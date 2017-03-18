@@ -8,4 +8,8 @@ The latest development version of `Sentometrics` is available at [https://github
 
 Please cite `Sentometrics` in publications.
 
-[GSCO 2017 Sentometrics](https://github.com/rstats-gsoc/gsoc2017/wiki/Sentometrics)
+[GSCO 2017 Sentometrics](https://github.com/rstats-gsoc/gsoc2017/wiki/Sentometrics:-An-integrated-framework-for-joint-sentiment-extraction-and-forecasting-from-text)
+
+[GSCO 2017](https://github.com/rstats-gsoc/gsoc2017/wiki/table-of-proposed-coding-projects)
+
+[GSCO 2017 TIME](https://developers.google.com/open-source/gsoc/timeline)
