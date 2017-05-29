@@ -1,0 +1,40 @@
+
+################################ 
+### GSoC 2017 - Sentometrics ###
+########### PLANNING ###########
+################################ 
+
+29/05 - 26/06
+-------------
+corpus CLASS
+sentmeasures CLASS
+
+Associated wrappers, unit tests and documentation
+
+setup of modelling and optimization in next phase (e.g. process control)
+
+26/06 - 30/06 ------------- Evaluation Phase 1
+
+26/06 - 27/07
+-------------
+sentmodel (sentlm + sentnlm) CLASS
+sentforecast CLASS
+
+Associated wrappers, unit tests and documentation
+
+24/07 - 28/07 ------------- Evaluation Phase 2
+
+28/07 - 04/08
+-------------
+sentattrib (sentattriblm + sentattribnlm) CLASS
+
+Associated wrappers, unit tests and documentation
+
+05/08 - 29/08
+-------------
+Extensive testing and code improvements
+Finalizing documentation
+Finalizing package structure (e.g. datasets)
+Vignette
+
+29/08 - 05/09 ------------- Evaluation Phase 3
