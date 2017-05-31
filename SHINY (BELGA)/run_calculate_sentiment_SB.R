@@ -38,7 +38,8 @@ for(i in languages) {
   xmli <- xmldt[xmldt$language == i, ]
 
   # subset by itemID where date is largest (most recent article in case of duplicate IDs)
-  xmli <- plyr::ddply(xmli, .(itemId), function(x) x[which.max(as.Date(x$date, "%d/%m/%Y")), ]) # faster alternatives with dplyr/data.table
+  xmli <- plyr::ddply(xmli, .(itemId), function(x) x[which.max(as.Date(x$date, "%d/%m/%Y")), ])
+  #### potentially faster alternatives with dplyr/data.table
 
   # add new meta data (category, desk and keywords)
   xml_newi <- xmldt_new[xmldt_new$language == i, ]
@@ -64,7 +65,7 @@ for(lan in names(lexicons)) {
   for(lexic in input_lexicons) {
     inp = paste0(data_folder, "lexicon/", lan, "_", lexic, "_lexicon.csv")
     lex = read.csv(inp, encoding = "UTF-8")
-    lex = lex[validUTF8(as.character(lex[, 1])), ] # some Dutch words pose a problem (ego?stisch, clich?matig, etc.)
+    lex = lex[validUTF8(as.character(lex[, 1])), ] # some Dutch words pose a problem (egoïstisch, clichématig, etc.)
     lex[, 1] = stringr::str_to_lower(lex[, 1])
     lex[, 1] = stringr::str_trim(lex[, 1])
     lex = lex[!duplicated(lex), ]
@@ -136,6 +137,5 @@ sapply(lapply(out, "[", j = keywords, with = FALSE), colSums) # number of docume
 #     ifelse(any(x), TRUE, FALSE) # rows with at least one of the words
 #   }
 # }
-
 # data <- data[apply(data[, input$keywords, with = FALSE], 1, and_or, choice), ]
 
