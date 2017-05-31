@@ -13,26 +13,26 @@ library(grDevices)
 
 # extrafont::loadfonts(device = "win", quiet = TRUE)
 
-inputs <- function() { 
+inputs <- function() {
   wellPanel(
     fluidRow(
       column(width = 5,
          checkboxGroupInput("keywords",
-                            "Keywords", c("Brexit" = "Brexit", 
+                            "Keywords", c("Brexit" = "Brexit",
                                           "Michel" = "Michel",
                                           "PS" = "PS",
                                           "Trump" = "Trump",
                                           "Vlaams Belang" = "Vlaams_Belang")), # _ for whitespaces within keywords
-         radioButtons('and_or', 
-                      'Inclusion', c("AND" = "&", 
+         radioButtons('and_or',
+                      'Inclusion', c("AND" = "&",
                                      "OR" = "|"),
                       inline = TRUE)),
       column(width = 3,
          checkboxGroupInput("language",
                             "Language", c("Dutch" = "nl",
-                                          "French" = "fr"), 
+                                          "French" = "fr"),
                             selected = c())),
-      column(width = 4,   
+      column(width = 4,
          checkboxGroupInput("lexicon",
                             "Lexicon", c("Harvard General Inquirer" = "GI",
                                          "Loughran and McDonald" = "McDonald",
@@ -55,21 +55,21 @@ fluidPage(
       tags$h2("Textual Sentiment: An Example from Politics"),
       hr(), # horizontal line
       fluidRow(
-        column(width = 3, 
+        column(width = 3,
                tags$h4("Parameters")),
-        column(width = 6, 
+        column(width = 6,
                tags$h4("Textual Sentiment Indices")),
-        column(width = 3, 
+        column(width = 3,
                tags$h4("Statistics"))
       ),
       fluidRow(
-        column(width = 3, 
+        column(width = 3,
                inputs(),
                div(column(width = 8),
-                   column(width = 4, 
-                          radioButtons("normalised", 
+                   column(width = 4,
+                          radioButtons("normalised",
                             "Normalisation", c("Yes" = TRUE,
-                                               "No" = FALSE), 
+                                               "No" = FALSE),
                             inline = TRUE)))),
         div(style = "position: relative",
             column(width = 6,
@@ -83,16 +83,17 @@ fluidPage(
                    br(),
                    uiOutput("sel_keywords"))
             )
-      ), 
+      ),
       br(), # blank line
       fluidRow(
         column(width = 3),
         column(width = 3,
-               dateRangeInput("dates", 
-                              "Select time horizon", min = "2016-01-01", max = "2016-12-31", 
-                              start = "2016-01-01", end = "2016-12-31", 
+               dateRangeInput("dates",
+                              "Select time horizon", min = "2016-01-01", max = "2016-12-31",
+                              start = "2016-01-01", end = "2016-12-31",
                               format = "dd-mm-yyyy"))
       )
     )
   )
 )
+
