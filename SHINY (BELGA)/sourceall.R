@@ -1,12 +1,3 @@
-# options(digits = 4, max.print = 5000, prompt = "> ", warn = -1)
-
-# list.of.packages = c("MSGARCH", "Rsolnp", "nloptr", "DEoptim", "MitISEM","methods",
-#                       "AdMit", "compiler", "mvtnorm", "car", "sandwich", "tseries",
-#                       "numDeriv", "Matrix","Rcpp","stringr")
-
-# list.of.packages <- c("MSGARCH", "Rsolnp", "nloptr", "DEoptim", "MitISEM",
-#                       "AdMit","compiler","mvtnorm","car","sandwich","tseries",
-#                       "numDeriv","Matrix","Rcpp","adaptMCMC","mcmcsampler")
 
 list.of.packages = c("XML", "compiler")
 
