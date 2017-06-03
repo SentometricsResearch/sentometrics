@@ -7,58 +7,64 @@ library(shinythemes)
 library(extrafont)
 library(dplyr)
 library(scales)
-library(shinyjs)
 library(TTR)
 library(grDevices)
 
 # extrafont::loadfonts(device = "win", quiet = TRUE)
 
-load("sentimentPOL.rda") # out
+load("sentimentShiny.rda") # out
 
 function(input, output) {
   selData <- reactive({
-
-    data <- rbindlist(out) # has all columns required for subsetting (lexicon, language and keywords)
+    data <- out # has all columns required for subsetting (lexicon, language and keywords)
     names(data) <- gsub(" ", "_", names(data)) # get rid of white spaces in keywords
-
-    n_kw <- length(input$keywords)
-
+    
     validate(
       need((length(input$language) > 0 & length(input$lexicon) > 0),
-           "Select at least one input language and one input lexicon.")
+           paste0("Select at least one input language, one input lexicon and one input topic.",
+                  "\n \n",
+                  "If none of the desks is selected, all desks are considered."))
     )
-
-    if(n_kw >= 1) {
-      shinyjs::disable("and_or") # if selection goes back from >= 2 keywords to 1 keyword
-      if(n_kw >= 2) {
-        shinyjs::enable("and_or")
-      }
-      choice <- input$and_or
-      cond <- paste0("data$", paste0(input$keywords, collapse = paste0(" == TRUE ", choice, " data$")), " == TRUE")
-      data <- filter(data, eval(parse(text = cond)))
+    
+    data <- dplyr::filter(data, keyword %in% input$keywords) # selected topic
+    
+    if(length(input$desk) > 0) {
+      if(length(input$language) == 2) {
+        desks <- unlist(strsplit(input$desk, " "))
       } else {
-        shinyjs::disable("and_or")
+        if(input$language == "nl") desks <- unlist(strsplit(input$desk, " "))[seq(1, length(input$desk) * 2, by = 2)]
+        else desks <- unlist(strsplit(input$desk, " "))[seq(1, length(input$desk) * 2, by = 2) + 1]
+      }
+      data <- dplyr::filter(data, desk %in% desks)
     }
-
-    data <- data.table(data)[, list(net_sent = mean(net_sent, na.rm = TRUE), # average net sentiment score
+    
+    data <- dplyr::filter(data, word_count >= input$minWords)
+    
+    if(input$aggregation == "Sum") fun <- sum
+    else fun <- mean
+    
+    data <- data.table(data)[, list(net_sent = fun(net_sent, na.rm = TRUE), # average net sentiment score
                                     words = sum(word_count), # total number of words
                                     documents = sum(doc_counter)), # total number of documents
                              by = list(date, lexicon, language)] # aggregate over date based on selected keywords
-
+    
     data <- data[grepl(paste0(input$language, collapse = "|"), data$language), ] # selection based on language input
     data <- data[grepl(paste0(input$lexicon, collapse = "|"), data$lexicon), ] # selection based on lexicons input
     data <- data[data$date >= input$dates[1] & data$date <= input$dates[2], ] # selection based on time frame input
-
+    
     data$name <- paste0(data$lexicon, " (", data$language, ")  ")
-
+  
+    data <- dplyr::filter(data, documents >= input$minDocs)
+    
     if(nrow(data) > 0) {
       nvals <- data.table(data)[, list(n = length(net_sent)),
                                 by = list(lexicon, language)]$n
     } else {
       nvals <- 0 # in case data is empty
     }
-
-    if(any(nvals <= 7)) { # if at least one of the series has 7 or less data points, inform users
+    
+    nSMA <- 7
+    if(any(nvals <= nSMA)) { # if at least one of the series has nSMA or less data points, inform users
       valid <- FALSE
     } else {
       valid <- TRUE
@@ -69,7 +75,7 @@ function(input, output) {
         data$net_sent <- norm$vals
       }
 
-      sma <- data.table(data)[, list(vals = SMA(net_sent, n = 7)), # simple moving average (weekly)
+      sma <- data.table(data)[, list(vals = SMA(net_sent, n = nSMA)), # simple moving average (weekly)
                             by = list(lexicon, language)]
       data$sma <- sma$vals
     }
@@ -77,37 +83,79 @@ function(input, output) {
     return(list(data = data, valid = valid))
   })
 
-  output$stats <- renderTable({
+  output$nDocs <- renderUI({
     validate(
       need((length(input$language) > 0 & length(input$lexicon) > 0),
-           "Select language and/or lexicon.")
+           "")
     )
+    
+    selData <- selData()
+    data <- selData$data
+    
+    docs <- dplyr::summarise(group_by(data, name),
+                              n = sum(documents))
 
+    validate(
+      need(selData$valid == TRUE,
+           paste0(""))
+    )
+    
+    HTML(paste0("Number of documents: ",
+                "<ul>",
+                paste0("<li>",
+                       paste0(unique(docs$n), " ", 
+                                     strsplit(paste0("(", input$language, collapse = " ", ")"), split = " ")[[1]],
+                              collapse = "</li><li>"),
+                       "</li"),
+                "</ul>"))
+  })
+
+  output$nWords <- renderUI({
+    validate(
+      need((length(input$language) > 0 & length(input$lexicon) > 0),
+           "")
+    )
+    
     selData <- selData()
     data <- selData$data
 
     validate(
       need(selData$valid == TRUE,
-           "Not enough data points.")
+           paste0(""))
     )
-
-    stats <- dplyr::summarise(group_by(data, name),
-                              sentiment = mean(net_sent),
-                              words = mean(words / documents),
-                              documents = mean(documents))
-
-    return(stats)
+    
+    words <- dplyr::summarise(group_by(data, name),
+                              n = round(mean(words / documents), 0))
+    
+    HTML(paste0("Average number of words per document: ",
+                "<ul>",
+                paste0("<li>",
+                       paste0(unique(words$n), " ", 
+                              strsplit(paste0("(", input$language, collapse = " ", ")"), split = " ")[[1]],
+                              collapse = "</li><li>"),
+                       "</li"),
+                "</ul>"))
   })
-
-  output$sel_keywords <- renderUI({
-    if(length(input$keywords) > 0) {
-      HTML(paste0("Selected keywords: ",
-                  "<ul>",
-                  paste0("<li>", paste0(gsub("_", " ", input$keywords), collapse = "</li><li>"), "</li>"),
-                  "</ul>"))
-    } else {
-      HTML(paste0("Selected keywords: ", "none"))
-    }
+  
+  output$stats <- renderTable({
+    validate(
+      need((length(input$language) > 0 & length(input$lexicon) > 0),
+           "Select language, lexicon and topic.")
+    )
+    
+    selData <- selData()
+    data <- selData$data
+    
+    validate(
+      need(selData$valid == TRUE,
+           paste0("Not enough data points.", "\n \n"))
+    )
+    
+    stats <- dplyr::summarise(group_by(data, name),
+                              sentiment = mean(net_sent))
+    names(stats) <- c("Selection", "Average Sentiment Score")
+    
+    return(stats)
   })
 
   output$plot <- renderPlot({
@@ -134,6 +182,7 @@ function(input, output) {
       geom_point() +
       # geom_line() +
       geom_line(aes(y = sma), size = 1.25) +
+      geom_hline(yintercept = 0, size = 0.70, linetype = "dotted") + 
       # geom_smooth(method = "auto", se = TRUE, level = 0.30) +
       scale_x_date(name = "Date",
                    labels = ifelse(timeGap > 90, date_format("%m-%Y"), date_format("%d-%m-%y")),
@@ -144,12 +193,13 @@ function(input, output) {
             legend.position = "top",
             text = element_text(family = "Georgia", size = 14),
             plot.margin = unit(c(0, 2.5, 0, 7.5), "mm"), # top, right, bottom, left
-            axis.text.x = element_text(angle = 60, hjust = 1))
+            axis.text.x = element_text(angle = 60, hjust = 1),
+            axis.ticks = element_blank())
 
     return(p)
   })
 
-  output$hover_info <- renderUI({
+  output$hoverInfo <- renderUI({
     validate(
       need((length(input$language) > 0 & length(input$lexicon) > 0),
            "")
@@ -175,8 +225,9 @@ function(input, output) {
     top_px <- hover$range$top + top_pct * (hover$range$bottom - hover$range$top)
 
     # create style properties fot tooltip
-    style <- paste0("position: absolute; z-index: 100; background-color: rgba(245, 245, 245, 0.85); ",
-                    "left:", left_px + 2, "px; top:", top_px + 2, "px;")
+    style <- paste0("position: absolute; z-index: 100; ", 
+                    "background-color: rgba(240, 240, 240, 0.90); ",
+                    "left:", left_px + 0.5, "px; top:", top_px + 0.5, "px;")
 
     # actual tooltip created as a wellPanel
     wellPanel(
@@ -187,5 +238,51 @@ function(input, output) {
                     "<b> Words (mean): </b>", floor(point$words/point$documents), "<br/>")))
     )
   })
+  
+  output$methodology <- renderUI({
+    
+    HTML(paste0("The methodology to obtain the displayed textual sentiment time series
+                can be explained in brief by below series of steps:",
+                "<ol>",
+                "<li> Assemble a selection of texts (a corpus) </li>",
+                "<li> Select the corpus texts of interest" ,
+                "<ul> <li> Based on keyword tag (e.g. 'VOETBAL' or 'FOOTBALL') </li> 
+                      <li> Based on keyword occurrence in text (e.g. all texts in which 'Trump' appears) </li> 
+                      <li> Based on category tag (e.g. 'POL' for politics) </li> 
+                      <li> Based on language tag </li> </ul> </li>",
+                "<li> Match all words in each text to word lists (lexicons) </li>",
+                "<li> Assign a sentiment score per text </li>",
+                "<li> Aggregate sentiment scores per text for every date </li>",
+                "</ol>",
+                "<br>",
+                "<p> A lexicon is a set of words with an associated polarity. There circulate
+                several lexicons in text mining research, primarily in English. Most often, these
+                lexicons are general in nature, but some are domain-specific. In this setting, we 
+                have used an English financial lexicon, translated to both French and English, a
+                general French lexicon, and a general English lexicon, translated to Dutch. </p>", 
+                "<br>",  
+                "<p> Sentiment for a given text is calculated as a weighted (by number of words) sum of 
+                sentiment per sentence. The latter is calculated by summing up the polarity of the
+                words that match a word in the lexicon, with the potential impact of surrounding words
+                near the polarized word accounted for. As a simple example, 'not bad' would
+                have an initial sentiment value of -1 due to the word 'bad', but this is eventually
+                reversed because of the presence of the word 'not'. Each text thus has a sentiment score,
+                and sentiment on a single date is composed by either summing up or averaging sentiment
+                from all texts on that day. </p>"))
+    
+  })
+  
+  output$spotted <- renderUI({
+    
+    HTML(paste0("..."))
+    
+  })
+  
+  output$toDo <- renderUI({
+    
+    HTML(paste0("..."))
+    
+  })
+  
 }
 
