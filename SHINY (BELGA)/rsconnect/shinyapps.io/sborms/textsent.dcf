@@ -3,9 +3,9 @@ title: TextSent
 account: sborms
 server: shinyapps.io
 appId: 184220
-bundleId: 843425
+bundleId: 867360
 url: https://sborms.shinyapps.io/textsent/
-when: 1495970325.83734
+when: 1497468605.56505
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: corpus.rda|Economic Policy Uncertainty Index.url|run_calculate_sentiment_SB.R|runApp.R|sentiment.rda|sourceall.R|xmldt.rda|xmldt_new.rda|code/get_sentence.R|code/sentiment.R|code/Utils.R|data/belgatextENG/agency.xml|data/lexicon/Dutch_GI_GT_lexicon.csv|data/lexicon/Dutch_McDonald_GT_lexicon.csv|data/lexicon/Dutch_pattern_lexicon.csv|data/lexicon/French_FEEL_lexicon.csv|data/lexicon/French_GI_GT_lexicon.csv|data/lexicon/French_McDonald_GT_lexicon.csv|data/lexicon/French_pattern_lexicon.csv|data/text/360texts-2016.xml|data/text/belgatext-2016-01.xml|data/text/belgatext-2016-02.xml|data/text/belgatext-2016-03.xml|data/text/belgatext-2016-04.xml|data/text/belgatext-2016-05.xml|data/text/belgatext-2016-06.xml|data/text/belgatext-2016-07.xml|data/text/belgatext-2016-08.xml|data/text/belgatext-2016-09.xml|data/text/belgatext-2016-10.xml|data/text/belgatext-2016-11.xml|data/text/belgatext-2016-12.xml
+ignoredFiles: calculate_sentiment.R|corpus.rda|runApp.R|sourceall.R|code/get_sentence.R|code/sentiment.R|code/utils.R
