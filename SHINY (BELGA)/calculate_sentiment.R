@@ -70,7 +70,7 @@ for(lan in names(lexicons)) {
     cat(lan, lexic, "\n")
     inp = paste0(data_folder, "lexicon/", lan, "_", lexic, "_lexicon.csv")
     lex = read.csv(inp, sep = ";")
-    #lex = lex[validUTF8(as.character(lex[, 1])), ]
+    # lex = lex[validUTF8(as.character(lex[, 1])), ]
     lex[, 1] = stringr::str_to_lower(lex[, 1])
     lex[, 1] = stringr::str_trim(lex[, 1])
     lex = lex[!duplicated(lex), ]
@@ -137,70 +137,70 @@ corpusECO <- lapply(corpus, dplyr::filter, category == "ECO" & body != " ")
 ###### sentiment calculation (sentiment calculation itself not very fast for large corpora)
 
 sentimentr_calc <- function(text, lex, val) {
-  
-  sentCalc <- sentiment_custom(text.var = text, 
+
+  sentCalc <- sentiment_custom(text.var = text,
                                polarity_dt = lex,
                                valence_shifters_dt = val) # based on 'sentimentr' package
-  
+
   sent <- sentCalc[, list(words = gsub(" :", " =", paste0(unlist(words), collapse = "; ")), # words useful here?
                           word_count = sum(word_count, na.rm = TRUE),
                           doc_counter = 1, # 1 doc per element_id (later summed)
                           net_sent = sum((sentiment * word_count) / sum(word_count, na.rm = TRUE), na.rm = TRUE)),
                    by = list(element_id)]
-  
+
   return(sent)
 }
 
 sentiment <- function(corpus, lexicons, valences, languagesIn, lexiconsIn, keywords = NA) {
-  
+
   out <- list()
 
   if(!(all(is.na(keywords)))) {
-    
+
     for(key_w in keywords) {
       for(lan in languagesIn) {
         corp <- corpus[[lan]]
         ind <- stringi::stri_detect_fixed(corp$body, key_w) # TRUE means keyword present in text
-        corp <- corp[ind, ]  
+        corp <- corp[ind, ]
         text <- corp$body[corp$body != " "] # leave out remaining empty texts
-        
+
         val <- valences[[lan]]
         for(lexic in lexiconsIn) {
           lex <- lexicons[[lan]][[lexic]]
-          
+
           sent <- sentimentr_calc(text, lex, val)
           sent$date <- as.Date(corp$date[sent$element_id], "%d/%m/%Y")
           sent$keyword <- key_w
           sent$lexicon <-lexic
           sent$language <- lan
           sent$desk <- corp$desk
-          
+
           name <- paste0(key_w, "_", lexic, " (", lan, ")")
           out[[name]] <- sent
-    
+
           cat("done:", key_w, "-", lan, "-", lexic, "\n") # progress statement
         }
       }
-    } 
+    }
   } else { # if no keywords supplied, calculate sentiment in provided corpus
-    
+
     for(lan in languagesIn) {
       corp <- corpus[[lan]]
       text <- corp$body[corp$body != " "]
-      
+
       val <- valences[[lan]]
       for(lexic in lexiconsIn) {
         lex <- lexicons[[lan]][[lexic]]
-        
+
         sent <- sentimentr_calc(text, lex, val)
         sent$date <- as.Date(corp$date[sent$element_id], "%d/%m/%Y")
         sent$lexicon <- lexic
         sent$language <- lan
         sent$desk <- corp$desk
-        
+
         name <- paste0(lexic, " (", lan, ")")
         out[[name]] <- sent
-        
+
         cat("done:", lan, "-", lexic, "\n") # progress statement
       }
     }
@@ -212,7 +212,7 @@ sentiment <- function(corpus, lexicons, valences, languagesIn, lexiconsIn, keywo
 ter <- sentiment(corpusTER, lexicons, valences, c("nl", "fr"), c("General", "Financial"))
 ter <- lapply(ter, function(x) {x$keyword <- "Terrorism"; return(x)})
 names(ter) <- paste0("Terrorism_", names(ter))
-                   
+
 foot <- sentiment(corpusFOOT, lexicons, valences, c("nl", "fr"), c("General", "Financial"))
 foot <- lapply(foot, function(x) {x$keyword <- "Football"; return(x)})
 names(foot) <- paste0("Football_", names(foot))
