@@ -2,6 +2,7 @@
 require(tm)
 require(qdapDictionaries)
 require(qdap)
+require(RWeka)
 
 load("DATA/example_corpus.rda")
 load("LEXICON/negativeDiction_McDonald.rda")
@@ -12,11 +13,11 @@ weighting = FALSE
 data(negation.words)
 
 str_negate <- function(x) {
-  
+
   for(i in 1:length(negation.words)) {
     x = gsub(paste0(negation.words[i], " "), "not_", gsub("n't ", "n't not_", x))
   }
-  
+
   return(x)
 }
 
@@ -111,13 +112,13 @@ sublist = matrix(NA, nrow = length(corpus), ncol = length(subjectList))
 
 for(i in 1:length(subjectList)) {
   sublist[, i] = as.numeric(as.character(lapply(Sub, FUN = function(x) {
-    
+
     if(any(!is.na(x))) {
       return(as.numeric(as.character(x[x[, 1] == subjectList[i], 2])))
-    } else { 
+    } else {
       return(0)
     }
-    
+
   })))
 }
 colnames(sublist) = subjectList
@@ -127,14 +128,14 @@ origin = lapply(corpus, meta, tag = "origin")
 origin[sapply(origin, length) == 0] <- NA
 origin = unlist(origin)
 
-sentiment = data.frame(date = unlist(timelist), 
-                       positiveScore = positiveScore, 
-                       negativeScore = negativeScore, 
+sentiment = data.frame(date = unlist(timelist),
+                       positiveScore = positiveScore,
+                       negativeScore = negativeScore,
                        origin = origin,
                        nwords = nwords)
 
 sentiment = cbind(sentiment, sublist)
 
-# Note that there are multiple articles per day. The next step is to merge per topic to obtain topic/daily sentiment measures. 
-# The number appearing in each row of one of the topic columns is the probability in percent that the document is from that topic.  
+# Note that there are multiple articles per day. The next step is to merge per topic to obtain topic/daily sentiment measures.
+# The number appearing in each row of one of the topic columns is the probability in percent that the document is from that topic.
 

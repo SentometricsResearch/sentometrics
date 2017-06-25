@@ -86,19 +86,73 @@ setup_time_weights <- function(lag, how, ...) {
   return(weights)
 }
 
-# to export
+#' Supported options to perform aggregation into sentiment measures.
+#'
+#' @description Call for information purposes only. Used within \code{ctrl_agg()} to check if supplied
+#' aggregation hows are supported.
+#'
+#' @return A list with the supported aggregation hows for words (within documents), docs (across documents, per date)
+#' and time (across dates).
+#'
+#' @export
 get_hows <- function() {
 
-  words <- c("equal-weight", "proportional", "tf-idf")
-  sentences <- c("equal-weight", "proportional")
+  words <- c("equal-weight", "proportional", "tf-idf", "counts")
   docs <- c("equal-weight", "proportional")
   time <- c("equal-weight", "almon", "linear", "exponential", "own")
 
   hows <- list(words = words,
-               sentences = sentences,
                docs = docs,
                time = time)
 
   return(hows)
+}
+
+create_cv_slices <- function (y, trainWindow, skip = 0, reverse = FALSE) {
+
+  if (trainWindow + skip >= length(y)) stop("(trainWindow + skip) >= length(y).")
+
+  if(reverse) {
+    stops <- (seq(along = y))[(length(y)):(trainWindow + skip + 1)]
+    test <- as.list(as.integer(stops - initialWindow - skip, SIMPLIFY = FALSE))
+  } else {
+    stops <- (seq(along = y))[trainWindow:(length(y) - skip - 1)]
+    test <- as.list(as.integer(stops + skip + 1))
+  }
+
+  starts <- stops - trainWindow + 1
+  train <- mapply(seq, starts, stops, SIMPLIFY = FALSE)
+
+  names(train) <- paste("Training", gsub(" ", "0", format(seq(along = train))), sep = "")
+  names(test) <- paste("Testing", gsub(" ", "0", format(seq(along = test))), sep = "")
+
+  return(list(train = train, test = test))
+}
+
+align_variables <- function(y, sentmeasures, x, h, i = NULL, nSample = NULL) {
+
+  y[is.na(y)] <- 0
+
+  sent <- sentmeasures$measures
+  x <- cbind(sent, x)
+  x[is.na(x)] <- 0
+  dates <- row.names(x)
+
+  if (!all(is.null(i) | is.null(nSample))) {
+    X <- x[i:(nSample + i + ifelse(h < 0, abs(h), 0) - 1), ]
+    Y <- y[i:(nSample + i + ifelse(h > 0, h , 0) - 1), , drop = FALSE]
+  }
+
+  if (h > 0) {
+    y <- y[(h + 1):nrow(x), , drop = FALSE]
+    x <- x[1:nrow(y), ]
+  } else if (h < 0) {
+    x <- x[(abs(h) + 1):nrow(y), ]
+    y <- y[1:nrow(x), drop = FALSE]
+  }
+
+  colnames(y) <- "y"
+
+  return(list(y = y, x = x))
 }
 
