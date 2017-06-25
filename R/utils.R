@@ -20,7 +20,6 @@ almons <- function(n, orders = 1:3, inverse = FALSE, normalize = TRUE) {
     } else {
       ind <- (ifelse(i == 1, 2, i)-1):i
     }
-
     almon <- (1 - (stdindex)^b) * stdindex^(max(orders) - b)
     almons[, ind] <- almon
   }
@@ -29,7 +28,6 @@ almons <- function(n, orders = 1:3, inverse = FALSE, normalize = TRUE) {
   if (normalize) almons <- t(t(almons)/colSums(almons))
 
   return(almons)
-
 }
 
 exponentials <- function(n, alphas = seq(0.1, 0.5, by = 0.1)) {
@@ -47,7 +45,6 @@ exponentials <- function(n, alphas = seq(0.1, 0.5, by = 0.1)) {
   }
 
   return(exponentials)
-
 }
 
 roll_weights <- function(x, w) {
@@ -56,7 +53,6 @@ roll_weights <- function(x, w) {
   else {
     return(sum(x[!is.na(x)] * w[!is.na(x)])) # x is sentiment index column, w is weights matrix
   }
-
 }
 
 setup_time_weights <- function(lag, how, ...) {
@@ -64,23 +60,15 @@ setup_time_weights <- function(lag, how, ...) {
   if (length(how) > 1) how <- how[1]
 
   if (how == "equal-weight") {
-
     weights <- data.frame(matrix(1/lag, nrow = lag, ncol = 1))
     colnames(weights) <- "equal_weight"
-
   } else if (how == "almon") {
-
     weights <- almons(lag, ...$orders, ...$inverse, ...$normalize)
-
   } else if (how == "linear") {
-
     weights <- data.frame(matrix((1:lag)/sum(1:lag), nrow = lag, ncol = 1))
     colnames(weights) <- "linear_moving"
-
   } else if (how == "exponential") {
-
     weights <- exponentials(lag, ...$alphas)
-
   } else stop("Please select an appropriate aggregation 'how'.")
 
   return(weights)

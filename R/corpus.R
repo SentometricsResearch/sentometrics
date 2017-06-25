@@ -36,20 +36,17 @@ corpuS <- function(text_df, minWords = NULL, maxWords = NULL) {
 
   ### to delete or put elsewhere (makes it too slow)
   if (!(is.null(minWords) & is.null(maxWords))) {
-
     # tokenize into proper words and apply lower and uppor bounds for number of words per text
     tWords <- quanteda::tokenize(c,
                                  remove_punct = TRUE, remove_numbers = TRUE, remove_symbols = TRUE, remove_separators = TRUE,
                                  ngrams = 1)
 
     c <- quanteda::corpus_subset(c, quanteda::ntoken(tWords) >= minWords & quanteda::ntoken(tWords) <= maxWords)
-
   }
 
   class(c) <- c("corpuS", class(c))
 
   return(c)
-
 }
 
 ### add that it's an S3 method (relocate documentation to add_features.corpuS?)
