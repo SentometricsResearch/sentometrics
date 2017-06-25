@@ -77,7 +77,6 @@ model_errors <- function(yEst, yReal) {
                     MAPE = as.numeric(meanErrors["APE"]))
 
   return(errorsAll)
-
 }
 
 #' Setup control for sentiment measures-based regression modelling
@@ -128,7 +127,6 @@ ctrl_model <- function(model = c("lm", "nlm"), type = c("BIC", "cv"), h = 1, alp
                      trainWindow = trainWindow)
 
   return(ctrl_model)
-
 }
 
 #' Optimized sparse linear regression
@@ -240,7 +238,6 @@ lm_BIC <- function(sentmeasures, y, x, h, alphas, lambdas, ...) {
               lambda = lambdaOpt)
 
   return(out)
-
 }
 
 lm_cv <- function(sentmeasures, y, x, h, alphas, lambdas, trainWindow, oos, ...) {
@@ -299,6 +296,7 @@ lm_cv <- function(sentmeasures, y, x, h, alphas, lambdas, trainWindow, oos, ...)
               alpha = alphaOpt,
               lambda = lambdaOpt)
 
+  return(out)
 }
 
 .sent_lm_iter <- function(type, sentmeasures, y, x, h, nSample, start, oos, alphas, lambdas, trainWindow) {
@@ -339,7 +337,6 @@ lm_cv <- function(sentmeasures, y, x, h, alphas, lambdas, trainWindow, oos, ...)
 
     yEst[i - start + 1, ] <- predict(regOpt, newx = xPred)
     yReal[i - start + 1, ] <- alignedVarsAll$y[(nSample + i + oos + h), ]
-
   }
 
   errors <- model_errors(yEst, yReal)
@@ -352,7 +349,6 @@ lm_cv <- function(sentmeasures, y, x, h, alphas, lambdas, trainWindow, oos, ...)
               performance = errors)
 
   return(out)
-
 }
 
 sent_lm_iter <- compiler::cmpfun(.sent_lm_iter) ### still too slow

@@ -20,7 +20,6 @@ sentmeasures <- function(corpus, lexicons, ctrlAgg) {
   sentmeasures <- perform_agg(toAgg, ctrlAgg)
 
   return(sentmeasures)
-
 }
 
 #' Setup lexicons format
@@ -64,7 +63,7 @@ setup_lexicons <- function(lexiconsRaw, valenceWords, split = FALSE) {
   for(lex in lexicons) {
       same <- which(val$x %in% lex$x) # x are the words (sentimentr format)
       sames <- c(sames, same)
-    }
+  }
 
   # split each lexicon into a positive and a negative polarity words only lexicon
   if (split) {
@@ -80,7 +79,6 @@ setup_lexicons <- function(lexiconsRaw, valenceWords, split = FALSE) {
   lexicons[["valenceWords"]] <- val[!unique(sames), ]
 
   return(lexicons)
-
 }
 
 .compute_sentiment <- function(corpuS, lexicons, how = get_hows()$words) {
@@ -103,23 +101,15 @@ setup_lexicons <- function(lexiconsRaw, valenceWords, split = FALSE) {
   wCounts <- rowSums(dfm, na.rm = TRUE)
 
   if (how == "counts" | how == "equal-weight") {
-
     fdm <- t(dfm) # feature-document matrix
-
   } else {
-
     if (how == "proportional") { # proportional w.r.t. words frequency vs. total words frequency per document
-
       weights <- quanteda::tf(dfm, scheme = "prop") # weight = (words freq. / total words freq.) per document
-
     } else if (how == "tf-idf") {
-
       weights <- quanteda::tfidf(dfm, normalize = TRUE)
-
     } else stop("Please select an appropriate aggregation 'how'.")
 
     fdmWeighted <- t(weights)
-
   }
 
   s <- data.table::as.data.table(matrix(0, nrow = quanteda::ndoc(corpuS), ncol = length(lexNames)))
@@ -162,7 +152,6 @@ setup_lexicons <- function(lexiconsRaw, valenceWords, split = FALSE) {
                   lexicons = lexNames)
 
   return(sentOut)
-
 }
 
 #' Computation of document-level sentiment across features and lexicons
@@ -217,7 +206,6 @@ perform_agg <- function(toAgg, ctrlAgg) {
   if (!("sentmeasures" %in% class(sentmeasures))) class(sentmeasures) <- c("sentmeasures")
 
   return(sentmeasures)
-
 }
 
 get_features_sentiment <- function(sent, features, lexNames) {
@@ -233,7 +221,6 @@ get_features_sentiment <- function(sent, features, lexNames) {
   sent[, eval(c(lexNames, features)) := NULL] # remove since replaced by lexicon--feature columns
 
   return(sent)
-
 }
 
 agg_documents <- function(toAgg, how = get_hows()$docs, ignoreZeros = FALSE) {
@@ -248,16 +235,12 @@ agg_documents <- function(toAgg, how = get_hows()$docs, ignoreZeros = FALSE) {
 
   # aggregate feature-sentiment per document by date for all lexicon columns
   if (how == "equal-weight") {
-
     measures <- sent[, lapply(.SD, mean, na.rm = TRUE),
                      by = date][order(date)]
-
   } else if (how == "proportional") { # proportional w.r.t. words in document vs. total words in all documents per date
-
     measures <- sent[, lapply(.SD, sum(.SD * word_count / sum(word_count, na.rm = TRUE), na.rm = TRUE), na.rm = TRUE),
                      by = date][order(date)]
   }
-
   measures$word_count <- NULL
 
   sentmeasures <- list(measures = measures,
@@ -269,7 +252,6 @@ agg_documents <- function(toAgg, how = get_hows()$docs, ignoreZeros = FALSE) {
   class(sentmeasures) <- c("sentmeasures")
 
   return(sentmeasures)
-
 }
 
 agg_time <- function(sentmeasures, lag, how = get_hows()$time, ...) {
@@ -342,7 +324,6 @@ merge_measures <- function(ctrlMerge) {
 
   # loop over lex(icon), feat(ure) and time lists
   for (across in toMerge[!is.na(toMerge)]) {
-
     # loop over set of aggregation levels to merge (combine) into given name (e.g. lex12 = c("lex1", "lex2"))
     for (i in seq_along(across)) {
       name <- names(across)[i]
@@ -389,7 +370,6 @@ merge_measures <- function(ctrlMerge) {
   sentmeasures$time <- unique(sapply(newNames, "[", 3))
 
   return(sentmeasures)
-
 }
 
 #' Setup control for aggregation into sentiment measures
@@ -441,7 +421,6 @@ ctrl_agg <- function(howWithin, howDocs, howTime, ignoreZeros, lag, ...) {
                   other = list(...))
 
   return(ctrlAgg)
-
 }
 
 #' Setup control for merging sentiment measures
@@ -509,7 +488,6 @@ ctrl_merge <- function(sentmeasures, lex = NA, feat = NA, time = NA, keep = FALS
                     keep = keep)
 
   return(ctrlMerge)
-
 }
 
 #' Select a subset of sentiment measures
@@ -543,6 +521,5 @@ select_measures <- function(sentmeasures, toSelect) {
   sentmeasures$time <- unique(sapply(newNames, "[", 3))
 
   return(sentmeasures)
-
 }
 
