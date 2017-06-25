@@ -17,9 +17,19 @@ Description: The Sentometrics package is designed to do time series analysis bas
   created therefore integrates the qualification of sentiment from text, the aggregation
   into different sentiment measures and the optimized forecasting based on these measures.
 Depends: R (>= 3.4.0)
-License: What license is it under?
+License: GPL-2
 Encoding: UTF-8
 LazyData: true
 Suggests: testthat
 Imports: quanteda,
-    sentimentr
+    sentimentr,
+    stringr,
+    xts,
+    zoo,
+    abind,
+    dplyr,
+    glmnet,
+    caret,
+    data.table,
+    compiler
+RoxygenNote: 6.0.1
