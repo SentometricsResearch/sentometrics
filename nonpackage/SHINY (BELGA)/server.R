@@ -424,7 +424,8 @@ function(input, output) {
 
     validate(
       need(selData$valid == TRUE,
-          paste0("There are too few data points (less than 10 available days) for at least one of the intended sentiment indices.",
+          paste0("There are too few data points (less than 10 available days) for at least one of the
+                 intended sentiment indices.",
                  "\n \n",
                  "Try out a different combination of parameters."))
     )
@@ -575,9 +576,9 @@ function(input, output) {
                 This results into a sentiment score for each text. Sentiment on a single date is composed by either summing
                 up or averaging sentiment from all texts on that day. Extensions exist under the name of semantic parsing,
                 textual analysis in which the potential impact of surrounding words
-                near the polarized word is accounted for. This is the most accurate approach, yet computationally more demanding.
-                As a simple example, 'not bad' would have an initial sentiment value of -1 due to the word 'bad', but this would
-                eventually be reversed because of the presence of the word 'not'. </p>",
+                near the polarized word is accounted for. This is the most accurate approach, yet computationally more
+                demanding. As a simple example, 'not bad' would have an initial sentiment value of -1 due to the word 'bad',
+                but this would eventually be reversed because of the presence of the word 'not'. </p>",
                 "<p> The fully aggregated sentiment index combines all articles in both French and Dutch
                 as well as the different sentiment scores per lexicon. The weight options allow to control
                 for the importance of each language or lexicon. </p>"))
@@ -590,12 +591,14 @@ function(input, output) {
                 textual sentiment. Elements of this analysis are:",
                 "<ul>",
                 "<li> The disparity in number of texts is apparent. During and shortly after important events,
-                the number of documents is clearly higher. How does the number of news articles spread out to the sentiment value?",
-                "<li> It is very much of interest to connect a peak in sentiment to the articles which have propelled that peak. This
-                is called attribution, and can be done at various levels. Another example is to link peaks to news sources (e.g. magazines),
-                to detect whether some news source is driving sentiment more than others. </li>",
-                "<li> How is textual sentiment from articles in one language correlated to articles in another language? Is sentiment
-                expressed in different languages, or by journalists in different countries, divergent or rather similar? </li>",
+                the number of documents is clearly higher. How does the number of news articles spread out to the sentiment
+                value?",
+                "<li> It is very much of interest to connect a peak in sentiment to the articles which have propelled that peak.
+                This is called attribution, and can be done at various levels. Another example is to link peaks to news sources
+                (e.g. magazines), to detect whether some news source is driving sentiment more than others. </li>",
+                "<li> How is textual sentiment from articles in one language correlated to articles in another language? Is
+                sentiment expressed in different languages, or by journalists in different countries, divergent or rather
+                similar? </li>",
                 "<li> When and why is sentiment positive or negative? When and why is sentiment abnormally high or low? </li>",
                 "</ul>",
                 "The overall framework for textual sentiment calculation is still subject to several

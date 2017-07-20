@@ -524,9 +524,10 @@ navbarPage(
                    offset = 1,
                    width = 8,
                    HTML(
-                     "Prof. Kris Boudt is an Associate Professor at the <b> Vrije Universiteit Brussel </b> with extensive experience in (financial) econometrics.
-                     The past several years, he has been developing statistical tools to analyse sentiment present in texts, like corporate
-                     publications. He also holds a position at the Vrije Universiteit Amsterdam."
+                     "Prof. Kris Boudt is an Associate Professor at the <b> Vrije Universiteit Brussel </b> with extensive
+                     experience in (financial) econometrics. The past several years, he has been developing statistical
+                     tools to analyse sentiment present in texts, like corporate publications. He also holds a position at
+                     the Vrije Universiteit Amsterdam."
                    )
                    )
                    )),
@@ -540,8 +541,9 @@ navbarPage(
                    offset = 1,
                    width = 8,
                    HTML(
-                     "Prof. David Ardia is an Assistant Professor at the Université de Neuchâtel as well as the Université Laval. He is a specialist in the modelling of financial risks,
-                     with very strong computational skills, who has been working with Prof. Boudt for close to a decade."
+                     "Prof. David Ardia is an Assistant Professor at the Université de Neuchâtel as well as the Université
+                     Laval. He is a specialist in the modelling of financial risks, with very strong computational skills,
+                     who has been working with Prof. Boudt for close to a decade."
                    )
                    )
                  )),
@@ -555,8 +557,8 @@ navbarPage(
                    offset = 1,
                    width = 8,
                    HTML(
-                     "Prof. James Thewissen contributed with his PhD to the analysis of corporate information, and has a solid knowledge in text mining and
-                     statistical textual analysis techniques."
+                     "Prof. James Thewissen contributed with his PhD to the analysis of corporate information, and has a solid
+                     knowledge in text mining and statistical textual analysis techniques."
                    )
                    )
                  ))
@@ -592,8 +594,8 @@ navbarPage(
                    offset = 1,
                    width = 8,
                    HTML(
-                     "Keven Bluteau is a PhD student, working primarily on how to use textual sentiment analysis to forecast economic and financial
-                     variables."
+                     "Keven Bluteau is a PhD student, working primarily on how to use textual sentiment analysis to forecast
+                     economic and financial variables."
                    )
                    )
                  )),
@@ -607,7 +609,8 @@ navbarPage(
                    offset = 1,
                    width = 8,
                    HTML(
-                     "Samuel Borms is an upcoming PhD student, currently devoted to the Sentometrics Google Summer of Code (GSoC) project."
+                     "Samuel Borms is an upcoming PhD student, currently devoted to the Sentometrics Google Summer of Code
+                     (GSoC) project."
                    )
                  )
                )),
@@ -621,7 +624,8 @@ navbarPage(
                    offset = 1,
                    width = 8,
                    HTML(
-                     "Andres Algaba is a PhD student who studies the time variation in financial time series, including those who are sentiment-based."
+                     "Andres Algaba is a PhD student who studies the time variation in financial time series, including those
+                     who are sentiment-based."
                    )
                  )
                )),
@@ -635,7 +639,8 @@ navbarPage(
                    offset = 1,
                    width = 8,
                    HTML(
-                     "Wouter Torsin is a PhD student who has been investigating the tone in a large amount of corporate publications."
+                     "Wouter Torsin is a PhD student who has been investigating the tone in a large amount of corporate
+                     publications."
                    )
                  )
                ))
@@ -665,9 +670,9 @@ navbarPage(
                         offset = 1,
                         width = 8,
                         HTML(
-                          "Tom Wuytack is the Chief Information Officer at <b>Belga News Agency</b>, a company he has been working at for over 15 years. He
-                          is convinced about the positive impact a trustworthy calculation of textual sentiment will have on extending media analysis services
-                          to Belga's clients."
+                          "Tom Wuytack is the Chief Information Officer at <b>Belga News Agency</b>, a company he has been
+                          working at for over 15 years. He is convinced about the positive impact a trustworthy calculation of
+                          textual sentiment will have on extending media analysis services to Belga's clients."
                         )
                         )
                         )),
@@ -681,9 +686,10 @@ navbarPage(
                         offset = 1,
                         width = 8,
                         HTML(
-                          "Stefan Hartmann is Head of Quantitative Research at <b> Finvex </b>. He is knowledgeable on the majority of contemporary investment
-                          strategies and products. He has observed a trend towards the explicit incorporation of sentiment expressed in texts
-                          in investment decisions and products, which he himself believes has strong potential."
+                          "Stefan Hartmann is Head of Quantitative Research at <b> Finvex </b>. He is knowledgeable on the
+                          majority of contemporary investment strategies and products. He has observed a trend towards the
+                          explicit incorporation of sentiment expressed in texts in investment decisions and products, which
+                          he himself believes has strong potential."
                         )
                         )
                         )))
