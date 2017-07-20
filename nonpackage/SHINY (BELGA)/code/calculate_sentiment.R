@@ -1,6 +1,5 @@
 
 loc <- "nonpackage/SHINY (BELGA)"
-source(paste0(loc, "/sourceall.R"))
 
 str <- c(paste0(loc, "/code/"))
 fileSources <- list.files(str, pattern = "*.R$", full.names = TRUE, ignore.case = TRUE)
@@ -44,8 +43,8 @@ save(xmldt11, file = paste0(loc, "/data/xmldt11.rda"))
 xmldt10 <- xmlToDataFrame(paste0(loc, "/data/360texts-2010.xml", stringsAsFactors = FALSE))
 save(xmldt10, file = paste0(loc, "/data/xmldt10.rda"))
 
-load(paste0(loc, "/data/xmldt.rda")) # 2016
-load(paste0(loc, "/data/xmldt16.rda")) # doesn't have body and lead (are empty strings), thus matched above
+load(paste0(loc, "/data/xmldt16old.rda"))
+load(paste0(loc, "/data/xmldt16.rda")) # doesn't have body and lead (are empty strings), thus matched with above
 load(paste0(loc, "/data/xmldt15.rda"))
 load(paste0(loc, "/data/xmldt14.rda"))
 load(paste0(loc, "/data/xmldt13.rda"))
