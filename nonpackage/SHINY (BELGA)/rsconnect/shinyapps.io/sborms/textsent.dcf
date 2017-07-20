@@ -1,0 +1,11 @@
+name: textsent
+title: TextSent
+account: sborms
+server: shinyapps.io
+appId: 184220
+bundleId: 905275
+url: https://sborms.shinyapps.io/textsent/
+when: 1500241279.94004
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: calculate_sentiment.R|corpus.rda|eco.rda|eco2.rda|fin.rda|fin2.rda|foot.rda|foot2.rda|pol.rda|pol2.rda|runApp.R|sourceall.R|ter.rda|ter2.rda|_old/sentimentShiny.rda|_old/sentimentShiny2016.rda|_old/sentimentShinyAll_old1.rda|_old/sentimentShinyAll_old2.rda|_old/server_old.R|_old/server_old2.R|code/get_sentence.R|code/sentiment.R|code/sentiment_custom2.R|code/utils.R|data/corpusFull.rda|data/corpusNew.rda|data/corpusOld.rda|data/dfmdfmTER_nl.rda|data/dfmECO_fr.rda|data/dfmECO_nlr.rda|data/dfmFIN_fr.rda|data/dfmFIN_nl.rda|data/dfmFOOT_fr.rda|data/dfmFOOT_nl.rda|data/dfmPOL_fr.rda|data/dfmPOL_nl.rda|data/dfmTER_fr.rda|data/lexicons.rda|data/valences.rda|data/xmldt10.rda|data/xmldt11.rda|data/xmldt12.rda|data/xmldt13.rda|data/xmldt14.rda|data/xmldt15.rda|data/xmldt16.rda|data/xmldt16old.rda|data/text/360texts-2010.xml|data/text/360texts-2011.xml|data/text/360texts-2012.xml|data/text/360texts-2013.xml|data/text/360texts-2014.xml|data/text/360texts-2015.xml|data/text/360texts-2016.xml|data/text/belgatext-2016-01.xml|data/text/belgatext-2016-02.xml|data/text/belgatext-2016-03.xml|data/text/belgatext-2016-04.xml|data/text/belgatext-2016-05.xml|data/text/belgatext-2016-06.xml|data/text/belgatext-2016-07.xml|data/text/belgatext-2016-08.xml|data/text/belgatext-2016-09.xml|data/text/belgatext-2016-10.xml|data/text/belgatext-2016-11.xml|data/text/belgatext-2016-12.xml|images/Original/ardia.jpg|images/Original/bluteau.jpg|images/Original/borms.png|images/Original/boudt.png|images/Original/hartmann.jpg|images/Original/thewissen.png|images/Original/torsin.jpg|images/Original/wuytack.jpg
