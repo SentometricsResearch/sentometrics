@@ -31,5 +31,11 @@ Imports: quanteda,
     glmnet,
     caret,
     data.table,
-    compiler
+    compiler,
+    RcppRoll,
+    Rcpp,
+    ggplot2,
+    ggthemes,
+    scales,
+    lubridate
 RoxygenNote: 6.0.1

@@ -3,31 +3,36 @@
 ################# Utility/Helper functions #################
 ############################################################
 
-almons <- function(n, orders = 1:3, inverse = FALSE, normalize = TRUE) {
+almons <- function(n, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE) {
 
   vals <- 1:n
-  inv <- ifelse(inverse, 2, 1)
+  inv <- ifelse(do.inverse, 2, 1)
   almons <- data.frame(matrix(nrow = n, ncol = length(orders) * inv))
   colnames(almons) <- paste0("almon", rep(orders, rep(inv, length(orders))), c("", "_inv")[1:inv])
+
+  if (n == 1) {
+    almons[, ] <- 1
+    return(almons)
+  }
 
   for (i in 1:length(orders)) {
     b <- orders[i]
 
     stdindex <- vals/max(vals)
-    if (inverse) {
+    if (do.inverse) {
       stdindex <- cbind(stdindex, - stdindex + 1)
       ind <- (i*2-1):(i*2)
     } else {
-      ind <- (ifelse(i == 1, 2, i)-1):i
+      ind <- i
     }
     almon <- (1 - (stdindex)^b) * stdindex^(max(orders) - b)
     almons[, ind] <- almon
   }
 
-  # normalize weights so that it sums to 1 (if normalize is TRUE)
-  if (normalize) almons <- t(t(almons)/colSums(almons))
+  # normalize weights so that it sums to 1 (if do.normalize is TRUE)
+  if (do.normalize) almons <- t(t(almons)/colSums(almons))
 
-  return(almons)
+  return(as.data.frame(almons))
 }
 
 exponentials <- function(n, alphas = seq(0.1, 0.5, by = 0.1)) {
@@ -41,21 +46,23 @@ exponentials <- function(n, alphas = seq(0.1, 0.5, by = 0.1)) {
 
     exponential <- ((alpha * (1 - alpha)^(1 - vals))) / sum((alpha * (1 - alpha)^(1 - vals)))
     exponentials[, i] <- exponential
-
   }
 
-  return(exponentials)
+  return(as.data.frame(exponentials))
 }
 
 roll_weights <- function(x, w) {
 
-  if (all(is.na(x))) return(NA)
-  else {
-    return(sum(x[!is.na(x)] * w[!is.na(x)])) # x is sentiment index column, w is weights matrix
+  if (all(is.na(x))) {
+    out <- NA
+  } else {
+    out <- sum(x[!is.na(x)] * w[!is.na(x)]) # x is sentiment index column, w is weights matrix
   }
+
+  return(out)
 }
 
-setup_time_weights <- function(lag, how, ...) {
+setup_time_weights <- function(lag, how, ...) { # ... argument should be a list to match with functions in sentomeasures.R
 
   if (length(how) > 1) how <- how[1]
 
@@ -63,7 +70,7 @@ setup_time_weights <- function(lag, how, ...) {
     weights <- data.frame(matrix(1/lag, nrow = lag, ncol = 1))
     colnames(weights) <- "equal_weight"
   } else if (how == "almon") {
-    weights <- almons(lag, ...$orders, ...$inverse, ...$normalize)
+    weights <- almons(lag, ...$orders, ...$do.inverse, ...$do.normalize)
   } else if (how == "linear") {
     weights <- data.frame(matrix((1:lag)/sum(1:lag), nrow = lag, ncol = 1))
     colnames(weights) <- "linear_moving"
@@ -96,11 +103,11 @@ get_hows <- function() {
   return(hows)
 }
 
-create_cv_slices <- function (y, trainWindow, skip = 0, reverse = FALSE) {
+create_cv_slices <- function (y, trainWindow, skip = 0, do.reverse = FALSE) {
 
   if (trainWindow + skip >= length(y)) stop("(trainWindow + skip) >= length(y).")
 
-  if(reverse) {
+  if (do.reverse) {
     stops <- (seq(along = y))[(length(y)):(trainWindow + skip + 1)]
     test <- as.list(as.integer(stops - initialWindow - skip, SIMPLIFY = FALSE))
   } else {
@@ -117,30 +124,65 @@ create_cv_slices <- function (y, trainWindow, skip = 0, reverse = FALSE) {
   return(list(train = train, test = test))
 }
 
-align_variables <- function(y, sentmeasures, x, h, i = NULL, nSample = NULL) {
+align_variables <- function(y, sentomeasures, x, h, i = 1, nSample = NULL) {
 
   y[is.na(y)] <- 0
 
-  sent <- sentmeasures$measures
+  sent <- sentomeasures$measures
   x <- cbind(sent, x)
   x[is.na(x)] <- 0
   dates <- row.names(x)
-
-  if (!all(is.null(i) | is.null(nSample))) {
-    X <- x[i:(nSample + i + ifelse(h < 0, abs(h), 0) - 1), ]
-    Y <- y[i:(nSample + i + ifelse(h > 0, h , 0) - 1), , drop = FALSE]
-  }
 
   if (h > 0) {
     y <- y[(h + 1):nrow(x), , drop = FALSE]
     x <- x[1:nrow(y), ]
   } else if (h < 0) {
     x <- x[(abs(h) + 1):nrow(y), ]
-    y <- y[1:nrow(x), drop = FALSE]
+    y <- y[1:nrow(x), , drop = FALSE]
   }
 
-  colnames(y) <- "y"
+  if (!is.null(nSample)) {
+    x <- x[i:(nSample + i - 1), ]
+    y <- y[i:(nSample + i - 1), , drop = FALSE]
+  }
+
+  colnames(y) <- c("y")
 
   return(list(y = y, x = x))
+}
+
+clean_panel <- function(sentomeasures) {
+
+  # discards columns from sentiment measures panel based on some simple rules
+  # useful to simplify penalized variables regression (cf. 'exclude')
+
+  x <- sentomeasures$measures
+
+  # duplicated columns
+  duplics <- duplicated(as.matrix(x), MARGIN = 2)
+
+  # columns with a too high proportion of zeros (> threshold)
+  threshold <- 0.50
+  manyZeros <- (colSums(as.matrix(x) == 0, na.rm = TRUE) / nrow(x)) > threshold
+
+  discard <- duplics & manyZeros
+  x <- x[, !discard]
+
+  sentomeasures$measures <- x
+
+  return(sentomeasures)
+}
+
+update_info <- function(sentomeasures, newMeasures) {
+
+  n <- ncol(newMeasures)
+  newNames <- stringr::str_split(colnames(newMeasures), "--")[2:n] # drop first element (date column)
+
+  sentomeasures$measures <- newMeasures
+  sentomeasures$lexicons <- unique(sapply(newNames, "[", 1))
+  sentomeasures$features <- unique(sapply(newNames, "[", 2))
+  sentomeasures$time <- unique(sapply(newNames, "[", 3))
+
+  return(sentomeasures)
 }
 

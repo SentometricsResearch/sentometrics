@@ -1,3 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^PLANNING$
+^data-raw$
+^nonpackage$
+^informal_testing\.R$
+^examples\.R$
+^belga\.rda$

@@ -33,3 +33,17 @@
 #' @note Please cite the package in publications. Use \code{citation("Sentometrics")}.
 "_PACKAGE"
 
+#' Built-in lexicons
+#'
+#' @description
+#' A list containing all built-in lexicons, with two columns: a \code{x} column with the words, and a \code{y} column with
+#' the polarities. The list element names incorporate consecutively the name and language, and 'tr' as suffix if the lexicon is
+#' translated. The lexicons are in the form required for further sentiment analysis. The built-in lexicons are the following:
+#'
+#' \itemize{
+#'   \item xxx. yyy (source: \link{})
+#' }
+#'
+#' @format A list with all built-in lexicons, appropriately named.
+"LEXICONS"
+
