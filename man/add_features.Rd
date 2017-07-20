@@ -2,9 +2,12 @@
 % Please edit documentation in R/corpus.R
 \name{add_features}
 \alias{add_features}
+\alias{add_features.corpuS}
 \title{Add feature columns to corpuS}
 \usage{
 add_features(corpuS, features)
+
+\method{add_features}{corpuS}(corpuS, features)
 }
 \arguments{
 \item{corpuS}{a \code{corpuS} object.}
