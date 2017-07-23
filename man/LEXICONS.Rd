@@ -4,17 +4,41 @@
 \name{LEXICONS}
 \alias{LEXICONS}
 \title{Built-in lexicons}
-\format{A list with all built-in lexicons, appropriately named.}
+\format{A list with all built-in lexicons, appropriately named as \code{"LEXICON_name_language(_tr)"} .}
+\source{
+\href{http://www.lirmm.fr/~abdaoui/FEEL}{FEEL lexicon}
+
+\href{http://www.wjh.harvard.edu/~inquirer/spreadsheet_guide.htm}{GI lexicon}
+
+\href{https://study.sagepub.com/sites/default/files/1\%20Henry\%202008_0.pdf}{HENRY lexicon}
+
+\href{https://www3.nd.edu/~mcdonald/Word_Lists.html}{LM lexicon}
+}
 \usage{
 LEXICONS
 }
 \description{
 A list containing all built-in lexicons, with two columns: a \code{x} column with the words, and a \code{y} column with
-the polarities. The list element names incorporate consecutively the name and language, and 'tr' as suffix if the lexicon is
-translated. The lexicons are in the form required for further sentiment analysis. The built-in lexicons are the following:
+the polarities. The list element names incorporate consecutively the name and language, and \code{"_tr"} as suffix if the
+lexicon is translated. The lexicons are in the form required for further sentiment analysis. The built-in lexicons are
+the following:
 
 \itemize{
-  \item xxx. yyy (source: \link{})
+  \item LEXICON_FEEL_ENG_tr (FEEL: French Expanded Emotion Lexicon)
+  \item LEXICON_FEEL_FR
+  \item LEXICON_FEEL_NL_tr
+  \item LEXICON_GI_ENG (GI: General Inquirer, i.e. Harvard IV-4 combined with Laswell)
+  \item LEXICON_GI_FR_tr
+  \item LEXICON_GI_NL_tr
+  \item LEXICON_HENRY_ENG (HENRY: Henry)
+  \item LEXICON_HENRY_FR_tr
+  \item LEXICON_HENRY_NL_tr
+  \item LEXICON_LM_ENG (LM: Loughran and McDonald)
+  \item LEXICON_LM_FR_tr
+  \item LEXICON_LM_NL_tr
 }
+}
+\examples{
+LEXICONS[c("LEXICON_FEEL_ENG_tr", "LEXICON_LM_ENG")]
 }
 \keyword{datasets}

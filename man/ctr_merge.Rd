@@ -16,7 +16,7 @@ ctr_merge(sentomeasures, lex = NA, feat = NA, time = NA,
 
 \item{time}{a list with unique time weighting schemes to merge at given name, e.g. \code{list(tw12 = c("tw1", "tw2"))}.}
 
-\item{do.keep}{a logical indicating if the original sentiment measures should be kept (i.e. the merged sentiment measures
+\item{do.keep}{a \code{logical} indicating if the original sentiment measures should be kept (i.e. the merged sentiment measures
 will be added to the current sentiment measures as additional indices if \code{TRUE}).}
 }
 \value{

@@ -4,10 +4,10 @@
 \alias{plot.sentomeasures}
 \title{Plot sentiment measures}
 \usage{
-\method{plot}{sentomeasures}(sentomeasures, ...)
+\method{plot}{sentomeasures}(x, ...)
 }
 \arguments{
-\item{sentomeasures}{a \code{sentomeasures} object.}
+\item{x}{a \code{sentomeasures} object.}
 
 \item{...}{currently not used.}
 }
@@ -15,6 +15,5 @@
 A simple ggplot2 plot.
 }
 \description{
-Generic plotting function for all sentiment measures in the provided \code{sentomeasures} object in one
-plot.
+Plotting function for all sentiment measures in the provided \code{sentomeasures} object, shown in one plot.
 }

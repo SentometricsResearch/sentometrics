@@ -4,20 +4,23 @@
 #' @description Assembles a collection of texts (corpus), by calling the \code{corpus()} instructor from the \pkg{quanteda}
 #' package and prepare it for further analysis.
 #'
-#' @param texts a \code{data.frame} with as named columns: a document \code{id} column, a \code{date} column, a \code{text}
-#' column (i.e. the columns where all texts to analyze reside), and a series of \code{feature} columns, with values pointing to
-#' the applicability of a particular feature to a particular text. The latter columns are often binary (1 means the feature is
-#' applicable to the document in the same row) or as a percentage to specify the degree of connectedness of a feature to a
-#' document. Features could be for example topics (e.g. economic, political or legal), but also article sources (e.g. online or
-#' printed press), amongst many more possibilities. Please provide the \code{date} column with character values formatted as
-#' \code{"yyyy-mm-dd"}.
+#' @param texts a \code{data.frame} (or \code{data.table} for that matter) with as named columns: a document \code{id} column,
+#' a \code{date} column, a \code{text} column (i.e. the columns where all texts to analyze reside), and a series of
+#' \code{feature} columns, with values pointing to the applicability of a particular feature to a particular text. The latter
+#' columns are often binary (1 means the feature is applicable to the document in the same row) or as a percentage to specify
+#' the degree of connectedness of a feature to a document. Features could be for example topics (e.g. economic, political or
+#' legal), but also article sources (e.g. online or printed press), amongst many more possibilities. Please provide the
+#' \code{date} column with character values formatted as \code{"yyyy-mm-dd"}.
 #'
 #' @return A \code{corpuS} object.
 #'
+#' @seealso \code{\link[quanteda]{corpus}}
+#'
 #' @export
-sento_corpus <- function(texts, minWords = NULL, maxWords = NULL) {
+sento_corpus <- function(texts) {
 
   ### check for data input
+  ### drop other columns (e.g. headline)
 
   # construct corpus as a quanteda corpus
   c <- quanteda::corpus(x = texts,
@@ -36,16 +39,6 @@ sento_corpus <- function(texts, minWords = NULL, maxWords = NULL) {
   c$tokens <- NULL
   c$features <- features
 
-  ### to delete or put elsewhere (makes it too slow)
-  if (!(is.null(minWords) & is.null(maxWords))) {
-    # tokenize into proper words and apply lower and uppor bounds for number of words per text
-    tWords <- quanteda::tokenize(c,
-                                 remove_punct = TRUE, remove_numbers = TRUE, remove_symbols = TRUE, remove_separators = TRUE,
-                                 ngrams = 1)
-
-    c <- quanteda::corpus_subset(c, quanteda::ntoken(tWords) >= minWords & quanteda::ntoken(tWords) <= maxWords)
-  }
-
   class(c) <- c("corpuS", class(c))
 
   return(c)
@@ -61,18 +54,16 @@ sento_corpus <- function(texts, minWords = NULL, maxWords = NULL) {
 #' @return An updated \code{corpuS} object.
 #'
 #' @export
-add_features <- function(corpuS, features) UseMethod("add_features")
+add_features <- function(corpuS, features) {
 
-#' @rdname add_features
-#' @export
-add_features.corpuS <- function(corpuS, features) {
+  check_class(corpuS, "corpuS")
 
   for (i in seq_along(features)) {
     quanteda::docvars(corpuS, field = names(features)[i]) <- features[[i]]
   }
 
   # update features vector
-  corpuS$features <- c(corpuS$features, names(features))
+  corpuS$features <- c(corpuS$features, colnames(features))
 
   return(corpuS)
 }

@@ -10,32 +10,32 @@ ctr_model(model = c("lm", "nlm"), type = c("BIC", "cv"), h = 1,
   start = 1)
 }
 \arguments{
-\item{model}{a character vector indicator "\code{lm}" (linear model) or "\code{nlm}" (nonlinear model).}
+\item{model}{a \code{character} vector indicator "\code{lm}" (linear model) or "\code{nlm}" (nonlinear model).}
 
-\item{type}{a character vector indicating which model selection criteria to use. Currently supports "\code{BIC}" (BIC-like
+\item{type}{a \code{character} vector indicating which model selection criteria to use. Currently supports "\code{BIC}" (BIC-like
 criterion, cf. Zou, Hastie, Tibshirani, et al. (2007). "On the 'degrees of freedom' of the LASSO.") and "\code{cv}"
 (cross-validation based on the \code{train} function from the \pkg{caret} package).}
 
-\item{h}{a non-negative integer value to shift the time series to have the desired (forecasting) setup, \code{h == 0} means
+\item{h}{a non-negative \code{integer} value to shift the time series to have the desired (forecasting) setup, \code{h == 0} means
 no change to input data, \code{h > 0} shifts the dependent variable by \code{h} periods, \code{h < 0} shifts the independent
 variables by \code{h} rows.}
 
-\item{lambdas}{a numeric vector of the different lambdas to test for during optimization.}
+\item{lambdas}{a \code{numeric} vector of the different lambdas to test for during optimization.}
 
-\item{alphas}{a numeric vector of the different alphas to test for during optimization, between 0 and 1.}
+\item{alphas}{a \code{numeric} vector of the different alphas to test for during optimization, between 0 and 1.}
 
-\item{nSample}{a positive integer, size of the sample for model calibration at every iteration (ignored if
+\item{nSample}{a positive \code{integer}, size of the sample for model calibration at every iteration (ignored if
 \code{iter == FALSE})}
 
-\item{trainWindow}{a positive integer of the size of the training sample in the cross-validation (ignored if \code{type !=}
+\item{trainWindow}{a positive \code{integer} of the size of the training sample in the cross-validation (ignored if \code{type !=}
 "\code{cv}")}
 
-\item{oos}{a non-negative integer to indicate the number of periods to skip from the end of the cross-validation training
+\item{oos}{a non-negative \code{integer} to indicate the number of periods to skip from the end of the cross-validation training
 sample (out-of-sample) up to the test sample (ignored if \code{type !=} "\code{cv}")}
 
-\item{do.iter}{a logical, \code{TRUE} will induce an iterative optimization of models through time.}
+\item{do.iter}{a \code{logical}, \code{TRUE} will induce an iterative optimization of models through time.}
 
-\item{start}{a positive integer to indicate at which point the iteration has to start (ignored if \code{iter == FALSE})}
+\item{start}{a positive \code{integer} to indicate at which point the iteration has to start (ignored if \code{iter == FALSE})}
 }
 \value{
 A list encapsulating the control parameters.

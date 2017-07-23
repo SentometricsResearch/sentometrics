@@ -49,12 +49,12 @@ USECONOMYNEWS$`_trusted_judgments` <- USECONOMYNEWS$`positivity:confidence` <- U
 USECONOMYNEWS$relevance_gold <- USECONOMYNEWS$articleid <- USECONOMYNEWS$`_unit_state` <- USECONOMYNEWS$`_golden` <-
 USECONOMYNEWS$positivity_gold <- USECONOMYNEWS$relevance <- USECONOMYNEWS$positivity <- NULL
 
-USECONOMYNEWS <- as.data.table(USECONOMYNEWS)
+USECONOMYNEWS <- data.table::as.data.table(USECONOMYNEWS)
 USECONOMYNEWS <- USECONOMYNEWS[order(date)]
 colnames(USECONOMYNEWS)[1] <- "id"
 
-save(USECONOMYNEWS, file = "DATA/USECONOMYNEWS.rda")
-# load("DATA/USECONOMYNEWS.rda")
+save(USECONOMYNEWS, file = "data/USECONOMYNEWS.rda", compress = 'xz')
+# load("data/USECONOMYNEWS.rda")
 
 ######################### S&P500 Index (1988-2014, monthly)
 
@@ -64,7 +64,7 @@ sp500 <- sp500[sp500$Date < "2014-12-31", ]
 sp500 <- xts::xts(sp500$`Adj Close`, sp500$Date)
 SP500 <- PerformanceAnalytics::Return.calculate(sp500)[-1, ] # returns
 
-save(SP500, file = "DATA/SP500.rda")
+save(SP500, file = "data/SP500.rda", compress = 'xz')
 
 ######################### LEXICONS
 
@@ -116,14 +116,12 @@ gi <- rbind(giPOS, giNEG)
 write.csv2(gi, file = "data-raw/lexicons-raw/GI.csv", row.names = FALSE)
 # read.csv("data-raw/lexicons-raw/GI.csv")
 
-prepare_word_list <- function(fileName, type, name, polarity = FALSE) {
+prepare_word_list <- function(fileName, type, name) {
 
   w <- read.csv(paste0("data-raw/", type, "-raw/", fileName), sep = ";")
-
-  if (polarity == 1) w$y <- 1
-  else if (polarity == -1) w$y <- -1
   colnames(w) <- c("x", "y")
 
+  # cleaning
   w$x <- as.character(w$x)
   w$x <- stringr::str_to_lower(w$x)
   w$x <- stringr::str_trim(w$x)
@@ -133,6 +131,7 @@ prepare_word_list <- function(fileName, type, name, polarity = FALSE) {
   w$x <- stringi::stri_replace_all(w$x, "", regex = '[@]') # remove @ character
   w$y <- as.numeric(w$y)
 
+  # change to as_key() format
   w <- w[!duplicated(w$x), ]
   w <- sentimentr::as_key(w, comparison = NULL) # makes absolutely sure duplicated words are removed
   w <- w[w$x != "" & w$x != " " & w$x != "#naam", ]
@@ -169,7 +168,7 @@ save(LEXICON_HENRY_FR_tr, file = l$file)
 l <- prepare_word_list("HENRY_nl.csv", typeL, "LEXICON_HENRY_NL_tr"); "LEXICON_HENRY_NL_tr" <- l$w
 save(LEXICON_HENRY_NL_tr, file = l$file)
 
-# creates and places LEXICON data in DATA folder
+# creates and places LEXICON data in data folder
 form_word_list <- function(type) {
 
   if (type == "LEXICON") pattern <- c("LEXICON_")
@@ -186,16 +185,16 @@ form_word_list <- function(type) {
   }
   if (type == "LEXICON") {
     assign("LEXICONS", value = listed, pos = 1)
-    save(LEXICONS, file = "DATA/LEXICONS.rda")
+    save(LEXICONS, file = "data/LEXICONS.rda", compress = 'xz')
   }
   else if (type == "VALENCE") {
     assign("VALENCE", value = listed, pos = 1)
-    save(VALENCE, file = "DATA/VALENCE.rda")
+    save(VALENCE, file = "data/VALENCE.rda", compress = 'xz')
   }
 }
 
 form_word_list(type = "LEXICON")
-# load("DATA/LEXICONS.rda")
+# load("data/LEXICONS.rda")
 
 ######################### VALENCE WORD LISTS
 
@@ -214,5 +213,5 @@ v <- prepare_word_list("NEGATORS_nl.csv", typeV, "NEGATORS_NL_tr"); "NEGATORS_NL
 save(NEGATORS_NL_tr, file = v$file)
 
 form_word_list(type = "VALENCE")
-# load("DATA/VALENCE.rda")
+# load("data/VALENCE.rda")
 
