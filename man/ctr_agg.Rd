@@ -10,25 +10,34 @@ ctr_agg(howWithin = "tf-idf", howDocs = "equal-weight",
   do.normalize = TRUE, weights = NULL)
 }
 \arguments{
-\item{howWithin}{a single character vector defining how aggregation within documents will be performed.}
+\item{howWithin}{a single \code{character} vector defining how aggregation within documents will be performed.}
 
-\item{howDocs}{a single character vector defining how aggregation across documents per date will be performed.}
+\item{howDocs}{a single \code{character} vector defining how aggregation across documents per date will be performed.}
 
-\item{howTime}{a single character vector defining how aggregation across dates will be performed.}
+\item{howTime}{a single \code{character} vector defining how aggregation across dates will be performed.}
 
-\item{do.ignoreZeros}{a logical indicating whether zero sentiment values have to be ignored while aggregation
+\item{do.ignoreZeros}{a \code{logical} indicating whether zero sentiment values have to be ignored while aggregation
 across documents.}
 
-\item{by}{a single character vector, either \code{"day", "week", "month"} or \code{"year"}, to indicate at what
+\item{by}{a single \code{character} vector, either \code{"day", "week", "month"} or \code{"year"}, to indicate at what
 level the dates should be aggregated. Dates will be displayed as the first day of the period, if applicable (e.g.
 \code{"2017-03-01"} for March 2017).}
 
-\item{lag}{a single integer vector, being the time lag to be specified for aggregation across time.}
+\item{lag}{a single \code{integer} vector, being the time lag to be specified for aggregation across time.}
 
-\item{...}{other parameters required for the time weighting schemes. These are \code{alphas} if
-\code{howTime == "exponential"}, and \code{orders}, \code{do.inverse} and \code{do.normalize} if \code{howTime == "almon"}.
-One could also supply an own weighting scheme as a \code{data.frame} with the number of rows equal to the desired (implicit)
-\code{lag}, via the \code{weights} option and for \code{howTime == "own"}.}
+\item{alphas}{a \code{numeric} vector of all exponential smoothing factors to calculate weights for, used if
+\code{howTime == "exponential"}.}
+
+\item{orders}{a \code{numeric} vector of all Almon orders to calcalute weights for, used if \code{howTime == "almon"}.}
+
+\item{do.inverse}{a \code{logical} indicating if for every Almon polynomial its inverse has to be calculated too, used if
+\code{howTime == "almon"}.}
+
+\item{do.normalize}{a \code{logical} indicating if every Almon polynomial weights column should sum to one, used if
+\code{howTime == "almon"}.}
+
+\item{weights}{an own weighting scheme as a \code{data.frame} with the number of rows equal to the desired (implicit)
+\code{lag}, used if \code{howTime == "own"}.}
 }
 \value{
 A list encapsulating the control parameters.

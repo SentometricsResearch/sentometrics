@@ -11,7 +11,7 @@ select_measures(sentomeasures, toSelect, do.all = TRUE)
 
 \item{toSelect}{a vector of components (lexicon, time weighting and features) which form the measures selected.}
 
-\item{do.all}{a logical indicating if only measures for wich all (\code{TRUE}) or at least one (\code{FALSE}) of the
+\item{do.all}{a \code{logical} indicating if only measures for wich all (\code{TRUE}) or at least one (\code{FALSE}) of the
 selection components should occur in the subset.}
 }
 \value{

@@ -37,5 +37,10 @@ Imports: quanteda,
     ggplot2,
     ggthemes,
     scales,
-    lubridate
+    lubridate,
+    utils,
+    stats,
+    ISOweek,
+    stringi,
+    plyr
 RoxygenNote: 6.0.1

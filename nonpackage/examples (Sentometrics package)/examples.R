@@ -3,6 +3,11 @@
 ######################### Examples #########################
 ############################################################
 
+require(Sentometrics)
+require(quanteda) # to delete
+require(ggplot2) # to delete
+require(data.table) # to delete
+
 data <- USECONOMYNEWS
 data$headline <- NULL
 data <- data[data$date >= "1988-01-01"]

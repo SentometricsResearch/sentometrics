@@ -11,15 +11,15 @@ compute_sentiment(corpuS, lexicons, how = get_hows()$words)
 
 \item{lexicons}{output from a \code{setup_lexicons()} call.}
 
-\item{how}{a single character vector defining how aggregation within documents will be performed. For currently
+\item{how}{a single \code{character} vector defining how aggregation within documents will be performed. For currently
 available options on how aggregation can occer, access \code{get_hows()$words}.}
 }
 \value{
 A list containing:
 \item{corpuS}{the supplied \code{corpuS} object.}
 \item{sent}{a sentiment scores \code{data.table} with dates and features--lexicons sentiment scores columns.}
-\item{features}{a character vector of the different features.}
-\item{lexicons}{a character vector of the different lexicons used.}
+\item{features}{a \code{character} vector of the different features.}
+\item{lexicons}{a \code{character} vector of the different lexicons used.}
 }
 \description{
 Given a corpus of texts, computes sentiment per document starting from the bag-of-words approach,

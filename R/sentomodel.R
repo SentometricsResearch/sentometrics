@@ -7,7 +7,7 @@
 #' basis. Fills in these dates with either \code{NA} or the respective latest non-\code{NA} values.
 #'
 #' @param sentomeasures a \code{sentomeasures} object.
-#' @param fillLatest a logical, if \code{TRUE} fills added dates with most recent value.
+#' @param do.fillLatest a \code{logical}, if \code{TRUE} fills added dates with most recent value.
 #'
 #' @return A modified \code{sentomeasures} object.
 #'
@@ -16,10 +16,9 @@ fill_measures <- function(sentomeasures, do.fillLatest = FALSE) {
 
   ### mice package?
 
-  if (!("sentomeasures" %in% class(sentomeasures))) stop("Please provide a sentomeasures object as first argument.")
+  check_class(sentomeasures, "sentomeasures")
 
   by <- sentomeasures$by
-
   measures <- sentomeasures$measures
   dates <- measures$date
   ts <- seq(dates[1], dates[length(dates)], by = by)
@@ -38,7 +37,7 @@ BIC_like <- function(reg, y, x, alpha) {
   beta <- reg$beta
   lambda <- reg$lambda
 
-  df_A = vector(mode = "numeric", length = length(lambda))
+  df_A <- vector(mode = "numeric", length = length(lambda))
 
   for(df in 1:length(lambda)) {
     A <- which(beta[, df] != 0)
@@ -48,11 +47,11 @@ BIC_like <- function(reg, y, x, alpha) {
     df_A[df] <- sum(diag(X_A %*% solve((t(X_A) %*% X_A + (1 - alpha) * lambda[df] * I)) %*% t(X_A)))
   }
 
-  y_est = predict(reg, newx = as.matrix(x))
+  y_est <- stats::predict(reg, newx = as.matrix(x))
 
-  RSS = apply(y_est, 2, FUN = function(est) sum((y - est)^2))
-  sigma2 = RSS[length(RSS)] / (nrow(y) - df_A[length(RSS)])
-  BIC = RSS/(nrow(y) * sigma2) + log(nrow(y))/nrow(y) * df_A
+  RSS <- apply(y_est, 2, FUN = function(est) sum((y - est)^2))
+  sigma2 <- RSS[length(RSS)] / (nrow(y) - df_A[length(RSS)])
+  BIC <- RSS/(nrow(y) * sigma2) + log(nrow(y))/nrow(y) * df_A
 
   return(BIC)
 }
@@ -94,23 +93,23 @@ model_performance <- function(yEst, yReal) {
 #' textual sentiment measures (and potentially other variables). Models are computed using the elastic-net regularization
 #' as implemented in the \pkg{glmnet} package, to account for the sparsity of the textual sentiment measures.
 #'
-#' @param model a character vector indicator "\code{lm}" (linear model) or "\code{nlm}" (nonlinear model).
-#' @param type a character vector indicating which model selection criteria to use. Currently supports "\code{BIC}" (BIC-like
+#' @param model a \code{character} vector indicator "\code{lm}" (linear model) or "\code{nlm}" (nonlinear model).
+#' @param type a \code{character} vector indicating which model selection criteria to use. Currently supports "\code{BIC}" (BIC-like
 #' criterion, cf. Zou, Hastie, Tibshirani, et al. (2007). "On the 'degrees of freedom' of the LASSO.") and "\code{cv}"
 #' (cross-validation based on the \code{train} function from the \pkg{caret} package).
-#' @param h a non-negative integer value to shift the time series to have the desired (forecasting) setup, \code{h == 0} means
+#' @param h a non-negative \code{integer} value to shift the time series to have the desired (forecasting) setup, \code{h == 0} means
 #' no change to input data, \code{h > 0} shifts the dependent variable by \code{h} periods, \code{h < 0} shifts the independent
 #' variables by \code{h} rows.
-#' @param alphas a numeric vector of the different alphas to test for during optimization, between 0 and 1.
-#' @param lambdas a numeric vector of the different lambdas to test for during optimization.
-#' @param trainWindow a positive integer of the size of the training sample in the cross-validation (ignored if \code{type !=}
+#' @param alphas a \code{numeric} vector of the different alphas to test for during optimization, between 0 and 1.
+#' @param lambdas a \code{numeric} vector of the different lambdas to test for during optimization.
+#' @param trainWindow a positive \code{integer} of the size of the training sample in the cross-validation (ignored if \code{type !=}
 #' "\code{cv}")
-#' @param oos a non-negative integer to indicate the number of periods to skip from the end of the cross-validation training
+#' @param oos a non-negative \code{integer} to indicate the number of periods to skip from the end of the cross-validation training
 #' sample (out-of-sample) up to the test sample (ignored if \code{type !=} "\code{cv}")
-#' @param do.iter a logical, \code{TRUE} will induce an iterative optimization of models through time.
-#' @param nSample a positive integer, size of the sample for model calibration at every iteration (ignored if
+#' @param do.iter a \code{logical}, \code{TRUE} will induce an iterative optimization of models through time.
+#' @param nSample a positive \code{integer}, size of the sample for model calibration at every iteration (ignored if
 #' \code{iter == FALSE})
-#' @param start a positive integer to indicate at which point the iteration has to start (ignored if \code{iter == FALSE})
+#' @param start a positive \code{integer} to indicate at which point the iteration has to start (ignored if \code{iter == FALSE})
 #'
 #' @return A list encapsulating the control parameters.
 #'
@@ -184,7 +183,7 @@ ctr_model <- function(model = c("lm", "nlm"), type = c("BIC", "cv"), h = 1,
 #' @export
 sento_lm <- function(sentomeasures, y, x, ctr) {
 
-  if (!("sentomeasures" %in% class(sentomeasures))) stop("Please provide a sentomeasures object as first argument.")
+  check_class(sentomeasures, "sentomeasures")
 
   if (ctr$model != "lm") stop("Expected model is 'lm'.")
 
@@ -194,18 +193,18 @@ sento_lm <- function(sentomeasures, y, x, ctr) {
   alphas <- ctr$alphas
   lambdas <- ctr$lambdas
 
-  if (!iter) {
+  if (!do.iter) {
     if (type == "BIC")
-      out <- lm_BIC(sentomeasures = sentomeasures, y = y, x = x, h = h, alphas = alphas, lambdas = lambdas)
+      out <- lm_BIC(sentomeasures, y = y, x = x, h = h, alphas = alphas, lambdas = lambdas)
     else if (type == "cv")
-      out <- lm_cv(sentomeasures = sentomeasures, y = y, x = x, h = h, alphas = alphas, lambdas = lambdas,
+      out <- lm_cv(sentomeasures, y = y, x = x, h = h, alphas = alphas, lambdas = lambdas,
                    trainWindow = ctr$trainWindow, oos = ctr$oos)
   } else {
     nSample <- ctr$nSample
     start <- ctr$start
     oos <- ctr$oos
 
-    out <- sento_lm_iter(type = type, sentomeasures = sentomeasures, y = y, x = x, h = h, nSample = nSample, start = start,
+    out <- sento_lm_iter(sentomeasures, type = type, y = y, x = x, h = h, nSample = nSample, start = start,
                          oos = oos, alphas = alphas, lambdas = lambdas, trainWindow = ctr$trainWindow)
   }
 
@@ -305,7 +304,7 @@ lm_cv <- function(sentomeasures, y, x, h, alphas, lambdas, ...) {
   return(out)
 }
 
-.sento_lm_iter <- function(type, sentomeasures, y, x, h, nSample, start, oos, alphas, lambdas, trainWindow) {
+.sento_lm_iter <- function(sentomeasures, type, y, x, h, nSample, start, oos, alphas, lambdas, trainWindow) {
 
   nIter <- nrow(y) - nSample - h - oos
   if (nIter <= 0 | start > nIter)
@@ -323,10 +322,10 @@ lm_cv <- function(sentomeasures, y, x, h, alphas, lambdas, ...) {
   for (i in start:nIter) {
     cat("iter:", i, "\n")
 
-    reg <- fun(sentomeasures, y, x, h, alphas, lambdas, i, nSample, oos, trainWindow)
+    reg <- fun(sentomeasures, y, x, h, alphas, lambdas, i = i, nSample = nSample, oos = oos, trainWindow = trainWindow)
     regOpt <- reg$reg
 
-    coeffs[[i - start + 1]] <- as.matrix(coef(regOpt))
+    coeffs[[i - start + 1]] <- as.matrix(stats::coef(regOpt))
     regsOpt[[i - start + 1]] <- regOpt
     alphasOpt[i - start + 1] <- reg$alpha
     lambdasOpt[i - start + 1] <- reg$lambda
@@ -339,7 +338,7 @@ lm_cv <- function(sentomeasures, y, x, h, alphas, lambdas, ...) {
   yEst <- rep(NA, nIter - start + 1)
   for (j in 1:(nIter - start + 1)) {
     attribs[[j]] <- coeffs[[j]] * c(1, as.matrix(xPred[j, ]))
-    yEst[j] <- predict(regsOpt[[j]], newx = as.matrix(xPred[j, ]))
+    yEst[j] <- stats::predict(regsOpt[[j]], newx = as.matrix(xPred[j, ]))
   }
 
   names(yReal) <- names(yEst) <- sentomeasures$measures$date[start:nIter] # dates

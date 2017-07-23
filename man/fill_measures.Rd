@@ -9,7 +9,7 @@ fill_measures(sentomeasures, do.fillLatest = FALSE)
 \arguments{
 \item{sentomeasures}{a \code{sentomeasures} object.}
 
-\item{fillLatest}{a logical, if \code{TRUE} fills added dates with most recent value.}
+\item{do.fillLatest}{a \code{logical}, if \code{TRUE} fills added dates with most recent value.}
 }
 \value{
 A modified \code{sentomeasures} object.

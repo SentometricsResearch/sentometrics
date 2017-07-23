@@ -64,18 +64,21 @@ roll_weights <- function(x, w) {
 
 setup_time_weights <- function(lag, how, ...) { # ... argument should be a list to match with functions in sentomeasures.R
 
+  dots <- tryCatch(list(...)[[1]], # extract list from list of list
+                   error = function(x) list(...))
+
   if (length(how) > 1) how <- how[1]
 
   if (how == "equal-weight") {
     weights <- data.frame(matrix(1/lag, nrow = lag, ncol = 1))
     colnames(weights) <- "equal_weight"
   } else if (how == "almon") {
-    weights <- almons(lag, ...$orders, ...$do.inverse, ...$do.normalize)
+    weights <- almons(lag, dots$orders, dots$do.inverse, dots$do.normalize)
   } else if (how == "linear") {
     weights <- data.frame(matrix((1:lag)/sum(1:lag), nrow = lag, ncol = 1))
     colnames(weights) <- "linear_moving"
   } else if (how == "exponential") {
-    weights <- exponentials(lag, ...$alphas)
+    weights <- exponentials(lag, dots$alphas)
   } else stop("Please select an appropriate aggregation 'how'.")
 
   return(weights)
@@ -108,10 +111,10 @@ create_cv_slices <- function (y, trainWindow, skip = 0, do.reverse = FALSE) {
   if (trainWindow + skip >= length(y)) stop("(trainWindow + skip) >= length(y).")
 
   if (do.reverse) {
-    stops <- (seq(along = y))[(length(y)):(trainWindow + skip + 1)]
-    test <- as.list(as.integer(stops - initialWindow - skip, SIMPLIFY = FALSE))
+    stops <- seq(along = y)[(length(y)):(trainWindow + skip + 1)]
+    test <- as.list(as.integer(stops - skip - trainWindow, SIMPLIFY = FALSE))
   } else {
-    stops <- (seq(along = y))[trainWindow:(length(y) - skip - 1)]
+    stops <- seq(along = y)[trainWindow:(length(y) - skip - 1)]
     test <- as.list(as.integer(stops + skip + 1))
   }
 
@@ -151,7 +154,7 @@ align_variables <- function(y, sentomeasures, x, h, i = 1, nSample = NULL) {
   return(list(y = y, x = x))
 }
 
-clean_panel <- function(sentomeasures) {
+clean_panel <- function(sentomeasures, threshold = 0.50) {
 
   # discards columns from sentiment measures panel based on some simple rules
   # useful to simplify penalized variables regression (cf. 'exclude')
@@ -162,7 +165,6 @@ clean_panel <- function(sentomeasures) {
   duplics <- duplicated(as.matrix(x), MARGIN = 2)
 
   # columns with a too high proportion of zeros (> threshold)
-  threshold <- 0.50
   manyZeros <- (colSums(as.matrix(x) == 0, na.rm = TRUE) / nrow(x)) > threshold
 
   discard <- duplics & manyZeros
@@ -184,5 +186,10 @@ update_info <- function(sentomeasures, newMeasures) {
   sentomeasures$time <- unique(sapply(newNames, "[", 3))
 
   return(sentomeasures)
+}
+
+check_class <- function(x, class) {
+  if (!(class %in% class(x)))
+    stop("Please provide a ", class, " object as first argument.")
 }
 

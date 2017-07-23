@@ -15,9 +15,9 @@ perform_agg(toAgg, ctr)
 \value{
 A list containing:
 \item{measures}{a \code{sentomeasures} object.}
-\item{features}{a character vector of the different features.}
-\item{lexicons}{a character vector of the different lexicons used.}
-\item{time}{a character vector of the different time weighting schemes used.}
+\item{features}{a \code{character} vector of the different features.}
+\item{lexicons}{a \code{character} vector of the different lexicons used.}
+\item{time}{a \code{character} vector of the different time weighting schemes used.}
 }
 \description{
 Condense document-level textual sentiment scores into a panel of textual sentiment

@@ -3,18 +3,17 @@
 ##################### Informal testing #####################
 ############################################################
 
-require(plyr)
-require(dplyr)
-require(quanteda)
-require(data.table)
-require(zoo)
+require(Sentometrics)
+require(quanteda) # to delete
+require(ggplot2) # to delete
+require(data.table) # to delete
 
 str <- c("./R/")
 sources <- list.files(str, pattern = "*.R$", full.names = TRUE, ignore.case = TRUE)
 
 sapply(sources, source, .GlobalEnv)
 
-load("DATA/belga.rda") # BELGA 2016 news data
+load("nonpackage/examples (Sentometrics package)/belga.rda") # BELGA 2016 news data
 
 tester <- belga$fr # unordered by date
 
@@ -159,13 +158,13 @@ if (modeling) {
   h <- 3
   alphas <- seq(0, 1, by = 0.20)
   lambdas <- 10^seq(2, -2, length.out = 50)
+  trainWindow <- 338
 
   sentomeasures <- sentMeas1
   sentomeasures <- fill_measures(sentomeasures)
 
   y <- data.frame(y = 0.01 + runif(nrow(sentomeasures$measures), 0.01, 0.04))
   x <- data.frame(xOther = y$y)
-  trainWindow <- 338
 
   ctrModel1 <- ctr_model(model = "lm", type = "BIC", do.iter = FALSE, h = h, alphas = alphas, lambdas = lambdas)
   bicTest <- sento_lm(sentomeasures, y, x, ctrModel1)

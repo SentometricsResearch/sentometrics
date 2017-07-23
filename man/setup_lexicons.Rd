@@ -9,12 +9,13 @@ setup_lexicons(lexiconsRaw, valenceWords = NULL, do.split = FALSE)
 \arguments{
 \item{lexiconsRaw}{a list of lexicons, with each element being a \code{data.frame} with a words column and a polarity score
 column. The lexicons should be appropriately named for clarity in terms of subsequently obtained sentiment measures.
-Alternatively, this argument can be a character vector specifying which built-in lexicons (\code{Sentometrics::LEXICONS}) to use.}
+Alternatively, this argument can be a \code{character} vector specifying which built-in lexicons (\code{Sentometrics::LEXICONS}) to
+use.}
 
 \item{valenceWords}{a \code{data.frame} with a words column and a type indicating ... ### (negators, amplifiers, etc.)
-Alternatively, this argument can be a character vector specifying which built-in valence words to use.}
+Alternatively, this argument can be a \code{character} vector specifying which built-in valence words to use.}
 
-\item{do.split}{a logical that if \code{TRUE} splits every lexicon into a separate positive polarity and negative polarity
+\item{do.split}{a \code{logical} that if \code{TRUE} splits every lexicon into a separate positive polarity and negative polarity
 lexicon.}
 }
 \value{
@@ -27,5 +28,5 @@ Structures provided lexicons and potentially valence words. Makes use of the \co
 \pkg{quanteda} package.
 }
 \seealso{
-\code{\link[quanteda]{as_key}}
+\code{\link[sentimentr]{as_key}}
 }
