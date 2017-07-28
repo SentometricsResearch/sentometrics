@@ -181,11 +181,11 @@ ctr_model <- function(model = c("lm", "binomial", "multinomial"), type = c("BIC"
   return(ctr_model)
 }
 
-#' Optimized sparse linear regression
+#' Optimized sparse regression
 #'
-#' @description Linear model of a dependent variable on the wide number of sentiment measures and potentially
-#' other explanatory variables. Either performs a linear regression on the provided variables at once, or computes
-#' linear models sequentially for a given sample size over a longer time horizon, with associated forecasting performance
+#' @description Linear or nonlinear regression of a dependent variable on the wide number of sentiment measures and
+#' potentially other explanatory variables. Either performs a regression given the provided variables at once, or computes
+#' regressions sequentially for a given sample size over a longer time horizon, with associated forecasting performance
 #' metrics.
 #'
 #' @param sentomeasures a \code{sentomeasures} object.

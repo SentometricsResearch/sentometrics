@@ -11,7 +11,7 @@ require(Sentometrics)
 
 data <- USECONOMYNEWS
 data$headline <- NULL
-data <- data[data$date >= "1988-01-01"]
+data <- data[data$date >= "1988-01-01", ]
 corpus <- sento_corpus(texts = data)
 # corpus <- quanteda::corpus_sample(corpus, size = 5000)
 
@@ -22,8 +22,8 @@ ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional", howTime = "almon"
 
 # step-by-step
 sent <- compute_sentiment(corpus, lexicons, how = "tf-idf")
-aggDocs <- agg_documents(sent, by = "month", how = "proportional", do.ignoreZeros = FALSE)
-sentMeas <- agg_time(aggDocs, lag = 3, how = "equal-weight")
+# aggDocs <- agg_documents(sent, by = "month", how = "proportional", do.ignoreZeros = FALSE) # internal
+# sentMeas <- agg_time(aggDocs, lag = 3, how = "equal-weight") # internal
 
 # at once
 sentMeas <- sento_measures(corpus, lexicons, ctr)
