@@ -108,7 +108,6 @@ get_hows <- function() {
 
 create_cv_slices <- function (y, trainWindow, testWindow = 1, skip = 0, do.reverse = FALSE) {
 
-  ### to do: continue end-to-beginning
   if ((trainWindow + skip + testWindow) >= length(y)) stop("(trainWindow + skip + testWindow) >= length(y).")
 
   if (do.reverse) {
@@ -156,7 +155,7 @@ align_variables <- function(y, sentomeasures, x, h, i = 1, nSample = NULL) {
 
 clean_panel <- function(sentomeasures, threshold = 0.50) {
 
-  # discards columns from sentiment measures panel based on some simple rules
+  # discards columns from panel of sentiment measures based on some simple rules
   # useful to simplify penalized variables regression (cf. 'exclude')
 
   measures <- sentomeasures$measures
@@ -192,7 +191,9 @@ check_class <- function(x, class) {
     stop("Please provide a ", class, " object as first argument.")
 }
 
-compute_df <- function(alpha, beta, lambda, x) { # degrees-of-freedom estimator of elastic net (cf. Tibshirani and Taylor, 2012)
+compute_df <- function(alpha, beta, lambda, x) {
+
+  # degrees-of-freedom estimator of elastic net (cf. Tibshirani and Taylor, 2012)
 
   df_A <- vector(mode = "numeric", length = length(lambda))
   for(df in 1:length(lambda)) {
