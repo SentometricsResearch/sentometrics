@@ -106,16 +106,17 @@ get_hows <- function() {
   return(hows)
 }
 
-create_cv_slices <- function (y, trainWindow, skip = 0, do.reverse = FALSE) {
+create_cv_slices <- function (y, trainWindow, testWindow = 1, skip = 0, do.reverse = FALSE) {
 
-  if (trainWindow + skip >= length(y)) stop("(trainWindow + skip) >= length(y).")
+  ### to do: continue end-to-beginning
+  if ((trainWindow + skip + testWindow) >= length(y)) stop("(trainWindow + skip + testWindow) >= length(y).")
 
   if (do.reverse) {
-    stops <- seq(along = y)[(length(y)):(trainWindow + skip + 1)]
-    test <- as.list(as.integer(stops - skip - trainWindow, SIMPLIFY = FALSE))
+    stops <- seq(along = y)[(length(y)):(trainWindow + skip + testWindow)]
+    test <- mapply(seq, stops - skip - trainWindow, stops - skip - trainWindow - testWindow + 1, SIMPLIFY = FALSE)
   } else {
-    stops <- seq(along = y)[trainWindow:(length(y) - skip - 1)]
-    test <- as.list(as.integer(stops + skip + 1))
+    stops <- seq(along = y)[trainWindow:(length(y) - skip - testWindow)]
+    test <- mapply(seq, stops + skip + 1, stops + skip + testWindow, SIMPLIFY = FALSE)
   }
 
   starts <- stops - trainWindow + 1
@@ -131,25 +132,24 @@ align_variables <- function(y, sentomeasures, x, h, i = 1, nSample = NULL) {
 
   y[is.na(y)] <- 0
 
-  sent <- sentomeasures$measures
-  x <- cbind(sent, x)
+  sent <- sentomeasures$measures[, 2:ncol(sentomeasures$measures)]
+  if (is.null(x)) x <- sent
+  else x <- cbind(sent, x)
+  x <- as.data.frame(x)
   x[is.na(x)] <- 0
-  dates <- row.names(x)
 
   if (h > 0) {
     y <- y[(h + 1):nrow(x), , drop = FALSE]
     x <- x[1:nrow(y), ]
   } else if (h < 0) {
-    x <- x[(abs(h) + 1):nrow(y), ]
-    y <- y[1:nrow(x), , drop = FALSE]
+    x <- x[(abs(h) + 1):nrow(y), , drop = FALSE]
+    y <- y[1:nrow(x), ]
   }
-
   if (!is.null(nSample)) {
     x <- x[i:(nSample + i - 1), ]
     y <- y[i:(nSample + i - 1), , drop = FALSE]
   }
-
-  colnames(y) <- c("y")
+  colnames(y) <- "y"
 
   return(list(y = y, x = x))
 }
@@ -159,18 +159,17 @@ clean_panel <- function(sentomeasures, threshold = 0.50) {
   # discards columns from sentiment measures panel based on some simple rules
   # useful to simplify penalized variables regression (cf. 'exclude')
 
-  x <- sentomeasures$measures
+  measures <- sentomeasures$measures
+  x <- measures[, 2:ncol(measures)]
 
-  # duplicated columns
-  duplics <- duplicated(as.matrix(x), MARGIN = 2)
-
-  # columns with a too high proportion of zeros (> threshold)
-  manyZeros <- (colSums(as.matrix(x) == 0, na.rm = TRUE) / nrow(x)) > threshold
+  duplics <- duplicated(as.matrix(x), MARGIN = 2) # duplicated columns
+  manyZeros <- (colSums(as.matrix(x) == 0, na.rm = TRUE) / nrow(x)) > threshold # columns with a too high proportion of zeros
 
   discard <- duplics & manyZeros
-  x <- x[, !discard]
+  measuresNew <- cbind(date = measures$date, x[, which(!discard), with = FALSE])
 
-  sentomeasures$measures <- x
+  if (ncol(measuresNew) == 1) stop("No sentiment measures retained after cleaning.")
+  else sentomeasures$measures <- measuresNew
 
   return(sentomeasures)
 }
@@ -191,5 +190,34 @@ update_info <- function(sentomeasures, newMeasures) {
 check_class <- function(x, class) {
   if (!(class %in% class(x)))
     stop("Please provide a ", class, " object as first argument.")
+}
+
+compute_df <- function(alpha, beta, lambda, x) { # degrees-of-freedom estimator of elastic net (cf. Tibshirani and Taylor, 2012)
+
+  df_A <- vector(mode = "numeric", length = length(lambda))
+  for(df in 1:length(lambda)) {
+    A <- which(beta[, df] != 0)
+    if (length(A) == 0) {df_A[df] <- NA; next}
+    I <- diag(1, ncol = length(A), nrow = length(A))
+    X_A <- as.matrix(x[, A])
+    df_A[df] <- sum(diag(X_A %*% solve((t(X_A) %*% X_A + (1 - alpha) * lambda[df] * I)) %*% t(X_A)))
+  }
+
+  return(df_A)
+}
+
+compute_BIC <- function(y, yEst, df_A, RSS, sigma2) { # BIC-like criterion
+  BIC <- RSS/(nrow(y) * sigma2) + log(nrow(y))/nrow(y) * df_A
+  return(BIC)
+}
+
+compute_AIC <- function(y, yEst, df_A, RSS, sigma2) { # AIC-like criterion
+  AIC <- RSS/(nrow(y) * sigma2) + 2/nrow(y) * df_A
+  return(AIC)
+}
+
+compute_Cp <- function(y, yEst, df_A, RSS, sigma2) { # Mallows's Cp-like criterion
+  Cp <- RSS/nrow(y) + 2/nrow(y) * df_A * sigma2
+  return(Cp)
 }
 

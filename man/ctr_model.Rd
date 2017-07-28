@@ -4,38 +4,47 @@
 \alias{ctr_model}
 \title{Setup control for sentiment measures-based regression modelling}
 \usage{
-ctr_model(model = c("lm", "nlm"), type = c("BIC", "cv"), h = 1,
-  lambdas = 10^seq(2, -2, length.out = 50), alphas = seq(0.05, 0.95, by =
-  0.1), nSample = NULL, trainWindow = NULL, oos = 0, do.iter = FALSE,
-  start = 1)
+ctr_model(model = c("lm", "binomial", "multinomial"), type = c("BIC", "AIC",
+  "Cp", "cv"), do.iter = FALSE, h = 1, lambdas = 10^seq(2, -2, length.out
+  = 50), alphas = seq(0, 1, by = 0.2), nSample = NULL, trainWindow = NULL,
+  testWindow = NULL, oos = 0, start = 1, do.progress = TRUE)
 }
 \arguments{
-\item{model}{a \code{character} vector indicator "\code{lm}" (linear model) or "\code{nlm}" (nonlinear model).}
+\item{model}{a \code{character} vector with one of the following: "\code{lm}" (linear regression), "\code{binomial}" (binomial logistic
+regression), or "\code{multinomial}" (multinomial logistic regression).}
 
-\item{type}{a \code{character} vector indicating which model selection criteria to use. Currently supports "\code{BIC}" (BIC-like
-criterion, cf. Zou, Hastie, Tibshirani, et al. (2007). "On the 'degrees of freedom' of the LASSO.") and "\code{cv}"
-(cross-validation based on the \code{train} function from the \pkg{caret} package).}
+\item{type}{a \code{character} vector indicating which model selection criteria to use. Currently supports "\code{BIC}",
+"\code{AIC}" and "\code{Cp}" (Mallows's Cp) as sparse-regression adapted information criteria (cf. Zou, Hastie, Tibshirani et
+al. (2007). "On the 'degrees of freedom' of the LASSO."), and "\code{cv}" (cross-validation based on the \code{train} function
+from the \pkg{caret} package).}
 
-\item{h}{a non-negative \code{integer} value to shift the time series to have the desired (forecasting) setup, \code{h == 0} means
-no change to input data, \code{h > 0} shifts the dependent variable by \code{h} periods, \code{h < 0} shifts the independent
-variables by \code{h} rows.}
+\item{do.iter}{a \code{logical}, \code{TRUE} induces an iterative optimization of models through time.}
+
+\item{h}{an \code{integer} value to shift the time series to have the desired (forecasting) setup, \code{h == 0} means
+no change to input data (nowcasting assuming data is aligned properly), \code{h > 0} shifts the dependent variable by
+\code{h} periods (i.e. rows) further in time (forecasting), \code{h < 0} shifts the independent variables by \code{h}
+periods.}
 
 \item{lambdas}{a \code{numeric} vector of the different lambdas to test for during optimization.}
 
-\item{alphas}{a \code{numeric} vector of the different alphas to test for during optimization, between 0 and 1.}
+\item{alphas}{a \code{numeric} vector of the different alphas to test for during optimization, between 0 and 1. A value of 0
+pertains to Ridge optimization, a value of 1 to LASSO optimization; values in between are pure elastic-net.}
 
-\item{nSample}{a positive \code{integer}, size of the sample for model calibration at every iteration (ignored if
-\code{iter == FALSE})}
+\item{nSample}{a positive \code{integer} as the size of the sample for model calibration at every iteration (ignored if
+\code{iter == FALSE}).}
 
-\item{trainWindow}{a positive \code{integer} of the size of the training sample in the cross-validation (ignored if \code{type !=}
-"\code{cv}")}
+\item{trainWindow}{a positive \code{integer} as the size of the training sample in cross-validation (ignored if \code{type !=}
+"\code{cv}").}
+
+\item{testWindow}{a positive \code{integer} as the size of the test sample in cross-validation (ignored if \code{type !=}
+"\code{cv}").}
 
 \item{oos}{a non-negative \code{integer} to indicate the number of periods to skip from the end of the cross-validation training
-sample (out-of-sample) up to the test sample (ignored if \code{type !=} "\code{cv}")}
+sample (out-of-sample) up to the test sample (ignored if \code{type !=} "\code{cv}").}
 
-\item{do.iter}{a \code{logical}, \code{TRUE} will induce an iterative optimization of models through time.}
+\item{start}{a positive \code{integer} to indicate at which point the iteration has to start (ignored if \code{iter == FALSE}).}
 
-\item{start}{a positive \code{integer} to indicate at which point the iteration has to start (ignored if \code{iter == FALSE})}
+\item{do.progress}{a \code{logical}, if \code{TRUE} progress statements are displayed during model calibration.}
 }
 \value{
 A list encapsulating the control parameters.
@@ -43,5 +52,7 @@ A list encapsulating the control parameters.
 \description{
 Sets up control for linear or nonlinear modelling of a response variable onto a sparse panel of
 textual sentiment measures (and potentially other variables). Models are computed using the elastic-net regularization
-as implemented in the \pkg{glmnet} package, to account for the sparsity of the textual sentiment measures.
+as implemented in the \pkg{glmnet} package, to account for the sparsity of the textual sentiment measures. The optimal
+elastic-net parameters \code{lambda} and \code{alpha} are calibrated either through a to specify information criterion or through
+cross-validation (based on the "rolling forecasting origin" principle).
 }

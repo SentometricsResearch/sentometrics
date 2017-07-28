@@ -3,7 +3,7 @@
 ################## Data sets manipulation ##################
 ############################################################
 
-######################### US ECONOMY TEXTS CORPUS
+######################### US ECONOMY TEXTS CORPUS (1951-2014)
 
 useconomy <- readr::read_csv("data-raw/US_economic_news_1951-2014.csv")
 useconomy$text <- stringi::stri_replace_all(useconomy$text, replacement = " ", regex = "</br></br>")
@@ -58,11 +58,15 @@ save(USECONOMYNEWS, file = "data/USECONOMYNEWS.rda", compress = 'xz')
 
 ######################### S&P500 Index (1988-2014, monthly)
 
+# makes returns in line with USECONOMYNEWS corpus
+# "1988-03-01" means monthly return from March to April 1988, such that it aligns with all articles in March
+
 sp500 <- readr::read_csv("data-raw/S&P500.csv")
 sp500 <- as.data.frame(sp500[c("Date", "Adj Close")])
-sp500 <- sp500[sp500$Date < "2014-12-31", ]
-sp500 <- xts::xts(sp500$`Adj Close`, sp500$Date)
-SP500 <- PerformanceAnalytics::Return.calculate(sp500)[-1, ] # returns
+sp500 <- sp500[sp500$Date <= "2015-01-01", ]
+sp500 <- xts::xts(sp500$`Adj Close`[-1], sp500$Date[-nrow(sp500)])
+sp500 <- PerformanceAnalytics::Return.calculate(sp500)
+SP500 <- sp500[-1, ]
 
 save(SP500, file = "data/SP500.rda", compress = 'xz')
 

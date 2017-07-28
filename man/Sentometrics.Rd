@@ -26,9 +26,9 @@ Please cite the package in publications. Use \code{citation("Sentometrics")}.
 \section{Functions}{
 
 \itemize{
-\item Sentiment computation and aggregation into sentiment measures: \code{\link{...}}
-\item Sparse modelling: \code{\link{...}}
-\item Forecasting and post-modelling analysis: \code{\link{...}}
+\item Sentiment computation and aggregation into sentiment measures: to do
+\item Sparse modelling: to do
+\item Forecasting and post-modelling analysis: to do
 }
 }
 

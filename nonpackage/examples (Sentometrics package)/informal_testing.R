@@ -4,17 +4,12 @@
 ############################################################
 
 require(Sentometrics)
-require(quanteda) # to delete
-require(ggplot2) # to delete
-require(data.table) # to delete
 
 str <- c("./R/")
 sources <- list.files(str, pattern = "*.R$", full.names = TRUE, ignore.case = TRUE)
-
 sapply(sources, source, .GlobalEnv)
 
 load("nonpackage/examples (Sentometrics package)/belga.rda") # BELGA 2016 news data
-
 tester <- belga$fr # unordered by date
 
 categs <- unique(tester$category)
@@ -26,9 +21,9 @@ for (el in categs) {
   } else next
 }
 
-tester2 <- tester[, c("id", "date", "body", categs[categs != ""])] # drop language for simplicity
-tester2$date <- as.Date(tester2$date, format = "%d/%m/%Y")
-names(tester2)[names(tester2) == "body"] <- "text"
+testerIn <- tester[, c("id", "date", "body", categs[categs != ""])] # drop language for simplicity
+testerIn$date <- as.Date(testerIn$date, format = "%d/%m/%Y")
+names(testerIn)[names(testerIn) == "body"] <- "text"
 
 lexs <- c("FEEL.csv", "LM_fr.csv")
 lexicons <- lapply(lexs, function(x) return(read.csv(paste0("data-raw/lexicons-raw/", x), sep = ";")))
@@ -44,7 +39,7 @@ valence <- read.csv("data-raw/valence-raw/NEGATORS_fr.csv", sep = ";")
 
 ###################################################################################################
 
-cAll <- sento_corpus(tester2)
+cAll <- sento_corpus(testerIn)
 
 cPol <- corpus_subset(cAll, POL == 1) # quanteda
 cGen <- corpus_subset(cAll, GEN == 1 | GENERAL == 1 | ALG == 1) # quanteda
@@ -149,34 +144,5 @@ plot(m1)
 plot(mSel)
 
 fill1 <- fill_measures(sentMeas2, do.fillLatest = FALSE)
-
-modeling <- FALSE
-if (modeling) {
-  nSample <- 348
-  start <- 3
-  oos <- 4
-  h <- 3
-  alphas <- seq(0, 1, by = 0.20)
-  lambdas <- 10^seq(2, -2, length.out = 50)
-  trainWindow <- 338
-
-  sentomeasures <- sentMeas1
-  sentomeasures <- fill_measures(sentomeasures)
-
-  y <- data.frame(y = 0.01 + runif(nrow(sentomeasures$measures), 0.01, 0.04))
-  x <- data.frame(xOther = y$y)
-
-  ctrModel1 <- ctr_model(model = "lm", type = "BIC", do.iter = FALSE, h = h, alphas = alphas, lambdas = lambdas)
-  bicTest <- sento_lm(sentomeasures, y, x, ctrModel1)
-
-  ctrModel2 <- ctr_model(model = "lm", type = "cv", do.iter = FALSE, h = h, alphas = alphas, lambdas = lambdas,
-                         oos = oos, trainWindow = trainWindow)
-  cvTest <- sento_lm(sentomeasures, y, x, ctrModel2)
-
-  ctrModel3 <- ctr_model(model = "lm", type = "BIC", do.iter = TRUE, h = h, alphas = alphas, lambdas = lambdas,
-                         nSample = nSample, start = start, oos = oos, trainWindow = NULL)
-  bicTestIter <- sento_lm(sentomeasures, y, x, ctrModel3)
-
-  ### test cvTestIter + bicTestIter to check
-}
+fill2 <- fill_measures(sentMeas2, do.fillLatest = TRUE)
 
