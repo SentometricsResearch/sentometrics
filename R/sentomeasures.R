@@ -38,8 +38,8 @@ sento_measures<- function(corpuS, lexicons, ctr) {
 #' use.
 #' @param valenceWords a \code{data.frame} with a words column and a type indicating ... ### (negators, amplifiers, etc.)
 #' Alternatively, this argument can be a \code{character} vector specifying which built-in valence words to use.
-#' @param do.split a \code{logical} that if \code{TRUE} splits every lexicon into a separate positive polarity and negative polarity
-#' lexicon.
+#' @param do.split a \code{logical} that if \code{TRUE} splits every lexicon into a separate positive polarity and negative
+#' polarity lexicon.
 #'
 #' @return a list with each lexicon as a \code{data.table} list element according to its name, and the element
 #' \code{valenceWords} that comprises the valence words. Every \code{x} column contains the words, every \code{y} column
@@ -65,7 +65,7 @@ setup_lexicons <- function(lexiconsRaw, valenceWords = NULL, do.split = FALSE) {
     lexicons <- lapply(lexicons, function(x) {names(x) <- c("x", "y"); return(x)})
     names(lexicons) <- names(lexiconsRaw)
   } else {
-    ### warn if some named lexicons not part of LEXICONS
+    ### warn if some named lexicons are not part of LEXICONS
     lexicons <- Sentometrics::LEXICONS[lexiconsRaw]
   }
   if (!is.null(valenceWords)) {
@@ -108,8 +108,8 @@ setup_lexicons <- function(lexiconsRaw, valenceWords = NULL, do.split = FALSE) {
   features <- corpuS$features
 
   # frequency-based document-feature matrix (rows are corpus ids, columns are words)
-  dfm <- quanteda::dfm(quanteda::tokenize(corpuS, remove_punct = TRUE, remove_numbers = TRUE,
-                                          remove_symbols = TRUE, remove_separators = TRUE, ngrams = 1))
+  dfm <- quanteda::dfm(quanteda::tokenize(corpuS, remove_punct = TRUE, remove_numbers = TRUE, remove_symbols = TRUE,
+                                          remove_separators = TRUE, ngrams = 1), verbose = FALSE)
 
   ### add remove = stopwords("english") in dfm... (or other specified stopwords)?
   ### valence words: ngrams (1:n), negation words in text ==> not_, pos lexicon = pos + not_ neg, one-word lexicons ideally
@@ -501,8 +501,8 @@ ctr_agg <- function(howWithin = "tf-idf", howDocs = "equal-weight", howTime = "e
 #' @param lex a list with unique lexicons to merge at given name, e.g. \code{list(lex12 = c("lex1", "lex2"))}.
 #' @param feat a list with unique features to merge at given name, e.g. \code{list(feat12 = c("feat1", "feat2"))}.
 #' @param time a list with unique time weighting schemes to merge at given name, e.g. \code{list(tw12 = c("tw1", "tw2"))}.
-#' @param do.keep a \code{logical} indicating if the original sentiment measures should be kept (i.e. the merged sentiment measures
-#' will be added to the current sentiment measures as additional indices if \code{TRUE}).
+#' @param do.keep a \code{logical} indicating if the original sentiment measures should be kept (i.e. the merged sentiment
+#' measures will be added to the current sentiment measures as additional indices if \code{TRUE}).
 #'
 #' @return A list encapsulating the control parameters.
 #'
