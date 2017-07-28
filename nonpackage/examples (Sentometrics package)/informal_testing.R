@@ -41,11 +41,11 @@ valence <- read.csv("data-raw/valence-raw/NEGATORS_fr.csv", sep = ";")
 
 cAll <- sento_corpus(testerIn)
 
-cPol <- corpus_subset(cAll, POL == 1) # quanteda
-cGen <- corpus_subset(cAll, GEN == 1 | GENERAL == 1 | ALG == 1) # quanteda
+cPol <- quanteda::corpus_subset(cAll, POL == 1)
+cGen <- quanteda::corpus_subset(cAll, GEN == 1 | GENERAL == 1 | ALG == 1)
 
-c <- corpus_sample(cAll, size = 500) # quanteda
-summary(c) # quanteda
+c <- quanteda::corpus_sample(cAll, size = 500)
+summary(c)
 
 lexiconsIn <- setup_lexicons(lexicons = c("LEXICON_FEEL_FR", "LEXICON_LM_FR_tr"))
 lexiconsIn2 <- setup_lexicons(lexicons, valence)
