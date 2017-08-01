@@ -14,7 +14,13 @@ sento_measures(corpuS, lexicons, ctr)
 \item{ctr}{output from a \code{ctr_agg()} call.}
 }
 \value{
-A \code{sentomeasures} object.
+A \code{sentomeasures} object, which is a list containing:
+\item{measures}{a \code{data.table} with a \code{date} column and all textual sentiment measures as remaining columns.}
+\item{features}{a \code{character} vector of the different features.}
+\item{lexicons}{a \code{character} vector of the different lexicons used.}
+\item{time}{a \code{character} vector of the different time weighting schemes used.}
+\item{by}{a single \code{character} vector specifying the time interval of aggregation used.}
+\item{sentiment}{a sentiment scores \code{data.table} with dates and feature--lexicon sentiment scores columns.}
 }
 \description{
 Wrapper function which assembles calls to \code{compute_sentiment()} and \code{perform_agg()}, and includes

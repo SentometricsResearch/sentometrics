@@ -8,16 +8,12 @@ perform_agg(toAgg, ctr)
 }
 \arguments{
 \item{toAgg}{output from a \code{compute_sentiment()} call, a list with as main component a sentiment scores
-\code{data.table} with dates and features--lexicons sentiment scores columns.}
+\code{data.table} with dates and feature--lexicon sentiment scores columns.}
 
 \item{ctr}{output from a \code{ctr_agg()} call.}
 }
 \value{
-A list containing:
-\item{measures}{a \code{sentomeasures} object.}
-\item{features}{a \code{character} vector of the different features.}
-\item{lexicons}{a \code{character} vector of the different lexicons used.}
-\item{time}{a \code{character} vector of the different time weighting schemes used.}
+a \code{sentomeasures} object.
 }
 \description{
 Condense document-level textual sentiment scores into a panel of textual sentiment
