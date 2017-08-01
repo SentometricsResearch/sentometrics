@@ -9,14 +9,14 @@ setup_lexicons(lexiconsRaw, valenceWords = NULL, do.split = FALSE)
 \arguments{
 \item{lexiconsRaw}{a list of lexicons, with each element being a \code{data.frame} with a words column and a polarity score
 column. The lexicons should be appropriately named for clarity in terms of subsequently obtained sentiment measures.
-Alternatively, this argument can be a \code{character} vector specifying which built-in lexicons (\code{Sentometrics::LEXICONS}) to
-use.}
+Alternatively, this argument can be a \code{character} vector specifying which built-in lexicons
+(\code{Sentometrics::LEXICONS}) to use.}
 
-\item{valenceWords}{a \code{data.frame} with a words column and a type indicating ... ### (negators, amplifiers, etc.)
-Alternatively, this argument can be a \code{character} vector specifying which built-in valence words to use.}
+\item{valenceWords}{a \code{data.frame} with a words column and a type indicating ... (depends on if negators, amplifiers,
+etc.; TO DO) Alternatively, this argument can be a \code{character} vector specifying which built-in valence words to use.}
 
-\item{do.split}{a \code{logical} that if \code{TRUE} splits every lexicon into a separate positive polarity and negative polarity
-lexicon.}
+\item{do.split}{a \code{logical} that if \code{TRUE} splits every lexicon into a separate positive polarity and negative
+polarity lexicon.}
 }
 \value{
 a list with each lexicon as a \code{data.table} list element according to its name, and the element

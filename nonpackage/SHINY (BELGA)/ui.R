@@ -88,7 +88,6 @@ navbarPage(
               selected = c("Financial")
             )
           )),
-
           tabsetPanel(
             type = "tabs",
 
@@ -182,7 +181,6 @@ navbarPage(
                         inline = TRUE
                       )
                     ),
-
                     column(
                       width = 7,
                       numericInput(
@@ -239,11 +237,8 @@ navbarPage(
                 )
 
           ),
-
-
           tabPanel(
             "Multiple Indices",
-
             # hr(), # horizontal line
             fluidRow(div(
               style = "font-weight: bold",
@@ -314,7 +309,6 @@ navbarPage(
                       inline = TRUE
                     )
                   ),
-
                   column(
                     width = 7,
                     numericInput(
@@ -370,10 +364,8 @@ navbarPage(
               )
               )
           ),
-
           tabPanel(
             "Influential Articles",
-
             # hr(), # horizontal line
             fluidRow(div(style = "font-weight: bold",
                          column(
@@ -496,7 +488,7 @@ navbarPage(
       column(width = 4,
              div(
                column(width = 11,
-                      h4("David Ardia (Universit√© de Neuch√¢tel)")),
+                      h4("David Ardia (UniversitÈ de Neuch‚tel)")),
                div(style = "padding: 6px 0px 0px 0px",
                    column(
                      width = 1,
@@ -541,7 +533,7 @@ navbarPage(
                    offset = 1,
                    width = 8,
                    HTML(
-                     "Prof. David Ardia is an Assistant Professor at the Universit√© de Neuch√¢tel as well as the Universit√©
+                     "Prof. David Ardia is an Assistant Professor at the UniversitÈ de Neuch‚tel as well as the UniversitÈ
                      Laval. He is a specialist in the modelling of financial risks, with very strong computational skills,
                      who has been working with Prof. Boudt for close to a decade."
                    )
@@ -739,5 +731,5 @@ navbarPage(
                       )
                     ))))
   )
-                    )
+)
 

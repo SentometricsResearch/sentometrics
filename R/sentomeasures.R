@@ -1,6 +1,4 @@
 
-### TODO: normalization of measures + statistics
-
 #' One-way road towards sentomeasures object
 #'
 #' @description Wrapper function which assembles calls to \code{compute_sentiment()} and \code{perform_agg()}, and includes
@@ -36,8 +34,8 @@ sento_measures<- function(corpuS, lexicons, ctr) {
 #' column. The lexicons should be appropriately named for clarity in terms of subsequently obtained sentiment measures.
 #' Alternatively, this argument can be a \code{character} vector specifying which built-in lexicons
 #' (\code{Sentometrics::LEXICONS}) to use.
-#' @param valenceWords a \code{data.frame} with a words column and a type indicating ... ### (negators, amplifiers, etc.)
-#' Alternatively, this argument can be a \code{character} vector specifying which built-in valence words to use.
+#' @param valenceWords a \code{data.frame} with a words column and a type indicating ... (depends on if negators, amplifiers,
+#' etc.; TO DO) Alternatively, this argument can be a \code{character} vector specifying which built-in valence words to use.
 #' @param do.split a \code{logical} that if \code{TRUE} splits every lexicon into a separate positive polarity and negative
 #' polarity lexicon.
 #'
@@ -49,9 +47,6 @@ sento_measures<- function(corpuS, lexicons, ctr) {
 #'
 #' @export
 setup_lexicons <- function(lexiconsRaw, valenceWords = NULL, do.split = FALSE) {
-
-  ### format of lexicons_raw and valenceWords to define
-  ### add built-in lexicons (add possibility for lexiconsRaw to be character + valenceWords input + combined input)
 
   if (!is.character(lexiconsRaw)) {
     # check for duplicated lexicon names
@@ -65,7 +60,6 @@ setup_lexicons <- function(lexiconsRaw, valenceWords = NULL, do.split = FALSE) {
     lexicons <- lapply(lexicons, function(x) {names(x) <- c("x", "y"); return(x)})
     names(lexicons) <- names(lexiconsRaw)
   } else {
-    ### warn if some named lexicons are not part of LEXICONS
     lexicons <- Sentometrics::LEXICONS[lexiconsRaw]
   }
   if (!is.null(valenceWords)) {
@@ -110,9 +104,6 @@ setup_lexicons <- function(lexiconsRaw, valenceWords = NULL, do.split = FALSE) {
   # frequency-based document-feature matrix (rows are corpus ids, columns are words)
   dfm <- quanteda::dfm(quanteda::tokenize(corpuS, remove_punct = TRUE, remove_numbers = TRUE, remove_symbols = TRUE,
                                           remove_separators = TRUE, ngrams = 1), verbose = FALSE)
-
-  ### add remove = stopwords("english") in dfm... (or other specified stopwords)?
-  ### valence words: ngrams (1:n), negation words in text ==> not_, pos lexicon = pos + not_ neg, one-word lexicons ideally
 
   allWords <- quanteda::featnames(dfm)
   wCounts <- quanteda::rowSums(dfm, na.rm = TRUE)
@@ -265,8 +256,8 @@ agg_documents <- function(toAgg, by, how = get_hows()$docs, do.ignoreZeros = FAL
   sent$date <- dates
 
   # ignore documents with zero sentiment in aggregation (if do.ignoreZeros is TRUE)
-  if (do.ignoreZeros) sent[, names(sent)] <-
-    sent[, names(sent), with = FALSE][, lapply(.SD, function(x) replace(x, which(x == 0), NA))]
+  if (do.ignoreZeros)
+    sent[, names(sent)] <- sent[, names(sent), with = FALSE][, lapply(.SD, function(x) replace(x, which(x == 0), NA))]
 
   # aggregate feature-sentiment per document by date for all lexicon columns
   if (how == "equal-weight") {
@@ -351,9 +342,6 @@ agg_time <- function(sentomeasures, lag, how = get_hows()$time, ...) {
 #'
 #' @export
 merge_measures <- function(ctr) {
-
-  ### melt from data.table useful?
-  ### option for computation of "global" sentiment measure
 
   sentomeasures <- ctr$sentomeasures
   measures <- sentomeasures$measures

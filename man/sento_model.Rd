@@ -2,40 +2,45 @@
 % Please edit documentation in R/sentomodel.R
 \name{sento_model}
 \alias{sento_model}
-\title{Optimized sparse linear regression}
+\title{Optimized sparse regression}
 \usage{
 sento_model(sentomeasures, y, x = NULL, ctr)
 }
 \arguments{
-\item{sentomeasures}{a \code{sentomeasures} object.}
+\item{sentomeasures}{a \code{sentomeasures} object. There should be at least two explanatory variables including the ones
+provided through the \code{x} argument.}
 
-\item{y}{a one-column \code{data.frame} or \code{numeric} vector capturing the dependent (response) variable.}
+\item{y}{a one-column \code{data.frame} or a \code{numeric} vector capturing the dependent (response) variable. In case of
+a logistic regression, the response variable is either a \code{factor} or a \code{matrix} with the factors represented by
+the columns as binary indicators, with the last factor level or column as the reference class. No \code{NA} values are
+allowed.}
 
 \item{x}{a named \code{data.frame} with other explanatory variables, by default set to \code{NULL}.}
 
 \item{ctr}{output from a \code{ctr_model()} call.}
 }
 \value{
-If \code{ctr$do.iter == FALSE}, a list containing:
-\item{reg}{optimized regression object.}
+If \code{ctr$do.iter == FALSE}, a \code{sentomodel} object which is a list containing:
+\item{reg}{optimized regression, i.e. a model-specific \code{glmnet} object.}
 \item{alpha}{optimized calibrated alpha.}
 \item{lambda}{optimized calibrated lambda.}
 \item{trained}{output from \code{caret::train} call within function (if \code{ctr$type ==} "\code{cv}").}
-\item{ic}{a \code{numeric} vector of minimum information criterion values per element of \code{alphas} (if \code{ctr$type !=} "\code{cv}").}
-\item{type}{information criterion used to calibrate (if \code{ctr$type !=} "\code{cv}").}
+\item{ic}{a \code{numeric} vector of the minimum information criterion value for every element of \code{alphas} (if
+\code{ctr$type !=} "\code{cv}").} \item{type}{information criterion used to calibrate (if \code{ctr$type !=} "\code{cv}").}
 
 If \code{ctr$do.iter == TRUE}, a list containing:
-\item{regs}{optimized regression objects, i.e. lists as above.}
-\item{alphas}{optimized calibrated alphass.}
+\item{regs}{optimized regressions, i.e. separate \code{sentomodel} objects as above.}
+\item{alphas}{optimized calibrated alphas.}
 \item{lambdas}{optimized calibrated lambdas.}
 \item{performance}{a \code{data.frame} with performance-related measures, being "\code{RMSFE}" (root mean squared
 forecasting error), "\code{MAD}" (mean absolute deviation), "\code{MAPE}" (mean absolute percentage error),
-"\code{DA}" (directional accuracy), and each's respective individual values in the sample.}
+"\code{DA}" (directional accuracy), "\code{accuracy}" (proportion of correctly predicted classes in case of a logistic
+regression), and each's respective individual values in the sample.}
 }
 \description{
-Linear model of a dependent variable on the wide number of sentiment measures and potentially
-other explanatory variables. Either performs a linear regression on the provided variables at once, or computes
-linear models sequentially for a given sample size over a longer time horizon, with associated forecasting performance
+Linear or nonlinear regression of a dependent variable on the wide number of sentiment measures and
+potentially other explanatory variables. Either performs a regression given the provided variables at once, or computes
+regressions sequentially for a given sample size over a longer time horizon, with associated forecasting performance
 metrics.
 }
 \seealso{

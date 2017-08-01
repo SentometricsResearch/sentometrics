@@ -1,6 +1,6 @@
 Package: Sentometrics
 Title: An Integrated Framework for Textual Sentiment Based Multivariate Time Series Modeling and Forecasting
-Version: 0.0.0.0
+Version: 0.0.0.1
 Authors@R: c(person("Samuel", "Borms", email = "borms_sam@hotmail.com", role = c("aut", "cre")),
   person("David", "Ardia", email = "david.ardia@unine.ch", role = c("aut")),
   person("Keven", "Bluteau", email = "keven.bluteau@unine.ch", role = c("aut")),

@@ -19,9 +19,6 @@
 #' @export
 sento_corpus <- function(texts) {
 
-  ### check for data input
-  ### drop other columns (e.g. headline)
-
   # construct corpus as a quanteda corpus
   c <- quanteda::corpus(x = texts,
                         docid_field = "id",
