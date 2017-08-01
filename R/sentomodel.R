@@ -1,10 +1,4 @@
 
-### parallelization to add (internally or pointers in documentation on how to use parallelization)
-### check warnings and sanity regarding caret::train() setup
-### do is.na(x) <- 0 before or after cleaning?
-### mice package in fill_measures?
-### add binomial (model == "binomial") and multinomial (model == "multinomial") logistic regression
-
 #' Add and fill missing dates
 #'
 #' @description Adds missing dates between earliest and latest date, such that time series is continuous on a period-by-period
@@ -39,7 +33,7 @@ compute_IC <- function(reg, y, x, alpha, ic) {
   beta <- reg$beta
   lambda <- reg$lambda
 
-  yEst <- stats::predict(reg, newx = as.matrix(x))
+  yEst <- stats::predict(reg, newx = x)
   df_A <- compute_df(alpha, beta, lambda, x)
   RSS <- apply(yEst, 2, FUN = function(est) sum((y - est)^2))
   sigma2 <- RSS[length(RSS)] / (nrow(y) - df_A[length(RSS)])
@@ -57,51 +51,64 @@ compute_IC <- function(reg, y, x, alpha, ic) {
   return(IC)
 }
 
-model_performance <- function(yEst, yReal) {
+model_performance <- function(yEst, yReal, family, dates, ...) {
 
-  # model errors
-  error <- yEst - yReal
-  error2 <- error^2
-  AD <- abs(error)
-  APE <- 100 * AD / abs(yReal)
-  errors <- data.frame(cbind(error, error2, AD, APE))
-  colnames(errors) <- c("error", "error^2", "AD", "APE")
+  dots <- list(...)
 
-  meanErrors <- colMeans(errors, na.rm = TRUE)[2:ncol(errors)]
+  if (family == "gaussian") {
+    tp <- as.numeric(yReal > 0 & yEst > 0) # true positives
+    fp <- as.numeric(yReal < 0 & yEst > 0) # false positives
+    tn <- as.numeric(yReal < 0 & yEst < 0) # true negatives
+    fn <- as.numeric(yReal > 0 & yEst < 0) # false negatives
+    dAcc <- data.frame(cbind(tp, fp, tn, fn))
+    colnames(dAcc) <- c("tp", "fp", "tn", "fn")
+    DA <- (sum(tp) + sum(tn)) / (sum(tp) + sum(fp) + sum(tn) + sum(fn)) # directional accuracy
 
-  # directional accuracy
-  tp <- as.numeric(yReal > 0 & yEst > 0) # true positives
-  fp <- as.numeric(yReal < 0 & yEst > 0) # false positives
-  tn <- as.numeric(yReal < 0 & yEst < 0) # true negatives
-  fn <- as.numeric(yReal > 0 & yEst < 0) # false negatives
-  acc <- data.frame(cbind(tp, fp, tn, fn))
-  colnames(acc) <- c("tp", "fp", "tn", "fn")
+    error <- yEst - yReal
+    error2 <- error^2
+    AD <- abs(error) # absolute deviation
+    APE <- 100 * AD / abs(yReal) # absolute percentage error
+    errors <- data.frame(cbind(error, error2, AD, APE))
+    colnames(errors) <- c("error", "errorSq", "AD", "APE")
+    meanErrors <- colMeans(errors[, 2:ncol(errors)], na.rm = TRUE)
 
-  DA <- (sum(tp) + sum(tn)) / (sum(tp) + sum(fp) + sum(tn) + sum(fn))
+    raw <- data.frame(yReal, predicted = yEst, dAcc, errors)
+    row.names(raw) <- dates
 
-  errorsAll <- list(raw = cbind(realized = yReal, predicted = yEst, errors, acc),
-                    RMSFE = as.numeric(sqrt(meanErrors["error^2"])),
-                    MAD = as.numeric(meanErrors["AD"]),
-                    MAPE = as.numeric(meanErrors["APE"]),
-                    DA = DA)
+    errorsAll <- list(raw = raw, DA = DA, RMSFE = as.numeric(sqrt(meanErrors["error^2"])),
+                      MAD = as.numeric(meanErrors["AD"]), MAPE = as.numeric(meanErrors["APE"]))
+
+  } else if (family %in% c("binomial", "multinomial")) {
+    yRealClass <- as.factor(colnames(yReal)[yReal %*% 1:ncol(yReal)])
+    yEstClass <- dots$yEstClass
+    accuracy <- as.numeric(yRealClass == yEstClass)
+    accuracyProb <- sum(accuracy)/length(accuracy)
+
+    raw <- data.frame(response = yRealClass, predicted = yEstClass, accuracy = accuracy)
+    row.names(raw) <- dates
+
+    errorsAll <- list(raw = raw, accuracy = accuracyProb)
+  }
 
   return(errorsAll)
 }
 
 #' Setup control for sentiment measures-based regression modelling
 #'
-#' @description Sets up control for linear or nonlinear modelling of a response variable onto a sparse panel of
-#' textual sentiment measures (and potentially other variables). Models are computed using the elastic-net regularization
-#' as implemented in the \pkg{glmnet} package, to account for the sparsity of the textual sentiment measures. The optimal
-#' elastic-net parameters \code{lambda} and \code{alpha} are calibrated either through a to specify information criterion or
-#' through cross-validation (based on the "rolling forecasting origin" principle).
+#' @description Sets up control for linear or nonlinear modelling of a response variable onto a sparse panel of textual
+#' sentiment measures (and potentially other variables). Models are computed using the elastic-net regularization as
+#' implemented in the \pkg{glmnet} package, to account for the sparsity of the sentiment measures. For a helpful introduction
+#' to \pkg{glmnet}, we refer to their \href{https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html#lin}{vignette}.
+#' The optimal elastic-net parameters \code{lambda} and \code{alpha} are calibrated either through a to specify information
+#' criterion or through cross-validation (based on the "rolling forecasting origin" principle).
 #'
 #' @param model a \code{character} vector with one of the following: "\code{lm}" (linear regression), "\code{binomial}"
 #' (binomial logistic regression), or "\code{multinomial}" (multinomial logistic regression).
 #' @param type a \code{character} vector indicating which model selection criteria to use. Currently supports "\code{BIC}",
 #' "\code{AIC}" and "\code{Cp}" (Mallows's Cp) as sparse-regression adapted information criteria (cf. Zou, Hastie, Tibshirani
 #' et al. (2007). "On the 'degrees of freedom' of the LASSO."), and "\code{cv}" (cross-validation based on the \code{train}
-#' function from the \pkg{caret} package).
+#' function from the \pkg{caret} package). The adapted information criteria are currently only available for a linear
+#' regression.
 #' @param h an \code{integer} value to shift the time series to have the desired (forecasting) setup, \code{h == 0} means
 #' no change to input data (nowcasting assuming data is aligned properly), \code{h > 0} shifts the dependent variable by
 #' \code{h} periods (i.e. rows) further in time (forecasting), \code{h < 0} shifts the independent variables by \code{h}
@@ -136,6 +143,9 @@ ctr_model <- function(model = c("lm", "binomial", "multinomial"), type = c("BIC"
   if (length(type) > 1) type <- type[1]
   else if (!(type %in% c("BIC", "AIC", "Cp", "cv")))
     stop("Provide a proper calibration type.")
+
+  if (model != "lm" & type != "cv")
+    stop("LASSO-specific information criteria are currently only supported for linear models, please opt for 'cv'.")
 
   if (oos < 0 | start <= 0)
     stop("Make sure all integer inputs are non-negative or positive for those required.")
@@ -188,26 +198,31 @@ ctr_model <- function(model = c("lm", "binomial", "multinomial"), type = c("BIC"
 #' regressions sequentially for a given sample size over a longer time horizon, with associated forecasting performance
 #' metrics.
 #'
-#' @param sentomeasures a \code{sentomeasures} object.
-#' @param y a one-column \code{data.frame} or \code{numeric} vector capturing the dependent (response) variable.
+#' @param sentomeasures a \code{sentomeasures} object. There should be at least two explanatory variables including the ones
+#' provided through the \code{x} argument.
+#' @param y a one-column \code{data.frame} or a \code{numeric} vector capturing the dependent (response) variable. In case of
+#' a logistic regression, the response variable is either a \code{factor} or a \code{matrix} with the factors represented by
+#' the columns as binary indicators, with the last factor level or column as the reference class. No \code{NA} values are
+#' allowed.
 #' @param x a named \code{data.frame} with other explanatory variables, by default set to \code{NULL}.
 #' @param ctr output from a \code{ctr_model()} call.
 #'
-#' @return If \code{ctr$do.iter == FALSE}, a list containing:
-#' \item{reg}{optimized regression object.}
+#' @return If \code{ctr$do.iter == FALSE}, a \code{sentomodel} object which is a list containing:
+#' \item{reg}{optimized regression, i.e. a model-specific \code{glmnet} object.}
 #' \item{alpha}{optimized calibrated alpha.}
 #' \item{lambda}{optimized calibrated lambda.}
 #' \item{trained}{output from \code{caret::train} call within function (if \code{ctr$type ==} "\code{cv}").}
-#' \item{ic}{a \code{numeric} vector of minimum information criterion values per element of \code{alphas} (if
+#' \item{ic}{a \code{numeric} vector of the minimum information criterion value for every element of \code{alphas} (if
 #' \code{ctr$type !=} "\code{cv}").} \item{type}{information criterion used to calibrate (if \code{ctr$type !=} "\code{cv}").}
 #'
 #' @return If \code{ctr$do.iter == TRUE}, a list containing:
-#' \item{regs}{optimized regression objects, i.e. lists as above.}
-#' \item{alphas}{optimized calibrated alphass.}
+#' \item{regs}{optimized regressions, i.e. separate \code{sentomodel} objects as above.}
+#' \item{alphas}{optimized calibrated alphas.}
 #' \item{lambdas}{optimized calibrated lambdas.}
 #' \item{performance}{a \code{data.frame} with performance-related measures, being "\code{RMSFE}" (root mean squared
 #' forecasting error), "\code{MAD}" (mean absolute deviation), "\code{MAPE}" (mean absolute percentage error),
-#' "\code{DA}" (directional accuracy), and each's respective individual values in the sample.}
+#' "\code{DA}" (directional accuracy), "\code{accuracy}" (proportion of correctly predicted classes in case of a logistic
+#' regression), and each's respective individual values in the sample.}
 #'
 #' @seealso \code{\link{ctr_model}}, \code{\link[glmnet]{glmnet}}, \code{\link[caret]{train}}
 #'
@@ -216,7 +231,14 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
 
   check_class(sentomeasures, "sentomeasures")
 
-  if (!is.data.frame(y)) y <- data.frame(y = y)
+  if (any(is.na(y))) stop("No NA values are allowed in y.")
+
+  nrows <- c(nrow(sentomeasures$measures), ifelse(is.null(nrow(y)), length(y), nrow(y)), nrow(x))
+  if (length(unique(nrows)) != 1)
+    stop("Number of rows or length for y, x and measures in sentomeasures must be equal.")
+
+  if (sum(ncol(sentomeasures$measures) + ifelse(is.null(x), 0, ncol(x))) < 2)
+    stop("There should be at least two explanatory variables out of sentomeasures and x combined.")
 
   family <- ctr$model
   type <- ctr$type
@@ -277,7 +299,7 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
       else cat(alpha, ", ", sep = "")
     }
 
-    reg <- glmnet::glmnet(x = as.matrix(xx), y = as.matrix(yy), penalty.factor = penalty,
+    reg <- glmnet::glmnet(x = xx, y = yy, penalty.factor = penalty,
                           lambda = lambdas, alpha = alpha, standardize = TRUE, family = family)
 
     IC <- compute_IC(reg, yy, xx, alpha, ic)
@@ -292,7 +314,7 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
   alphaOpt <- as.numeric(names(minLoc))
 
   # actual elastic net optimization
-  regOpt <- glmnet::glmnet(x = as.matrix(xx), y = as.matrix(yy), penalty.factor = penalty,
+  regOpt <- glmnet::glmnet(x = xx, y = yy, penalty.factor = penalty,
                            lambda = lambdaOpt, alpha = alphaOpt, standardize = TRUE, family = family)
 
   out <- list(reg = regOpt,
@@ -300,6 +322,8 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
               lambda = lambdaOpt,
               ic = ICs,
               type = ic)
+
+  class(out) <- c("sentomodel")
 
   return(out)
 }
@@ -327,12 +351,19 @@ model_IC <- compiler::cmpfun(.model_IC)
   # train model based on slices in sliced
   sliced <- create_cv_slices(1:nrow(yy), trainWindow, testWindow = testWindow, skip = oos, do.reverse = FALSE)
   ctrTrain <- caret::trainControl(index = sliced$train, indexOut = sliced$test, allowParallel = TRUE)
-  gbmGrid <- expand.grid(alpha = alphas, lambda = lambdas)
+  tuneGrid <- expand.grid(alpha = alphas, lambda = lambdas)
+
+  # change y variable to format required in caret::train function
+  if (family == "gaussian") yyy <- yy[, 1]
+  else yyy <- as.factor(colnames(yy)[yy %*% 1:ncol(yy)])
+
+  # align training metric based on whether family is a linear or classifcation model
+  metric <- ifelse(family == "gaussian", "RMSE", "Accuracy")
 
   if (do.progress) cat("Training model... ")
-  trained <- caret::train(x = as.matrix(xx), y = as.matrix(yy)[, 1], method = "glmnet",
-                          family = family, standardize = TRUE, penalty.factor = penalty,
-                          trControl = ctrTrain, tuneGrid = gbmGrid, metric = "RMSE")
+  trained <- caret::train(x = xx, y = yyy, method = "glmnet", family = family,
+                          standardize = TRUE, penalty.factor = penalty,
+                          trControl = ctrTrain, tuneGrid = tuneGrid, metric = metric)
   if (do.progress) cat("Done.", "\n")
 
   # retrieve optimal alphas and lambdas
@@ -340,13 +371,15 @@ model_IC <- compiler::cmpfun(.model_IC)
   lambdaOpt <- as.numeric(trained$bestTune[2])
 
   # actual elastic net optimization
-  regOpt <- glmnet::glmnet(x = as.matrix(xx), y = as.matrix(yy), penalty.factor = penalty,
+  regOpt <- glmnet::glmnet(x = xx, y = yy, penalty.factor = penalty,
                            lambda = lambdaOpt, alpha = alphaOpt, standardize = TRUE, family = family)
 
   out <- list(reg = regOpt,
               alpha = alphaOpt,
               lambda = lambdaOpt,
               trained = trained)
+
+  class(out) <- c("sentomodel")
 
   return(out)
 }
@@ -356,7 +389,7 @@ model_CV <- compiler::cmpfun(.model_CV)
 .sento_model_iter <- function(sentomeasures, y, x, h, family, alphas, lambdas,
                               type, nSample, start, trainWindow, testWindow, oos, do.progress) {
 
-  nIter <- nrow(y) - nSample - h - oos
+  nIter <- ifelse(is.null(nrow(y)), length(y), nrow(y)) - nSample - abs(h) - oos
   if (nIter <= 0 | start > nIter)
     stop("Data not sufficient to do at least one iteration for given sample size, horizon, out-of-sample skip and start.")
 
@@ -368,7 +401,7 @@ model_CV <- compiler::cmpfun(.model_CV)
   else fun <- model_IC
 
   for (i in start:nIter) {
-    if (do.progress) cat("iteration: ", i, " from ", as.character(nIter), "\n", sep = "")
+    if (do.progress) cat("iteration: ", i, " from ", nIter, "\n", sep = "")
 
     reg <- fun(sentomeasures, y, x, h, alphas, lambdas,
                trainWindow = trainWindow, testWindow = testWindow,
@@ -382,18 +415,39 @@ model_CV <- compiler::cmpfun(.model_CV)
   alphasOpt <- sapply(regsOpt, function(x) return(x$alpha))
   lambdasOpt <- sapply(regsOpt, function(x) return(x$lambda))
 
-  # get all predictions (estimations)
+  # prepare for and get all predictions (estimations)
   alignedVarsAll <- align_variables(y, sentomeasures, x, h)
-  xPred <- alignedVarsAll$x[(start + nSample):(nIter + nSample), ]
-  yReal <- alignedVarsAll$y[(start + nSample + oos):(nIter + nSample + oos), ]
-  yEst <- rep(NA, nIter - start + 1)
-  for (j in 1:(nIter - start + 1)) {
-    yEst[j] <- stats::predict(regsOpt[[j]]$reg, newx = as.matrix(xPred[j, ]))
+  xPred <- alignedVarsAll$x[(start + nSample):(nIter + nSample), , drop = FALSE]
+  yReal <- alignedVarsAll$y[(start + nSample + oos):(nIter + nSample + oos), , drop = FALSE]
+  datesX <- alignedVarsAll$datesX[(start + nSample):(nIter + nSample)] # dates from perspective of x
+
+  if (family %in% c("binomial", "multinomial")) {
+    n <- length(colnames(yReal)) # number of factor levels
+    yEst <- matrix(rep(NA, n * (nIter - start + 1)), ncol = n)
+    colnames(yEst) <- colnames(yReal)
+    yEstClass <- rep(NA, nIter - start + 1)
+  } else {
+    yEst <- rep(NA, nIter - start + 1)
+    yEstClass <- NULL
   }
-  names(yReal) <- names(yEst) <- sentomeasures$measures$date[start:nIter] # dates
+
+  for (j in 1:(nIter - start + 1)) {
+    reg <- regsOpt[[j]]
+    newx <- xPred[j, , drop = FALSE]
+    if (family == "gaussian") {
+      yEst[j] <- stats::predict(reg, newx = newx, type = "link")
+    } else if (family == "binomial") {
+      yEst[j, 2] <- stats::predict(reg, newx = newx, type = "response") # second factor
+      yEst[j, 1] <- 1 - yEst[j, 2]
+      yEstClass[j] <- stats::predict(reg, newx = newx, type = "class")
+    } else if (family == "multinomial") {
+      yEst[j, ] <- stats::predict(reg, newx = newx, type = "response")[1, , ]
+      yEstClass[j] <- as.character(stats::predict(reg, newx = newx, type = "class"))
+    }
+  }
 
   # compute model performance
-  performance <- model_performance(yEst, yReal)
+  performance <- model_performance(yEst = yEst, yReal = yReal, family = family, dates = datesX, yEstClass = yEstClass)
 
   out <- list(regs = regsOpt,
               alphas = alphasOpt,
@@ -407,16 +461,25 @@ sento_model_iter <- compiler::cmpfun(.sento_model_iter)
 
 retrieve_attribution <- function() {
 
-  ### attribution analysis
-
   # coeffs[[i - start + 1]] <- as.matrix(stats::coef(regOpt))
-  # attribs[[j]] <- coeffs[[j]] * c(1, as.matrix(xPred[j, ]))
+  # attribs[[j]] <- coeffs[[j]] * c(1, xPred[j, ])
 
 }
 
 sento_arima <- function() {
 
-  ### arima for all measures
+}
 
+summary.sentomodel <- function(object, ...) {
+
+}
+
+predict.sentomodel <- function(object, newx, type, ...) {
+
+  sentomodel <- object
+  reg <- sentomodel$reg
+  pred <- stats::predict(reg, newx = newx, type = type, ...)
+
+  return(pred)
 }
 

@@ -129,28 +129,44 @@ create_cv_slices <- function (y, trainWindow, testWindow = 1, skip = 0, do.rever
 
 align_variables <- function(y, sentomeasures, x, h, i = 1, nSample = NULL) {
 
-  y[is.na(y)] <- 0
+  if (is.factor(y)) {
+    levs <- levels(y)
+    yNew <- matrix(nrow = length(y), ncol = length(levs))
+    for (j in seq_along(levs)) {
+      col <- as.numeric(y == levs[j])
+      yNew[, j] <- col
+    }
+    y <- yNew
+    colnames(y) <- levs
+  } else {
+    y <- as.matrix(y)
+    colnames(y) <- "response"
+    row.names(y) <- NULL
+  }
 
+  datesX <- sentomeasures$measures$date
   sent <- sentomeasures$measures[, 2:ncol(sentomeasures$measures)]
   if (is.null(x)) x <- sent
   else x <- cbind(sent, x)
-  x <- as.data.frame(x)
+  x <- as.matrix(x)
   x[is.na(x)] <- 0
 
   if (h > 0) {
     y <- y[(h + 1):nrow(x), , drop = FALSE]
-    x <- x[1:nrow(y), ]
+    x <- x[1:nrow(y), , drop = FALSE]
+    datesX <- datesX[1:nrow(y)]
   } else if (h < 0) {
     x <- x[(abs(h) + 1):nrow(y), , drop = FALSE]
-    y <- y[1:nrow(x), ]
+    datesX <- datesX[(abs(h) + 1):nrow(y)]
+    y <- y[1:nrow(x), , drop = FALSE]
   }
   if (!is.null(nSample)) {
-    x <- x[i:(nSample + i - 1), ]
+    x <- x[i:(nSample + i - 1), , drop = FALSE]
+    datesX <- datesX[i:(nSample + i - 1)]
     y <- y[i:(nSample + i - 1), , drop = FALSE]
   }
-  colnames(y) <- "y"
 
-  return(list(y = y, x = x))
+  return(list(y = y, x = x, datesX = datesX))
 }
 
 clean_panel <- function(sentomeasures, threshold = 0.50) {
@@ -194,6 +210,7 @@ check_class <- function(x, class) {
 compute_df <- function(alpha, beta, lambda, x) {
 
   # degrees-of-freedom estimator of elastic net (cf. Tibshirani and Taylor, 2012)
+  # only for linear models
 
   df_A <- vector(mode = "numeric", length = length(lambda))
   for(df in 1:length(lambda)) {

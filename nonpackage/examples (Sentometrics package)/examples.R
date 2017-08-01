@@ -48,9 +48,14 @@ plot(measSel)
 
 ### LINEAR ###
 
-y <- as.numeric(SP500) # make sure it is a numeric vector (will be coerced to data.frame)
+y <- as.numeric(SP500) # convert to numeric vector
 sentMeas <- fill_measures(sentMeas)
 length(y) == nrow(sentMeas$measures) # TRUE
+
+n <- 100
+sentMeas2 <- sentMeas
+sentMeas2$measures <- tail(sentMeas2$measures, n)
+yl <- tail(y, n)
 
 # require(doParallel)
 # registerDoParallel(2)
@@ -61,21 +66,40 @@ for (ic in c("BIC", "AIC", "Cp")) {
   out[[ic]] <- sento_model(sentMeas, y, ctr = ctrIC)
 }
 
-ctrIC <- ctr_model(model = "lm", type = "BIC", do.iter = TRUE, h = 0, nSample = 315, do.progress = TRUE)
-out <- sento_model(sentMeas, y, ctr = ctrIC)
+ctrIC <- ctr_model(model = "lm", type = "BIC", do.iter = TRUE, h = 0, nSample = n - 2, do.progress = TRUE)
+out <- sento_model(sentMeas2, yl, ctr = ctrIC)
 
 ctrCV <- ctr_model(model = "lm", type = "cv", do.iter = FALSE, h = 0, trainWindow = 250, testWindow = 10, oos = 3)
 out <- sento_model(sentMeas, y, ctr = ctrCV)
 
-ctrCV <- ctr_model(model = "lm", type = "cv", do.iter = TRUE, h = 0, trainWindow = 250, testWindow = 3, oos = 0, nSample = 320)
-out <- sento_model(sentMeas, y, ctr = ctrCV)
+ctrCV <- ctr_model(model = "lm", type = "cv", do.iter = TRUE, h = 0, trainWindow = 45, testWindow = 2, oos = 0,
+                   nSample = n - 2, do.progress = TRUE)
+out <- sento_model(sentMeas2, yl, ctr = ctrCV)
 
 ### LOGISTIC (binomial) ###
 
-yb <- y
+yb <- tail(y, n)
 yb <- ifelse(yb >= 0, 1, -1)
 yb <- as.factor(yb)
+levels(yb) <- c("neg", "pos")
 # p <- as.numeric(yb == 1)
 # n <- as.numeric(yb == -1)
 # yb <- matrix(c(n, p), ncol = 2)
+# colnames(yb) <- c("pos", "neg")
+
+ctrCV <- ctr_model(model = "binomial", type = "cv", do.iter = TRUE, h = 0, trainWindow = 45, testWindow = 2, oos = 0,
+                   nSample = n - 2, do.progress = TRUE)
+out <- sento_model(sentMeas2, yb, ctr = ctrCV)
+
+### LOGISTIC (multinomial) ###
+
+ym <- tail(y, n)
+ym[ym >= 0 & ym < 0.05] <- 1; ym[ym >= 0.05 & ym != 1] <- 2
+ym[ym <= 0 & ym > -0.05] <- -1; ym[ym <= -0.05 & ym != -1] <- -2
+ym <- as.factor(ym)
+levels(ym) <- c("neg-", "neg", "pos", "pos+")
+
+ctrCV <- ctr_model(model = "multinomial", type = "cv", do.iter = TRUE, h = 0, trainWindow = 45, testWindow = 2, oos = 0,
+                   nSample = n - 2, do.progress = TRUE)
+out <- sento_model(sentMeas2, ym, ctr = ctrCV)
 
