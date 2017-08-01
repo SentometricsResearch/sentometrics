@@ -9,7 +9,13 @@
 #' @param lexicons output from a \code{setup_lexicons()} call.
 #' @param ctr output from a \code{ctr_agg()} call.
 #'
-#' @return A \code{sentomeasures} object.
+#' @return A \code{sentomeasures} object, which is a list containing:
+#' \item{measures}{a \code{data.table} with a \code{date} column and all textual sentiment measures as remaining columns.}
+#' \item{features}{a \code{character} vector of the different features.}
+#' \item{lexicons}{a \code{character} vector of the different lexicons used.}
+#' \item{time}{a \code{character} vector of the different time weighting schemes used.}
+#' \item{by}{a single \code{character} vector specifying the time interval of aggregation used.}
+#' \item{sentiment}{a sentiment scores \code{data.table} with dates and feature--lexicon sentiment scores columns.}
 #'
 #' @seealso \code{\link{compute_sentiment}}, \code{\link{perform_agg}}
 #'
@@ -35,11 +41,12 @@ sento_measures<- function(corpuS, lexicons, ctr) {
 #' Alternatively, this argument can be a \code{character} vector specifying which built-in lexicons
 #' (\code{Sentometrics::LEXICONS}) to use.
 #' @param valenceWords a \code{data.frame} with a words column and a type indicating ... (depends on if negators, amplifiers,
-#' etc.; TO DO) Alternatively, this argument can be a \code{character} vector specifying which built-in valence words to use.
+#' etc.; TO DO). Alternatively, this argument can be a \code{character} vector specifying which built-in valence word lists to
+#' use.
 #' @param do.split a \code{logical} that if \code{TRUE} splits every lexicon into a separate positive polarity and negative
 #' polarity lexicon.
 #'
-#' @return a list with each lexicon as a \code{data.table} list element according to its name, and the element
+#' @return a list with each lexicon as a \code{data.table} list element according to its name, and the list element
 #' \code{valenceWords} that comprises the valence words. Every \code{x} column contains the words, every \code{y} column
 #' containts the polarity or other quantitative information.
 #'
@@ -176,7 +183,7 @@ setup_lexicons <- function(lexiconsRaw, valenceWords = NULL, do.split = FALSE) {
 #'
 #' @return A list containing:
 #' \item{corpuS}{the supplied \code{corpuS} object.}
-#' \item{sent}{a sentiment scores \code{data.table} with dates and features--lexicons sentiment scores columns.}
+#' \item{sentiment}{a sentiment scores \code{data.table} with dates and feature--lexicon sentiment scores columns.}
 #' \item{features}{a \code{character} vector of the different features.}
 #' \item{lexicons}{a \code{character} vector of the different lexicons used.}
 #'
@@ -205,14 +212,10 @@ get_features_sentiment <- compiler::cmpfun(.get_features_sentiment)
 #' measures by aggregating across documents and time.
 #'
 #' @param toAgg output from a \code{compute_sentiment()} call, a list with as main component a sentiment scores
-#' \code{data.table} with dates and features--lexicons sentiment scores columns.
+#' \code{data.table} with dates and feature--lexicon sentiment scores columns.
 #' @param ctr output from a \code{ctr_agg()} call.
 #'
-#' @return A list containing:
-#' \item{measures}{a \code{sentomeasures} object.}
-#' \item{features}{a \code{character} vector of the different features.}
-#' \item{lexicons}{a \code{character} vector of the different lexicons used.}
-#' \item{time}{a \code{character} vector of the different time weighting schemes used.}
+#' @return a \code{sentomeasures} object.
 #'
 #' @seealso \code{\link{compute_sentiment}}, \code{\link{ctr_agg}}
 #'

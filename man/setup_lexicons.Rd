@@ -13,13 +13,14 @@ Alternatively, this argument can be a \code{character} vector specifying which b
 (\code{Sentometrics::LEXICONS}) to use.}
 
 \item{valenceWords}{a \code{data.frame} with a words column and a type indicating ... (depends on if negators, amplifiers,
-etc.; TO DO) Alternatively, this argument can be a \code{character} vector specifying which built-in valence words to use.}
+etc.; TO DO). Alternatively, this argument can be a \code{character} vector specifying which built-in valence word lists to
+use.}
 
 \item{do.split}{a \code{logical} that if \code{TRUE} splits every lexicon into a separate positive polarity and negative
 polarity lexicon.}
 }
 \value{
-a list with each lexicon as a \code{data.table} list element according to its name, and the element
+a list with each lexicon as a \code{data.table} list element according to its name, and the list element
 \code{valenceWords} that comprises the valence words. Every \code{x} column contains the words, every \code{y} column
 containts the polarity or other quantitative information.
 }

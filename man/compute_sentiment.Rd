@@ -17,7 +17,7 @@ available options on how aggregation can occer, access \code{get_hows()$words}.}
 \value{
 A list containing:
 \item{corpuS}{the supplied \code{corpuS} object.}
-\item{sent}{a sentiment scores \code{data.table} with dates and features--lexicons sentiment scores columns.}
+\item{sentiment}{a sentiment scores \code{data.table} with dates and feature--lexicon sentiment scores columns.}
 \item{features}{a \code{character} vector of the different features.}
 \item{lexicons}{a \code{character} vector of the different lexicons used.}
 }
