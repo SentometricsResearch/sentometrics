@@ -18,7 +18,7 @@
 	> account for valence words in sentiment calculation (start with negation words)
 		> paste valence words with neighboring words in text processing (no change from 1-gram analysis required then) + add negation words in lexicons
 		> format of valence word list: three-column (to change in VALENCE); adapt as_key() call
-- corpus.R
+- sentocorpus.R
 	> cleaning functions (basics + HTML, etc.); do.clean option in sento_corpus()
 - examples
 	> incorporation into documentation
