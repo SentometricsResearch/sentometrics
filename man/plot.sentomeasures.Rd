@@ -4,16 +4,23 @@
 \alias{plot.sentomeasures}
 \title{Plot sentiment measures}
 \usage{
-\method{plot}{sentomeasures}(x, ...)
+\method{plot}{sentomeasures}(x, group = "all", ...)
 }
 \arguments{
 \item{x}{a \code{sentomeasures} object.}
 
-\item{...}{currently not used.}
+\item{group}{a value from \code{c("lexicon", "feature", "time", "all")}. The first three choices display
+all measures from the same group in the same color. The choice \code{"all"} displays every single sentiment
+measure in a separate color, but this may look visually overwhelming very fast.}
+
+\item{...}{not used.}
 }
 \value{
-A simple ggplot2 plot.
+Returns a simple \pkg{ggplot2} plot, which can be added onto (or to alter its default elements) by using the
+\code{+} operator.
 }
 \description{
-Plotting function for all sentiment measures in the provided \code{sentomeasures} object, shown in one plot.
+Straightforward plotting method for all sentiment measures in the provided \code{sentomeasures} object,
+shown in one plot. We suggest to make use of the \code{select_measures()} function when you desire to plot only a subset of
+the sentiment measures.
 }

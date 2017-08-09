@@ -2,18 +2,20 @@
 % Please edit documentation in R/corpus.R
 \name{add_features}
 \alias{add_features}
-\title{Add feature columns to corpuS}
+\title{Add feature columns to a sentocorpus}
 \usage{
-add_features(corpuS, features)
+add_features(sentocorpus, featuresdf)
 }
 \arguments{
-\item{corpuS}{a \code{corpuS} object.}
+\item{sentocorpus}{a \code{sentocorpus} object.}
 
-\item{features}{a named \code{data.frame} with as columns the new features to add to the \code{corpuS} inputted.}
+\item{featuresdf}{a sensibly named \code{data.frame} with as columns the new features of type \code{numeric} to add
+to the \code{sentocorpus} inputted. If the number of rows in \code{featuresdf} is not equal to the number of documents in
+\code{sentocorpus}, recycling will occur.}
 }
 \value{
-An updated \code{corpuS} object.
+An updated \code{sentocorpus} object.
 }
 \description{
-Adds new named feature columns to provided \code{corpuS} object.
+Adds new named feature columns to provided \code{sentocorpus} object.
 }

@@ -13,7 +13,7 @@ perform_agg(toAgg, ctr)
 \item{ctr}{output from a \code{ctr_agg()} call.}
 }
 \value{
-a \code{sentomeasures} object.
+A \code{sentomeasures} object.
 }
 \description{
 Condense document-level textual sentiment scores into a panel of textual sentiment

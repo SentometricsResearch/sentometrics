@@ -4,10 +4,10 @@
 \alias{compute_sentiment}
 \title{Computation of document-level sentiment across features and lexicons}
 \usage{
-compute_sentiment(corpuS, lexicons, how = get_hows()$words)
+compute_sentiment(sentocorpus, lexicons, how = get_hows()$words)
 }
 \arguments{
-\item{corpuS}{a \code{corpuS} object.}
+\item{sentocorpus}{a \code{sentocorpus} object.}
 
 \item{lexicons}{output from a \code{setup_lexicons()} call.}
 
@@ -16,10 +16,11 @@ available options on how aggregation can occer, access \code{get_hows()$words}.}
 }
 \value{
 A list containing:
-\item{corpuS}{the supplied \code{corpuS} object.}
-\item{sentiment}{a sentiment scores \code{data.table} with dates and feature--lexicon sentiment scores columns.}
+\item{corpus}{the supplied \code{sentocorpus} object.}
+\item{sentiment}{a sentiment scores \code{data.table} with a \code{date} and feature--lexicon sentiment scores columns.}
 \item{features}{a \code{character} vector of the different features.}
 \item{lexicons}{a \code{character} vector of the different lexicons used.}
+\item{howWithin}{a \code{character} vector to remind how sentiment within documents was aggregated.}
 }
 \description{
 Given a corpus of texts, computes sentiment per document starting from the bag-of-words approach,
@@ -27,5 +28,6 @@ based on the lexicons provided and a preferred aggregation across words per docu
 \pkg{quanteda} package. The scores computed are net sentiment (sum of positive minus sum of negative scores). For a
 separate calculation of positive (resp. negative) sentiment, one has to provide distinct positive (resp. negative)
 lexicons. This can be done using the \code{do.split} option in the \code{setup_lexicons()}, which automatically splits
-any lexicon into positive and negative polarity.
+any lexicon into positive and negative polarity. \code{NA}s are converted to 0, under the assumption that this is
+equivalent to no sentiment.
 }

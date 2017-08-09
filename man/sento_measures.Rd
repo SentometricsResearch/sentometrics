@@ -2,12 +2,12 @@
 % Please edit documentation in R/sentomeasures.R
 \name{sento_measures}
 \alias{sento_measures}
-\title{One-way road towards sentomeasures object}
+\title{One-way road towards a sentomeasures object}
 \usage{
-sento_measures(corpuS, lexicons, ctr)
+sento_measures(sentocorpus, lexicons, ctr)
 }
 \arguments{
-\item{corpuS}{a \code{corpuS} object.}
+\item{sentocorpus}{a \code{sentocorpus} object.}
 
 \item{lexicons}{output from a \code{setup_lexicons()} call.}
 
@@ -20,11 +20,15 @@ A \code{sentomeasures} object, which is a list containing:
 \item{lexicons}{a \code{character} vector of the different lexicons used.}
 \item{time}{a \code{character} vector of the different time weighting schemes used.}
 \item{by}{a single \code{character} vector specifying the time interval of aggregation used.}
-\item{sentiment}{a sentiment scores \code{data.table} with dates and feature--lexicon sentiment scores columns.}
+\item{stats}{a \code{data.frame} with a series of elementary statistics (mean, standard deviation, maximum, minimum, and
+average correlation with all other measures) for each individual sentiment measure.}
+\item{sentiment}{a sentiment scores \code{data.table} with a \code{date} and feature--lexicon sentiment scores columns.}
+\item{howWithin}{a \code{character} vector to remind how sentiment within documents was aggregated.}
+\item{howDocs}{a \code{character} vector to remind how sentiment across documents was aggregated.}
 }
 \description{
 Wrapper function which assembles calls to \code{compute_sentiment()} and \code{perform_agg()}, and includes
-the input \code{corpuS} and computed sentiment scores in its output. Serves as the most direct way towards a panel of
+the input \code{sentocorpus} and computed sentiment scores in its output. Serves as the most direct way towards a panel of
 textual sentiment measures, and a \code{sentomeasures} object.
 }
 \seealso{

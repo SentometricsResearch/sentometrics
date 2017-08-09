@@ -1,6 +1,6 @@
 
 library(testthat)
-library(Sentometrics)
+library(sentometrics)
 
-test_check("Sentometrics")
+test_check("sentometrics")
 

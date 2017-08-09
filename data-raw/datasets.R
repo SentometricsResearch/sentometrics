@@ -8,29 +8,24 @@
 useconomy <- readr::read_csv("data-raw/US_economic_news_1951-2014.csv")
 useconomy$text <- stringi::stri_replace_all(useconomy$text, replacement = " ", regex = "</br></br>")
 useconomy$text <- stringi::stri_replace_all(useconomy$text, replacement = "", regex = '[\\"]')
-
-# TODO: further text cleaning
-# TODO: drop < 1970
+# useconomy$text <- stringi::stri_replace_all(useconomy$text, replacement = "", regex = "[%#*<=>@^_`|~{}�]")
+useconomy$text <- stringi::stri_replace_all(useconomy$text, replacement = "", regex = "[^-a-zA-Z0-9,&. ]")
 
 months <- lapply(stringi::stri_split(useconomy$date, regex = "/"), "[", 1)
 days <- lapply(stringi::stri_split(useconomy$date, regex = "/"), "[", 2)
 years <- lapply(stringi::stri_split(useconomy$date, regex = "/"), "[", 3)
 yearsLong <- lapply(years, function(x) if (as.numeric(x) > 14) return(paste0("19", x)) else return(paste0("20", x)))
-
 datesNew <- paste0(paste0(unlist(months), "/"), paste0(unlist(days), "/"), unlist(yearsLong))
+datesNew <- as.character(as.Date(datesNew, format = "%m/%d/%Y")) # character date is input requirement
 useconomy$dateNew <- datesNew
 
-dates <- as.character(as.Date(useconomy$dateNew, format = "%m/%d/%Y")) # character date is input requirement
-useconomy$dateNewDate <- dates
-
-freqDays <- plyr::count(dates)
-freqMonths <- plyr::count(unlist(lapply(stringi::stri_split(dates, regex = "-"),
+freqDays <- plyr::count(datesNew)
+freqMonths <- plyr::count(unlist(lapply(stringi::stri_split(datesNew, regex = "-"),
                                         function(x) return(paste0(x[1:2], collapse = "/")))))
-freqYears <- plyr::count(unlist(lapply(stringi::stri_split(dates, regex = "-"), "[", 1)))
+freqYears <- plyr::count(unlist(lapply(stringi::stri_split(datesNew, regex = "-"), "[", 1)))
 
 USECONOMYNEWS <- useconomy
-
-USECONOMYNEWS$date <- USECONOMYNEWS$dateNewDate
+USECONOMYNEWS$date <- USECONOMYNEWS$dateNew
 
 source <- sapply(stringi::stri_split(USECONOMYNEWS$articleid, regex = "_"), "[", 1)
 wsj <- ifelse(source == "wsj", 1, 0) # wall street journal
@@ -44,17 +39,20 @@ USECONOMYNEWS$economy <- economy
 USECONOMYNEWS$noneconomy <- noneconomy
 
 # delete obsolete columns
-USECONOMYNEWS$dateNewDate <- USECONOMYNEWS$dateNew <- USECONOMYNEWS$`_last_judgment_at` <-
-USECONOMYNEWS$`_trusted_judgments` <- USECONOMYNEWS$`positivity:confidence` <- USECONOMYNEWS$`relevance:confidence` <-
-USECONOMYNEWS$relevance_gold <- USECONOMYNEWS$articleid <- USECONOMYNEWS$`_unit_state` <- USECONOMYNEWS$`_golden` <-
-USECONOMYNEWS$positivity_gold <- USECONOMYNEWS$relevance <- USECONOMYNEWS$positivity <- NULL
+USECONOMYNEWS$dateNew <- USECONOMYNEWS$`_last_judgment_at` <- USECONOMYNEWS$`_trusted_judgments` <-
+USECONOMYNEWS$`positivity:confidence` <- USECONOMYNEWS$`relevance:confidence` <- USECONOMYNEWS$relevance_gold <-
+USECONOMYNEWS$articleid <- USECONOMYNEWS$`_unit_state` <- USECONOMYNEWS$`_golden` <- USECONOMYNEWS$positivity_gold <-
+USECONOMYNEWS$relevance <- USECONOMYNEWS$positivity <- NULL
 
 USECONOMYNEWS <- data.table::as.data.table(USECONOMYNEWS)
 USECONOMYNEWS <- USECONOMYNEWS[order(date)]
 colnames(USECONOMYNEWS)[1] <- "id"
+USECONOMYNEWS <- subset(USECONOMYNEWS, date >= "1980-01-01") # drop all before 1980
+setcolorder(USECONOMYNEWS, c("id", "date", "text", "headline", "wsj", "wapo", "economy", "noneconomy"))
+useconomynews <- USECONOMYNEWS # back to lowercase before saving
 
-save(USECONOMYNEWS, file = "data/USECONOMYNEWS.rda", compress = 'xz')
-# load("data/USECONOMYNEWS.rda")
+save(useconomynews, file = "data/useconomynews.rda", compress = 'xz')
+# load("data/useconomynews.rda")
 
 ######################### S&P500 Index (1988-2014, monthly)
 
@@ -66,9 +64,10 @@ sp500 <- as.data.frame(sp500[c("Date", "Adj Close")])
 sp500 <- sp500[sp500$Date <= "2015-01-01", ]
 sp500 <- xts::xts(sp500$`Adj Close`[-1], sp500$Date[-nrow(sp500)])
 sp500 <- PerformanceAnalytics::Return.calculate(sp500)
-SP500 <- sp500[-1, ]
+sp500 <- sp500[-1, ]
+sp500 <- data.frame(date = zoo::index(sp500), return = as.numeric(sp500))
 
-save(SP500, file = "data/SP500.rda", compress = 'xz')
+save(sp500, file = "data/sp500.rda", compress = 'xz')
 
 ######################### LEXICONS
 
@@ -123,7 +122,8 @@ write.csv2(gi, file = "data-raw/lexicons-raw/GI.csv", row.names = FALSE)
 prepare_word_list <- function(fileName, type, name) {
 
   w <- read.csv(paste0("data-raw/", type, "-raw/", fileName), sep = ";")
-  colnames(w) <- c("x", "y")
+  if (type == "lexicons") colnames(w) <- c("x", "y")
+  else colnames(w) <- c("x", "t", "y")
 
   # cleaning
   w$x <- as.character(w$x)
@@ -134,10 +134,13 @@ prepare_word_list <- function(fileName, type, name) {
   w$x <- stringi::stri_replace_all(w$x, "", regex = '[()]') # remove single brackets
   w$x <- stringi::stri_replace_all(w$x, "", regex = '[@]') # remove @ character
   w$y <- as.numeric(w$y)
+  if (type == "valence") w$t <- as.numeric(w$t)
 
   # change to as_key() format
   w <- w[!duplicated(w$x), ]
-  w <- sentimentr::as_key(w, comparison = NULL) # makes absolutely sure duplicated words are removed
+  if (type != "valence") {
+    w <- sentimentr::as_key(w, comparison = NULL) # makes absolutely sure duplicated words are removed
+  }
   w <- w[w$x != "" & w$x != " " & w$x != "#naam", ]
 
   fileOut <- paste0("data-raw/", name, ".rda")
@@ -147,36 +150,36 @@ prepare_word_list <- function(fileName, type, name) {
 
 # save lexicons with appropriate names to data-raw/ folder
 typeL <- "lexicons"
-l <- prepare_word_list("LM.csv", typeL, "LEXICON_LM_ENG"); "LEXICON_LM_ENG" <- l$w
-save(LEXICON_LM_ENG, file = l$file)
-l <- prepare_word_list("LM_fr.csv", typeL, "LEXICON_LM_FR_tr"); "LEXICON_LM_FR_tr" <- l$w
-save(LEXICON_LM_FR_tr, file = l$file)
-l <- prepare_word_list("LM_nl.csv", typeL, "LEXICON_LM_NL_tr"); "LEXICON_LM_NL_tr" <- l$w
-save(LEXICON_LM_NL_tr, file = l$file)
-l <- prepare_word_list("FEEL.csv", typeL, "LEXICON_FEEL_FR"); "LEXICON_FEEL_FR" <- l$w
-save(LEXICON_FEEL_FR, file = l$file)
-l <- prepare_word_list("FEEL_nl.csv", typeL, "LEXICON_FEEL_NL_tr"); "LEXICON_FEEL_NL_tr" <- l$w
-save(LEXICON_FEEL_NL_tr, file = l$file)
-l <- prepare_word_list("FEEL_eng.csv", typeL, "LEXICON_FEEL_ENG_tr"); "LEXICON_FEEL_ENG_tr" <- l$w
-save(LEXICON_FEEL_ENG_tr, file = l$file)
-l <- prepare_word_list("GI.csv", typeL,"LEXICON_GI_ENG"); "LEXICON_GI_ENG" <- l$w
-save(LEXICON_GI_ENG, file = l$file)
-l <- prepare_word_list("GI_fr.csv", typeL, "LEXICON_GI_FR_tr"); "LEXICON_GI_FR_tr" <- l$w
-save(LEXICON_GI_FR_tr, file = l$file)
-l <- prepare_word_list("GI_nl.csv", typeL, "LEXICON_GI_NL_tr"); "LEXICON_GI_NL_tr" <- l$w
-save(LEXICON_GI_NL_tr, file = l$file)
-l <- prepare_word_list("HENRY.csv", typeL, "LEXICON_HENRY_ENG"); "LEXICON_HENRY_ENG" <- l$w
-save(LEXICON_HENRY_ENG, file = l$file)
-l <- prepare_word_list("HENRY_fr.csv", typeL, "LEXICON_HENRY_FR_tr"); "LEXICON_HENRY_FR_tr" <- l$w
-save(LEXICON_HENRY_FR_tr, file = l$file)
-l <- prepare_word_list("HENRY_nl.csv", typeL, "LEXICON_HENRY_NL_tr"); "LEXICON_HENRY_NL_tr" <- l$w
-save(LEXICON_HENRY_NL_tr, file = l$file)
+l <- prepare_word_list("LM.csv", typeL, "LM_eng"); "LM_eng" <- l$w
+save(LM_eng, file = l$file)
+l <- prepare_word_list("LM_fr.csv", typeL, "LM_fr_tr"); "LM_fr_tr" <- l$w
+save(LM_fr_tr, file = l$file)
+l <- prepare_word_list("LM_nl.csv", typeL, "LM_nl_tr"); "LM_nl_tr" <- l$w
+save(LM_nl_tr, file = l$file)
+l <- prepare_word_list("FEEL.csv", typeL, "FEEL_fr"); "FEEL_fr" <- l$w
+save(FEEL_fr, file = l$file)
+l <- prepare_word_list("FEEL_nl.csv", typeL, "FEEL_nl_tr"); "FEEL_nl_tr" <- l$w
+save(FEEL_nl_tr, file = l$file)
+l <- prepare_word_list("FEEL_eng.csv", typeL, "FEEL_eng_tr"); "FEEL_eng_tr" <- l$w
+save(FEEL_eng_tr, file = l$file)
+l <- prepare_word_list("GI.csv", typeL,"GI_eng"); "GI_eng" <- l$w
+save(GI_eng, file = l$file)
+l <- prepare_word_list("GI_fr.csv", typeL, "GI_fr_tr"); "GI_fr_tr" <- l$w
+save(GI_fr_tr, file = l$file)
+l <- prepare_word_list("GI_nl.csv", typeL, "GI_nl_tr"); "GI_nl_tr" <- l$w
+save(GI_nl_tr, file = l$file)
+l <- prepare_word_list("HENRY.csv", typeL, "HENRY_eng"); "HENRY_eng" <- l$w
+save(HENRY_eng, file = l$file)
+l <- prepare_word_list("HENRY_fr.csv", typeL, "HENRY_fr_tr"); "HENRY_fr_tr" <- l$w
+save(HENRY_fr_tr, file = l$file)
+l <- prepare_word_list("HENRY_nl.csv", typeL, "HENRY_nl_tr"); "HENRY_nl_tr" <- l$w
+save(HENRY_nl_tr, file = l$file)
 
 # creates and places LEXICON data in data folder
 form_word_list <- function(type) {
 
-  if (type == "LEXICON") pattern <- c("LEXICON_")
-  else if (type == "VALENCE") pattern <- c("NEGATORS_") # change if additional valence shifter categories are added
+  if (type == "lexicon") pattern <- paste0(c("FEEL", "GI", "HENRY", "LM"), collapse = "|")
+  else if (type == "valence") pattern <- c("valence_") # change if additional valence shifter categories are added
 
   objects <- list.files("data-raw/", pattern = pattern)
 
@@ -187,18 +190,18 @@ form_word_list <- function(type) {
     listed[[obj]] <- toAdd
     cat("added:", obj, "\n")
   }
-  if (type == "LEXICON") {
-    assign("LEXICONS", value = listed, pos = 1)
-    save(LEXICONS, file = "data/LEXICONS.rda", compress = 'xz')
+  if (type == "lexicon") {
+    assign("lexicons", value = listed, pos = 1)
+    save(lexicons, file = "data/lexicons.rda", compress = 'xz')
   }
-  else if (type == "VALENCE") {
-    assign("VALENCE", value = listed, pos = 1)
-    save(VALENCE, file = "data/VALENCE.rda", compress = 'xz')
+  else if (type == "valence") {
+    assign("valence", value = listed, pos = 1)
+    save(valence, file = "data/valence.rda", compress = 'xz')
   }
 }
 
-form_word_list(type = "LEXICON")
-# load("data/LEXICONS.rda")
+form_word_list(type = "lexicon")
+# load("data/lexicons.rda")
 
 ######################### VALENCE WORD LISTS
 
@@ -209,13 +212,13 @@ negators$y <- -1
 write.csv2(negators, file = "data-raw/valence-raw/NEGATORS.csv", row.names = FALSE)
 
 typeV <- "valence"
-v <- prepare_word_list("NEGATORS.csv", typeV, "NEGATORS_ENG"); "NEGATORS_ENG" <- v$w
-save(NEGATORS_ENG, file = v$file)
-v <- prepare_word_list("NEGATORS_fr.csv", typeV, "NEGATORS_FR_tr"); "NEGATORS_FR_tr" <- v$w
-save(NEGATORS_FR_tr, file = v$file)
-v <- prepare_word_list("NEGATORS_nl.csv", typeV, "NEGATORS_NL_tr"); "NEGATORS_NL_tr" <- v$w
-save(NEGATORS_NL_tr, file = v$file)
+v <- prepare_word_list("NEGATORS.csv", typeV, "valence_eng"); "valence_eng" <- v$w
+save(valence_eng, file = v$file)
+v <- prepare_word_list("NEGATORS_fr.csv", typeV, "valence_fr"); "valence_fr" <- v$w
+save(valence_fr, file = v$file)
+v <- prepare_word_list("NEGATORS_nl.csv", typeV, "valence_nl"); "valence_nl" <- v$w
+save(valence_nl, file = v$file)
 
-form_word_list(type = "VALENCE")
-# load("data/VALENCE.rda")
+form_word_list(type = "valence")
+# load("data/valence.rda")
 

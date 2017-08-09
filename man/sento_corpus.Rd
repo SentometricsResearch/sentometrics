@@ -2,25 +2,30 @@
 % Please edit documentation in R/corpus.R
 \name{sento_corpus}
 \alias{sento_corpus}
-\title{Create a corpus}
+\title{Create a sentocorpus object}
 \usage{
-sento_corpus(texts)
+sento_corpus(corpusdf, do.clean = FALSE)
 }
 \arguments{
-\item{texts}{a \code{data.frame} (or \code{data.table} for that matter) with as named columns: a document \code{id} column,
-a \code{date} column, a \code{text} column (i.e. the columns where all texts to analyze reside), and a series of
-\code{feature} columns, with values pointing to the applicability of a particular feature to a particular text. The latter
-columns are often binary (1 means the feature is applicable to the document in the same row) or as a percentage to specify
-the degree of connectedness of a feature to a document. Features could be for example topics (e.g. economic, political or
-legal), but also article sources (e.g. online or printed press), amongst many more possibilities. Please provide the
-\code{date} column with character values formatted as \code{"yyyy-mm-dd"}.}
+\item{corpusdf}{a \code{data.table} (or \code{data.frame}) with as named columns and \emph{in this order}: a document
+\code{id} column, a \code{date} column, a \code{text} column (i.e. the columns where all texts to analyze reside), and a
+series of feature columns of type \code{numeric}, with values pointing to the applicability of a particular feature to
+a particular text. The latter columns are often binary (1 means the feature is applicable to the document in the same row)
+or as a percentage to specify the degree of connectedness of a feature to a document. Features could be for example topics
+(e.g. economic, political or legal), but also article sources (e.g. online or printed press), amongst many more
+possibilities. Feature column names should be unique. Provide the \code{date} column as \code{"yyyy-mm-dd"}.}
+
+\item{do.clean}{a \code{logical}, if \code{TRUE} all texts undergo a cleaning routine to eliminate common textual
+garbage. This includes ... . TO DO.}
 }
 \value{
-A \code{corpuS} object.
+A \code{sentocorpus} object, as a \code{quanteda} classed list keeping the elements \code{documents},
+\code{metadata} and\code{settings}, while adding the elements \code{features} (a \code{character} vector of
+all features part of the corpus.), and \code{nDocs} (the number of documents in the corpus).
 }
 \description{
-Assembles a collection of texts (corpus), by calling the \code{corpus()} instructor from the \pkg{quanteda}
-package and prepare it for further analysis.
+Assembles a collection of texts (i.e. a corpus), by calling the \code{corpus()} instructor from the
+\pkg{quanteda} package, perform a set of checks and prepare it for further analysis.
 }
 \seealso{
 \code{\link[quanteda]{corpus}}

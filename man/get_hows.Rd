@@ -2,15 +2,18 @@
 % Please edit documentation in R/utils.R
 \name{get_hows}
 \alias{get_hows}
-\title{Supported options to perform aggregation into sentiment measures.}
+\title{Options supported to perform aggregation into sentiment measures.}
 \usage{
 get_hows()
 }
 \value{
-A list with the supported aggregation hows for words (within documents), docs (across documents, per date)
-and time (across dates).
+A list with the supported aggregation hows for arguments \code{howWithin} (within documents), \code{howDows}
+(across documents, per date) and \code{howTime} (across dates), to be supplied to \code{ctr_agg()}.
 }
 \description{
-Call for information purposes only. Used within \code{ctrl_agg()} to check if supplied
+Call for information purposes only. Used within \code{ctr_agg()} to check if supplied
 aggregation hows are supported.
+}
+\seealso{
+\code{\link{ctr_agg}}
 }

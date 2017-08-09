@@ -4,20 +4,21 @@
 \alias{select_measures}
 \title{Select a subset of sentiment measures}
 \usage{
-select_measures(sentomeasures, toSelect, do.all = TRUE)
+select_measures(sentomeasures, toSelect, do.combine = TRUE)
 }
 \arguments{
 \item{sentomeasures}{a \code{sentomeasures} object.}
 
-\item{toSelect}{a vector of components (lexicon, time weighting and features) which form the measures selected.}
+\item{toSelect}{a vector of components (lexicon, time weighting and feature names) which form the measures selected.}
 
-\item{do.all}{a \code{logical} indicating if only measures for wich all (\code{TRUE}) or at least one (\code{FALSE}) of the
-selection components should occur in the subset.}
+\item{do.combine}{a \code{logical} indicating if only measures for wich all (\code{TRUE}) or at least one (\code{FALSE}) of
+the selection components should occur in each sentiment measure's name in the subset.}
 }
 \value{
-A modified \code{sentomeasures} object, with only the measures required.
+A modified \code{sentomeasures} object, with only the sentiment measures required, including updated information
+and statistics, but the original sentiment scores \code{data.table} untouched.
 }
 \description{
-Selects the subset of sentiment measures which include either all of the given selection components or at least
-one of them.
+Selects the subset of sentiment measures which include either all of the given selection components combined,
+or those who's name consist of at least one of the selection components.
 }

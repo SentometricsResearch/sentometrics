@@ -3,44 +3,62 @@
 ######################### Examples #########################
 ############################################################
 
-require(Sentometrics)
+require(sentometrics)
 
 ###############################
 ######### AGGREGATION #########
 ###############################
 
-data <- USECONOMYNEWS
-data$headline <- NULL
+data("useconomynews")
+
+data <- useconomynews
 data <- data[data$date >= "1988-01-01", ]
-corpus <- sento_corpus(texts = data)
-# corpus <- quanteda::corpus_sample(corpus, size = 5000)
+corpus <- sento_corpus(corpusdf = data)
+corpusSmall <- quanteda::corpus_sample(corpus, size = 500)
+corpusExt <- add_features(corpus, featuresdf = data.frame(random = runif(corpus$nDocs)))
 
-lexicons <- setup_lexicons(c("LEXICON_GI_ENG", "LEXICON_LM_ENG"))
+data("lexicons")
+data("valence")
 
-ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional", howTime = "almon", by = "month",
-               lag = 3, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE)
+lexIn <- c(list(myLexicon = data.frame(w = c("good", "nice", "boring"), s = c(1, 2, -1))), lexicons[c("GI_eng")])
+valIn <- valence[["valence_nl"]] # change naming to language + three-column
+lex <- setup_lexicons(lexIn, valIn)
+lex <- setup_lexicons(lexIn, valIn, do.split = TRUE)
+lex <- lexicons[c("GI_eng", "LM_eng")]
+
+ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional", howTime = c("equal-weight", "linear", "almon"),
+               by = "month", lag = 3, ordersAlm = 1:3, do.inverseAlm = TRUE, do.normalizeAlm = TRUE)
 
 # step-by-step
-sent <- compute_sentiment(corpus, lexicons, how = "tf-idf")
+sent <- compute_sentiment(corpus, lex, how = "tf-idf")
 # aggDocs <- agg_documents(sent, by = "month", how = "proportional", do.ignoreZeros = FALSE) # internal
 # sentMeas <- agg_time(aggDocs, lag = 3, how = "equal-weight") # internal
 
 # at once
-sentMeas <- sento_measures(corpus, lexicons, ctr)
-plot(sentMeas)
+sentMeas <- sento_measures(corpus, lex, ctr)
+p <- plot(sentMeas)
 
 ctrMerge <- ctr_merge(sentMeas, time = list(W1 = c("almon1", "almon1_inv"), W2 = c("almon2", "almon3")),
-                      lex = list(LEX = c("LEXICON_GI_ENG", "LEXICON_LM_ENG")), feat = list(journals = c("wsj", "wapo")),
+                      lex = list(LEX = c("GI_eng", "LM_eng")), feat = list(journals = c("wsj", "wapo")),
                       do.keep = FALSE)
 
 sentMeasMerged <- merge_measures(ctrMerge)
 plot(sentMeasMerged)
 
+scaled <- scale(sentMeasMerged)
+plot(scaled)
+
 measSel <- select_measures(sentMeasMerged, c("LEX", "wrong")) # error
 measSel <- select_measures(sentMeasMerged, c("LEX", "W1", "W2")) # warning
-measSel <- select_measures(sentMeasMerged, c("W1", "W2"), do.all = FALSE)
+measSel <- select_measures(sentMeasMerged, c("W1", "W2"), do.combine = FALSE)
 measSel <- select_measures(sentMeasMerged, c("LEX", "W1"))
 plot(measSel)
+
+global <- merge_to_global(sentMeas)
+plot(global)
+
+global <- merge_to_global(sentMeas, lex = c(0.30, 0.70), feat = c(0.20, 0.30, 0.40, 0.10), time = 1)
+plot(global)
 
 ###############################
 ########## MODELLING ##########
@@ -48,8 +66,11 @@ plot(measSel)
 
 ### LINEAR ###
 
-y <- as.numeric(SP500) # convert to numeric vector
+data("sp500")
+
+y <- sp500$return # convert to numeric vector
 sentMeas <- fill_measures(sentMeas)
+sentMeas <- fill_measures(sentMeas, fill = "latest")
 length(y) == nrow(sentMeas$measures) # TRUE
 
 n <- 100
@@ -57,22 +78,26 @@ sentMeas2 <- sentMeas
 sentMeas2$measures <- tail(sentMeas2$measures, n)
 yl <- tail(y, n)
 
+x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
+colnames(x) <- c("x1", "x2")
+xs <- tail(x, n)
+
 # require(doParallel)
 # registerDoParallel(2)
 
 out <- list()
 for (ic in c("BIC", "AIC", "Cp")) {
   ctrIC <- ctr_model(model = "lm", type = ic, do.iter = FALSE, h = 0, alphas = seq(0, 1, by = 0.10))
-  out[[ic]] <- sento_model(sentMeas, y, ctr = ctrIC)
+  out[[ic]] <- sento_model(sentMeas, y, x = x, ctr = ctrIC)
 }
 
 ctrIC <- ctr_model(model = "lm", type = "BIC", do.iter = TRUE, h = 0, nSample = n - 2, do.progress = TRUE)
-out <- sento_model(sentMeas2, yl, ctr = ctrIC)
+out <- sento_model(sentMeas2, yl, x = xs, ctr = ctrIC)
 
 ctrCV <- ctr_model(model = "lm", type = "cv", do.iter = FALSE, h = 0, trainWindow = 250, testWindow = 10, oos = 3)
-out <- sento_model(sentMeas, y, ctr = ctrCV)
+out <- sento_model(sentMeas, y, x = x, ctr = ctrCV)
 
-ctrCV <- ctr_model(model = "lm", type = "cv", do.iter = TRUE, h = 0, trainWindow = 45, testWindow = 2, oos = 0,
+ctrCV <- ctr_model(model = "lm", type = "cv", do.iter = TRUE, h = 0, trainWindow = 45, testWindow = 4, oos = 0,
                    nSample = n - 2, do.progress = TRUE)
 out <- sento_model(sentMeas2, yl, ctr = ctrCV)
 
@@ -89,7 +114,7 @@ levels(yb) <- c("neg", "pos")
 
 ctrCV <- ctr_model(model = "binomial", type = "cv", do.iter = TRUE, h = 0, trainWindow = 45, testWindow = 2, oos = 0,
                    nSample = n - 2, do.progress = TRUE)
-out <- sento_model(sentMeas2, yb, ctr = ctrCV)
+out <- sento_model(sentMeas2, yb, x = xs, ctr = ctrCV)
 
 ### LOGISTIC (multinomial) ###
 

@@ -2,31 +2,42 @@
 % Please edit documentation in R/sentomeasures.R
 \name{setup_lexicons}
 \alias{setup_lexicons}
-\title{Setup lexicons format}
+\title{Setup lexicons (and valence word list) for use in sentiment analysis}
 \usage{
-setup_lexicons(lexiconsRaw, valenceWords = NULL, do.split = FALSE)
+setup_lexicons(lexicons, valenceWords = NULL, do.split = FALSE)
 }
 \arguments{
-\item{lexiconsRaw}{a list of lexicons, with each element being a \code{data.frame} with a words column and a polarity score
-column. The lexicons should be appropriately named for clarity in terms of subsequently obtained sentiment measures.
-Alternatively, this argument can be a \code{character} vector specifying which built-in lexicons
-(\code{Sentometrics::LEXICONS}) to use.}
+\item{lexicons}{a list of (raw) lexicons, each element being a \code{data.table} or \code{data.frame} with respectively a
+words column and a polarity score column. The lexicons should be appropriately named for clarity in terms of subsequently
+obtained sentiment measures. Alternatively, a subset of the already formatted built-in lexicons accessible via
+\code{LEXICONS} can be declared too, as part of the same list input. If only (some of) the package built-in lexicons want
+to be used, ony can simply supply \code{LEXICONS[c(...)]} as an argument to either \code{sento_measures()} or
+\code{compute_sentiment()}. One could thus also opt to create a list independently from this function based on what's built
+in the package as word lists (including a built-in valence word list); see the first example.}
 
-\item{valenceWords}{a \code{data.frame} with a words column and a type indicating ... (depends on if negators, amplifiers,
-etc.; TO DO). Alternatively, this argument can be a \code{character} vector specifying which built-in valence word lists to
-use.}
+\item{valenceWords}{a valence word list as a \code{data.table} or \code{data.frame} with respectively a words column, a
+type column (1 for negators, 2 for amplifiers, and 3 for deamplifiers) and a score column. Alternatively, this argument can
+be one of the already formatted built-in valence word lists accessible via \code{VALENCE}. If \code{NULL}, no valence
+word list is part of the output.}
 
 \item{do.split}{a \code{logical} that if \code{TRUE} splits every lexicon into a separate positive polarity and negative
 polarity lexicon.}
 }
 \value{
-a list with each lexicon as a \code{data.table} list element according to its name, and the list element
-\code{valenceWords} that comprises the valence words. Every \code{x} column contains the words, every \code{y} column
-containts the polarity or other quantitative information.
+A list with each lexicon as a \code{data.table} list element according to its name, and a list element named
+\code{valence} that comprises the valence words. Every \code{x} column contains the words, every \code{y} column
+contains the (polarity) score, and for the valence word list, \code{t} contains the word type.
 }
 \description{
-Structures provided lexicons and potentially valence words. Makes use of the \code{as_key()} function from the
-\pkg{quanteda} package.
+Structures provided lexicons and potentially valence words. One can also provide (part of) the built-in
+lexicons from \code{Sentometrics::LEXICON} or a valence word list from \code{Sentometrics::VALENCE} as an argument.
+Makes use of the \code{as_key()} function from the \pkg{quanteda} package to make the output coherent and check for
+duplicates.
+}
+\examples{
+# sets up output list straight from built-in word lists including valence words
+l <- c(lexicons[c("LM_eng", "HENRY_eng")], valence = list(valence[["eng"]]))
+
 }
 \seealso{
 \code{\link[sentimentr]{as_key}}

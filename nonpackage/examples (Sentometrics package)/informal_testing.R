@@ -3,7 +3,7 @@
 ##################### Informal testing #####################
 ############################################################
 
-require(Sentometrics)
+require(sentometrics)
 
 str <- c("./R/")
 sources <- list.files(str, pattern = "*.R$", full.names = TRUE, ignore.case = TRUE)
@@ -25,15 +25,12 @@ testerIn <- tester[, c("id", "date", "body", categs[categs != ""])] # drop langu
 testerIn$date <- as.Date(testerIn$date, format = "%d/%m/%Y")
 names(testerIn)[names(testerIn) == "body"] <- "text"
 
-lexs <- c("FEEL.csv", "LM_fr.csv")
-lexicons <- lapply(lexs, function(x) return(read.csv(paste0("data-raw/lexicons-raw/", x), sep = ";")))
-names(lexicons) <- gsub(".csv", "", lexs)
-
-lexicons <- lapply(lexicons, function(x) {x[, 1] <- stringr::str_to_lower(x[, 1]); return(x)})
-lexicons <- lapply(lexicons, function(x) {x[, 1] <- stringr::str_trim(x[, 1]); return(x)})
+lexNames <- c("FEEL.csv", "LM_fr.csv")
+lex <- lapply(lexNames, function(x) return(read.csv(paste0("data-raw/lexicons-raw/", x), sep = ";")))
+lex <- lapply(lex, function(x) {x[, 1] <- stringr::str_to_lower(x[, 1]); return(x)})
+lex <- lapply(lex, function(x) {x[, 1] <- stringr::str_trim(x[, 1]); return(x)})
 # lexicons <- lapply(lexicons, function(x) {x[!(stringi::stri_detect_fixed(l[, 1], " ")), ]}) # keep only single words
-
-# lexicons <- LEXICONS[c("LEXICON_FEEL_FR", "LEXICON_MCDONALD_FR_tr")]
+names(lex) <- gsub(".csv", "", lexNames)
 
 valence <- read.csv("data-raw/valence-raw/NEGATORS_fr.csv", sep = ";")
 
@@ -47,9 +44,10 @@ cGen <- quanteda::corpus_subset(cAll, GEN == 1 | GENERAL == 1 | ALG == 1)
 c <- quanteda::corpus_sample(cAll, size = 500)
 summary(c)
 
-lexiconsIn <- setup_lexicons(lexicons = c("LEXICON_FEEL_FR", "LEXICON_LM_FR_tr"))
-lexiconsIn2 <- setup_lexicons(lexicons, valence)
-lexiconsIn3 <- setup_lexicons(lexicons, valence, do.split = TRUE)
+data("lexicons")
+lexiconsIn <- setup_lexicons(lexicons[c("FEEL_fr", "LM_fr_tr")])
+lexiconsIn2 <- setup_lexicons(lex, valence)
+lexiconsIn3 <- setup_lexicons(lex, valence, do.split = TRUE)
 
 ###
 
@@ -87,21 +85,21 @@ aggDocs4 <- agg_documents(sent1, by = "year", how = "proportional", do.ignoreZer
 # w3 <- setup_time_weights(3, how = "linear"); w3
 # w4 <- setup_time_weights(3, how = "exponential", alphas = c(0.01, 0.1, 0.4, 0.7)); w4
 
-sentMeas1 <- agg_time(aggDocs1, lag = 10, how = "almon", list(orders = 1:3, do.inverse = TRUE, do.normalize = TRUE))
+sentMeas1 <- agg_time(aggDocs1, lag = 10, how = "almon", list(ordersAlm = 1:3, do.inverseAlm = TRUE, do.normalizeAlm = TRUE))
 sentMeas2 <- agg_time(aggDocs2, 3, how = "equal-weight")
-sentMeas3 <- agg_time(aggDocs3, 3, how = "exponential", list(alphas = seq(0.1, 0.5, by = 0.1)))
+sentMeas3 <- agg_time(aggDocs3, 3, how = "exponential", list(alphasExp = seq(0.1, 0.5, by = 0.1)))
 sentMeas4 <- agg_time(aggDocs4, 1, how = "equal-weight")
-sentMeas5 <- agg_time(aggDocs1, lag = NULL, how = "own", list(weights = data.frame(w1 = c(0.5, 0.3, 0.2),
+sentMeas5 <- agg_time(aggDocs1, lag = 3, how = "own", list(weights = data.frame(w1 = c(0.5, 0.3, 0.2),
                                                                                    w2 = c(0.3, 0.3, 0.4))))
 
 ctrM1 <- ctr_merge(sentMeas1,
-                   lex = list(LEX = c("LEXICON_FEEL_FR", "LEXICON_LM_FR_tr")),
+                   lex = list(LEX = c("FEEL_fr", "LM_fr_tr")),
                    feat = list(GEN = c("GEN", "GENERAL"), FEAT2 = c("ECO", "POL")),
                    time = list(W1 = c("almon1", "almon1_inv"), W2 = c("almon2", "almon3")),
                    do.keep = FALSE)
 
 ctrM2 <- ctr_merge(sentMeas1,
-                   lex = list(LEX = c("LEXICON_FEEL_FR", "LEXICON_LM_FR_tr")),
+                   lex = list(LEX = c("FEEL_fr", "LM_fr_tr")),
                    feat = list(WRONG3 = c("Oops")),
                    time = list(WRONG1 = c("almon1", "almon1"), WRONG2 = c("almon1_INV")),
                    do.keep = TRUE) # produces error and warnings as it should
@@ -119,15 +117,15 @@ ctrAgg <- ctr_agg(howWithin = "equal-weight",
                   do.normalize = TRUE)
 
 ctrAgg2 <- ctr_agg(howWithin = "equal-weight",
-                  howDocs = "equal-weight",
-                  howTime = "equal-weight", # automatically set to "own"
-                  do.ignoreZeros = FALSE,
-                  by = "week",
-                  orders = 1:3,
-                  do.inverse = TRUE,
-                  do.normalize = TRUE,
-                  weights = data.frame(w1 = c(0.5, 0.3, 0.2),
-                                       w2 = c(0.3, 0.3, 0.4)))
+                   howDocs = "equal-weight",
+                   howTime = "equal-weight", # automatically set to "own"
+                   do.ignoreZeros = FALSE,
+                   by = "week",
+                   orders = 1:3,
+                   do.inverse = TRUE,
+                   do.normalize = TRUE,
+                   weights = data.frame(w1 = c(0.5, 0.3, 0.2),
+                                        w2 = c(0.3, 0.3, 0.4)))
 
 sentMeas6 <- perform_agg(sent1, ctrAgg)
 sentMeas7 <- sento_measures(c, lexiconsIn, ctrAgg)
@@ -143,6 +141,6 @@ plot(sentMeas2)
 plot(m1)
 plot(mSel)
 
-fill1 <- fill_measures(sentMeas2, do.fillLatest = FALSE)
-fill2 <- fill_measures(sentMeas2, do.fillLatest = TRUE)
+fill1 <- fill_measures(sentMeas2)
+fill2 <- fill_measures(sentMeas2, fill = c("latest"))
 

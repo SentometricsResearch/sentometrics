@@ -1,27 +1,27 @@
-x;y
-ain't;-1
-ne sont pas;-1
-ne peut pas;-1
-ne peut pas;-1
-ne pouvait pas;-1
-n’a pas;-1
-n’est pas;-1
-ne pas;-1
-n’a pas;-1
-n’ont pas;-1
-n’est pas;-1
-pourraient ne pas;-1
-ne doit pas;-1
-ni;-1
-jamais;-1
-non;-1
-Personne ne;-1
-aucun;-1
-ni;-1
-pas;-1
-shan't;-1
-ne devrait pas;-1
-n’a pas été;-1
-n’ont pas été;-1
-ne;-1
-ne serait pas;-1
+x;t;y
+ain't;1;-1
+ne sont pas;1;-1
+ne peut pas;1;-1
+ne peut pas;1;-1
+ne pouvait pas;1;-1
+n’a pas;1;-1
+n’est pas;1;-1
+ne pas;1;-1
+n’a pas;1;-1
+n’ont pas;1;-1
+n’est pas;1;-1
+pourraient ne pas;1;-1
+ne doit pas;1;-1
+ni;1;-1
+jamais;1;-1
+non;1;-1
+Personne ne;1;-1
+aucun;1;-1
+ni;1;-1
+pas;1;-1
+shan't;1;-1
+ne devrait pas;1;-1
+n’a pas été;1;-1
+n’ont pas été;1;-1
+ne;1;-1
+ne serait pas;1;-1
