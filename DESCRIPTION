@@ -1,11 +1,11 @@
-Package: Sentometrics
+Package: sentometrics
 Title: An Integrated Framework for Textual Sentiment Based Multivariate Time Series Modeling and Forecasting
-Version: 0.0.0.1
+Version: 0.0.1
 Authors@R: c(person("Samuel", "Borms", email = "borms_sam@hotmail.com", role = c("aut", "cre")),
   person("David", "Ardia", email = "david.ardia@unine.ch", role = c("aut")),
   person("Keven", "Bluteau", email = "keven.bluteau@unine.ch", role = c("aut")),
   person("Kris", "Boudt", email = "kris.boudt@vub.be", role = c("aut")))
-Description: The Sentometrics package is designed to do time series analysis based
+Description: The sentometrics package is designed to do time series analysis based
   on textual sentiment. It accounts for the intrinsic challenge that for a given text
   sentiment can be computed in hundreds of different ways, as well as the large number
   of possibilities to pool sentiment across text and time. This additional layer of
@@ -23,24 +23,18 @@ License: GPL-2
 Encoding: UTF-8
 LazyData: true
 Suggests: testthat
-Imports: quanteda,
+Imports: utils,
+    stats,
+    quanteda,
     sentimentr,
-    stringr,
-    xts,
+    stringi,
     zoo,
     abind,
-    dplyr,
-    plyr,
     glmnet,
     caret,
     compiler,
-    RcppRoll,
     Rcpp,
+    RcppRoll,
     ggthemes,
-    scales,
-    lubridate,
-    utils,
-    stats,
     ISOweek,
-    stringi
 RoxygenNote: 6.0.1

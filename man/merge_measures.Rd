@@ -10,7 +10,8 @@ merge_measures(ctr)
 \item{ctr}{output from a \code{ctr_merge()} call.}
 }
 \value{
-A modified \code{sentomeasures} object.
+A modified \code{sentomeasures} object, with only the sentiment measures required, including updated information
+and statistics, but the original sentiment scores \code{data.table} untouched.
 }
 \description{
 Merge (further aggregate) measures by combining across the lexicons, features and time weighting schemes

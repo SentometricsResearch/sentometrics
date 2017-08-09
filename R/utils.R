@@ -37,6 +37,9 @@ almons <- function(n, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE) {
 
 exponentials <- function(n, alphas = seq(0.1, 0.5, by = 0.1)) {
 
+  if (max(alphas) >= 1 & min(alphas) <= 0)
+    stop("Values in 'alphas' should be between 0 and 1 (both excluded).")
+
   vals <- 1:n
   exponentials <- data.frame(matrix(nrow = n, ncol = length(alphas)))
   colnames(exponentials) <- paste0("exp_smoothing_", alphas)
@@ -51,46 +54,42 @@ exponentials <- function(n, alphas = seq(0.1, 0.5, by = 0.1)) {
   return(as.data.frame(exponentials))
 }
 
-roll_weights <- function(x, w) {
-
-  if (all(is.na(x))) {
-    out <- NA
-  } else {
-    out <- sum(x[!is.na(x)] * w[!is.na(x)]) # x is sentiment index column, w is weights matrix
-  }
-
-  return(out)
-}
-
 setup_time_weights <- function(lag, how, ...) { # ... argument should be a list to match with functions in sentomeasures.R
 
   dots <- tryCatch(list(...)[[1]], # extract list from list of list
-                   error = function(x) list(...))
+                   error = function(x) list(...)) # if ... is empty
 
-  if (length(how) > 1) how <- how[1]
+  if (!all(how %in% get_hows()$time)) stop("Please select an appropriate aggregation 'how'.")
 
-  if (how == "equal-weight") {
-    weights <- data.frame(matrix(1/lag, nrow = lag, ncol = 1))
-    colnames(weights) <- "equal_weight"
-  } else if (how == "almon") {
-    weights <- almons(lag, dots$orders, dots$do.inverse, dots$do.normalize)
-  } else if (how == "linear") {
-    weights <- data.frame(matrix((1:lag)/sum(1:lag), nrow = lag, ncol = 1))
-    colnames(weights) <- "linear_moving"
-  } else if (how == "exponential") {
-    weights <- exponentials(lag, dots$alphas)
-  } else stop("Please select an appropriate aggregation 'how'.")
+  weights <- data.frame(row.names = 1:lag)
+  if ("equal-weight" %in% how) {
+    weights <- cbind(weights, data.frame(equal_weight = matrix(1/lag, nrow = lag, ncol = 1)))
+  }
+  if ("linear" %in% how) {
+    weights <- cbind(weights, data.frame(linear_moving = matrix((1:lag)/sum(1:lag), nrow = lag, ncol = 1)))
+  }
+  if ("exponential" %in% how) {
+    weights <- cbind(weights, exponentials(lag, dots$alphasExp))
+  }
+  if ("almon" %in% how) {
+    weights <- cbind(weights, almons(lag, dots$ordersAlm, dots$do.inverseAlm, dots$do.normalizeAlm))
+  }
+  if ("own" %in% how) {
+    weights <- cbind(weights, dots$weights)
+  }
 
   return(weights)
 }
 
-#' Supported options to perform aggregation into sentiment measures.
+#' Options supported to perform aggregation into sentiment measures.
 #'
-#' @description Call for information purposes only. Used within \code{ctrl_agg()} to check if supplied
+#' @description Call for information purposes only. Used within \code{ctr_agg()} to check if supplied
 #' aggregation hows are supported.
 #'
-#' @return A list with the supported aggregation hows for words (within documents), docs (across documents, per date)
-#' and time (across dates).
+#' @return A list with the supported aggregation hows for arguments \code{howWithin} (within documents), \code{howDows}
+#' (across documents, per date) and \code{howTime} (across dates), to be supplied to \code{ctr_agg()}.
+#'
+#' @seealso \code{\link{ctr_agg}}
 #'
 #' @export
 get_hows <- function() {
@@ -145,11 +144,11 @@ align_variables <- function(y, sentomeasures, x, h, i = 1, nSample = NULL) {
   }
 
   datesX <- sentomeasures$measures$date
-  sent <- sentomeasures$measures[, 2:ncol(sentomeasures$measures)]
+  sent <- sentomeasures$measures[, -1] # drop date
   if (is.null(x)) x <- sent
   else x <- cbind(sent, x)
   x <- as.matrix(x)
-  x[is.na(x)] <- 0
+  x[is.na(x)] <- 0 # check
 
   if (h > 0) {
     y <- y[(h + 1):nrow(x), , drop = FALSE]
@@ -175,7 +174,8 @@ clean_panel <- function(sentomeasures, threshold = 0.50) {
   # useful to simplify penalized variables regression (cf. 'exclude')
 
   measures <- sentomeasures$measures
-  x <- measures[, 2:ncol(measures)]
+  x <- measures[, -1] # drop date column
+  x[is.na(x)] <- 0 # check
 
   duplics <- duplicated(as.matrix(x), MARGIN = 2) # duplicated columns
   manyZeros <- (colSums(as.matrix(x) == 0, na.rm = TRUE) / nrow(x)) > threshold # columns with a too high proportion of zeros
@@ -191,13 +191,16 @@ clean_panel <- function(sentomeasures, threshold = 0.50) {
 
 update_info <- function(sentomeasures, newMeasures) {
 
+  check_class(sentomeasures, "sentomeasures")
+
   n <- ncol(newMeasures)
-  newNames <- stringr::str_split(colnames(newMeasures), "--")[2:n] # drop first element (date column)
+  newNames <- stringi::stri_split(colnames(newMeasures), regex = "--")[-1] # drop first element (date column)
 
   sentomeasures$measures <- newMeasures
   sentomeasures$lexicons <- unique(sapply(newNames, "[", 1))
   sentomeasures$features <- unique(sapply(newNames, "[", 2))
   sentomeasures$time <- unique(sapply(newNames, "[", 3))
+  sentomeasures$stats <- compute_stats(sentomeasures) # measures in sentomeasures are already updated by here
 
   return(sentomeasures)
 }
@@ -205,6 +208,29 @@ update_info <- function(sentomeasures, newMeasures) {
 check_class <- function(x, class) {
   if (!(class %in% class(x)))
     stop("Please provide a ", class, " object as first argument.")
+}
+
+compute_stats <- function(sentomeasures) {
+
+  measures <- sentomeasures$measures[, -1]
+
+  names <- c("mean", "sd", "max", "min", "meanCorr")
+  stats <- data.frame(matrix(NA, nrow = length(names), ncol = length(measures), dimnames = list(names)))
+  colnames(stats) <- colnames(measures)
+  stats["mean", ] <- measures[, lapply(.SD, mean, na.rm = TRUE)]
+  stats["sd", ] <- measures[, lapply(.SD, stats::sd, na.rm = TRUE)]
+  stats["max", ] <- measures[, lapply(.SD, max, na.rm = TRUE)]
+  stats["min", ] <- measures[, lapply(.SD, min, na.rm = TRUE)]
+
+  if (ncol(measures) > 1) {
+    corrs <- stats::cor(measures)
+    corrs[corrs == 1] <- NA
+    meanCorrs <- colMeans(corrs, na.rm = TRUE)
+    stats["meanCorr", ] <- meanCorrs
+  } else stats <- stats[row.names(stats) != "meanCorr", , drop = FALSE]
+
+
+  return(stats)
 }
 
 compute_df <- function(alpha, beta, lambda, x) {
@@ -237,5 +263,35 @@ compute_AIC <- function(y, yEst, df_A, RSS, sigma2) { # AIC-like criterion
 compute_Cp <- function(y, yEst, df_A, RSS, sigma2) { # Mallows's Cp-like criterion
   Cp <- RSS/nrow(y) + 2/nrow(y) * df_A * sigma2
   return(Cp)
+}
+
+to_long <- function(measures) {
+
+  # change format of sentiment measures data.table from wide to long
+
+  dates <- measures$date
+  names <- colnames(measures)[-1]
+
+  measuresTrans <- as.data.table(t(measures[, -1]))
+  colnames(measuresTrans) <- as.character(dates)
+  triplets <- stringi::stri_split(names, regex = "--")
+  measuresTrans[, "lexicon" := sapply(triplets, "[", 1)]
+  measuresTrans[, "feature" := sapply(triplets, "[", 2)]
+  measuresTrans[, "time" := sapply(triplets, "[", 3)]
+
+  long <- melt(measuresTrans, id.vars = c("lexicon", "feature", "time"), variable.name = "date")
+  long[, "date" := as.Date(date)][]
+
+  return(long)
+}
+
+nonzero_coeffs <- function(reg) {
+  coeffs <- stats::coef(reg)
+  df <- as.data.frame(summary(coeffs))
+  vars <- names(coeffs[df$i, ])
+  row.names(df) <- vars
+  df$i <- df$j <- NULL
+  colnames(df) <- NULL
+  return(df)
 }
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/sentomodel.R
 \name{sento_model}
 \alias{sento_model}
-\title{Optimized sparse regression}
+\title{Optimized and automated sparse regression}
 \usage{
 sento_model(sentomeasures, y, x = NULL, ctr)
 }
@@ -22,26 +22,32 @@ allowed.}
 \value{
 If \code{ctr$do.iter == FALSE}, a \code{sentomodel} object which is a list containing:
 \item{reg}{optimized regression, i.e. a model-specific \code{glmnet} object.}
+\item{sentomeasures}{the input \code{sentomeasures} object.}
 \item{alpha}{optimized calibrated alpha.}
 \item{lambda}{optimized calibrated lambda.}
-\item{trained}{output from \code{caret::train} call within function (if \code{ctr$type ==} "\code{cv}").}
-\item{ic}{a \code{numeric} vector of the minimum information criterion value for every element of \code{alphas} (if
-\code{ctr$type !=} "\code{cv}").} \item{type}{information criterion used to calibrate (if \code{ctr$type !=} "\code{cv}").}
+\item{trained}{output from \code{caret::train} call (if \code{ctr$type ==} "\code{cv}").}
+\item{ic}{a \code{list} composed of two elements: the information criterion used in the calibration under
+\code{"criterion"}, and a vector of all minimum information criterion values for each value in \code{alphas}
+under \code{"opts"} (if \code{ctr$type !=} "\code{cv}").}
 
 If \code{ctr$do.iter == TRUE}, a list containing:
-\item{regs}{optimized regressions, i.e. separate \code{sentomodel} objects as above.}
+\item{regs}{optimized regressions, i.e. separate \code{sentomodel} objects as above, as a \code{list} with as names the
+dates from the perspective of the sentiment measures at which predictions for performance measurement are carried out.}
 \item{alphas}{optimized calibrated alphas.}
 \item{lambdas}{optimized calibrated lambdas.}
 \item{performance}{a \code{data.frame} with performance-related measures, being "\code{RMSFE}" (root mean squared
 forecasting error), "\code{MAD}" (mean absolute deviation), "\code{MAPE}" (mean absolute percentage error),
 "\code{DA}" (directional accuracy), "\code{accuracy}" (proportion of correctly predicted classes in case of a logistic
-regression), and each's respective individual values in the sample.}
+regression), and each's respective individual values in the sample. Only the relevant performance statistics are given
+depending on the type of regression. Dates are similarly as with the \code{"regs"} output element from the perspective
+of the sentiment measures.}
 }
 \description{
-Linear or nonlinear regression of a dependent variable on the wide number of sentiment measures and
+Linear or nonlinear penalized regression of a dependent variable on the wide number of sentiment measures and
 potentially other explanatory variables. Either performs a regression given the provided variables at once, or computes
 regressions sequentially for a given sample size over a longer time horizon, with associated forecasting performance
-metrics.
+metrics. Independent variables are normalized in the regression process, but coefficients are returned in their original
+space.
 }
 \seealso{
 \code{\link{ctr_model}}, \code{\link[glmnet]{glmnet}}, \code{\link[caret]{train}}

@@ -1,39 +1,13 @@
 
-#' Add and fill missing dates
-#'
-#' @description Adds missing dates between earliest and latest date, such that time series is continuous on a period-by-period
-#' basis. Fills in these dates with either \code{NA} or the respective latest non-\code{NA} values.
-#'
-#' @param sentomeasures a \code{sentomeasures} object.
-#' @param do.fillLatest a \code{logical}, if \code{TRUE} fills added dates with most recent value.
-#'
-#' @return A modified \code{sentomeasures} object.
-#'
-#' @export
-fill_measures <- function(sentomeasures, do.fillLatest = FALSE) {
-
-  check_class(sentomeasures, "sentomeasures")
-
-  by <- sentomeasures$by
-  measures <- sentomeasures$measures
-  dates <- measures$date
-  ts <- seq(dates[1], dates[length(dates)], by = by)
-  dt <- data.table(date = ts)
-
-  # join to new measures
-  measuresFill <- merge(dt, measures, by = "date", all = TRUE) # fills with NA
-  if (do.fillLatest) measuresFill <- zoo::na.locf(measuresFill)
-  sentomeasures$measures <- measuresFill
-
-  return(sentomeasures)
-}
-
-compute_IC <- function(reg, y, x, alpha, ic) {
+compute_IC <- function(reg, y, x, alpha, ic, family) {
 
   beta <- reg$beta
   lambda <- reg$lambda
 
-  yEst <- stats::predict(reg, newx = x)
+  if (family == "gaussian") type <- "link"
+  else stop("To implement for 'binomial' and 'multinomial'.")
+
+  yEst <- stats::predict(reg, newx = x, type = type)
   df_A <- compute_df(alpha, beta, lambda, x)
   RSS <- apply(yEst, 2, FUN = function(est) sum((y - est)^2))
   sigma2 <- RSS[length(RSS)] / (nrow(y) - df_A[length(RSS)])
@@ -70,12 +44,12 @@ model_performance <- function(yEst, yReal, family, dates, ...) {
     APE <- 100 * AD / abs(yReal) # absolute percentage error
     errors <- data.frame(cbind(error, error2, AD, APE))
     colnames(errors) <- c("error", "errorSq", "AD", "APE")
-    meanErrors <- colMeans(errors[, 2:ncol(errors)], na.rm = TRUE)
+    meanErrors <- colMeans(errors[, -1], na.rm = TRUE)
 
     raw <- data.frame(yReal, predicted = yEst, dAcc, errors)
     row.names(raw) <- dates
 
-    errorsAll <- list(raw = raw, DA = DA, RMSFE = as.numeric(sqrt(meanErrors["error^2"])),
+    errorsAll <- list(raw = raw, DA = DA, RMSFE = as.numeric(sqrt(meanErrors["errorSq"])),
                       MAD = as.numeric(meanErrors["AD"]), MAPE = as.numeric(meanErrors["APE"]))
 
   } else if (family %in% c("binomial", "multinomial")) {
@@ -145,7 +119,7 @@ ctr_model <- function(model = c("lm", "binomial", "multinomial"), type = c("BIC"
     stop("Provide a proper calibration type.")
 
   if (model != "lm" & type != "cv")
-    stop("LASSO-specific information criteria are currently only supported for linear models, please opt for 'cv'.")
+    stop("Elastic net-specific information criteria are currently only supported for linear models, please opt for 'cv'.")
 
   if (oos < 0 | start <= 0)
     stop("Make sure all integer inputs are non-negative or positive for those required.")
@@ -191,12 +165,13 @@ ctr_model <- function(model = c("lm", "binomial", "multinomial"), type = c("BIC"
   return(ctr_model)
 }
 
-#' Optimized sparse regression
+#' Optimized and automated sparse regression
 #'
-#' @description Linear or nonlinear regression of a dependent variable on the wide number of sentiment measures and
+#' @description Linear or nonlinear penalized regression of a dependent variable on the wide number of sentiment measures and
 #' potentially other explanatory variables. Either performs a regression given the provided variables at once, or computes
 #' regressions sequentially for a given sample size over a longer time horizon, with associated forecasting performance
-#' metrics.
+#' metrics. Independent variables are normalized in the regression process, but coefficients are returned in their original
+#' space.
 #'
 #' @param sentomeasures a \code{sentomeasures} object. There should be at least two explanatory variables including the ones
 #' provided through the \code{x} argument.
@@ -209,20 +184,25 @@ ctr_model <- function(model = c("lm", "binomial", "multinomial"), type = c("BIC"
 #'
 #' @return If \code{ctr$do.iter == FALSE}, a \code{sentomodel} object which is a list containing:
 #' \item{reg}{optimized regression, i.e. a model-specific \code{glmnet} object.}
+#' \item{sentomeasures}{the input \code{sentomeasures} object.}
 #' \item{alpha}{optimized calibrated alpha.}
 #' \item{lambda}{optimized calibrated lambda.}
-#' \item{trained}{output from \code{caret::train} call within function (if \code{ctr$type ==} "\code{cv}").}
-#' \item{ic}{a \code{numeric} vector of the minimum information criterion value for every element of \code{alphas} (if
-#' \code{ctr$type !=} "\code{cv}").} \item{type}{information criterion used to calibrate (if \code{ctr$type !=} "\code{cv}").}
+#' \item{trained}{output from \code{caret::train} call (if \code{ctr$type ==} "\code{cv}").}
+#' \item{ic}{a \code{list} composed of two elements: the information criterion used in the calibration under
+#' \code{"criterion"}, and a vector of all minimum information criterion values for each value in \code{alphas}
+#' under \code{"opts"} (if \code{ctr$type !=} "\code{cv}").}
 #'
 #' @return If \code{ctr$do.iter == TRUE}, a list containing:
-#' \item{regs}{optimized regressions, i.e. separate \code{sentomodel} objects as above.}
+#' \item{regs}{optimized regressions, i.e. separate \code{sentomodel} objects as above, as a \code{list} with as names the
+#' dates from the perspective of the sentiment measures at which predictions for performance measurement are carried out.}
 #' \item{alphas}{optimized calibrated alphas.}
 #' \item{lambdas}{optimized calibrated lambdas.}
 #' \item{performance}{a \code{data.frame} with performance-related measures, being "\code{RMSFE}" (root mean squared
 #' forecasting error), "\code{MAD}" (mean absolute deviation), "\code{MAPE}" (mean absolute percentage error),
 #' "\code{DA}" (directional accuracy), "\code{accuracy}" (proportion of correctly predicted classes in case of a logistic
-#' regression), and each's respective individual values in the sample.}
+#' regression), and each's respective individual values in the sample. Only the relevant performance statistics are given
+#' depending on the type of regression. Dates are similarly as with the \code{"regs"} output element from the perspective
+#' of the sentiment measures.}
 #'
 #' @seealso \code{\link{ctr_model}}, \code{\link[glmnet]{glmnet}}, \code{\link[caret]{train}}
 #'
@@ -290,9 +270,11 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
   penalty <- rep(1, ncol(xx))
   if (!is.null(x)) penalty[ncol(sentomeasures$measures):ncol(xx)] <- 0 # no shrinkage for original x variables
 
-  ICs <- list()
-  lambdaVals <- c()
-  for (alpha in alphas) {
+  minIC <- as.list(numeric(length(alphas)))
+  names(minIC) <- as.character(alphas)
+  lambdaVals <- numeric(length(alphas))
+  for (i in seq_along(alphas)) {
+    alpha <- alphas[i]
     if (do.progress) {
       if (alpha == alphas[1]) cat("alphas run: ", alpha, ", ", sep = "")
       else if (alpha == alphas[length(alphas)]) cat(alpha, "\n")
@@ -302,26 +284,26 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
     reg <- glmnet::glmnet(x = xx, y = yy, penalty.factor = penalty,
                           lambda = lambdas, alpha = alpha, standardize = TRUE, family = family)
 
-    IC <- compute_IC(reg, yy, xx, alpha, ic)
-    ICs[[as.character(alpha)]] <- suppressWarnings(min(IC, na.rm = TRUE))
+    IC <- compute_IC(reg, yy, xx, alpha, ic, family = family) # vector of ic values for lambdas sequence in reg
+    minIC[[i]] <- suppressWarnings(min(IC, na.rm = TRUE))
     lambdaTmp <- ifelse(length(lambdas[which.min(IC)]) > 0, lambdas[which.min(IC)], Inf)
-    lambdaVals <- c(lambdaVals, lambdaTmp)
+    lambdaVals[i] <- lambdaTmp
   }
 
   # retrieve optimal alphas and lambdas
-  minLoc <- which.min(ICs)
+  minLoc <- which.min(minIC)
   lambdaOpt <- lambdaVals[minLoc]
-  alphaOpt <- as.numeric(names(minLoc))
+  alphaOpt <- alphas[minLoc]
 
   # actual elastic net optimization
   regOpt <- glmnet::glmnet(x = xx, y = yy, penalty.factor = penalty,
                            lambda = lambdaOpt, alpha = alphaOpt, standardize = TRUE, family = family)
 
   out <- list(reg = regOpt,
+              sentomeasures = sentomeasures,
               alpha = alphaOpt,
               lambda = lambdaOpt,
-              ic = ICs,
-              type = ic)
+              ic = list(criterion = ic, opts = unlist(minIC)))
 
   class(out) <- c("sentomodel")
 
@@ -375,6 +357,7 @@ model_IC <- compiler::cmpfun(.model_IC)
                            lambda = lambdaOpt, alpha = alphaOpt, standardize = TRUE, family = family)
 
   out <- list(reg = regOpt,
+              sentomeasures = sentomeasures,
               alpha = alphaOpt,
               lambda = lambdaOpt,
               trained = trained)
@@ -393,9 +376,9 @@ model_CV <- compiler::cmpfun(.model_CV)
   if (nIter <= 0 | start > nIter)
     stop("Data not sufficient to do at least one iteration for given sample size, horizon, out-of-sample skip and start.")
 
-  regsOpt <- list()
-  lambdasOpt <- c()
-  alphasOpt <- c()
+  regsOpt <- as.list(numeric(nIter - start + 1))
+  lambdasOpt <- numeric(nIter - start + 1)
+  alphasOpt <- numeric(nIter - start + 1)
 
   if (type == "cv") fun <- model_CV
   else fun <- model_IC
@@ -420,6 +403,7 @@ model_CV <- compiler::cmpfun(.model_CV)
   xPred <- alignedVarsAll$x[(start + nSample):(nIter + nSample), , drop = FALSE]
   yReal <- alignedVarsAll$y[(start + nSample + oos):(nIter + nSample + oos), , drop = FALSE]
   datesX <- alignedVarsAll$datesX[(start + nSample):(nIter + nSample)] # dates from perspective of x
+  names(regsOpt) <- datesX
 
   if (family %in% c("binomial", "multinomial")) {
     n <- length(colnames(yReal)) # number of factor levels
@@ -459,26 +443,118 @@ model_CV <- compiler::cmpfun(.model_CV)
 
 sento_model_iter <- compiler::cmpfun(.sento_model_iter)
 
-retrieve_attribution <- function() {
+#' Retrieves top-down sentiment attribution given forecasting equation
+#'
+#' xxx
+#'
+#' @param sentomodel a \code{sentomodel} object.
+#' @param rows row indices (i.e. dates) for which the attribution needs to be calculated, based on the measures in the
+#' \code{sentomeasures} object packed within the \code{sentomodel} input. By default \code{NULL}, which means attribution
+#' is calculated for all rows.
+#' @param ... to do.
+#'
+#' @return A list with all dimensions for which aggregation is computed, as \code{data.table}s with a \code{"date"} and
+#' \code{"attribution"} column for the rows indicated.
+#'
+#' @export
+retrieve_attribution <- function(sentomodel, rows = NULL, ...) {
 
-  # coeffs[[i - start + 1]] <- as.matrix(stats::coef(regOpt))
-  # attribs[[j]] <- coeffs[[j]] * c(1, xPred[j, ])
+  ### check rows input
+  ### compute document-level attribution
 
+  check_class(sentomodel, "sentomodel")
+
+  reg <- sentomodel$reg
+  sentomeasures <- sentomodel$sentomeasures
+  dates <- sentomeasures$measures$date
+  measures <- sentomeasures$measures[, -1] # drop date column
+  coeffs <- stats::coef(reg)[1:ncol(measures), ][-1] # exclude intercept and other x variables
+  if (is.null(rows)) rows <- 1:nrow(measures)
+
+  cols <- colnames(measures)
+  dims <- c(sentomeasures$features, sentomeasures$lexicons, sentomeasures$time)
+  attribs <- lapply(dims, function(x) {
+    sel <- cols[stringi::stri_detect(cols, regex = paste0("\\b", x, "\\b"))] # exact match
+    attr <- rowSums(coeffs * measures[rows, sel, with = FALSE, drop = FALSE], na.rm = TRUE)
+    attr <- data.table(date = dates, attribution = attr)
+    return(attr)
+  })
+  names(attribs) <- dims
+
+  return(attribs)
 }
 
 sento_arima <- function() {
 
 }
 
+#' Summary of sentomodel object
+#'
+#' Prints out a short summary consisting of the main elements of the constructed model (model type, calibrated values, non-zero
+#' coefficients and performance).
+#'
+#' @param object a \code{sentomodel} object.
+#' @param ... not used.
+#'
+#' @return A sequence of informative prints on the model's results.
 summary.sentomodel <- function(object, ...) {
-
-}
-
-predict.sentomodel <- function(object, newx, type, ...) {
 
   sentomodel <- object
   reg <- sentomodel$reg
-  pred <- stats::predict(reg, newx = newx, type = type, ...)
+
+  if ("ic" %in% names(sentomodel)) {
+    printCalib <- paste0("via ", sentomodel$ic[[1]], " information criterion")
+  } else {
+    printCalib <- paste0("via cross-validation; ",
+                         "Ran trough ", nrow(sentomodel$trained$resample), " samples of size ",
+                         length(sentomodel$trained$control$index[[1]]),
+                         ", selection based on ", sentomodel$trained$metric, " metric")
+  }
+
+  cat("\n")
+  cat("Model specifications \n")
+  cat(rep("-", 20), "\n \n")
+  cat("Calibration:", printCalib, "\n")
+  cat("Number of observations:", reg$nobs, "\n")
+  cat("Optimal elastic net alpha parameter:", sentomodel$alpha, "\n")
+  cat("Optimal elastic net lambda parameter:", reg$lambda, "\n \n")
+
+  cat("Non-zero coefficients \n")
+  cat(rep("-", 20), "\n")
+  print(nonzero_coeffs(reg))
+  cat("\n \n")
+
+  cat("Performance \n")
+  cat(rep("-", 20), "\n \n")
+  cat("Fraction of deviance explained: ", reg$dev.ratio * 100, "% \n \n")
+
+  invisible()
+}
+
+#' Make predictions from a sentomodel object
+#'
+#' Prediction (forecasting) method for \code{sentomodel} class, with usage along the lines of \code{predict.glmnet}, but
+#' simplified in terms of allowed parameters.
+#'
+#' @param object a \code{sentomodel} object.
+#' @param newx a \code{matrix} of \code{numeric} values for all explanatory variables at which predictions are to be made, see
+#' documentation for \code{\link{predict.glmnet}}.
+#' @param type type of prediction required, an value from \code{c("link", "response", "class")}, see documentation for
+#' \code{\link{predict.glmnet}}.
+#' @param offset values to use as offset, only if an offset was also used in the model fitting, see documentation for
+#' \code{\link{predict.glmnet}}.
+#' @param ... not used.
+#'
+#' @return A prediction output depending on the \code{type} argument provided.
+#'
+#' @seealso \code{\link{predict.glmnet}}
+#'
+#' @export
+predict.sentomodel <- function(object, newx, type, offset = NULL, ...) {
+
+  sentomodel <- object
+  reg <- sentomodel$reg
+  pred <- stats::predict(reg, newx = newx, type = type, offset = offset)
 
   return(pred)
 }
