@@ -23,82 +23,103 @@
 #'
 #' @seealso \code{\link{compute_sentiment}}, \code{\link{perform_agg}}
 #'
+#' @examples
+#' # computation of sentiment measures based on a provided control function
+#' data("useconomynews")
+#' corpus <- sento_corpus(corpusdf = useconomynews)
+#' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+#' ctr <- ctr_agg(howWithin = "tf-idf",
+#'                howDocs = "proportional",
+#'                howTime = c("equal_weight", "linear", "almon"),
+#'                by = "month",
+#'                lag = 3,
+#'                ordersAlm = 1:3,
+#'                do.inverseAlm = TRUE,
+#'                do.normalizeAlm = TRUE)
+#' sentomeasures <- sento_measures(corpus, l, ctr)
+#'
 #' @import data.table
 #' @export
 sento_measures<- function(sentocorpus, lexicons, ctr) {
-
   check_class(sentocorpus, "sentocorpus")
-
   toAgg <- compute_sentiment(sentocorpus, lexicons, how = ctr$howWithin)
   sentomeasures <- perform_agg(toAgg, ctr)
-
   return(sentomeasures)
 }
 
 #' Setup lexicons (and valence word list) for use in sentiment analysis
 #'
-#' @description Structures provided lexicons and potentially valence words. One can also provide (part of) the built-in
-#' lexicons from \code{Sentometrics::LEXICON} or a valence word list from \code{Sentometrics::VALENCE} as an argument.
+#' @description Structures provided lexicons and potentially integrates valence words. One can also provide (part of) the
+#' built-in lexicons from \code{Sentometrics::lexicon} or a valence word list from \code{Sentometrics::valence} as an argument.
 #' Makes use of the \code{as_key()} function from the \pkg{quanteda} package to make the output coherent and check for
 #' duplicates.
 #'
-#' @param lexicons a list of (raw) lexicons, each element being a \code{data.table} or \code{data.frame} with respectively a
+#' @param lexiconsIn a list of (raw) lexicons, each element being a \code{data.table} or \code{data.frame} with respectively a
 #' words column and a polarity score column. The lexicons should be appropriately named for clarity in terms of subsequently
 #' obtained sentiment measures. Alternatively, a subset of the already formatted built-in lexicons accessible via
-#' \code{LEXICONS} can be declared too, as part of the same list input. If only (some of) the package built-in lexicons want
-#' to be used, ony can simply supply \code{LEXICONS[c(...)]} as an argument to either \code{sento_measures()} or
-#' \code{compute_sentiment()}. One could thus also opt to create a list independently from this function based on what's built
-#' in the package as word lists (including a built-in valence word list); see the first example.
-#' @param valenceWords a valence word list as a \code{data.table} or \code{data.frame} with respectively a words column, a
-#' type column (1 for negators, 2 for amplifiers, and 3 for deamplifiers) and a score column. Alternatively, this argument can
-#' be one of the already formatted built-in valence word lists accessible via \code{VALENCE}. If \code{NULL}, no valence
-#' word list is part of the output.
+#' \code{lexicons} can be declared too, as part of the same list input. If only (some of) the package built-in lexicons want
+#' to be used, ony can simply supply \code{lexicons[c(...)]} as an argument to either \code{sento_measures()} or
+#' \code{compute_sentiment()}. However, it is strongly recommended to pass the lexicons (and a valence word list) that want to
+#' be used through this function.
+#' @param valenceIn a single valence word list as a \code{data.table} or \code{data.frame} with respectively a words column, a
+#' type column (1 for negators, 2 for amplifiers/intensifiers, and 3 for deamplifiers/downtoners) and a score column.
+#' Suggested scores are -1, 2 and 0.5 respectively, and should be the same within each type. Alternatively, this argument can
+#' be one of the already formatted built-in valence word lists accessible via \code{valence}. If \code{NULL}, no valence word
+#' list is part of the output.
 #' @param do.split a \code{logical} that if \code{TRUE} splits every lexicon into a separate positive polarity and negative
 #' polarity lexicon.
 #'
 #' @return A list with each lexicon as a \code{data.table} list element according to its name, and a list element named
 #' \code{valence} that comprises the valence words. Every \code{x} column contains the words, every \code{y} column
-#' contains the (polarity) score, and for the valence word list, \code{t} contains the word type.
+#' contains the polarity score, and for the valence word list, \code{t} contains the word type. If a valence word list is
+#' provided, all lexicons are expanded by copying the respective lexicon, and changing the words and scores according to the
+#' valence word type: "NOT_" is added for negators, "VERY_" is added for amplifiers and "HARDLY_" is added for deamplifiers.
+#' Lexicon scores are multiplied by -1, 2 and 0.5 by default, respectively, or the first value of the scores column of the
+#' valence word list.
 #'
 #' @seealso \code{\link[sentimentr]{as_key}}
 #'
 #' @examples
 #' # sets up output list straight from built-in word lists including valence words
-#' l <- c(lexicons[c("LM_eng", "HENRY_eng")], valence = list(valence[["eng"]]))
+#' l1 <- c(lexicons[c("LM_eng", "HENRY_eng")], valence[["eng"]])
+#'
+#' # using function, including a self-made lexicon, with and without valence shifters
+#' lexIn <- c(list(myLexicon = data.frame(w = c("nice", "boring"), s = c(2, -1))),
+#'            lexicons[c("GI_eng")])
+#' valIn <- valence[["valence_eng"]]
+#' l2 <- setup_lexicons(lexIn)
+#' l3 <- setup_lexicons(lexIn, valIn)
+#' l4 <- setup_lexicons(lexIn, valIn, do.split = TRUE)
 #'
 #' @export
-setup_lexicons <- function(lexicons, valenceWords = NULL, do.split = FALSE) {
+setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 
-  if (!is.list(lexicons))
+  if (!is.list(lexiconsIn))
     stop("The 'lexicons' input should be a list.")
-  if (!is.data.frame(valenceWords) & !is.null(valenceWords))
-    stop("The 'valenceWords' argument should be a data.table or data.frame if not NULL.")
-  if (any(is.na(names(lexicons))))
-    stop("At least one lexicon list name is NA. Please provide a proper name.")
+  if (!is.data.frame(valenceIn) & !is.null(valenceIn))
+    stop("The 'valence' argument should be a data.table or data.frame if not NULL.")
+  if (any(is.na(names(lexiconsIn))))
+    stop("At least one lexicon's name is NA. Please provide proper list names.")
 
   # check for duplicated lexicon names
-  if (sum(duplicated(names(lexicons))) > 0) {
-    duplics <- unique(names(lexicons[duplicated(names(lexicons))]))
+  if (sum(duplicated(names(lexiconsIn))) > 0) {
+    duplics <- unique(names(lexiconsIn[duplicated(names(lexiconsIn))]))
     stop(paste0("Names of lexicons are not unique. Following names occur at least twice: ",
                 paste0(duplics, collapse = ", ")))
   }
-  lexNames <- names(lexicons)
+  lexNames <- names(lexiconsIn)
 
   # convert to sentimentr format while supressing warnings on removal of duplicated values
-  lexicons <- suppressWarnings(lapply(lexicons, sentimentr::as_key, comparison = NULL))
+  lexicons <- suppressWarnings(lapply(lexiconsIn, sentimentr::as_key, comparison = NULL))
   lexicons <- lapply(lexicons, function(x) {names(x) <- c("x", "y"); return(x)})
   names(lexicons) <- lexNames
 
-  if (!is.null(valenceWords)) {
-    val <- suppressWarnings(sentimentr::as_key(valenceWords, comparison = NULL))
-    # discard valence words that also occur in at least one of the lexicons
-    sames <- c()
-    for(lex in lexicons) {
-      same <- which(val$x %in% lex$x) # x are the words (sentimentr format)
-      sames <- c(sames, same)
-    }
+  if (!is.null(valenceIn)) {
+    names(valenceIn) <- c("x", "t", "y")
+    valTypes <- unique(valenceIn$t)
+    scores <- c(valenceIn[valenceIn$t == 1, ]$y[1], valenceIn[valenceIn$t == 2, ]$y[1], valenceIn[valenceIn$t == 3, ]$y[1])
+    lexicons <- expand_lexicons(lexicons, types = valTypes, scores = )
   }
-
   # split each lexicon into a positive and a negative polarity words only lexicon
   if (do.split) {
     lexiconsPos <- lapply(lexicons, function(lex) return(lex[lex$y > 0]))
@@ -107,19 +128,24 @@ setup_lexicons <- function(lexicons, valenceWords = NULL, do.split = FALSE) {
     names(lexiconsNeg) <- paste0(names(lexicons), "_NEG")
     lexicons <- c(lexiconsPos, lexiconsNeg)
   }
-
-  if (!is.null(valenceWords)) lexicons[["valence"]] <- val[!unique(sames), ]
+  if (!is.null(valenceIn)) {
+    lexicons[["valence"]] <- valenceIn[!duplicated(valenceIn$x), ]
+  }
 
   return(lexicons)
 }
 
 .compute_sentiment <- function(sentocorpus, lexicons, how = get_hows()$words) {
-
   check_class(sentocorpus, "sentocorpus")
 
   if (length(how) > 1) how <- how[1]
 
-  lexNames <- names(lexicons)[names(lexicons) != "valenceWords"]
+  if ("valence" %in% names(lexicons)) {
+    cat("Modify corpus to account for valence words... ")
+    quanteda::texts(sentocorpus) <- include_valence(quanteda::texts(sentocorpus), lexicons[["valence"]])
+    cat("Done.", "\n")
+  }
+  lexNames <- names(lexicons)[names(lexicons) != "valence"]
   features <- sentocorpus$features
 
   # frequency-based document-feature matrix (rows are corpus ids, columns are words)
@@ -129,7 +155,7 @@ setup_lexicons <- function(lexicons, valenceWords = NULL, do.split = FALSE) {
   allWords <- quanteda::featnames(dfm)
   wCounts <- quanteda::rowSums(dfm, na.rm = TRUE)
 
-  if (how == "counts" | how == "equal-weight") {
+  if (how == "counts" | how == "equal_weight") {
     fdm <- quanteda::t(dfm) # feature-document matrix
   } else {
     if (how == "proportional") { # proportional w.r.t. words frequency vs. total words frequency per document
@@ -146,34 +172,30 @@ setup_lexicons <- function(lexicons, valenceWords = NULL, do.split = FALSE) {
   for (lexicon in lexNames) {
     lexWords <- lexicons[[lexicon]]$x
     lexScores <- lexicons[[lexicon]]$y
-
     # locate polarized words and set weights to their polarity or keep at zero
     allScores <- rep(0, length(allWords))
     polInd <- allWords %in% lexWords
     polWords <- allWords[polInd]
     allScores[polInd] <- lexScores[lexWords %in% polWords]
     names(allScores) <- allWords
-
     # scores per document equal to (frequency * weight * polarity score)
     if (how == "counts") {
       scores <- quanteda::rowSums(quanteda::t(fdm * allScores))
-    } else if (how == "equal-weight") {
+    } else if (how == "equal_weight") {
       scores <- quanteda::rowSums(quanteda::t(fdm * allScores)) / wCounts
     } else scores <- quanteda::rowSums(quanteda::t(fdmWeighted * allScores))
-
     # set NA/NaN sentiment to 0 (e.g. if document contains no words) and put scores under appropriate lexicon column
     scores[is.na(scores)] <- 0
     s[, (lexicon) := scores]
   }
-
   # structure: date - feature1 - ... - word_count - lexicon1 (sentiment) - ...
-  s <- as.data.table(cbind(quanteda::docvars(sentocorpus), word_count = wCounts, s))
+  s <- as.data.table(cbind(id = quanteda::docnames(sentocorpus), quanteda::docvars(sentocorpus), word_count = wCounts, s))
 
   # compute feature-sentiment per document for all lexicons and order by date
   sent <- get_features_sentiment(s, features, lexNames)
   sent <- sent[order(date)]
 
-  sentOut <- list(corpus = sentocorpus,
+  sentOut <- list(corpus = sentocorpus, # not the same as input corpus if accounted for valence shifters
                   sentiment = sent,
                   features = features,
                   lexicons = lexNames,
@@ -204,23 +226,26 @@ setup_lexicons <- function(lexicons, valenceWords = NULL, do.split = FALSE) {
 #' \item{lexicons}{a \code{character} vector of the different lexicons used.}
 #' \item{howWithin}{a \code{character} vector to remind how sentiment within documents was aggregated.}
 #'
+#' @examples
+#' # sentiment computation based on raw frequency counts
+#' data("useconomynews")
+#' corpus <- sento_corpus(corpusdf = useconomynews)
+#' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+#' sent <- compute_sentiment(corpus, l, how = "counts")
+#'
 #' @export
 compute_sentiment <- compiler::cmpfun(.compute_sentiment)
 
 .get_features_sentiment <- function(sent, features, lexNames) {
-
-  # multiply lexicons with features to obtain feature-sentiment scores per lexicon
-  for (lexicon in lexNames) {
+  for (lexicon in lexNames) { # multiply lexicons with features to obtain feature-sentiment scores per lexicon
     for (feature in features) {
       name <- paste0(lexicon, "--", feature)
       sent[, name] <- sent[, lexicon, with = FALSE] * sent[, feature, with = FALSE]
     }
   }
   sent[, eval(c(lexNames, features)) := NULL] # remove since replaced by lexicon--feature columns
-
   return(sent)
 }
-
 get_features_sentiment <- compiler::cmpfun(.get_features_sentiment)
 
 #' Aggregate textual sentiment across documents and time
@@ -236,21 +261,26 @@ get_features_sentiment <- compiler::cmpfun(.get_features_sentiment)
 #'
 #' @seealso \code{\link{compute_sentiment}}, \code{\link{ctr_agg}}
 #'
+#' @examples
+#' # computation of sentiment and aggregation into sentiment measures
+#' data("useconomynews")
+#' corpus <- sento_corpus(corpusdf = useconomynews)
+#' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+#' sent <- compute_sentiment(corpus, l, how = "counts")
+#' ctr <- ctr_agg(howTime = c("linear"), by = "year", lag = 3)
+#' sentomeasures <- perform_agg(sent, ctr)
+#'
 #' @export
 perform_agg <- function(toAgg, ctr) {
-
   howDocs <- ctr$howDocs
   howTime <- ctr$howTime
   do.ignoreZeros <- ctr$do.ignoreZeros
   by <- ctr$by
   lag <- ctr$lag
   otherVars <- ctr$other # list or empty
-
   aggDocs <- agg_documents(toAgg, by = by, how = howDocs, do.ignoreZeros = do.ignoreZeros)
   sentomeasures <- agg_time(aggDocs, lag = lag, how = howTime, otherVars)
-
   if (!("sentomeasures" %in% class(sentomeasures))) class(sentomeasures) <- c("sentomeasures")
-
   return(sentomeasures)
 }
 
@@ -259,6 +289,7 @@ agg_documents <- function(toAgg, by, how = get_hows()$docs, do.ignoreZeros = FAL
   features <- toAgg$features
   lexNames <- toAgg$lexicons
   sent <- toAgg$sentiment
+  attribWeights <- list(W = NA, B = NA) # list with weights useful in later attribution analysis
 
   # reformat dates so they can be aggregated at the specified 'by' level, and cast to Date format
   if (by == "year") {
@@ -280,10 +311,14 @@ agg_documents <- function(toAgg, by, how = get_hows()$docs, do.ignoreZeros = FAL
     sent[, names(sent)] <- sent[, names(sent), with = FALSE][, lapply(.SD, function(x) replace(x, which(x == 0), NA))]
 
   # aggregate feature-sentiment per document by date for all lexicon columns
-  if (how == "equal-weight") {
-    measures <- sent[, lapply(.SD, mean, na.rm = TRUE), by = date]
+  s <- sent[, -1]
+  if (how == "equal_weight") {
+    attribWeights[["W"]] <- data.table(id = sent$id, s[, w := 1 / .N, by = date][, "w"])
+    s[, w := NULL]
+    measures <- s[, lapply(.SD, mean, na.rm = TRUE), by = date]
   } else if (how == "proportional") { # proportional w.r.t. words in document vs. total words in all documents per date
-    measures <- sent[, lapply(.SD, function(x) sum(x * word_count / sum(word_count, na.rm = TRUE), na.rm = TRUE)), by = date]
+    attribWeights[["W"]] <- data.table(id = sent$id, s[, list(w = word_count / sum(word_count, na.rm = TRUE)), by = date])
+    measures <- s[, lapply(.SD, function(x) sum(x * word_count / sum(word_count, na.rm = TRUE), na.rm = TRUE)), by = date]
   }
   measures$word_count <- NULL
 
@@ -295,7 +330,8 @@ agg_documents <- function(toAgg, by, how = get_hows()$docs, do.ignoreZeros = FAL
                         stats = NA,
                         sentiment = sent,
                         howWithin = toAgg$howWithin,
-                        howDocs = how)
+                        howDocs = how,
+                        attribWeights = attribWeights)
 
   class(sentomeasures) <- c("sentomeasures")
 
@@ -303,7 +339,6 @@ agg_documents <- function(toAgg, by, how = get_hows()$docs, do.ignoreZeros = FAL
 }
 
 agg_time <- function(sentomeasures, lag, how = get_hows()$time, ...) {
-
   check_class(sentomeasures, "sentomeasures")
 
   dots <- tryCatch(list(...)[[1]], # extract list from list of list
@@ -316,27 +351,24 @@ agg_time <- function(sentomeasures, lag, how = get_hows()$time, ...) {
     stop(paste0("Names of weighting schemes are not unique. Following names occur at least twice: ",
                 paste0(duplics, collapse = ", ")))
   }
+  sentomeasures$attribWeights[["B"]] <- copy(weights)
 
   # apply rolling time window, if not too large, for every weights column and combine all new measures column-wise
   measures <- sentomeasures$measures
   toRoll <- measures[, -1]
-
   n <- nrow(weights)
   m <- nrow(measures)
   if (n > m)
     stop("Rolling time aggregation window (= ", n, ") is too large for number of observations per measure (= ", m, ")")
 
   for (i in 1:ncol(weights)) {
-    w <- weights[, i]
     name <- colnames(weights)[i]
-
-    add <- RcppRoll::roll_sum(as.matrix(toRoll), n = n, weights = as.vector(w), align = "right")
+    add <- RcppRoll::roll_sum(as.matrix(toRoll), n = n, weights = as.vector(weights[, i]), normalize = FALSE, align = "right")
     colnames(add) <- paste0(colnames(toRoll), "--", name)
     if (i == 1) measuresAggTime <- add
     else measuresAggTime <- cbind(measuresAggTime, add)
   }
   measuresAggTime <- as.data.table(measuresAggTime)
-
   if (n > 1) date <- measures$date[-1:-(n-1)]
   else date <- measures$date
   measuresAggTime$date <- date
@@ -361,6 +393,21 @@ agg_time <- function(sentomeasures, lag, how = get_hows()$time, ...) {
 #'
 #' @seealso \code{\link{ctr_merge}}
 #'
+#' @examples
+#' # construct a sentomeasures object to start with
+#' data("useconomynews")
+#' corpus <- sento_corpus(corpusdf = useconomynews)
+#' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+#' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
+#' sentomeasures <- sento_measures(corpus, l, ctr)
+#'
+#' # set up control function and perform the merging
+#' ctrMerge <- ctr_merge(sentomeasures,
+#'                       time = list(W = c("equal_weight", "linear")),
+#'                       feat = list(journals = c("wsj", "wapo")),
+#'                       do.keep = TRUE)
+#' sentomeasuresMerged <- merge_measures(ctrMerge)
+#'
 #' @export
 merge_measures <- function(ctr) {
 
@@ -373,14 +420,12 @@ merge_measures <- function(ctr) {
     measuresOld <- measures
     namesOld <- colnames(measures)
   }
-
   # loop over lex(icon), feat(ure) and time lists
   for (across in toMerge[!is.na(toMerge)]) {
     # loop over set of aggregation levels to merge (combine) into given name (e.g. lex12 = c("lex1", "lex2"))
     for (i in seq_along(across)) {
       name <- names(across)[i] # e.g. "lex12"
       cols <- across[[i]] # e.g. c("lex1", "lex2")
-
       # find all sentiment columns aggregated at one of the 'cols' aggregation levels and stack them into ls
       ls <- list()
       for (elem in cols) {
@@ -388,13 +433,11 @@ merge_measures <- function(ctr) {
         ls[[elem]] <- measures[, sel, with = FALSE, drop = FALSE]
         measures <- measures[, !sel, with = FALSE, drop = FALSE]
       }
-
       # take element-wise average for every row/column combination across columns to merge
       if (ncol(ls[[1]] >= 2)) { # ncol across elements of ls is the same
         all <- abind::abind(ls, along = 3)
         merged <- apply(all, c(1, 2), mean)
       } else merged <- rowSums(abind::abind(ls, along = 2))
-
       # insert new name at name location of aggregation level (e.g. "lex1--top1" + "lex2--top1" = "lex12--top1")
       nms <- stringi::stri_split(colnames(merged), regex = "--") # list
       loc <- which(stringi::stri_detect(nms[[1]], regex = elem))[1]
@@ -403,17 +446,13 @@ merge_measures <- function(ctr) {
         return(paste0(x, collapse = "--"))
       })
       colnames(merged) <- unlist(nmsNew)
-
-      # add back merged columns for further merging if needed
-      measures <- cbind(measures, merged)
+      measures <- cbind(measures, merged) # add back merged columns for further merging if needed
     }
   }
-
   # add old unmerged measures to merged measures (if do.keep is TRUE)
   if (do.keep) measures <- cbind(measures, measuresOld[, !(namesOld %in% colnames(measures))])
 
-  # update information in sentomeasures object
-  sentomeasures <- update_info(sentomeasures, measures)
+  sentomeasures <- update_info(sentomeasures, measures) # update information in sentomeasures object
 
   return(sentomeasures)
 }
@@ -438,9 +477,21 @@ merge_measures <- function(ctr) {
 #'
 #' @seealso \code{\link{ctr_merge}}
 #'
+#' @examples
+#' # construct a sentomeasures object to start with
+#' data("useconomynews")
+#' corpus <- sento_corpus(corpusdf = useconomynews)
+#' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+#' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
+#' sentomeasures <- sento_measures(corpus, l, ctr)
+#'
+#' # merge into one global sentiment measure, with specified weighting for lexicons and features
+#' global <- merge_to_global(sentomeasures, lex = c(0.40, 0.60),
+#'                                          feat = c(0.10, 0.20, 0.30, 0.40),
+#'                                          time = 1)
+#'
 #' @export
 merge_to_global <- function(sentomeasures, lex = 1, feat = 1, time = 1) {
-
   check_class(sentomeasures, "sentomeasures")
 
   lexicons <- sentomeasures$lexicons
@@ -524,18 +575,33 @@ merge_to_global <- function(sentomeasures, lex = 1, feat = 1, time = 1) {
 #'
 #' @seealso \code{\link{get_hows}}
 #'
+#' @examples
+#' # simple control function (using equal_weight default options)
+#' ctr1 <- ctr_agg(howTime = c("linear"), by = "year", lag = 3)
+#'
+#' # more elaborate control function (particular attention to time weighting schemes)
+#' ctr2 <- ctr_agg(howWithin = "tf-idf",
+#'                 howDocs = "proportional",
+#'                 howTime = c("equal_weight", "linear", "almon", "exponential", "own"),
+#'                 do.ignoreZeros = TRUE,
+#'                 by = "day",
+#'                 lag = 20,
+#'                 ordersAlm = 1:3,
+#'                 do.inverseAlm = TRUE,
+#'                 do.normalizeAlm = TRUE,
+#'                 alphasExp = c(0.20, 0.50, 0.70, 0.95),
+#'                 weights = data.frame(myWeights = runif(20)))
+#'
 #' @export
-ctr_agg <- function(howWithin = "tf-idf", howDocs = "equal-weight", howTime = "equal-weight",
+ctr_agg <- function(howWithin = "equal_weight", howDocs = "equal_weight", howTime = "equal_weight",
                     do.ignoreZeros = FALSE, by = "day", lag = 1, alphasExp = seq(0.1, 0.5, by = 0.1),
                     ordersAlm = 1:3, do.inverseAlm = TRUE, do.normalizeAlm = TRUE, weights = NULL) {
-
-  # get all supported options for each aggregation level
-  hows <- get_hows()
 
   if (length(howWithin) > 1) howWithin <- howWithin[1]
   if (length(howDocs) > 1) howDocs <- howDocs[1]
 
-  # check if provided aggregations are supported
+  # check if provided aggregation specifications are supported
+  hows <- get_hows() # get all supported options for each aggregation level
   warned <- 0
   if (!(howWithin %in% hows[["words"]])) {
     warning(paste0(howWithin, " is no current option for aggregation across words."))
@@ -546,7 +612,7 @@ ctr_agg <- function(howWithin = "tf-idf", howDocs = "equal-weight", howTime = "e
     warned <- warned + 1
   }
   if (!all(howTime %in% hows[["time"]])) {
-    warning(paste0(howTime, " is no current option for aggregation across time."))
+    warning(paste0(howTime[!(howTime %in% hows[["time"]])], " is no current option for aggregation across time. "))
     warned <- warned + 1
   }
   if ("own" %in% howTime & is.null(weights)) {
@@ -596,17 +662,42 @@ ctr_agg <- function(howWithin = "tf-idf", howDocs = "equal-weight", howTime = "e
 #' @description Sets up control for the optional merging (additional aggregation) of sentiment measures.
 #'
 #' @param sentomeasures a \code{sentomeasures} object.
-#' @param lex a list with unique lexicons to merge at given name, e.g. \code{list(lex12 = c("lex1", "lex2"))}.
-#' @param feat a list with unique features to merge at given name, e.g. \code{list(feat12 = c("feat1", "feat2"))}.
+#' @param lex a list with unique lexicons to merge at given name, e.g. \code{list(lex12 = c("lex1", "lex2"))}. See
+#' \code{sentomeasures$lexicons} for the exact names to use.
+#' @param feat a list with unique features to merge at given name, e.g. \code{list(feat12 = c("feat1", "feat2"))}. See
+#' \code{sentomeasures$features} for the exact names to use.
 #' @param time a list with unique time weighting schemes to merge at given name, e.g. \code{list(tw12 = c("tw1", "tw2"))}.
+#' See \code{sentomeasures$time} for the exact names to use.
 #' @param do.keep a \code{logical} indicating if the original sentiment measures should be kept (i.e. the merged sentiment
 #' measures will be added to the current sentiment measures as additional indices if \code{TRUE}).
 #'
 #' @return A list encapsulating the control parameters.
 #'
+#' @examples
+#' # construct a sentomeasures object to start with
+#' data("useconomynews")
+#' corpus <- sento_corpus(corpusdf = useconomynews)
+#' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+#' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
+#' sentomeasures <- sento_measures(corpus, l, ctr)
+#'
+#' # set up a correct control function
+#' ctrMerge <- ctr_merge(sentomeasures,
+#'                       time = list(W = c("equal_weight", "linear")),
+#'                       lex = list(LEX = c("LM_eng", "HENRY_eng")),
+#'                       feat = list(journals = c("wsj", "wapo")),
+#'                       do.keep = TRUE)
+#'
+#' \dontrun{
+#' # produces an informative error message
+#' ctrMerge <- ctr_merge(sentomeasures,
+#'                       time = list(W = c("equal_weight", "almon1")),
+#'                       lex = list(LEX = c("LM_eng", "HENRY_eng")),
+#'                       feat = list(journals = c("notInHere", "wapo")))
+#' }
+#'
 #' @export
-ctr_merge <- function(sentomeasures, lex = NA, feat = NA, time = NA, do.keep = FALSE) {
-
+ctr_merge <- function(sentomeasures, feat = NA, lex = NA, time = NA, do.keep = FALSE) {
   check_class(sentomeasures, "sentomeasures")
 
   # check if columns to merge exist (missings) and if all merges have at least two columns to combine and are unique (tooFew)
@@ -671,9 +762,22 @@ ctr_merge <- function(sentomeasures, lex = NA, feat = NA, time = NA, do.keep = F
 #' @return A modified \code{sentomeasures} object, with only the sentiment measures required, including updated information
 #' and statistics, but the original sentiment scores \code{data.table} untouched.
 #'
+#' @examples
+#' # construct a sentomeasures object to start with
+#' data("useconomynews")
+#' corpus <- sento_corpus(corpusdf = useconomynews)
+#' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+#' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
+#' sentomeasures <- sento_measures(corpus, l, ctr)
+#'
+#' # different selections
+#' sel1 <- select_measures(sentomeasures, c("equal_weight"))
+#' sel2 <- select_measures(sentomeasures, c("equal_weight", "linear"), do.combine = FALSE)
+#' sel3 <- select_measures(sentomeasures, c("linear", "LM_eng"))
+#' sel4 <- select_measures(sentomeasures, c("linear", "LM_eng", "wsj", "economy"), do.combine = FALSE)
+#'
 #' @export
 select_measures <- function(sentomeasures, toSelect, do.combine = TRUE) {
-
   check_class(sentomeasures, "sentomeasures")
 
   allOpts <- c(sentomeasures$features, sentomeasures$lexicons, sentomeasures$time)
@@ -693,8 +797,7 @@ select_measures <- function(sentomeasures, toSelect, do.combine = TRUE) {
   } else ind[1] <- TRUE # include date column
   measuresNew <- measures[, ind, with = FALSE]
 
-  # update information in sentomeasures object
-  sentomeasures <- update_info(sentomeasures, measuresNew)
+  sentomeasures <- update_info(sentomeasures, measuresNew) # update information in sentomeasures object
 
   return(sentomeasures)
 }
@@ -716,6 +819,18 @@ select_measures <- function(sentomeasures, toSelect, do.combine = TRUE) {
 #' @return Returns a simple \pkg{ggplot2} plot, which can be added onto (or to alter its default elements) by using the
 #' \code{+} operator.
 #'
+#' @examples
+#' # construct a sentomeasures object to start with
+#' data("useconomynews")
+#' corpus <- sento_corpus(corpusdf = useconomynews)
+#' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+#' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
+#' sentomeasures <- sento_measures(corpus, l, ctr)
+#'
+#' # plot sentiment measures
+#' plot(sentomeasures)
+#' plot(sentomeasures, group = "lexicon")
+#'
 #' @import ggplot2
 #' @export
 plot.sentomeasures <- function(x, group = "all", ...) {
@@ -735,7 +850,6 @@ plot.sentomeasures <- function(x, group = "all", ...) {
     legendPos <- "top"
   }
 
-  # prepare plot object
   plot <- ggplot(data = measuresMelt, aes_string(x = "date", y = "value", color = group)) +
     geom_line() +
     geom_hline(yintercept = 0, size = 0.50, linetype = "dotted") +
@@ -753,14 +867,25 @@ plot.sentomeasures <- function(x, group = "all", ...) {
 #' basis. Fills in these dates with either \code{0} or the respective latest non-missing value.
 #'
 #' @param sentomeasures a \code{sentomeasures} object.
-#' @param fill an element of \code{c("zero", "latest")}, the first assumes missing dates represent zero sentoment, the
+#' @param fill an element of \code{c("zero", "latest")}, the first assumes missing dates represent zero sentiment, the
 #' latter assumes missing dates represent constant sentiment.
 #'
 #' @return A modified \code{sentomeasures} object.
 #'
+#' @examples
+#' # construct a sentomeasures object to start with
+#' data("useconomynews")
+#' corpus <- sento_corpus(corpusdf = useconomynews)
+#' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+#' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
+#' sentomeasures <- sento_measures(corpus, l, ctr)
+#'
+#' # fill measures
+#' f1 <- fill_measures(sentomeasures)
+#' f2 <- fill_measures(sentomeasures, fill = "latest")
+#'
 #' @export
 fill_measures <- function(sentomeasures, fill = "zero") {
-
   check_class(sentomeasures, "sentomeasures")
 
   by <- sentomeasures$by
@@ -795,16 +920,25 @@ fill_measures <- function(sentomeasures, fill = "zero") {
 #' @return A modified \code{sentomeasures} object, with the measures replaced by the scaled measures as well as updated
 #' statistics.
 #'
+#' @examples
+#' # construct a sentomeasures object to start with
+#' data("useconomynews")
+#' corpus <- sento_corpus(corpusdf = useconomynews)
+#' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+#' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
+#' sentomeasures <- sento_measures(corpus, l, ctr)
+#'
+#' # scale sentimeant measures
+#' scaled <- scale(sentomeasures)
+#'
 #' @export
 scale.sentomeasures <- function(x, center = TRUE, scale = TRUE) {
-
   sentomeasures <- x
   dates <- sentomeasures$measures[, 1]
   measures <- sentomeasures$measures[, -1] # drop date column
   measuresNorm <- scale(measures, center, scale)
   sentomeasures$measures <- data.table(dates, measuresNorm)
   sentomeasures$stats <- compute_stats(sentomeasures)
-
   return(sentomeasures)
 }
 

@@ -17,6 +17,22 @@ and statistics, but the original sentiment scores \code{data.table} untouched.
 Merge (further aggregate) measures by combining across the lexicons, features and time weighting schemes
 dimensions. The combination occurs by taking the mean of the relevant measures.
 }
+\examples{
+# construct a sentomeasures object to start with
+data("useconomynews")
+corpus <- sento_corpus(corpusdf = useconomynews)
+l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
+sentomeasures <- sento_measures(corpus, l, ctr)
+
+# set up control function and perform the merging
+ctrMerge <- ctr_merge(sentomeasures,
+                      time = list(W = c("equal_weight", "linear")),
+                      feat = list(journals = c("wsj", "wapo")),
+                      do.keep = TRUE)
+sentomeasuresMerged <- merge_measures(ctrMerge)
+
+}
 \seealso{
 \code{\link{ctr_merge}}
 }

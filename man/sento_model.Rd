@@ -49,6 +49,55 @@ regressions sequentially for a given sample size over a longer time horizon, wit
 metrics. Independent variables are normalized in the regression process, but coefficients are returned in their original
 space.
 }
+\examples{
+# construct a sentomeasures object to start with
+data("useconomynews")
+useconomynews <- useconomynews[date >= "1988-01-01", ]
+corpus <- sento_corpus(corpusdf = useconomynews)
+l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional",
+               howTime = c("equal_weight", "linear", "almon"),
+               by = "month", lag = 3, ordersAlm = 1:3,
+               do.inverseAlm = TRUE, do.normalizeAlm = TRUE)
+sentomeasures <- sento_measures(corpus, l, ctr)
+
+# prepare y and other x variables
+data("sp500")
+y <- sp500$return # convert to numeric vector
+sentomeasures <- fill_measures(sentomeasures)
+length(y) == nrow(sentomeasures$measures) # TRUE
+x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
+colnames(x) <- c("x1", "x2")
+
+# a list with models based on the three implemented information criteria
+out1 <- list()
+for (ic in c("BIC", "AIC", "Cp")) {
+ctrIC <- ctr_model(model = "lm", type = ic, do.iter = FALSE, h = 0)
+out1[[ic]] <- sento_model(sentomeasures, y, x = x, ctr = ctrIC)
+}
+
+# a (very) short iterative analysis of cross-validation based models
+ctrCV <- ctr_model(model = "lm", type = "cv", do.iter = TRUE, h = 0, trainWindow = 250,
+                   testWindow = 20, oos = 0, nSample = 320, do.progress = TRUE)
+out2 <- sento_model(sentomeasures, y, x = x, ctr = ctrCV)
+
+# a similar iterative analysis of cross-validation based models but for a binomial target
+yb <- sp500$up
+ctrCV <- ctr_model(model = "binomial", type = "cv", do.iter = TRUE, trainWindow = 250,
+                   h = 0, testWindow = 20, oos = 0, nSample = 320, do.progress = TRUE)
+out3 <- sento_model(sentomeasures, yb, x = x, ctr = ctrCV)
+
+# post-analysis (summary, attribution and prediction)
+out <- out1[["BIC"]]
+summary(out)
+
+attribution <- retrieve_attributions(out)
+
+nx <- ncol(sentomeasures$measures) - 1 + ncol(x) # don't count date column
+newx <- runif(nx) * cbind(sentomeasures$measures[, -1], x)[nrow(x), ]
+preds <- predict(out, newx = as.matrix(newx), type = "link")
+
+}
 \seealso{
 \code{\link{ctr_model}}, \code{\link[glmnet]{glmnet}}, \code{\link[caret]{train}}
 }

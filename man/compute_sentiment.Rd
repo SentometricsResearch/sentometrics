@@ -31,3 +31,11 @@ lexicons. This can be done using the \code{do.split} option in the \code{setup_l
 any lexicon into positive and negative polarity. \code{NA}s are converted to 0, under the assumption that this is
 equivalent to no sentiment.
 }
+\examples{
+# sentiment computation based on raw frequency counts
+data("useconomynews")
+corpus <- sento_corpus(corpusdf = useconomynews)
+l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+sent <- compute_sentiment(corpus, l, how = "counts")
+
+}

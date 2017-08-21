@@ -1,72 +1,4 @@
 
-compute_IC <- function(reg, y, x, alpha, ic, family) {
-
-  beta <- reg$beta
-  lambda <- reg$lambda
-
-  if (family == "gaussian") type <- "link"
-  else stop("To implement for 'binomial' and 'multinomial'.")
-
-  yEst <- stats::predict(reg, newx = x, type = type)
-  df_A <- compute_df(alpha, beta, lambda, x)
-  RSS <- apply(yEst, 2, FUN = function(est) sum((y - est)^2))
-  sigma2 <- RSS[length(RSS)] / (nrow(y) - df_A[length(RSS)])
-
-  if (ic == "BIC") {
-    fun <- compute_BIC
-  } else if (ic == "AIC") {
-    fun <- compute_AIC
-  } else if (ic == "Cp") {
-    fun <- compute_Cp
-  }
-
-  IC <- fun(y, yEst, df_A, RSS, sigma2)
-
-  return(IC)
-}
-
-model_performance <- function(yEst, yReal, family, dates, ...) {
-
-  dots <- list(...)
-
-  if (family == "gaussian") {
-    tp <- as.numeric(yReal > 0 & yEst > 0) # true positives
-    fp <- as.numeric(yReal < 0 & yEst > 0) # false positives
-    tn <- as.numeric(yReal < 0 & yEst < 0) # true negatives
-    fn <- as.numeric(yReal > 0 & yEst < 0) # false negatives
-    dAcc <- data.frame(cbind(tp, fp, tn, fn))
-    colnames(dAcc) <- c("tp", "fp", "tn", "fn")
-    DA <- (sum(tp) + sum(tn)) / (sum(tp) + sum(fp) + sum(tn) + sum(fn)) # directional accuracy
-
-    error <- yEst - yReal
-    error2 <- error^2
-    AD <- abs(error) # absolute deviation
-    APE <- 100 * AD / abs(yReal) # absolute percentage error
-    errors <- data.frame(cbind(error, error2, AD, APE))
-    colnames(errors) <- c("error", "errorSq", "AD", "APE")
-    meanErrors <- colMeans(errors[, -1], na.rm = TRUE)
-
-    raw <- data.frame(yReal, predicted = yEst, dAcc, errors)
-    row.names(raw) <- dates
-
-    errorsAll <- list(raw = raw, DA = DA, RMSFE = as.numeric(sqrt(meanErrors["errorSq"])),
-                      MAD = as.numeric(meanErrors["AD"]), MAPE = as.numeric(meanErrors["APE"]))
-
-  } else if (family %in% c("binomial", "multinomial")) {
-    yRealClass <- as.factor(colnames(yReal)[yReal %*% 1:ncol(yReal)])
-    yEstClass <- dots$yEstClass
-    accuracy <- as.numeric(yRealClass == yEstClass)
-    accuracyProb <- sum(accuracy)/length(accuracy)
-
-    raw <- data.frame(response = yRealClass, predicted = yEstClass, accuracy = accuracy)
-    row.names(raw) <- dates
-
-    errorsAll <- list(raw = raw, accuracy = accuracyProb)
-  }
-
-  return(errorsAll)
-}
-
 #' Setup control for sentiment measures-based regression modelling
 #'
 #' @description Sets up control for linear or nonlinear modelling of a response variable onto a sparse panel of textual
@@ -105,6 +37,22 @@ model_performance <- function(yEst, yReal, family, dates, ...) {
 #'
 #' @return A list encapsulating the control parameters.
 #'
+#' @examples
+#' # series of example information criterion based model control functions
+#' ctrIC1 <- ctr_model(model = "lm", type = "BIC", do.iter = FALSE, h = 0,
+#'                     alphas = seq(0, 1, by = 0.10))
+#' ctrIC2 <- ctr_model(model = "lm", type = "BIC", do.iter = TRUE, h = 0, nSample = 100)
+#'
+#' # series of example cross-validation based model control functions
+#' ctrCV1 <- ctr_model(model = "lm", type = "cv", do.iter = FALSE, h = 0, trainWindow = 250,
+#'                     testWindow = 4, oos = 0, do.progress = TRUE)
+#' ctrCV2 <- ctr_model(model = "binomial", type = "cv", h = 0, trainWindow = 250,
+#'                     testWindow = 4, oos = 0, do.progress = TRUE)
+#' ctrCV3 <- ctr_model(model = "multinomial", type = "cv", h = 0, trainWindow = 250,
+#'                     testWindow = 4, oos = 0, do.progress = TRUE)
+#' ctrCV4 <- ctr_model(model = "lm", type = "cv", do.iter = TRUE, h = 0, trainWindow = 45,
+#'                     testWindow = 4, oos = 0, nSample = 70, do.progress = TRUE)
+#'
 #' @export
 ctr_model <- function(model = c("lm", "binomial", "multinomial"), type = c("BIC", "AIC", "Cp", "cv"),
                       do.iter = FALSE, h = 1, lambdas = 10^seq(2, -2, length.out = 50), alphas = seq(0, 1, by = 0.20),
@@ -126,6 +74,8 @@ ctr_model <- function(model = c("lm", "binomial", "multinomial"), type = c("BIC"
 
   if (min(alphas) < 0 | max(alphas) > 1)
     stop("Each alpha value in alphas must be between 0 and 1, inclusive.")
+
+  if (!do.iter) nSample <- start <- NULL
 
   if (do.iter & is.null(nSample))
     stop("Iterative modelling requires a non-NULL sample size given by nSample.")
@@ -206,21 +156,67 @@ ctr_model <- function(model = c("lm", "binomial", "multinomial"), type = c("BIC"
 #'
 #' @seealso \code{\link{ctr_model}}, \code{\link[glmnet]{glmnet}}, \code{\link[caret]{train}}
 #'
+#' @examples
+#' # construct a sentomeasures object to start with
+#' data("useconomynews")
+#' useconomynews <- useconomynews[date >= "1988-01-01", ]
+#' corpus <- sento_corpus(corpusdf = useconomynews)
+#' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+#' ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional",
+#'                howTime = c("equal_weight", "linear", "almon"),
+#'                by = "month", lag = 3, ordersAlm = 1:3,
+#'                do.inverseAlm = TRUE, do.normalizeAlm = TRUE)
+#' sentomeasures <- sento_measures(corpus, l, ctr)
+#'
+#' # prepare y and other x variables
+#' data("sp500")
+#' y <- sp500$return # convert to numeric vector
+#' sentomeasures <- fill_measures(sentomeasures)
+#' length(y) == nrow(sentomeasures$measures) # TRUE
+#' x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
+#' colnames(x) <- c("x1", "x2")
+#'
+#' # a list with models based on the three implemented information criteria
+#' out1 <- list()
+#' for (ic in c("BIC", "AIC", "Cp")) {
+#' ctrIC <- ctr_model(model = "lm", type = ic, do.iter = FALSE, h = 0)
+#' out1[[ic]] <- sento_model(sentomeasures, y, x = x, ctr = ctrIC)
+#' }
+#'
+#' # a (very) short iterative analysis of cross-validation based models
+#' ctrCV <- ctr_model(model = "lm", type = "cv", do.iter = TRUE, h = 0, trainWindow = 250,
+#'                    testWindow = 20, oos = 0, nSample = 320, do.progress = TRUE)
+#' out2 <- sento_model(sentomeasures, y, x = x, ctr = ctrCV)
+#'
+#' # a similar iterative analysis of cross-validation based models but for a binomial target
+#' yb <- sp500$up
+#' ctrCV <- ctr_model(model = "binomial", type = "cv", do.iter = TRUE, trainWindow = 250,
+#'                    h = 0, testWindow = 20, oos = 0, nSample = 320, do.progress = TRUE)
+#' out3 <- sento_model(sentomeasures, yb, x = x, ctr = ctrCV)
+#'
+#' # post-analysis (summary, attribution and prediction)
+#' out <- out1[["BIC"]]
+#' summary(out)
+#'
+#' attribution <- retrieve_attributions(out)
+#'
+#' nx <- ncol(sentomeasures$measures) - 1 + ncol(x) # don't count date column
+#' newx <- runif(nx) * cbind(sentomeasures$measures[, -1], x)[nrow(x), ]
+#' preds <- predict(out, newx = as.matrix(newx), type = "link")
+#'
 #' @export
 sento_model <- function(sentomeasures, y, x = NULL, ctr) {
-
   check_class(sentomeasures, "sentomeasures")
 
   if (any(is.na(y))) stop("No NA values are allowed in y.")
-
   nrows <- c(nrow(sentomeasures$measures), ifelse(is.null(nrow(y)), length(y), nrow(y)), nrow(x))
   if (length(unique(nrows)) != 1)
     stop("Number of rows or length for y, x and measures in sentomeasures must be equal.")
-
   if (sum(ncol(sentomeasures$measures) + ifelse(is.null(x), 0, ncol(x))) < 2)
     stop("There should be at least two explanatory variables out of sentomeasures and x combined.")
 
   family <- ctr$model
+  if (family == "lm") family <- "gaussian"
   type <- ctr$type
   do.iter <- ctr$do.iter
   h <- ctr$h
@@ -232,8 +228,6 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
   oos <- ctr$oos # used when type == "cv"
   nSample <- ctr$nSample # used when do.iter == TRUE
   start <- ctr$start # used when do.iter == TRUE
-
-  if (family == "lm") family <- "gaussian"
 
   if (do.iter) {
     out <- sento_model_iter(sentomeasures, y = y, x = x, h = h, family = family, alphas = alphas,
@@ -266,6 +260,7 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
   alignedVars <- align_variables(y, sentomeasures, x, h, i = i, nSample = nSample)
   yy <- alignedVars$y
   xx <- alignedVars$x # changed x to include sentiment measures
+  refDate <- alignedVars$datesX[nrow(yy)]
 
   penalty <- rep(1, ncol(xx))
   if (!is.null(x)) penalty[ncol(sentomeasures$measures):ncol(xx)] <- 0 # no shrinkage for original x variables
@@ -303,13 +298,13 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
               sentomeasures = sentomeasures,
               alpha = alphaOpt,
               lambda = lambdaOpt,
-              ic = list(criterion = ic, opts = unlist(minIC)))
+              ic = list(criterion = ic, opts = unlist(minIC)),
+              date = refDate)
 
   class(out) <- c("sentomodel")
 
   return(out)
 }
-
 model_IC <- compiler::cmpfun(.model_IC)
 
 .model_CV <- function(sentomeasures, y, x, h, family, alphas, lambdas,
@@ -326,6 +321,7 @@ model_IC <- compiler::cmpfun(.model_IC)
   alignedVars <- align_variables(y, sentomeasures, x, h, i = i, nSample = nSample)
   yy <- alignedVars$y
   xx <- alignedVars$x # changed x to include sentiment measures
+  refDate <- alignedVars$datesX[nrow(yy)]
 
   penalty <- rep(1, ncol(xx))
   if (!is.null(x)) penalty[ncol(sentomeasures$measures):ncol(xx)] <- 0 # no shrinkage for original x variables
@@ -360,13 +356,13 @@ model_IC <- compiler::cmpfun(.model_IC)
               sentomeasures = sentomeasures,
               alpha = alphaOpt,
               lambda = lambdaOpt,
-              trained = trained)
+              trained = trained,
+              date = refDate)
 
   class(out) <- c("sentomodel")
 
   return(out)
 }
-
 model_CV <- compiler::cmpfun(.model_CV)
 
 .sento_model_iter <- function(sentomeasures, y, x, h, family, alphas, lambdas,
@@ -440,68 +436,187 @@ model_CV <- compiler::cmpfun(.model_CV)
 
   return(out)
 }
-
 sento_model_iter <- compiler::cmpfun(.sento_model_iter)
+
+compute_IC <- function(reg, y, x, alpha, ic, family) {
+
+    beta <- reg$beta
+  lambda <- reg$lambda
+
+  if (family == "gaussian") type <- "link"
+  else stop("To implement for 'binomial' and 'multinomial'.")
+
+  yEst <- stats::predict(reg, newx = x, type = type)
+  df_A <- compute_df(alpha, beta, lambda, x)
+  RSS <- apply(yEst, 2, FUN = function(est) sum((y - est)^2))
+  sigma2 <- RSS[length(RSS)] / (nrow(y) - df_A[length(RSS)])
+
+  if (ic == "BIC") {
+    fun <- compute_BIC
+  } else if (ic == "AIC") {
+    fun <- compute_AIC
+  } else if (ic == "Cp") {
+    fun <- compute_Cp
+  }
+  IC <- fun(y, yEst, df_A, RSS, sigma2)
+
+  return(IC)
+}
+
+model_performance <- function(yEst, yReal, family, dates, ...) {
+
+  dots <- list(...)
+
+  if (family == "gaussian") {
+    tp <- as.numeric(yReal > 0 & yEst > 0) # true positives
+    fp <- as.numeric(yReal < 0 & yEst > 0) # false positives
+    tn <- as.numeric(yReal < 0 & yEst < 0) # true negatives
+    fn <- as.numeric(yReal > 0 & yEst < 0) # false negatives
+    dAcc <- data.frame(cbind(tp, fp, tn, fn))
+    colnames(dAcc) <- c("tp", "fp", "tn", "fn")
+    DA <- (sum(tp) + sum(tn)) / (sum(tp) + sum(fp) + sum(tn) + sum(fn)) # directional accuracy
+
+    error <- yEst - yReal
+    error2 <- error^2
+    AD <- abs(error) # absolute deviation
+    APE <- 100 * AD / abs(yReal) # absolute percentage error
+    errors <- data.frame(cbind(error, error2, AD, APE))
+    colnames(errors) <- c("error", "errorSq", "AD", "APE")
+    meanErrors <- colMeans(errors[, -1], na.rm = TRUE)
+
+    raw <- data.frame(yReal, predicted = yEst, dAcc, errors)
+    row.names(raw) <- dates
+
+    errorsAll <- list(raw = raw, DA = DA, RMSFE = as.numeric(sqrt(meanErrors["errorSq"])),
+                      MAD = as.numeric(meanErrors["AD"]), MAPE = as.numeric(meanErrors["APE"]))
+
+  } else if (family %in% c("binomial", "multinomial")) {
+    yRealClass <- as.factor(colnames(yReal)[yReal %*% 1:ncol(yReal)])
+    yEstClass <- dots$yEstClass
+    accuracy <- as.numeric(yRealClass == yEstClass)
+    accuracyProb <- sum(accuracy)/length(accuracy)
+
+    raw <- data.frame(response = yRealClass, predicted = yEstClass, accuracy = accuracy)
+    row.names(raw) <- dates
+
+    errorsAll <- list(raw = raw, accuracy = accuracyProb)
+  }
+
+  return(errorsAll)
+}
 
 #' Retrieves top-down sentiment attribution given forecasting equation
 #'
-#' xxx
+#' ### TODO
 #'
 #' @param sentomodel a \code{sentomodel} object.
-#' @param rows row indices (i.e. dates) for which the attribution needs to be calculated, based on the measures in the
-#' \code{sentomeasures} object packed within the \code{sentomodel} input. By default \code{NULL}, which means attribution
-#' is calculated for all rows.
-#' @param ... to do.
 #'
-#' @return A list with all dimensions for which aggregation is computed, as \code{data.table}s with a \code{"date"} and
-#' \code{"attribution"} column for the rows indicated.
+#' @return A list with all possible dimensions for which aggregation can be computed, as \code{data.table}s with an
+#' \code{"id"} (at document-level) column, a \code{"date"} column and a \code{"attribution"} column. ### TODO
+#'
+#' @seealso \code{\link{sento_model}}
 #'
 #' @export
-retrieve_attribution <- function(sentomodel, rows = NULL, ...) {
-
-  ### check rows input
-  ### compute document-level attribution
-
+retrieve_attributions <- function(sentomodel) {
   check_class(sentomodel, "sentomodel")
 
-  reg <- sentomodel$reg
-  sentomeasures <- sentomodel$sentomeasures
-  dates <- sentomeasures$measures$date
-  measures <- sentomeasures$measures[, -1] # drop date column
-  coeffs <- stats::coef(reg)[1:ncol(measures), ][-1] # exclude intercept and other x variables
-  if (is.null(rows)) rows <- 1:nrow(measures)
+  ### TODO: proper datesIn (fill sentiment values) [vs. time aggregation with unfilled values]
+  ### TODO: date selection/timing of attribution
+  ### TODO: application to logistic models (exponentiation?)
 
+  sentomeasures <- sentomodel$sentomeasures
+  sent <- sentomeasures$sentiment
+  lex <- sentomeasures$lexicons
+  features <- sentomeasures$features
+  W <- sentomeasures$attribWeights[["W"]]
+  B <- sentomeasures$attribWeights[["B"]]
+  refDate <- sentomodel$date
+  measures <- sentomeasures$measures[, -1]
   cols <- colnames(measures)
-  dims <- c(sentomeasures$features, sentomeasures$lexicons, sentomeasures$time)
-  attribs <- lapply(dims, function(x) {
+  coeffs <- stats::coef(sentomodel$reg)[2:(length(cols) + 1), ] # exclude intercept and other x variables
+
+  attribsList <- function() {
+    dates <- unique(sent$date)
+    datesIn <- dates[(which(dates == refDate) - nrow(B) + 1):which(dates == refDate)]
+    B$date <- datesIn
+    outL <- vector(mode = "list", length = length(lex))
+    names(outL) <- lex
+    for (lexicon in lex) { # document-level attribution for all lexicons
+      selS <- colnames(sent)[stringi::stri_detect(colnames(sent), regex = paste0(lexicon, "\\b"))]
+      outF <- lapply(features, function(feat) { # for later summation over all features
+        selF <- cols[stringi::stri_detect(cols, regex = paste0(paste0(c(lexicon, feat), collapse = "--"), "\\b"))]
+        betas <- coeffs[selF]
+        outB <- rbindlist(
+          lapply(datesIn, function(b) { # for all dates between reference date and lag number
+            timeWeights <- B[B$date == b, -ncol(B)]
+            docWeights <- W[date == b, "w"]
+            sents <- sent[date == b, selS, with = FALSE]
+            colnames(sents) <- features
+            out <- data.table(sent[date == b, c("id")], date = rep(b, nrow(docWeights)),
+                              sum(timeWeights * betas) * docWeights * sents[, feat, with = FALSE])
+            return(out)
+          })
+        )
+        names(outB)[3] <- c("attrib")
+        return(outB)
+      })
+      names(outF) <- features
+      outL[[lexicon]] <- outF
+    }
+    return(outL)
+  }
+  attribsListed <- attribsList()
+
+  attribsDocs <- lapply(attribsListed, function(l) {
+    all <- rbindlist(l)
+    out <- all[, list(attrib = sum(attrib)), by = list(id, date)]
+    return(out)
+  })
+
+  attribsFeatures <- rbindlist(lapply(attribsListed, function(l) {
+    ll <- rbindlist(l, idcol = "feature")
+    return(ll[, list(attrib = sum(attrib)), by = feature])
+  }))[, list(attrib = sum(attrib)), by = feature]
+
+  attribsLexicons <- rbindlist(lapply(attribsDocs, function(l) {
+    return(l[, list(attrib = sum(attrib))])
+  }), idcol = "lexicon")
+
+  attribsTime <- lapply(colnames(B), function(x) {
     sel <- cols[stringi::stri_detect(cols, regex = paste0("\\b", x, "\\b"))] # exact match
-    attr <- rowSums(coeffs * measures[rows, sel, with = FALSE, drop = FALSE], na.rm = TRUE)
-    attr <- data.table(date = dates, attribution = attr)
+    attr <- sum(coeffs[sel] * measures[nrow(measures), sel, with = FALSE, drop = FALSE])
+    attr <- data.table(attrib = attr)
     return(attr)
   })
-  names(attribs) <- dims
+  names(attribsTime) <- colnames(B)
+  attribsTime <- rbindlist(attribsTime, idcol = "time")
 
-  return(attribs)
+  attribsAll <- vector(mode = "list", length = 4)
+  attribsAll[[1]] <- attribsDocs
+  attribsAll[[2]] <- attribsFeatures
+  attribsAll[[3]] <- attribsLexicons
+  attribsAll[[4]] <- attribsTime
+  names(attribsAll) <- c("documents", "features", "lexicons", "time")
+
+  return(attribsAll)
 }
 
-sento_arima <- function() {
-
-}
-
-#' Summary of sentomodel object
+#' Summary of a sentomodel object
 #'
-#' Prints out a short summary consisting of the main elements of the constructed model (model type, calibrated values, non-zero
-#' coefficients and performance).
+#' Prints out a short summary consisting of the main elements of the constructed model (model type, calibrated values,
+#' non-zero coefficients and performance).
 #'
 #' @param object a \code{sentomodel} object.
 #' @param ... not used.
 #'
 #' @return A sequence of informative prints on the model's results.
+#'
+#' @seealso \code{\link{sento_model}}
+#'
+#' @export
 summary.sentomodel <- function(object, ...) {
-
   sentomodel <- object
   reg <- sentomodel$reg
-
   if ("ic" %in% names(sentomodel)) {
     printCalib <- paste0("via ", sentomodel$ic[[1]], " information criterion")
   } else {
@@ -510,7 +625,6 @@ summary.sentomodel <- function(object, ...) {
                          length(sentomodel$trained$control$index[[1]]),
                          ", selection based on ", sentomodel$trained$metric, " metric")
   }
-
   cat("\n")
   cat("Model specifications \n")
   cat(rep("-", 20), "\n \n")
@@ -518,16 +632,13 @@ summary.sentomodel <- function(object, ...) {
   cat("Number of observations:", reg$nobs, "\n")
   cat("Optimal elastic net alpha parameter:", sentomodel$alpha, "\n")
   cat("Optimal elastic net lambda parameter:", reg$lambda, "\n \n")
-
   cat("Non-zero coefficients \n")
   cat(rep("-", 20), "\n")
   print(nonzero_coeffs(reg))
   cat("\n \n")
-
   cat("Performance \n")
   cat(rep("-", 20), "\n \n")
   cat("Fraction of deviance explained: ", reg$dev.ratio * 100, "% \n \n")
-
   invisible()
 }
 
@@ -537,9 +648,9 @@ summary.sentomodel <- function(object, ...) {
 #' simplified in terms of allowed parameters.
 #'
 #' @param object a \code{sentomodel} object.
-#' @param newx a \code{matrix} of \code{numeric} values for all explanatory variables at which predictions are to be made, see
-#' documentation for \code{\link{predict.glmnet}}.
-#' @param type type of prediction required, an value from \code{c("link", "response", "class")}, see documentation for
+#' @param newx a \code{matrix} of \code{numeric} values for all explanatory variables at which predictions are to be made,
+#' see documentation for \code{\link{predict.glmnet}}.
+#' @param type type of prediction required, a value from \code{c("link", "response", "class")}, see documentation for
 #' \code{\link{predict.glmnet}}.
 #' @param offset values to use as offset, only if an offset was also used in the model fitting, see documentation for
 #' \code{\link{predict.glmnet}}.
@@ -547,15 +658,13 @@ summary.sentomodel <- function(object, ...) {
 #'
 #' @return A prediction output depending on the \code{type} argument provided.
 #'
-#' @seealso \code{\link{predict.glmnet}}
+#' @seealso \code{\link{predict.glmnet}}, \code{\link{sento_model}}
 #'
 #' @export
 predict.sentomodel <- function(object, newx, type, offset = NULL, ...) {
-
   sentomodel <- object
   reg <- sentomodel$reg
   pred <- stats::predict(reg, newx = newx, type = type, offset = offset)
-
   return(pred)
 }
 
