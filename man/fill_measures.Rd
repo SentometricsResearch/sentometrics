@@ -9,7 +9,7 @@ fill_measures(sentomeasures, fill = "zero")
 \arguments{
 \item{sentomeasures}{a \code{sentomeasures} object.}
 
-\item{fill}{an element of \code{c("zero", "latest")}, the first assumes missing dates represent zero sentoment, the
+\item{fill}{an element of \code{c("zero", "latest")}, the first assumes missing dates represent zero sentiment, the
 latter assumes missing dates represent constant sentiment.}
 }
 \value{
@@ -18,4 +18,17 @@ A modified \code{sentomeasures} object.
 \description{
 Adds missing dates between earliest and latest date, such that time series is continuous on a period-by-period
 basis. Fills in these dates with either \code{0} or the respective latest non-missing value.
+}
+\examples{
+# construct a sentomeasures object to start with
+data("useconomynews")
+corpus <- sento_corpus(corpusdf = useconomynews)
+l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
+sentomeasures <- sento_measures(corpus, l, ctr)
+
+# fill measures
+f1 <- fill_measures(sentomeasures)
+f2 <- fill_measures(sentomeasures, fill = "latest")
+
 }

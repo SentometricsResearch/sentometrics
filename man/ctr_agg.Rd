@@ -4,8 +4,8 @@
 \alias{ctr_agg}
 \title{Setup control for aggregation into sentiment measures}
 \usage{
-ctr_agg(howWithin = "tf-idf", howDocs = "equal-weight",
-  howTime = "equal-weight", do.ignoreZeros = FALSE, by = "day", lag = 1,
+ctr_agg(howWithin = "equal_weight", howDocs = "equal_weight",
+  howTime = "equal_weight", do.ignoreZeros = FALSE, by = "day", lag = 1,
   alphasExp = seq(0.1, 0.5, by = 0.1), ordersAlm = 1:3,
   do.inverseAlm = TRUE, do.normalizeAlm = TRUE, weights = NULL)
 }
@@ -54,6 +54,24 @@ sentiment measures (indices).
 \details{
 For currently available options on how aggregation can occer (via the \code{howWithin},
 \code{howDocs} and \code{howTime} parameters), call \code{get_hows()}.
+}
+\examples{
+# simple control function (using equal_weight default options)
+ctr1 <- ctr_agg(howTime = c("linear"), by = "year", lag = 3)
+
+# more elaborate control function (particular attention to time weighting schemes)
+ctr2 <- ctr_agg(howWithin = "tf-idf",
+                howDocs = "proportional",
+                howTime = c("equal_weight", "linear", "almon", "exponential", "own"),
+                do.ignoreZeros = TRUE,
+                by = "day",
+                lag = 20,
+                ordersAlm = 1:3,
+                do.inverseAlm = TRUE,
+                do.normalizeAlm = TRUE,
+                alphasExp = c(0.20, 0.50, 0.70, 0.95),
+                weights = data.frame(myWeights = runif(20)))
+
 }
 \seealso{
 \code{\link{get_hows}}

@@ -65,8 +65,20 @@ sp500 <- sp500[sp500$Date <= "2015-01-01", ]
 sp500 <- xts::xts(sp500$`Adj Close`[-1], sp500$Date[-nrow(sp500)])
 sp500 <- PerformanceAnalytics::Return.calculate(sp500)
 sp500 <- sp500[-1, ]
-sp500 <- data.frame(date = zoo::index(sp500), return = as.numeric(sp500))
 
+yb <- ifelse(sp500 >= 0, 1, -1)
+yb <- as.factor(yb)
+levels(yb) <- c("neg", "pos") # binomial example series
+
+ym <- sp500
+ym[ym >= 0 & ym < 0.05] <- 1
+ym[ym >= 0.05 & ym != 1] <- 2
+ym[ym <= 0 & ym > -0.05] <- -1
+ym[ym <= -0.05 & ym != -1] <- -2
+ym <- as.factor(ym)
+levels(ym) <- c("neg-", "neg", "pos", "pos+") # multinomial example series
+
+sp500 <- data.frame(date = zoo::index(sp500), return = as.numeric(sp500), up = yb, upMulti = ym)
 save(sp500, file = "data/sp500.rda", compress = 'xz')
 
 ######################### LEXICONS

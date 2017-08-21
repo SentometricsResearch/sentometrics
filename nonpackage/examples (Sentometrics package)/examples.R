@@ -10,29 +10,29 @@ require(sentometrics)
 ###############################
 
 data("useconomynews")
+useconomynews <- useconomynews[date >= "1988-01-01", ]
 
-data <- useconomynews
-data <- data[data$date >= "1988-01-01", ]
-corpus <- sento_corpus(corpusdf = data)
+corpus <- sento_corpus(corpusdf = useconomynews)
 corpusSmall <- quanteda::corpus_sample(corpus, size = 500)
-corpusExt <- add_features(corpus, featuresdf = data.frame(random = runif(corpus$nDocs)))
+corpusExt <- add_features(corpus, featuresdf = data.frame(random = runif(quanteda::ndoc(corpus))))
 
 data("lexicons")
 data("valence")
 
 lexIn <- c(list(myLexicon = data.frame(w = c("good", "nice", "boring"), s = c(1, 2, -1))), lexicons[c("GI_eng")])
-valIn <- valence[["valence_nl"]] # change naming to language + three-column
+valIn <- valence[["valence_eng"]]
 lex <- setup_lexicons(lexIn, valIn)
 lex <- setup_lexicons(lexIn, valIn, do.split = TRUE)
 lex <- lexicons[c("GI_eng", "LM_eng")]
 
-ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional", howTime = c("equal-weight", "linear", "almon"),
+ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional", howTime = c("equal_weight", "linear", "almon"),
                by = "month", lag = 3, ordersAlm = 1:3, do.inverseAlm = TRUE, do.normalizeAlm = TRUE)
 
 # step-by-step
-sent <- compute_sentiment(corpus, lex, how = "tf-idf")
-# aggDocs <- agg_documents(sent, by = "month", how = "proportional", do.ignoreZeros = FALSE) # internal
-# sentMeas <- agg_time(aggDocs, lag = 3, how = "equal-weight") # internal
+sent <- compute_sentiment(corpusSmall, lex, how = "tf-idf")
+sent <- compute_sentiment(corpus, lex, how = "equal_weight")
+# aggDocs <- agg_documents(sent, by = "month", how = "equal_weight", do.ignoreZeros = FALSE) # internal
+# sentMeas <- agg_time(aggDocs, lag = 3, c("equal_weight", "linear")) # internal
 
 # at once
 sentMeas <- sento_measures(corpus, lex, ctr)
@@ -77,7 +77,6 @@ n <- 100
 sentMeas2 <- sentMeas
 sentMeas2$measures <- tail(sentMeas2$measures, n)
 yl <- tail(y, n)
-
 x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
 colnames(x) <- c("x1", "x2")
 xs <- tail(x, n)
@@ -103,27 +102,14 @@ out <- sento_model(sentMeas2, yl, ctr = ctrCV)
 
 ### LOGISTIC (binomial) ###
 
-yb <- tail(y, n)
-yb <- ifelse(yb >= 0, 1, -1)
-yb <- as.factor(yb)
-levels(yb) <- c("neg", "pos")
-# p <- as.numeric(yb == 1)
-# n <- as.numeric(yb == -1)
-# yb <- matrix(c(n, p), ncol = 2)
-# colnames(yb) <- c("pos", "neg")
-
+yb <- tail(sp500$up, n)
 ctrCV <- ctr_model(model = "binomial", type = "cv", do.iter = TRUE, h = 0, trainWindow = 45, testWindow = 2, oos = 0,
                    nSample = n - 2, do.progress = TRUE)
 out <- sento_model(sentMeas2, yb, x = xs, ctr = ctrCV)
 
 ### LOGISTIC (multinomial) ###
 
-ym <- tail(y, n)
-ym[ym >= 0 & ym < 0.05] <- 1; ym[ym >= 0.05 & ym != 1] <- 2
-ym[ym <= 0 & ym > -0.05] <- -1; ym[ym <= -0.05 & ym != -1] <- -2
-ym <- as.factor(ym)
-levels(ym) <- c("neg-", "neg", "pos", "pos+")
-
+ym <- tail(sp500$upMulti, n)
 ctrCV <- ctr_model(model = "multinomial", type = "cv", do.iter = TRUE, h = 0, trainWindow = 45, testWindow = 2, oos = 0,
                    nSample = n - 2, do.progress = TRUE)
 out <- sento_model(sentMeas2, ym, ctr = ctrCV)

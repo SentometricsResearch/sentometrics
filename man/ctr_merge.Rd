@@ -4,17 +4,20 @@
 \alias{ctr_merge}
 \title{Setup control for merging sentiment measures}
 \usage{
-ctr_merge(sentomeasures, lex = NA, feat = NA, time = NA,
+ctr_merge(sentomeasures, feat = NA, lex = NA, time = NA,
   do.keep = FALSE)
 }
 \arguments{
 \item{sentomeasures}{a \code{sentomeasures} object.}
 
-\item{lex}{a list with unique lexicons to merge at given name, e.g. \code{list(lex12 = c("lex1", "lex2"))}.}
+\item{feat}{a list with unique features to merge at given name, e.g. \code{list(feat12 = c("feat1", "feat2"))}. See
+\code{sentomeasures$features} for the exact names to use.}
 
-\item{feat}{a list with unique features to merge at given name, e.g. \code{list(feat12 = c("feat1", "feat2"))}.}
+\item{lex}{a list with unique lexicons to merge at given name, e.g. \code{list(lex12 = c("lex1", "lex2"))}. See
+\code{sentomeasures$lexicons} for the exact names to use.}
 
-\item{time}{a list with unique time weighting schemes to merge at given name, e.g. \code{list(tw12 = c("tw1", "tw2"))}.}
+\item{time}{a list with unique time weighting schemes to merge at given name, e.g. \code{list(tw12 = c("tw1", "tw2"))}.
+See \code{sentomeasures$time} for the exact names to use.}
 
 \item{do.keep}{a \code{logical} indicating if the original sentiment measures should be kept (i.e. the merged sentiment
 measures will be added to the current sentiment measures as additional indices if \code{TRUE}).}
@@ -24,4 +27,28 @@ A list encapsulating the control parameters.
 }
 \description{
 Sets up control for the optional merging (additional aggregation) of sentiment measures.
+}
+\examples{
+# construct a sentomeasures object to start with
+data("useconomynews")
+corpus <- sento_corpus(corpusdf = useconomynews)
+l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
+sentomeasures <- sento_measures(corpus, l, ctr)
+
+# set up a correct control function
+ctrMerge <- ctr_merge(sentomeasures,
+                      time = list(W = c("equal_weight", "linear")),
+                      lex = list(LEX = c("LM_eng", "HENRY_eng")),
+                      feat = list(journals = c("wsj", "wapo")),
+                      do.keep = TRUE)
+
+\dontrun{
+# produces an informative error message
+ctrMerge <- ctr_merge(sentomeasures,
+                      time = list(W = c("equal_weight", "almon1")),
+                      lex = list(LEX = c("LM_eng", "HENRY_eng")),
+                      feat = list(journals = c("notInHere", "wapo")))
+}
+
 }

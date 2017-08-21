@@ -28,6 +28,20 @@ indicate the importance of each component in the \code{lexicons}, \code{features
 \code{sentomeasures} object. The global measure is composed as the multiplication of the individual weights across the
 three dimensions times the sentiment value per date observation.
 }
+\examples{
+# construct a sentomeasures object to start with
+data("useconomynews")
+corpus <- sento_corpus(corpusdf = useconomynews)
+l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
+sentomeasures <- sento_measures(corpus, l, ctr)
+
+# merge into one global sentiment measure, with specified weighting for lexicons and features
+global <- merge_to_global(sentomeasures, lex = c(0.40, 0.60),
+                                         feat = c(0.10, 0.20, 0.30, 0.40),
+                                         time = 1)
+
+}
 \seealso{
 \code{\link{ctr_merge}}
 }

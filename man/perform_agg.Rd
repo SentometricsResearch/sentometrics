@@ -19,6 +19,16 @@ A \code{sentomeasures} object.
 Condense document-level textual sentiment scores into a panel of textual sentiment
 measures by aggregating across documents and time.
 }
+\examples{
+# computation of sentiment and aggregation into sentiment measures
+data("useconomynews")
+corpus <- sento_corpus(corpusdf = useconomynews)
+l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+sent <- compute_sentiment(corpus, l, how = "counts")
+ctr <- ctr_agg(howTime = c("linear"), by = "year", lag = 3)
+sentomeasures <- perform_agg(sent, ctr)
+
+}
 \seealso{
 \code{\link{compute_sentiment}}, \code{\link{ctr_agg}}
 }

@@ -1,29 +1,24 @@
 
-################################
-## GSoC 2017 - TO DO (AUGUST) ##
-################################
-
 - sentomodel.R
 	> parallelization to add (internally or pointers in documentation on how to use parallelization)
 	> check warnings and sanity in caret::train() setup
-	> retrieve_attribution()
-	> sento_arima()
+	> retrieve_attribution() [cf. ### in-code comments]
 	> check binomial and multinomial regressions
 	> integrate ... to allow for user-supplied additional parameters to glmnet (via ctr functions of glmnet train in our ctr function); e.g. offset
 	> add GCV (gen. cross-validation)
-	> find information criteria appropriate for logistic regression in elastic net-context
+	> find information criteria appropriate for logistic regression in elastic net-context (cf. Keven on GitHub + df estimator applicable for logistic regression?)
 	> statistical tests (Diebold-Mariano, MCS, etc.)
 - sentomeasures.R
 	> add remove = stopwords("english") in dfm (+ translated stopwords)?
-	> account for valence words in sentiment calculation (start with negation words)
-		> paste valence words with neighboring words in text processing (no change from 1-gram analysis required then) + add negation words in lexicons
-		> format of valence word list: three-column (to change in VALENCE); adapt as_key() call
-- sentocorpus.R
-	> cleaning functions (basics + HTML, etc.); do.clean option in sento_corpus()
 - examples
-	> incorporation into documentation
-	> examples with meaningful results (find another corpus/response variable combination)
+	> incorporation into documentation + relatively meaningful results (other corpus/response variable combination?)
 - vignette
 	> basic structure
 - write unit tests
-- speed (e.g. use apply where for loops if desirable, optimal use of data.table and its methods, etc.)
+- speed (use apply where for loops if desirable, optimal use of data.table and its methods, etc.)
+
+(update to newest R version)
+(check compatibility with major quanteda package update in October 2017)
+(valence words not detected if first word is a valence shifter, e.g. " not " if text is "not ...")
+(function to update sentomeasures [when new texts come in])
+

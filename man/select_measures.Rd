@@ -22,3 +22,18 @@ and statistics, but the original sentiment scores \code{data.table} untouched.
 Selects the subset of sentiment measures which include either all of the given selection components combined,
 or those who's name consist of at least one of the selection components.
 }
+\examples{
+# construct a sentomeasures object to start with
+data("useconomynews")
+corpus <- sento_corpus(corpusdf = useconomynews)
+l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
+sentomeasures <- sento_measures(corpus, l, ctr)
+
+# different selections
+sel1 <- select_measures(sentomeasures, c("equal_weight"))
+sel2 <- select_measures(sentomeasures, c("equal_weight", "linear"), do.combine = FALSE)
+sel3 <- select_measures(sentomeasures, c("linear", "LM_eng"))
+sel4 <- select_measures(sentomeasures, c("linear", "LM_eng", "wsj", "economy"), do.combine = FALSE)
+
+}

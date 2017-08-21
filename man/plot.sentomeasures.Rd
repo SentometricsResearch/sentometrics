@@ -24,3 +24,16 @@ Straightforward plotting method for all sentiment measures in the provided \code
 shown in one plot. We suggest to make use of the \code{select_measures()} function when you desire to plot only a subset of
 the sentiment measures.
 }
+\examples{
+# construct a sentomeasures object to start with
+data("useconomynews")
+corpus <- sento_corpus(corpusdf = useconomynews)
+l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
+sentomeasures <- sento_measures(corpus, l, ctr)
+
+# plot sentiment measures
+plot(sentomeasures)
+plot(sentomeasures, group = "lexicon")
+
+}

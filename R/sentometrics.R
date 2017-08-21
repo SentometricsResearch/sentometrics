@@ -126,16 +126,20 @@
 #' @docType data
 #'
 #' @description
-#' Monthly returns for the S&P 500 Index between March 1988 and December 2014.
+#' Monthly returns for the S&P 500 Index between March 1988 and December 2014, including a binomial and a multinomial example
+#' series.
 #'
 #' \itemize{
 #'   \item date. Date as \code{"yyyy-mm-01"}.
 #'   \item return. A \code{numeric} monthly return value.
+#'   \item up. A \code{factor} with value \code{"pos"} if return is greater than zero, else \code{"neg"}.
+#'   \item upMulti. A \code{factor} with values \code{"pos+"}, \code{"pos"}, \code{"neg"} and \code{"neg-"} if returns are
+#'   greater than 0.05 and 0, or smaller than 0 and -0.05, respectively and in a mutually exclusive sense.
 #' }
 #'
 #' @usage data("sp500")
 #'
-#' @format A \code{data.frame} with 322 rows and 2 columns.
+#' @format A \code{data.frame} with 322 rows and 4 columns.
 #'
 #' @source \href{https://finance.yahoo.com/quote/\%5EGSPC/history?p=\%5EGSPC}{S&P 500 (^GSPC) at Yahoo Finance}
 "sp500"

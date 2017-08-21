@@ -9,10 +9,10 @@
 \arguments{
 \item{object}{a \code{sentomodel} object.}
 
-\item{newx}{a \code{matrix} of \code{numeric} values for all explanatory variables at which predictions are to be made, see
-documentation for \code{\link{predict.glmnet}}.}
+\item{newx}{a \code{matrix} of \code{numeric} values for all explanatory variables at which predictions are to be made,
+see documentation for \code{\link{predict.glmnet}}.}
 
-\item{type}{type of prediction required, an value from \code{c("link", "response", "class")}, see documentation for
+\item{type}{type of prediction required, a value from \code{c("link", "response", "class")}, see documentation for
 \code{\link{predict.glmnet}}.}
 
 \item{offset}{values to use as offset, only if an offset was also used in the model fitting, see documentation for
@@ -28,5 +28,5 @@ Prediction (forecasting) method for \code{sentomodel} class, with usage along th
 simplified in terms of allowed parameters.
 }
 \seealso{
-\code{\link{predict.glmnet}}
+\code{\link{predict.glmnet}}, \code{\link{sento_model}}
 }

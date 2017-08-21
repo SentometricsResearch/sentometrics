@@ -31,6 +31,22 @@ Wrapper function which assembles calls to \code{compute_sentiment()} and \code{p
 the input \code{sentocorpus} and computed sentiment scores in its output. Serves as the most direct way towards a panel of
 textual sentiment measures, and a \code{sentomeasures} object.
 }
+\examples{
+# computation of sentiment measures based on a provided control function
+data("useconomynews")
+corpus <- sento_corpus(corpusdf = useconomynews)
+l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+ctr <- ctr_agg(howWithin = "tf-idf",
+               howDocs = "proportional",
+               howTime = c("equal_weight", "linear", "almon"),
+               by = "month",
+               lag = 3,
+               ordersAlm = 1:3,
+               do.inverseAlm = TRUE,
+               do.normalizeAlm = TRUE)
+sentomeasures <- sento_measures(corpus, l, ctr)
+
+}
 \seealso{
 \code{\link{compute_sentiment}}, \code{\link{perform_agg}}
 }

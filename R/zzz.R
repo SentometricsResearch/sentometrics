@@ -4,7 +4,8 @@
   # CRAN note avoidance
   if (getRversion() >= "2.15.1")
     utils::globalVariables(
-      c("value", "variable", "word_count", "w")
+      c("value", "variable", "word_count", "w",
+        "attrib", "feature", "id")
     )
 
   invisible()

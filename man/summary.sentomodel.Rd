@@ -2,7 +2,7 @@
 % Please edit documentation in R/sentomodel.R
 \name{summary.sentomodel}
 \alias{summary.sentomodel}
-\title{Summary of sentomodel object}
+\title{Summary of a sentomodel object}
 \usage{
 \method{summary}{sentomodel}(object, ...)
 }
@@ -15,6 +15,9 @@
 A sequence of informative prints on the model's results.
 }
 \description{
-Prints out a short summary consisting of the main elements of the constructed model (model type, calibrated values, non-zero
-coefficients and performance).
+Prints out a short summary consisting of the main elements of the constructed model (model type, calibrated values,
+non-zero coefficients and performance).
+}
+\seealso{
+\code{\link{sento_model}}
 }

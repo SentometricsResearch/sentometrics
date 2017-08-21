@@ -59,3 +59,20 @@ to \pkg{glmnet}, we refer to their \href{https://web.stanford.edu/~hastie/glmnet
 The optimal elastic-net parameters \code{lambda} and \code{alpha} are calibrated either through a to specify information
 criterion or through cross-validation (based on the "rolling forecasting origin" principle).
 }
+\examples{
+# series of example information criterion based model control functions
+ctrIC1 <- ctr_model(model = "lm", type = "BIC", do.iter = FALSE, h = 0,
+                    alphas = seq(0, 1, by = 0.10))
+ctrIC2 <- ctr_model(model = "lm", type = "BIC", do.iter = TRUE, h = 0, nSample = 100)
+
+# series of example cross-validation based model control functions
+ctrCV1 <- ctr_model(model = "lm", type = "cv", do.iter = FALSE, h = 0, trainWindow = 250,
+                    testWindow = 4, oos = 0, do.progress = TRUE)
+ctrCV2 <- ctr_model(model = "binomial", type = "cv", h = 0, trainWindow = 250,
+                    testWindow = 4, oos = 0, do.progress = TRUE)
+ctrCV3 <- ctr_model(model = "multinomial", type = "cv", h = 0, trainWindow = 250,
+                    testWindow = 4, oos = 0, do.progress = TRUE)
+ctrCV4 <- ctr_model(model = "lm", type = "cv", do.iter = TRUE, h = 0, trainWindow = 45,
+                    testWindow = 4, oos = 0, nSample = 70, do.progress = TRUE)
+
+}

@@ -20,6 +20,14 @@
 #'
 #' @seealso \code{\link[quanteda]{corpus}}
 #'
+#' @examples
+#' # corpus construction
+#' data("useconomynews")
+#' corpus <- sento_corpus(corpusdf = useconomynews)
+#'
+#' # take a random subset using a quanteda's package function
+#' corpusSmall <- quanteda::corpus_sample(corpus, size = 500)
+#'
 #' @export
 sento_corpus <- function(corpusdf, do.clean = FALSE) {
 
@@ -28,15 +36,12 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
   cols <- colnames(corpusdf)
   if (!all(nonfeatures %in% cols) | (cols[1] != "id" | cols[2] != "date" | cols[3] != "text"))
     stop("The input data.frame should have its first columns named 'id', 'date' and 'text', in this order.")
-
   # check for type of text column
   if (!is.character(corpusdf[["text"]])) stop("The 'text' column should be of type character.")
-
   # check for date format
   dates <- as.Date(corpusdf$date, format = "%Y-%m-%d")
   if (all(is.na(dates))) stop("Dates are not in appropriate format. Should be 'yyyy-mm-dd'.")
   else corpusdf$date <- dates
-
   # check for duplicated feature names, if no issues add to output list
   features <- cols[!(cols %in% nonfeatures)]
   if (sum(duplicated(features)) > 0) {
@@ -56,10 +61,8 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
   # construct corpus as a quanteda corpus
   c <- quanteda::corpus(x = corpusdf, docid_field = "id", text_field = "text",
                         metacorpus = list(info = "This is a sentocorpus object directly based on the quanteda corpus."))
-
   c$tokens <- NULL
   c$features <- names(which(isNumeric))
-  c$nDocs <- nrow(corpusdf)
 
   class(c) <- c("sentocorpus", class(c))
 
@@ -67,7 +70,10 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
 }
 
 clean <- function(corpusdf) {
-
+  corpusdf$text <- stringi::stri_replace_all(corpusdf$text, replacement = "", regex = "<.*?>") # html tags
+  corpusdf$text <- stringi::stri_replace_all(corpusdf$text, replacement = "", regex = '[\\"]')
+  corpusdf$text <- stringi::stri_replace_all(corpusdf$text, replacement = "", regex = "[^-a-zA-Z0-9,&. ]")
+  return(corpusdf)
 }
 
 #' Add feature columns to a sentocorpus
@@ -81,11 +87,15 @@ clean <- function(corpusdf) {
 #'
 #' @return An updated \code{sentocorpus} object.
 #'
+#' @examples
+#' # construct a corpus and add random features to it
+#' data("useconomynews")
+#' corpus <- sento_corpus(corpusdf = useconomynews)
+#' corpus <- add_features(corpus, featuresdf = data.frame(random = runif(quanteda::ndoc(corpus))))
+#'
 #' @export
 add_features <- function(sentocorpus, featuresdf) {
-
   check_class(sentocorpus, "sentocorpus")
-
   features <- colnames(featuresdf)
   isNumeric <- sapply(features, function(x) return(is.numeric(featuresdf[[x]])))
   toAdd <- which(isNumeric)
@@ -94,10 +104,7 @@ add_features <- function(sentocorpus, featuresdf) {
   }
   if (length(toAdd) != length(isNumeric))
     warning(paste0("Following columns were not added as they are not of type numeric: ", names(which(!isNumeric))))
-
-  # update features vector
-  sentocorpus$features <- c(sentocorpus$features, names(toAdd))
-
+  sentocorpus$features <- c(sentocorpus$features, names(toAdd)) # update features vector
   return(sentocorpus)
 }
 
