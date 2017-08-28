@@ -72,8 +72,8 @@ colnames(x) <- c("x1", "x2")
 # a list with models based on the three implemented information criteria
 out1 <- list()
 for (ic in c("BIC", "AIC", "Cp")) {
-ctrIC <- ctr_model(model = "lm", type = ic, do.iter = FALSE, h = 0)
-out1[[ic]] <- sento_model(sentomeasures, y, x = x, ctr = ctrIC)
+   ctrIC <- ctr_model(model = "lm", type = ic, do.iter = FALSE, h = 0)
+   out1[[ic]] <- sento_model(sentomeasures, y, x = x, ctr = ctrIC)
 }
 
 # a (very) short iterative analysis of cross-validation based models

@@ -2,7 +2,7 @@
 % Please edit documentation in R/sentomodel.R
 \name{retrieve_attributions}
 \alias{retrieve_attributions}
-\title{Retrieves top-down sentiment attribution given forecasting equation}
+\title{Retrieves top-down sentiment attribution given forecasting model}
 \usage{
 retrieve_attributions(sentomodel)
 }

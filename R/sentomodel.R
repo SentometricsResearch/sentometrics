@@ -1,8 +1,8 @@
 
 #' Setup control for sentiment measures-based regression modelling
 #'
-#' @description Sets up control for linear or nonlinear modelling of a response variable onto a sparse panel of textual
-#' sentiment measures (and potentially other variables). Models are computed using the elastic-net regularization as
+#' @description Sets up control object for linear or nonlinear modelling of a response variable onto a sparse panel of
+#' textual sentiment measures (and potentially other variables). Models are computed using the elastic-net regularization as
 #' implemented in the \pkg{glmnet} package, to account for the sparsity of the sentiment measures. For a helpful introduction
 #' to \pkg{glmnet}, we refer to their \href{https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html#lin}{vignette}.
 #' The optimal elastic-net parameters \code{lambda} and \code{alpha} are calibrated either through a to specify information
@@ -16,7 +16,7 @@
 #' function from the \pkg{caret} package). The adapted information criteria are currently only available for a linear
 #' regression.
 #' @param h an \code{integer} value to shift the time series to have the desired (forecasting) setup, \code{h == 0} means
-#' no change to input data (nowcasting assuming data is aligned properly), \code{h > 0} shifts the dependent variable by
+#' no change to the input data (nowcasting assuming data is aligned properly), \code{h > 0} shifts the dependent variable by
 #' \code{h} periods (i.e. rows) further in time (forecasting), \code{h < 0} shifts the independent variables by \code{h}
 #' periods.
 #' @param alphas a \code{numeric} vector of the different alphas to test for during optimization, between 0 and 1. A value of
@@ -179,8 +179,8 @@ ctr_model <- function(model = c("lm", "binomial", "multinomial"), type = c("BIC"
 #' # a list with models based on the three implemented information criteria
 #' out1 <- list()
 #' for (ic in c("BIC", "AIC", "Cp")) {
-#' ctrIC <- ctr_model(model = "lm", type = ic, do.iter = FALSE, h = 0)
-#' out1[[ic]] <- sento_model(sentomeasures, y, x = x, ctr = ctrIC)
+#'    ctrIC <- ctr_model(model = "lm", type = ic, do.iter = FALSE, h = 0)
+#'    out1[[ic]] <- sento_model(sentomeasures, y, x = x, ctr = ctrIC)
 #' }
 #'
 #' # a (very) short iterative analysis of cross-validation based models
@@ -505,7 +505,7 @@ model_performance <- function(yEst, yReal, family, dates, ...) {
   return(errorsAll)
 }
 
-#' Retrieves top-down sentiment attribution given forecasting equation
+#' Retrieves top-down sentiment attribution given forecasting model
 #'
 #' ### TODO
 #'

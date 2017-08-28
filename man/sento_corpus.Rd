@@ -16,7 +16,7 @@ or as a percentage to specify the degree of connectedness of a feature to a docu
 possibilities. Feature column names should be unique. Provide the \code{date} column as \code{"yyyy-mm-dd"}.}
 
 \item{do.clean}{a \code{logical}, if \code{TRUE} all texts undergo a cleaning routine to eliminate common textual
-garbage. This includes ... . TO DO.}
+garbage. This includes a brute force replacement of HTML tags and non-alphanumeric characters by an empty string.}
 }
 \value{
 A \code{sentocorpus} object, as a \code{quanteda} classed list keeping the elements \code{documents},

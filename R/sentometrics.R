@@ -2,16 +2,16 @@
 #' @name sentometrics
 #' @docType package
 #'
-#' @title sentometrics: An Integrated Framework for Textual Sentiment Based Multivariate Time Series Modeling and Forecasting
+#' @title An Integrated Framework for Textual Sentiment Based Multivariate Time Series Modeling and Forecasting
 #'
 #' @description The sentometrics package is designed to do time series analysis based on textual sentiment. It accounts
-#' for the intrinsic challenge that for a given text sentiment can be computed in hundreds of different ways, as well as
+#' for the intrinsic challenge that, for a given text, sentiment can be computed in hundreds of different ways, as well as
 #' the large number of possibilities to pool sentiment across text and time. This additional layer of manipulation
 #' does not exist in standard time series analysis packages. As a final outcome, this package provides an automated means
-#' to econometrically model the impact of sentiment in texts on a given variable, by optimizing the sentiment extraction
-#' and aggregation for the forecasting task. Aggregation can be optimized across several dimensions, for example word term
-#' weighting schemes or time lag structures. The package created therefore integrates the qualification of sentiment from
-#' text, the aggregation into different sentiment measures and the optimized forecasting based on these measures.
+#' to econometrically model the impact of sentiment in texts on a given variable, by first computing a wide range of textual
+#' sentiment time series and then selecting the sentiment times series that are most informative. The package created
+#' therefore integrates the qualification of sentiment from texts, the aggregation into different sentiment measures
+#' and the optimized forecasting based on these measures.
 #'
 #' @section Functions:
 #' \itemize{
@@ -25,9 +25,9 @@
 #'
 #' @author Samuel Borms, Keven Bluteau, David Ardia and Kris Boudt.
 #'
-#' @note The ideas behind the sentiment aggregation framework can be consulted in the working paper titled 'Aggregating the
-#' Panel of Daily Textual Sentiment for Sparse Forecasting of Economic Growth' (Ardia, Bluteau and Boudt, 2017) at
-#' \url{https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2976084}.
+#' @note The ideas behind the sentiment aggregation framework can be consulted in the working paper titled `Questioning the
+#' news about economic growth: Sparse forecasting using thousands of news-based sentiment values' (Ardia, Bluteau & Boudt,
+#' 2017) at \url{https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2976084}.
 #'
 #' @note Please cite the package in publications. Use \code{citation("sentometrics")}.
 "_PACKAGE"

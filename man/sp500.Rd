@@ -20,7 +20,7 @@ series.
   \item return. A \code{numeric} monthly return value.
   \item up. A \code{factor} with value \code{"pos"} if return is greater than zero, else \code{"neg"}.
   \item upMulti. A \code{factor} with values \code{"pos+"}, \code{"pos"}, \code{"neg"} and \code{"neg-"} if returns are
-  greater than 0.05 and 0, or smaller than 0 and -0.05, respectively and in a mutual exclusive sense.
+  greater than 0.05 and 0, or smaller than 0 and -0.05, respectively and in a mutually exclusive sense.
 }
 }
 \keyword{datasets}

@@ -12,7 +12,7 @@ compute_sentiment(sentocorpus, lexicons, how = get_hows()$words)
 \item{lexicons}{output from a \code{setup_lexicons()} call.}
 
 \item{how}{a single \code{character} vector defining how aggregation within documents will be performed. For currently
-available options on how aggregation can occer, access \code{get_hows()$words}.}
+available options on how aggregation can occer, see \code{get_hows()$words}.}
 }
 \value{
 A list containing:
@@ -23,12 +23,14 @@ A list containing:
 \item{howWithin}{a \code{character} vector to remind how sentiment within documents was aggregated.}
 }
 \description{
-Given a corpus of texts, computes sentiment per document starting from the bag-of-words approach,
-based on the lexicons provided and a preferred aggregation across words per document scheme. Relies partly on the
-\pkg{quanteda} package. The scores computed are net sentiment (sum of positive minus sum of negative scores). For a
-separate calculation of positive (resp. negative) sentiment, one has to provide distinct positive (resp. negative)
-lexicons. This can be done using the \code{do.split} option in the \code{setup_lexicons()}, which automatically splits
-any lexicon into positive and negative polarity. \code{NA}s are converted to 0, under the assumption that this is
+Given a corpus of texts, computes sentiment per document using the bag-of-words approach,
+based on the lexicons provided and a choice of aggregation across words per document scheme. Relies partly on the
+\pkg{quanteda} package. The scores computed are net sentiment (sum of positive minus sum of negative scores).
+}
+\details{
+For a separate calculation of positive (resp. negative) sentiment, one has to provide distinct positive (resp. negative)
+lexicons. This can be done using the \code{do.split} option in the \code{setup_lexicons()} function, which automatically
+splits any lexicon into positive and negative polarity. \code{NA}s are converted to 0, under the assumption that this is
 equivalent to no sentiment.
 }
 \examples{

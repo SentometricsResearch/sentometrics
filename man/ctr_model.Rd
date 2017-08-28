@@ -22,7 +22,7 @@ regression.}
 \item{do.iter}{a \code{logical}, \code{TRUE} induces an iterative optimization of models through time.}
 
 \item{h}{an \code{integer} value to shift the time series to have the desired (forecasting) setup, \code{h == 0} means
-no change to input data (nowcasting assuming data is aligned properly), \code{h > 0} shifts the dependent variable by
+no change to the input data (nowcasting assuming data is aligned properly), \code{h > 0} shifts the dependent variable by
 \code{h} periods (i.e. rows) further in time (forecasting), \code{h < 0} shifts the independent variables by \code{h}
 periods.}
 
@@ -52,8 +52,8 @@ training sample (out-of-sample) up to the test sample (ignored if \code{type !=}
 A list encapsulating the control parameters.
 }
 \description{
-Sets up control for linear or nonlinear modelling of a response variable onto a sparse panel of textual
-sentiment measures (and potentially other variables). Models are computed using the elastic-net regularization as
+Sets up control object for linear or nonlinear modelling of a response variable onto a sparse panel of
+textual sentiment measures (and potentially other variables). Models are computed using the elastic-net regularization as
 implemented in the \pkg{glmnet} package, to account for the sparsity of the sentiment measures. For a helpful introduction
 to \pkg{glmnet}, we refer to their \href{https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html#lin}{vignette}.
 The optimal elastic-net parameters \code{lambda} and \code{alpha} are calibrated either through a to specify information

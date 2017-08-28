@@ -12,7 +12,7 @@
 #' (e.g. economic, political or legal), but also article sources (e.g. online or printed press), amongst many more
 #' possibilities. Feature column names should be unique. Provide the \code{date} column as \code{"yyyy-mm-dd"}.
 #' @param do.clean a \code{logical}, if \code{TRUE} all texts undergo a cleaning routine to eliminate common textual
-#' garbage. This includes ... . TO DO.
+#' garbage. This includes a brute force replacement of HTML tags and non-alphanumeric characters by an empty string.
 #'
 #' @return A \code{sentocorpus} object, as a \code{quanteda} classed list keeping the elements \code{documents},
 #' \code{metadata} and\code{settings}, while adding the elements \code{features} (a \code{character} vector of
@@ -81,7 +81,7 @@ clean <- function(corpusdf) {
 #' @description Adds new named feature columns to provided \code{sentocorpus} object.
 #'
 #' @param sentocorpus a \code{sentocorpus} object.
-#' @param featuresdf a sensibly named \code{data.frame} with as columns the new features of type \code{numeric} to add
+#' @param featuresdf a named \code{data.frame} with as columns the new features of type \code{numeric} to add
 #' to the \code{sentocorpus} inputted. If the number of rows in \code{featuresdf} is not equal to the number of documents in
 #' \code{sentocorpus}, recycling will occur.
 #'
@@ -91,7 +91,8 @@ clean <- function(corpusdf) {
 #' # construct a corpus and add random features to it
 #' data("useconomynews")
 #' corpus <- sento_corpus(corpusdf = useconomynews)
-#' corpus <- add_features(corpus, featuresdf = data.frame(random = runif(quanteda::ndoc(corpus))))
+#' corpus <- add_features(corpus,
+#'                        featuresdf = data.frame(random = runif(quanteda::ndoc(corpus))))
 #'
 #' @export
 add_features <- function(sentocorpus, featuresdf) {

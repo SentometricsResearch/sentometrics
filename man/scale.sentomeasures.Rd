@@ -18,8 +18,8 @@ A modified \code{sentomeasures} object, with the measures replaced by the scaled
 statistics.
 }
 \description{
-Scales and centers sentiment measures from a \code{sentomeasures} object, column-per-column. By default, the
-measures are normalized. \code{NA}s are removed first.
+Scales and centers the sentiment measures from a \code{sentomeasures} object, column-per-column. By default,
+the measures are normalized. \code{NA}s are removed first.
 }
 \examples{
 # construct a sentomeasures object to start with

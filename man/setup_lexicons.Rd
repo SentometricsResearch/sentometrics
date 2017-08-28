@@ -35,7 +35,7 @@ valence word list.
 }
 \description{
 Structures provided lexicons and potentially integrates valence words. One can also provide (part of) the
-built-in lexicons from \code{Sentometrics::lexicon} or a valence word list from \code{Sentometrics::valence} as an argument.
+built-in lexicons from \code{data("lexicons")} or a valence word list from \code{data("valence")} as an argument.
 Makes use of the \code{as_key()} function from the \pkg{quanteda} package to make the output coherent and check for
 duplicates.
 }
