@@ -7,9 +7,11 @@ POST-GSOC 2017
 	> check warnings and sanity in caret::train() setup
 	> finalize retrieve_attribution() + documentation [cf. ### in-code comments]
 	> check binomial and multinomial regressions
-	> integrate ... to allow for user-supplied additional parameters to glmnet (via ctr functions of glmnet train in our ctr function); e.g. offset
+	> integrate ... to allow for user-supplied additional parameters to glmnet (via ctr functions of glmnet train in our 
+	  ctr function); e.g. offset
 	> add GCV (gen. cross-validation)
-	> find information criteria appropriate for logistic regression in elastic net-context (cf. Keven on GitHub + df estimator applicable for logistic regression?)
+	> find information criteria appropriate for logistic regression in elastic net-context (cf. Keven on GitHub + df
+	  estimator applicable for logistic regression?)
 	> statistical tests (Diebold-Mariano, MCS, etc.)
 - sentomeasures.R
 	> add remove = stopwords("english") in dfm (+ translated stopwords)?

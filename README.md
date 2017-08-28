@@ -3,7 +3,14 @@
 
 ## Introduction
 
-The `sentometrics` package is designed to do time series analysis based on textual sentiment. It accounts for the intrinsic challenge that for a given text sentiment can be computed in hundreds of different ways, as well as the large number of possibilities to pool sentiment across text and time. This additional layer of manipulation does not exist in standard time series analysis packages. As a final outcome, this package provides an automated means to econometrically model the impact of sentiment in texts on a given variable, by optimizing the sentiment extraction and aggregation for the forecasting task. Aggregation can be optimized across several dimensions, for example word term weighting schemes or time lag structures. The package created therefore integrates the qualification of sentiment from text, the aggregation into different sentiment measures and the optimized forecasting based on these measures.
+The `sentometrics` package is designed to do time series analysis based on textual sentiment. It accounts
+for the intrinsic challenge that, for a given text, sentiment can be computed in hundreds of different ways, as well as
+the large number of possibilities to pool sentiment across text and time. This additional layer of manipulation
+does not exist in standard time series analysis packages. As a final outcome, this package provides an automated means
+to econometrically model the impact of sentiment in texts on a given variable, by first computing a wide range of textual
+sentiment time series and then selecting the sentiment times series that are most informative. The package created
+therefore integrates the qualification of sentiment from texts, the aggregation into different sentiment measures
+and the optimized forecasting based on these measures.
 
 ## Installation
 
