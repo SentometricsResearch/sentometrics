@@ -34,6 +34,7 @@ sentomeasures <- sento_measures(corpus, l, ctr)
 sel1 <- select_measures(sentomeasures, c("equal_weight"))
 sel2 <- select_measures(sentomeasures, c("equal_weight", "linear"), do.combine = FALSE)
 sel3 <- select_measures(sentomeasures, c("linear", "LM_eng"))
-sel4 <- select_measures(sentomeasures, c("linear", "LM_eng", "wsj", "economy"), do.combine = FALSE)
+sel4 <- select_measures(sentomeasures, c("linear", "LM_eng", "wsj", "economy"),
+                        do.combine = FALSE)
 
 }

@@ -1,42 +1,16 @@
 Package: sentometrics
 Title: An Integrated Framework for Textual Sentiment Based Multivariate Time Series Modeling and Forecasting
-Version: 0.0.1
+Version: 0.1.0
 Authors@R: c(person("Samuel", "Borms", email = "borms_sam@hotmail.com", role = c("aut", "cre")),
   person("David", "Ardia", email = "david.ardia@unine.ch", role = c("aut")),
   person("Keven", "Bluteau", email = "keven.bluteau@unine.ch", role = c("aut")),
   person("Kris", "Boudt", email = "kris.boudt@vub.be", role = c("aut")))
-Description: The sentometrics package is designed to do time series analysis based
-  on textual sentiment. It accounts for the intrinsic challenge that for a given text
-  sentiment can be computed in hundreds of different ways, as well as the large number
-  of possibilities to pool sentiment across text and time. This additional layer of
-  manipulation does not exist in standard time series analysis packages. As a final
-  outcome, this package provides an automated means to econometrically model the impact
-  of sentiment in texts on a given variable, by optimizing the sentiment extraction and
-  aggregation for the forecasting task. Aggregation can be optimized across several
-  dimensions, for example word term weighting schemes or time lag structures. The package
-  created therefore integrates the qualification of sentiment from text, the aggregation
-  into different sentiment measures and the optimized forecasting based on these measures.
-Depends: R (>= 3.4.0),
-    data.table,
-    ggplot2
+Description: Time series analysis based on textual sentiment, accounting for the intrinsic challenge that sentiment can be computed and pooled across texts and time in many ways. Provides a means to model the impact of sentiment in texts on a target variable, by first computing a wide range of textual sentiment measures and then selecting those that are most informative.
+Depends: R (>= 3.4.0), data.table, ggplot2
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
-Suggests: testthat,
-    e1071,
-    randomForest
-Imports: utils,
-    stats,
-    quanteda,
-    sentimentr,
-    stringi,
-    zoo,
-    abind,
-    glmnet,
-    caret,
-    compiler,
-    Rcpp,
-    RcppRoll,
-    ggthemes,
-    ISOweek,
+Suggests: testthat, e1071, randomForest
+Imports: utils, stats, quanteda, sentimentr, stringi, zoo, abind, glmnet, caret,
+    compiler, Rcpp, RcppRoll, ggthemes, ISOweek
 RoxygenNote: 6.0.1

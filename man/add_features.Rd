@@ -9,7 +9,7 @@ add_features(sentocorpus, featuresdf)
 \arguments{
 \item{sentocorpus}{a \code{sentocorpus} object.}
 
-\item{featuresdf}{a sensibly named \code{data.frame} with as columns the new features of type \code{numeric} to add
+\item{featuresdf}{a named \code{data.frame} with as columns the new features of type \code{numeric} to add
 to the \code{sentocorpus} inputted. If the number of rows in \code{featuresdf} is not equal to the number of documents in
 \code{sentocorpus}, recycling will occur.}
 }
@@ -23,6 +23,7 @@ Adds new named feature columns to provided \code{sentocorpus} object.
 # construct a corpus and add random features to it
 data("useconomynews")
 corpus <- sento_corpus(corpusdf = useconomynews)
-corpus <- add_features(corpus, featuresdf = data.frame(random = runif(quanteda::ndoc(corpus))))
+corpus <- add_features(corpus,
+                       featuresdf = data.frame(random = runif(quanteda::ndoc(corpus))))
 
 }

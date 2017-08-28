@@ -32,7 +32,7 @@ equal to 1, meaning no aggregation across time.}
 \item{alphasExp}{a \code{numeric} vector of all exponential smoothing factors to calculate weights for, used if
 \code{"exponential" \%in\% howTime}. Values should be betwoon 0 and 1 (both excluded).}
 
-\item{ordersAlm}{a \code{numeric} vector of all Almon orders to calcalute weights for, used if
+\item{ordersAlm}{a \code{numeric} vector of all Almon polynomial orders to calcalute weights for, used if
 \code{"almon" \%in\% howTime}.}
 
 \item{do.inverseAlm}{a \code{logical} indicating if for every Almon polynomial its inverse has to be calculated too, used
@@ -48,7 +48,7 @@ if \code{"own" \%in\% howTime}.}
 A list encapsulating the control parameters.
 }
 \description{
-Sets up control for aggregation of document-level textual sentiment into textual
+Sets up control object for aggregation of document-level textual sentiment into textual
 sentiment measures (indices).
 }
 \details{

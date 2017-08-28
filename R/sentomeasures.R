@@ -50,7 +50,7 @@ sento_measures<- function(sentocorpus, lexicons, ctr) {
 #' Setup lexicons (and valence word list) for use in sentiment analysis
 #'
 #' @description Structures provided lexicons and potentially integrates valence words. One can also provide (part of) the
-#' built-in lexicons from \code{Sentometrics::lexicon} or a valence word list from \code{Sentometrics::valence} as an argument.
+#' built-in lexicons from \code{data("lexicons")} or a valence word list from \code{data("valence")} as an argument.
 #' Makes use of the \code{as_key()} function from the \pkg{quanteda} package to make the output coherent and check for
 #' duplicates.
 #'
@@ -206,18 +206,20 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 
 #' Computation of document-level sentiment across features and lexicons
 #'
-#' @description Given a corpus of texts, computes sentiment per document starting from the bag-of-words approach,
-#' based on the lexicons provided and a preferred aggregation across words per document scheme. Relies partly on the
-#' \pkg{quanteda} package. The scores computed are net sentiment (sum of positive minus sum of negative scores). For a
-#' separate calculation of positive (resp. negative) sentiment, one has to provide distinct positive (resp. negative)
-#' lexicons. This can be done using the \code{do.split} option in the \code{setup_lexicons()}, which automatically splits
-#' any lexicon into positive and negative polarity. \code{NA}s are converted to 0, under the assumption that this is
+#' @description Given a corpus of texts, computes sentiment per document using the bag-of-words approach,
+#' based on the lexicons provided and a choice of aggregation across words per document scheme. Relies partly on the
+#' \pkg{quanteda} package. The scores computed are net sentiment (sum of positive minus sum of negative scores).
+#'
+#' @details
+#' For a separate calculation of positive (resp. negative) sentiment, one has to provide distinct positive (resp. negative)
+#' lexicons. This can be done using the \code{do.split} option in the \code{setup_lexicons()} function, which automatically
+#' splits any lexicon into positive and negative polarity. \code{NA}s are converted to 0, under the assumption that this is
 #' equivalent to no sentiment.
 #'
 #' @param sentocorpus a \code{sentocorpus} object.
 #' @param lexicons output from a \code{setup_lexicons()} call.
 #' @param how a single \code{character} vector defining how aggregation within documents will be performed. For currently
-#' available options on how aggregation can occer, access \code{get_hows()$words}.
+#' available options on how aggregation can occer, see \code{get_hows()$words}.
 #'
 #' @return A list containing:
 #' \item{corpus}{the supplied \code{sentocorpus} object.}
@@ -541,7 +543,7 @@ merge_to_global <- function(sentomeasures, lex = 1, feat = 1, time = 1) {
 
 #' Setup control for aggregation into sentiment measures
 #'
-#' @description Sets up control for aggregation of document-level textual sentiment into textual
+#' @description Sets up control object for aggregation of document-level textual sentiment into textual
 #' sentiment measures (indices).
 #'
 #' @details For currently available options on how aggregation can occer (via the \code{howWithin},
@@ -562,7 +564,7 @@ merge_to_global <- function(sentomeasures, lex = 1, feat = 1, time = 1) {
 #' equal to 1, meaning no aggregation across time.
 #' @param alphasExp a \code{numeric} vector of all exponential smoothing factors to calculate weights for, used if
 #'  \code{"exponential" \%in\% howTime}. Values should be betwoon 0 and 1 (both excluded).
-#' @param ordersAlm a \code{numeric} vector of all Almon orders to calcalute weights for, used if
+#' @param ordersAlm a \code{numeric} vector of all Almon polynomial orders to calcalute weights for, used if
 #' \code{"almon" \%in\% howTime}.
 #' @param do.inverseAlm a \code{logical} indicating if for every Almon polynomial its inverse has to be calculated too, used
 #' if \code{"almon" \%in\% howTime}.
@@ -659,15 +661,15 @@ ctr_agg <- function(howWithin = "equal_weight", howDocs = "equal_weight", howTim
 
 #' Setup control for merging sentiment measures
 #'
-#' @description Sets up control for the optional merging (additional aggregation) of sentiment measures.
+#' @description Sets up control object for the optional merging (additional aggregation) of sentiment measures.
 #'
 #' @param sentomeasures a \code{sentomeasures} object.
-#' @param lex a list with unique lexicons to merge at given name, e.g. \code{list(lex12 = c("lex1", "lex2"))}. See
-#' \code{sentomeasures$lexicons} for the exact names to use.
-#' @param feat a list with unique features to merge at given name, e.g. \code{list(feat12 = c("feat1", "feat2"))}. See
-#' \code{sentomeasures$features} for the exact names to use.
-#' @param time a list with unique time weighting schemes to merge at given name, e.g. \code{list(tw12 = c("tw1", "tw2"))}.
-#' See \code{sentomeasures$time} for the exact names to use.
+#' @param lex a list with unique lexicons to merge at given name, e.g. \cr
+#' \code{list(lex12 = c("lex1", "lex2"))}. See \code{sentomeasures$lexicons} for the exact names to use.
+#' @param feat a list with unique features to merge at given name, e.g. \cr
+#' \code{list(feat12 = c("feat1", "feat2"))}. See \code{sentomeasures$features} for the exact names to use.
+#' @param time a list with unique time weighting schemes to merge at given name, e.g. \cr
+#' \code{list(tw12 = c("tw1", "tw2"))}. See \code{sentomeasures$time} for the exact names to use.
 #' @param do.keep a \code{logical} indicating if the original sentiment measures should be kept (i.e. the merged sentiment
 #' measures will be added to the current sentiment measures as additional indices if \code{TRUE}).
 #'
@@ -774,7 +776,8 @@ ctr_merge <- function(sentomeasures, feat = NA, lex = NA, time = NA, do.keep = F
 #' sel1 <- select_measures(sentomeasures, c("equal_weight"))
 #' sel2 <- select_measures(sentomeasures, c("equal_weight", "linear"), do.combine = FALSE)
 #' sel3 <- select_measures(sentomeasures, c("linear", "LM_eng"))
-#' sel4 <- select_measures(sentomeasures, c("linear", "LM_eng", "wsj", "economy"), do.combine = FALSE)
+#' sel4 <- select_measures(sentomeasures, c("linear", "LM_eng", "wsj", "economy"),
+#'                         do.combine = FALSE)
 #'
 #' @export
 select_measures <- function(sentomeasures, toSelect, do.combine = TRUE) {
@@ -817,7 +820,7 @@ select_measures <- function(sentomeasures, toSelect, do.combine = TRUE) {
 #' @param ... not used.
 #'
 #' @return Returns a simple \pkg{ggplot2} plot, which can be added onto (or to alter its default elements) by using the
-#' \code{+} operator.
+#' \code{+} operator (see examples).
 #'
 #' @examples
 #' # construct a sentomeasures object to start with
@@ -830,6 +833,13 @@ select_measures <- function(sentomeasures, toSelect, do.combine = TRUE) {
 #' # plot sentiment measures
 #' plot(sentomeasures)
 #' plot(sentomeasures, group = "lexicon")
+#'
+#' # adjust appearance of plot
+#' p <- plot(sentomeasures)
+#' p <- p + theme_dark() +
+#'   scale_x_date(name = "date") +
+#'   scale_y_continuous(name = "newName")
+#' p
 #'
 #' @import ggplot2
 #' @export
@@ -910,8 +920,8 @@ fill_measures <- function(sentomeasures, fill = "zero") {
 
 #' Scaling and centering of sentiment measures
 #'
-#' @description Scales and centers sentiment measures from a \code{sentomeasures} object, column-per-column. By default, the
-#' measures are normalized. \code{NA}s are removed first.
+#' @description Scales and centers the sentiment measures from a \code{sentomeasures} object, column-per-column. By default,
+#' the measures are normalized. \code{NA}s are removed first.
 #'
 #' @param x a \code{sentomeasures} object.
 #' @param center a \code{logical}, see documentation for the generic \code{\link{scale}}.

@@ -17,7 +17,7 @@ measure in a separate color, but this may look visually overwhelming very fast.}
 }
 \value{
 Returns a simple \pkg{ggplot2} plot, which can be added onto (or to alter its default elements) by using the
-\code{+} operator.
+\code{+} operator (see examples).
 }
 \description{
 Straightforward plotting method for all sentiment measures in the provided \code{sentomeasures} object,
@@ -35,5 +35,12 @@ sentomeasures <- sento_measures(corpus, l, ctr)
 # plot sentiment measures
 plot(sentomeasures)
 plot(sentomeasures, group = "lexicon")
+
+# adjust appearance of plot
+p <- plot(sentomeasures)
+p <- p + theme_dark() +
+  scale_x_date(name = "date") +
+  scale_y_continuous(name = "newName")
+p
 
 }

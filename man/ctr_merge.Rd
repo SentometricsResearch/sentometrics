@@ -10,14 +10,14 @@ ctr_merge(sentomeasures, feat = NA, lex = NA, time = NA,
 \arguments{
 \item{sentomeasures}{a \code{sentomeasures} object.}
 
-\item{feat}{a list with unique features to merge at given name, e.g. \code{list(feat12 = c("feat1", "feat2"))}. See
-\code{sentomeasures$features} for the exact names to use.}
+\item{feat}{a list with unique features to merge at given name, e.g. \cr
+\code{list(feat12 = c("feat1", "feat2"))}. See \code{sentomeasures$features} for the exact names to use.}
 
-\item{lex}{a list with unique lexicons to merge at given name, e.g. \code{list(lex12 = c("lex1", "lex2"))}. See
-\code{sentomeasures$lexicons} for the exact names to use.}
+\item{lex}{a list with unique lexicons to merge at given name, e.g. \cr
+\code{list(lex12 = c("lex1", "lex2"))}. See \code{sentomeasures$lexicons} for the exact names to use.}
 
-\item{time}{a list with unique time weighting schemes to merge at given name, e.g. \code{list(tw12 = c("tw1", "tw2"))}.
-See \code{sentomeasures$time} for the exact names to use.}
+\item{time}{a list with unique time weighting schemes to merge at given name, e.g. \cr
+\code{list(tw12 = c("tw1", "tw2"))}. See \code{sentomeasures$time} for the exact names to use.}
 
 \item{do.keep}{a \code{logical} indicating if the original sentiment measures should be kept (i.e. the merged sentiment
 measures will be added to the current sentiment measures as additional indices if \code{TRUE}).}
@@ -26,7 +26,7 @@ measures will be added to the current sentiment measures as additional indices i
 A list encapsulating the control parameters.
 }
 \description{
-Sets up control for the optional merging (additional aggregation) of sentiment measures.
+Sets up control object for the optional merging (additional aggregation) of sentiment measures.
 }
 \examples{
 # construct a sentomeasures object to start with

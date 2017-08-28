@@ -1,8 +1,11 @@
 
+POST-GSOC 2017
+-------------------------------------------------------------------------------
+
 - sentomodel.R
 	> parallelization to add (internally or pointers in documentation on how to use parallelization)
 	> check warnings and sanity in caret::train() setup
-	> retrieve_attribution() [cf. ### in-code comments]
+	> finalize retrieve_attribution() + documentation [cf. ### in-code comments]
 	> check binomial and multinomial regressions
 	> integrate ... to allow for user-supplied additional parameters to glmnet (via ctr functions of glmnet train in our ctr function); e.g. offset
 	> add GCV (gen. cross-validation)
@@ -11,11 +14,16 @@
 - sentomeasures.R
 	> add remove = stopwords("english") in dfm (+ translated stopwords)?
 - examples
-	> incorporation into documentation + relatively meaningful results (other corpus/response variable combination?)
+	> incorporation into documentation + check for meaningful results (other corpus/response variable combination?)
 - vignette
 	> basic structure
 - write unit tests
 - speed (use apply where for loops if desirable, optimal use of data.table and its methods, etc.)
+- write print/summary methods for objects where useful + include in examples
+- reproduce paper example + add paper section on GitHub + include new version in description
+- relate in description of functions to paper once finalized
+- add author(s) in function's documentation
+- check data.frame vs. data.table input/output consistency
 
 (update to newest R version)
 (check compatibility with major quanteda package update in October 2017)
