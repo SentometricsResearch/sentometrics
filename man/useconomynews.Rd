@@ -20,7 +20,6 @@ contains following information:
   \item id. ID identifier.
   \item date. Date as \code{"yyyy-mm-dd"}.
   \item text. Texts in \code{character} format.
-  \item headline. Headlines in \code{character} format.
   \item wsj. Equals 1 if the article comes from The Wall Street Journal.
   \item wapo. Equals 1 if the article comes from The Washington Post.
   \item economy. Equals 1 if the article is relevant to the US economy.

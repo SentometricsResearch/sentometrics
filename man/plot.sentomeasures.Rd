@@ -9,24 +9,28 @@
 \arguments{
 \item{x}{a \code{sentomeasures} object.}
 
-\item{group}{a value from \code{c("lexicon", "feature", "time", "all")}. The first three choices display
-all measures from the same group in the same color. The choice \code{"all"} displays every single sentiment
-measure in a separate color, but this may look visually overwhelming very fast.}
+\item{group}{a value from \code{c("lexicons", "features", "time", "all")}. The first three choices display the average of
+all measures from the same group, in a different color. The choice \code{"all"} displays every single sentiment measure
+in a separate color, but this may look visually overwhelming very fast, and can be quite slow.}
 
 \item{...}{not used.}
 }
 \value{
 Returns a simple \pkg{ggplot2} plot, which can be added onto (or to alter its default elements) by using the
-\code{+} operator (see examples).
+\code{+} operator (see examples). By default, a legend is positioned at the top if there are at maximum twelve line graphs
+plotted.
 }
 \description{
-Straightforward plotting method for all sentiment measures in the provided \code{sentomeasures} object,
-shown in one plot. We suggest to make use of the \code{select_measures()} function when you desire to plot only a subset of
-the sentiment measures.
+Straightforward plotting method that shows all sentiment measures from the provided \code{sentomeasures} object
+in one plot, or the average along one of the lexicons, features and time weighting dimensions. We suggest to make use of the
+code{select_measures()} function when you desire to plot only a subset of the sentiment measures.
 }
 \examples{
-# construct a sentomeasures object to start with
 data("useconomynews")
+data("lexicons")
+data("valence")
+
+# construct a sentomeasures object to start with
 corpus <- sento_corpus(corpusdf = useconomynews)
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
@@ -34,13 +38,17 @@ sentomeasures <- sento_measures(corpus, l, ctr)
 
 # plot sentiment measures
 plot(sentomeasures)
-plot(sentomeasures, group = "lexicon")
+plot(sentomeasures, group = "lexicons")
 
 # adjust appearance of plot
 p <- plot(sentomeasures)
-p <- p + theme_dark() +
+p <- p +
+  ggthemes::theme_base() +
   scale_x_date(name = "date") +
   scale_y_continuous(name = "newName")
 p
 
+}
+\author{
+Samuel Borms
 }

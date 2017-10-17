@@ -22,9 +22,13 @@ A \code{sentomeasures} object, which is a list containing:
 \item{by}{a single \code{character} vector specifying the time interval of aggregation used.}
 \item{stats}{a \code{data.frame} with a series of elementary statistics (mean, standard deviation, maximum, minimum, and
 average correlation with all other measures) for each individual sentiment measure.}
-\item{sentiment}{a sentiment scores \code{data.table} with a \code{date} and feature--lexicon sentiment scores columns.}
+\item{sentiment}{the sentiment scores \code{data.table} with a \code{date} and lexicon--feature sentiment scores columns.}
 \item{howWithin}{a \code{character} vector to remind how sentiment within documents was aggregated.}
 \item{howDocs}{a \code{character} vector to remind how sentiment across documents was aggregated.}
+\item{fill}{a single \code{character} vector that specifies if and how missing dates have been added before
+aggregation across time was carried out.}
+\item{attribWeights}{a \code{list} of document weights and time weights that are extracted in a call to
+\code{retrieve_attributions()}. Serves further no direct purpose.}
 }
 \description{
 Wrapper function which assembles calls to \code{compute_sentiment()} and \code{perform_agg()}, and includes
@@ -32,8 +36,11 @@ the input \code{sentocorpus} and computed sentiment scores in its output. Serves
 textual sentiment measures, and a \code{sentomeasures} object.
 }
 \examples{
-# computation of sentiment measures based on a provided control function
 data("useconomynews")
+data("lexicons")
+data("valence")
+
+# construct a sentomeasures object to start with
 corpus <- sento_corpus(corpusdf = useconomynews)
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 ctr <- ctr_agg(howWithin = "tf-idf",
@@ -45,8 +52,12 @@ ctr <- ctr_agg(howWithin = "tf-idf",
                do.inverseAlm = TRUE,
                do.normalizeAlm = TRUE)
 sentomeasures <- sento_measures(corpus, l, ctr)
+summary(sentomeasures)
 
 }
 \seealso{
 \code{\link{compute_sentiment}}, \code{\link{perform_agg}}
+}
+\author{
+Samuel Borms, Keven Bluteau
 }

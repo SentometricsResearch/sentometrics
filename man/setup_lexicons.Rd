@@ -2,7 +2,7 @@
 % Please edit documentation in R/sentomeasures.R
 \name{setup_lexicons}
 \alias{setup_lexicons}
-\title{Setup lexicons (and valence word list) for use in sentiment analysis}
+\title{Set up lexicons (and valence word list) for use in sentiment analysis}
 \usage{
 setup_lexicons(lexiconsIn, valenceIn = NULL, do.split = FALSE)
 }
@@ -25,8 +25,8 @@ list is part of the output.}
 polarity lexicon.}
 }
 \value{
-A list with each lexicon as a \code{data.table} list element according to its name, and a list element named
-\code{valence} that comprises the valence words. Every \code{x} column contains the words, every \code{y} column
+A list with each lexicon as a separate element according to its name, as a \code{data.table}, and a list element
+named \code{valence} that comprises the valence words. Every \code{x} column contains the words, every \code{y} column
 contains the polarity score, and for the valence word list, \code{t} contains the word type. If a valence word list is
 provided, all lexicons are expanded by copying the respective lexicon, and changing the words and scores according to the
 valence word type: "NOT_" is added for negators, "VERY_" is added for amplifiers and "HARDLY_" is added for deamplifiers.
@@ -36,15 +36,18 @@ valence word list.
 \description{
 Structures provided lexicons and potentially integrates valence words. One can also provide (part of) the
 built-in lexicons from \code{data("lexicons")} or a valence word list from \code{data("valence")} as an argument.
-Makes use of the \code{as_key()} function from the \pkg{quanteda} package to make the output coherent and check for
+Makes use of the \code{as_key()} function from the \pkg{sentimentr} package to make the output coherent and check for
 duplicates.
 }
 \examples{
+data("lexicons")
+data("valence")
+
 # sets up output list straight from built-in word lists including valence words
 l1 <- c(lexicons[c("LM_eng", "HENRY_eng")], valence[["eng"]])
 
 # using function, including a self-made lexicon, with and without valence shifters
-lexIn <- c(list(myLexicon = data.frame(w = c("nice", "boring"), s = c(2, -1))),
+lexIn <- c(list(myLexicon = data.table(w = c("nice", "boring"), s = c(2, -1))),
            lexicons[c("GI_eng")])
 valIn <- valence[["valence_eng"]]
 l2 <- setup_lexicons(lexIn)
@@ -54,4 +57,7 @@ l4 <- setup_lexicons(lexIn, valIn, do.split = TRUE)
 }
 \seealso{
 \code{\link[sentimentr]{as_key}}
+}
+\author{
+Samuel Borms
 }

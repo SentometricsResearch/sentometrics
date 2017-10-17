@@ -13,12 +13,13 @@ data("sp500")
 }
 \description{
 Monthly returns for the S&P 500 Index between March 1988 and December 2014, including a binomial and a multinomial example
-series.
+series. It has following columns:
 
 \itemize{
   \item date. Date as \code{"yyyy-mm-01"}.
-  \item return. A \code{numeric} monthly return value.
-  \item up. A \code{factor} with value \code{"pos"} if return is greater than zero, else \code{"neg"}.
+  \item return. A \code{numeric} value as the return that was achieved during the corresponding month; for example the first
+  return value is the price change from beginning of March 1988 to beginning of April 1988.
+  \item up. A \code{factor} with value \code{"pos"} if the return is greater than zero, else \code{"neg"}.
   \item upMulti. A \code{factor} with values \code{"pos+"}, \code{"pos"}, \code{"neg"} and \code{"neg-"} if returns are
   greater than 0.05 and 0, or smaller than 0 and -0.05, respectively and in a mutually exclusive sense.
 }

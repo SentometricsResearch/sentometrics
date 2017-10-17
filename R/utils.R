@@ -3,27 +3,29 @@
 ################# Utility/Helper functions #################
 ############################################################
 
-expand_lexicons <- function(lexicons, types = c(1, 2, 3), scores = c(-1, 2, 0.5)) {
-  funcs <- list(negate, amplify, deamplify)
-  lexiconExp <- lapply(lexicons, function(l) {
-    rbindlist(
-      lapply(c(0, types), function(x) {
-        if (x == 0) return(l)
-        else {f = funcs[[x]]; return(f(l, scores[[x]]))}
-        })
-      )
-  })
-  return(lexiconExp) # expanded lexicons (original + copied and negated/amplified/deamplified words and scores)
-}
-
 negate <- function(lexicon, s = -1) {
-  lexicon$x <- paste0("NOT_", lexicon$x); lexicon$y <- s * (lexicon$y); return(lexicon)
+  lexicon$x <- paste0("NOT_", lexicon$x); lexicon$y <- s * (lexicon$y)
+  return(lexicon)
 }
 amplify <- function(lexicon, s = 2) {
-  lexicon$x <- paste0("VERY_", lexicon$x); lexicon$y <- s * (lexicon$y); return(lexicon)
+  lexicon$x <- paste0("VERY_", lexicon$x); lexicon$y <- s * (lexicon$y)
+  return(lexicon)
 }
 deamplify <- function(lexicon, s = 0.5) {
-  lexicon$x <- paste0("HARDLY_", lexicon$x); lexicon$y <- s * (lexicon$y); return(lexicon)
+  lexicon$x <- paste0("HARDLY_", lexicon$x); lexicon$y <- s * (lexicon$y)
+  return(lexicon)
+}
+
+expand_lexicons <- function(lexicons, types = c(1, 2, 3), scores = c(-1, 2, 0.5)) {
+  funcs <- list(negate, amplify, deamplify) # types: 1, 2, 3
+  lexiconsExp <- lapply(lexicons, function(l) {
+    out <- lapply(c(0, types), function(x) {
+      if (x == 0) return(l)
+      else {f = funcs[[x]]; return(f(l, scores[[x]]))}
+      })
+    return(rbindlist(out))
+  })
+  return(lexiconsExp) # expanded lexicons (original + copied and negated/amplified/deamplified words and scores)
 }
 
 # replaces valence words in texts and combines into bigrams
@@ -39,6 +41,24 @@ include_valence <- function(texts, val, valIdentifier = c(" NOT_", " VERY_", " H
   return(texts)
 }
 
+#' Compute Almon polynomials
+#'
+#' @description Computes Almon polynomial weighting curves; handy to self-select specific time aggregation weighting schemes.
+#'
+#' @details The Almon polynomial formula implemented is:
+#' \eqn{(1 - (i/n)^{b})(i/n)^{max(b) - b}}{(1 - (i/n)^b) * (i/n)^(max(b) - b)}.
+#'
+#' @param n a single \code{numeric} to indicate the length of the curve (the number of lags, cf. \emph{n} in the formula).
+#' @param orders a \code{numeric} vector as the sequence the Almon orders (cf. \emph{b} in the formula).
+#' @param do.inverse \code{TRUE} if the inverse Almon polynomials should be calculated as well.
+#' @param do.normalize \code{TRUE} if polynomials should be normalized to unity.
+#'
+#' @return A \code{data.frame} of all Almon polynomial weighting curves, of size \code{length(orders)} (times two if
+#' \code{do.inverse == TRUE}).
+#'
+#' @seealso \code{\link{ctr_agg}}
+#'
+#' @export
 almons <- function(n, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE) {
   vals <- 1:n
   inv <- ifelse(do.inverse, 2, 1)
@@ -64,6 +84,18 @@ almons <- function(n, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE) {
   return(as.data.frame(almons))
 }
 
+#' Compute exponential weighting curves
+#'
+#' @description Computes exponential weighting curves; handy to self-select specific time aggregation weighting schemes.
+#'
+#' @param n a single \code{numeric} to indicate the length of the curve (the number of lags).
+#' @param alphas a \code{numeric} vector of decay factors.
+#'
+#' @return A \code{data.frame} of exponential weighting curves per value of \code{alphas}.
+#'
+#' @seealso \code{\link{ctr_agg}}
+#'
+#' @export
 exponentials <- function(n, alphas = seq(0.1, 0.5, by = 0.1)) {
   if (max(alphas) >= 1 & min(alphas) <= 0)
     stop("Values in 'alphas' should be between 0 and 1 (both excluded).")
@@ -117,7 +149,7 @@ setup_time_weights <- function(lag, how, ...) {
 #'
 #' @export
 get_hows <- function() {
-  words <- c("equal_weight", "proportional", "tf-idf", "counts")
+  words <- c("proportional", "tf-idf", "counts")
   docs <- c("equal_weight", "proportional")
   time <- c("equal_weight", "almon", "linear", "exponential", "own")
   return(list(words = words, docs = docs, time = time))
@@ -184,24 +216,29 @@ align_variables <- function(y, sentomeasures, x, h, i = 1, nSample = NULL) {
   return(list(y = y, x = x, datesX = datesX))
 }
 
-clean_panel <- function(sentomeasures, threshold = 0.50) {
+clean_panel <- function(x, nx, threshold = 0.25) {
 
-  # discards columns from panel of sentiment measures based on a few simple rules
-  # useful to simplify penalized variables regression (cf. 'exclude')
+  # discards columns only from panel of sentiment measures based on a few simple rules
+  # useful to simplify (to some extent) the penalized variables regression (cf. 'exclude')
 
-  measures <- sentomeasures$measures
-  x <- measures[, -1] # drop date column
-  x[is.na(x)] <- 0 # check
+  start <- ncol(x) - nx + 1
+  end <- ncol(x)
+  if (nx != 0) xSent <- x[, -start:-end] # drop non-sentiment variables
+  else xSent <- x
+  xSent[is.na(xSent)] <- 0 # check
+  duplics <- duplicated(as.matrix(xSent), MARGIN = 2) # duplicated columns
+  manyZeros <- (colSums(as.matrix(xSent) == 0, na.rm = TRUE) / nrow(xSent)) > threshold # columns with a too high proportion of zeros
+  toDiscard <- duplics | manyZeros
+  if (ncol(xSent) == 1) stop("No sentiment measures retained after cleaning: too many duplicated columns and/or zeros.")
+  else {
+    if (nx != 0) {
+      xNew <- cbind(xSent[, !toDiscard], x[, start:end])
+      colnames(xNew) <- c(names(which(!toDiscard)), colnames(x[, start:end, drop = FALSE]))
+    }
+    else xNew <- xSent[, !toDiscard]
+  }
 
-  duplics <- duplicated(as.matrix(x), MARGIN = 2) # duplicated columns
-  manyZeros <- (colSums(as.matrix(x) == 0, na.rm = TRUE) / nrow(x)) > threshold # columns with a too high proportion of zeros
-  discard <- duplics & manyZeros
-  measuresNew <- cbind(date = measures$date, x[, which(!discard), with = FALSE])
-
-  if (ncol(measuresNew) == 1) stop("No sentiment measures retained after cleaning.")
-  else sentomeasures$measures <- measuresNew
-
-  return(sentomeasures)
+  return(list(xNew = xNew, discarded = toDiscard))
 }
 
 update_info <- function(sentomeasures, newMeasures) {
@@ -217,14 +254,12 @@ update_info <- function(sentomeasures, newMeasures) {
 }
 
 check_class <- function(x, class) {
-  if (!(class %in% class(x)))
+  if (!inherits(x, class))
     stop("Please provide a ", class, " object as first argument.")
 }
 
 compute_stats <- function(sentomeasures) {
-
   measures <- sentomeasures$measures[, -1]
-
   names <- c("mean", "sd", "max", "min", "meanCorr")
   stats <- data.frame(matrix(NA, nrow = length(names), ncol = length(measures), dimnames = list(names)))
   colnames(stats) <- colnames(measures)
@@ -232,55 +267,58 @@ compute_stats <- function(sentomeasures) {
   stats["sd", ] <- measures[, lapply(.SD, stats::sd, na.rm = TRUE)]
   stats["max", ] <- measures[, lapply(.SD, max, na.rm = TRUE)]
   stats["min", ] <- measures[, lapply(.SD, min, na.rm = TRUE)]
-
   if (ncol(measures) > 1) {
     corrs <- stats::cor(measures)
     corrs[corrs == 1] <- NA
     meanCorrs <- colMeans(corrs, na.rm = TRUE)
     stats["meanCorr", ] <- meanCorrs
   } else stats <- stats[row.names(stats) != "meanCorr", , drop = FALSE]
-
   return(stats)
 }
 
 compute_df <- function(alpha, beta, lambda, x) { # elastic net degrees-of-freedom estimator (Tibshirani and Taylor, 2012)
-  df_A <- vector(mode = "numeric", length = length(lambda))
-  for(df in 1:length(lambda)) {
+  x <- scale(x) # scale x first
+  df_A <- lapply(1:length(lambda), function(df) {
     A <- which(beta[, df] != 0)
-    if (length(A) == 0) {df_A[df] <- NA; next}
+    if (alpha == 1) {return(length(A))} # df equal to non-zero parameters if LASSO (alpha = 1)
+    if (length(A) == 0) {return(NA)}
     I <- diag(1, ncol = length(A), nrow = length(A))
     X_A <- as.matrix(x[, A])
-    df_A[df] <- sum(diag(X_A %*% solve((t(X_A) %*% X_A + (1 - alpha) * lambda[df] * I)) %*% t(X_A)))
-  }
-  return(df_A)
+    estimate <- tryCatch(sum(diag(X_A %*% solve((t(X_A) %*% X_A + (1 - alpha) * lambda[df] * I)) %*% t(X_A))),
+                         error = function(x) {NA}) # to handle rare matrix inversion problems
+    return(estimate)
+  })
+  return(unlist(df_A))
 }
 
 compute_BIC <- function(y, yEst, df_A, RSS, sigma2) { # BIC-like criterion
-  BIC <- RSS/(nrow(y) * sigma2) + log(nrow(y))/nrow(y) * df_A
+  BIC <- RSS/(nrow(y) * sigma2) + (log(nrow(y))/nrow(y)) * df_A
   return(BIC)
 }
 
 compute_AIC <- function(y, yEst, df_A, RSS, sigma2) { # AIC-like criterion
-  AIC <- RSS/(nrow(y) * sigma2) + 2/nrow(y) * df_A
+  AIC <- RSS/(nrow(y) * sigma2) + (2/nrow(y)) * df_A
   return(AIC)
 }
 
 compute_Cp <- function(y, yEst, df_A, RSS, sigma2) { # Mallows's Cp-like criterion
-  Cp <- RSS/nrow(y) + 2/nrow(y) * df_A * sigma2
+  Cp <- RSS/nrow(y) + (2/nrow(y)) * df_A * sigma2
   return(Cp)
 }
 
 to_long <- function(measures) { # changes format of sentiment measures data.table from wide to long
   dates <- measures$date
+  n <- length(dates)
   names <- colnames(measures)[-1]
   measuresTrans <- as.data.table(t(measures[, -1]))
-  colnames(measuresTrans) <- as.character(dates)
+  colnames(measuresTrans) <- as.character(1:n)
   triplets <- stringi::stri_split(names, regex = "--")
-  measuresTrans[, "lexicon" := sapply(triplets, "[", 1)]
-  measuresTrans[, "feature" := sapply(triplets, "[", 2)]
+  measuresTrans[, "lexicons" := sapply(triplets, "[", 1)]
+  measuresTrans[, "features" := sapply(triplets, "[", 2)]
   measuresTrans[, "time" := sapply(triplets, "[", 3)]
-  long <- melt(measuresTrans, id.vars = c("lexicon", "feature", "time"), variable.name = "date")
-  long[, "date" := as.Date(date)][]
+  long <- melt(measuresTrans, id.vars = c("lexicons", "features", "time"), variable.name = "toDrop")
+  long[, "toDrop" := NULL]
+  long[, "date" := rep(dates, rep(length(names), length(dates)))][]
   return(long)
 }
 

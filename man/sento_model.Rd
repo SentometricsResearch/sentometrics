@@ -12,47 +12,69 @@ provided through the \code{x} argument.}
 
 \item{y}{a one-column \code{data.frame} or a \code{numeric} vector capturing the dependent (response) variable. In case of
 a logistic regression, the response variable is either a \code{factor} or a \code{matrix} with the factors represented by
-the columns as binary indicators, with the last factor level or column as the reference class. No \code{NA} values are
-allowed.}
+the columns as binary indicators, with the second factor level or column as the reference class in case of a binomial logistic
+regression. No \code{NA} values are allowed.}
 
-\item{x}{a named \code{data.frame} with other explanatory variables, by default set to \code{NULL}.}
+\item{x}{a named \code{data.frame} with other explanatory variables as \code{numeric}, by default set to \code{NULL}.}
 
 \item{ctr}{output from a \code{ctr_model()} call.}
 }
 \value{
 If \code{ctr$do.iter == FALSE}, a \code{sentomodel} object which is a list containing:
 \item{reg}{optimized regression, i.e. a model-specific \code{glmnet} object.}
-\item{sentomeasures}{the input \code{sentomeasures} object.}
+\item{model}{the input argument \code{ctr$model}, to remind of the type of model that was estimated.}
+\item{x}{the \code{matrix} of the values used in the regression for all explanatory variables.}
 \item{alpha}{optimized calibrated alpha.}
 \item{lambda}{optimized calibrated lambda.}
 \item{trained}{output from \code{caret::train} call (if \code{ctr$type ==} "\code{cv}").}
 \item{ic}{a \code{list} composed of two elements: the information criterion used in the calibration under
 \code{"criterion"}, and a vector of all minimum information criterion values for each value in \code{alphas}
 under \code{"opts"} (if \code{ctr$type !=} "\code{cv}").}
+\item{date}{a reference date, being the most recent date from the \code{sentomeasures} object accounted for in the
+estimation window.}
+\item{nVar}{the sum of the number of sentiment measures and other explanatory variables inputted.}
+\item{discarded}{a named \code{logical} vector of length equal to the number of sentiment measures, in which \code{TRUE}
+indicates that the particular sentiment measure has not been considered in the regression process.}
 
-If \code{ctr$do.iter == TRUE}, a list containing:
-\item{regs}{optimized regressions, i.e. separate \code{sentomodel} objects as above, as a \code{list} with as names the
-dates from the perspective of the sentiment measures at which predictions for performance measurement are carried out.}
+If \code{ctr$do.iter == TRUE}, a \code{sentomodeliter} object which is a list containing:
+\item{models}{all sparse regressions, i.e. separate \code{sentomodel} objects as above, as a \code{list} with as names the
+dates from the perspective of the sentiment measures at which predictions for performance measurement are carried out (i.e.
+one date step beyond the date found at \code{sentomodel$date}.}
 \item{alphas}{optimized calibrated alphas.}
 \item{lambdas}{optimized calibrated lambdas.}
 \item{performance}{a \code{data.frame} with performance-related measures, being "\code{RMSFE}" (root mean squared
-forecasting error), "\code{MAD}" (mean absolute deviation), "\code{MAPE}" (mean absolute percentage error),
-"\code{DA}" (directional accuracy), "\code{accuracy}" (proportion of correctly predicted classes in case of a logistic
-regression), and each's respective individual values in the sample. Only the relevant performance statistics are given
-depending on the type of regression. Dates are similarly as with the \code{"regs"} output element from the perspective
-of the sentiment measures.}
+forecasting error), "\code{MAD}" (mean absolute deviation), "\code{MDA}" (mean directional accuracy, in which's calculation zero
+is considered as a positive; in percentage points), "\code{accuracy}" (proportion of correctly predicted classes in case of a
+logistic regression; in percentage points), and each's respective individual values in the sample. Directional accuracy is
+measured by comparing the change in the realized response with the change in the forecast between two consecutive time points
+(omitting the very first forecast, resulting in \code{NA}). Only the relevant performance statistics are given depending on the
+type of regression. Dates are as in the \code{"models"} output element, i.e. from the perspective of the sentiment measures.}
 }
 \description{
-Linear or nonlinear penalized regression of a dependent variable on the wide number of sentiment measures and
+Linear or nonlinear penalized regression of any dependent variable on the wide number of sentiment measures and
 potentially other explanatory variables. Either performs a regression given the provided variables at once, or computes
-regressions sequentially for a given sample size over a longer time horizon, with associated forecasting performance
-metrics. Independent variables are normalized in the regression process, but coefficients are returned in their original
-space.
+regressions sequentially for a given sample size over a longer time horizon, with associated one-step ahead forecasting
+performance metrics.
+}
+\details{
+Models are computed using the elastic net regularization as implemented in the \pkg{glmnet} package, to account for
+the multidimensionality of the sentiment measures. Additional explanatory variables are not subject to shrinkage. Independent
+variables are normalized in the regression process, but coefficients are returned in their original space. For a helpful
+introduction to \pkg{glmnet}, we refer to their \href{https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html#lin}{vignette}.
+The optimal elastic net parameters \code{lambda} and \code{alpha} are calibrated either through a to specify information
+criterion or through cross-validation (based on the "rolling forecasting origin" principle). In the latter case, the training
+metric is automatically set to \code{"RMSE"} for a linear model and to \code{"Accuracy"} for a logistic model. We suppressed many
+of the details that can be supplied to the \code{glmnet::glmnet()} and \code{caret::train()} functions we rely on for estimation
+and calibration through cross-validation, for the sake of user-friendliness.
 }
 \examples{
-# construct a sentomeasures object to start with
 data("useconomynews")
-useconomynews <- useconomynews[date >= "1988-01-01", ]
+data("lexicons")
+data("valence")
+data("epu")
+
+# construct a sentomeasures object to start with
+useconomynews <- useconomynews[date >= "1980-01-01" & date < "2014-10-01", ]
 corpus <- sento_corpus(corpusdf = useconomynews)
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional",
@@ -62,42 +84,52 @@ ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional",
 sentomeasures <- sento_measures(corpus, l, ctr)
 
 # prepare y and other x variables
-data("sp500")
-y <- sp500$return # convert to numeric vector
-sentomeasures <- fill_measures(sentomeasures)
+y <- epu[epu$date >= sentomeasures$measures$date[1], ]$index
 length(y) == nrow(sentomeasures$measures) # TRUE
 x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
 colnames(x) <- c("x1", "x2")
-
 # a list with models based on the three implemented information criteria
 out1 <- list()
 for (ic in c("BIC", "AIC", "Cp")) {
-   ctrIC <- ctr_model(model = "lm", type = ic, do.iter = FALSE, h = 0)
-   out1[[ic]] <- sento_model(sentomeasures, y, x = x, ctr = ctrIC)
+ ctrIC <- ctr_model(model = "gaussian", type = ic, do.iter = FALSE, h = 0)
+ out1[[ic]] <- sento_model(sentomeasures, y, x = x, ctr = ctrIC)
 }
-
-# a (very) short iterative analysis of cross-validation based models
-ctrCV <- ctr_model(model = "lm", type = "cv", do.iter = TRUE, h = 0, trainWindow = 250,
-                   testWindow = 20, oos = 0, nSample = 320, do.progress = TRUE)
+# a cross-validation based model
+ctrCV <- ctr_model(model = "gaussian", type = "cv", do.iter = FALSE,
+                   h = 0, alphas = c(0.10, 0.50, 0.90), trainWindow = 350,
+                   testWindow = 40, oos = 0, do.progress = TRUE)
 out2 <- sento_model(sentomeasures, y, x = x, ctr = ctrCV)
+summary(out2)
 
-# a similar iterative analysis of cross-validation based models but for a binomial target
-yb <- sp500$up
-ctrCV <- ctr_model(model = "binomial", type = "cv", do.iter = TRUE, trainWindow = 250,
-                   h = 0, testWindow = 20, oos = 0, nSample = 320, do.progress = TRUE)
-out3 <- sento_model(sentomeasures, yb, x = x, ctr = ctrCV)
+# a cross-validation based model but for a binomial target
+yb <- epu[epu$date >= sentomeasures$measures$date[1], ]$above
+ctrCVb <- ctr_model(model = "binomial", type = "cv", do.iter = FALSE,
+                    h = 0, alphas = c(0.10, 0.50, 0.90), trainWindow = 350,
+                    testWindow = 40, oos = 0, do.progress = TRUE)
+out3 <- sento_model(sentomeasures, yb, x = x, ctr = ctrCVb)
+summary(out3)
 
-# post-analysis (summary, attribution and prediction)
-out <- out1[["BIC"]]
+# an example of an iterative analysis
+ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE,
+                       h = 0, nSample = 300, start = 106)
+out <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
 summary(out)
 
-attribution <- retrieve_attributions(out)
+# some post-analysis (attribution and prediction)
+attributions <- retrieve_attributions(out, sentomeasures)
+plot_attributions(attributions, "lexicons")
+plot_attributions(attributions, "features")
+plot_attributions(attributions, "time")
 
 nx <- ncol(sentomeasures$measures) - 1 + ncol(x) # don't count date column
-newx <- runif(nx) * cbind(sentomeasures$measures[, -1], x)[nrow(x), ]
-preds <- predict(out, newx = as.matrix(newx), type = "link")
+newx <- runif(nx) * cbind(sentomeasures$measures[, -1], x)[1:nrow(x), ]
+preds2 <- predict(out2, newx = as.matrix(newx), type = "link")
+preds3 <- predict(out3, newx = as.matrix(newx), type = "class")
 
 }
 \seealso{
 \code{\link{ctr_model}}, \code{\link[glmnet]{glmnet}}, \code{\link[caret]{train}}
+}
+\author{
+Samuel Borms, Keven Bluteau
 }

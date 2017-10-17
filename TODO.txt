@@ -1,34 +1,29 @@
 
-POST-GSOC 2017
+TO DO
 -------------------------------------------------------------------------------
 
-- sentomodel.R
-	> parallelization to add (internally or pointers in documentation on how to use parallelization)
-	> check warnings and sanity in caret::train() setup
-	> finalize retrieve_attribution() + documentation [cf. ### in-code comments]
-	> check binomial and multinomial regressions
-	> integrate ... to allow for user-supplied additional parameters to glmnet (via ctr functions of glmnet train in our 
-	  ctr function); e.g. offset
-	> add GCV (gen. cross-validation)
-	> find information criteria appropriate for logistic regression in elastic net-context (cf. Keven on GitHub + df
-	  estimator applicable for logistic regression?)
-	> statistical tests (Diebold-Mariano, MCS, etc.)
-- sentomeasures.R
-	> add remove = stopwords("english") in dfm (+ translated stopwords)?
-- examples
-	> incorporation into documentation + check for meaningful results (other corpus/response variable combination?)
-- vignette
-	> basic structure
 - write unit tests
-- speed (use apply where for loops if desirable, optimal use of data.table and its methods, etc.)
-- write print/summary methods for objects where useful + include in examples
-- reproduce paper example + add paper section on GitHub + include new version in description
-- relate in description of functions to paper once finalized
-- add author(s) in function's documentation
-- check data.frame vs. data.table input/output consistency
+- speeding up:
+	> apply where for loops if desirable + optimal use of data.table and its methods
+	> memory: rm() & gc()
+	> Rcpp implementation of compute_df()
+	> parallelization (internally + pointers in documentation on how to use)
+- check warnings and sanity in caret::train() setup + parallelize
+- check binomial and multinomial regressions
+- plot function for sentomodeliter if logistic model (other type of plot or "link" predictions)
+- finalize retrieve_attribution() (incl. documentation + attribution plotting)
+- add IC/df estimator appropriate for logistic regression in elastic net-context (cf. Keven on GitHub)
+- check perform_MCS()
+- change dates in sentomodel object: c(first sample date, last sample date) [cf. attribution function]
+- check ### in-code
 
 (update to newest R version)
 (check compatibility with major quanteda package update in October 2017)
 (valence words not detected if first word is a valence shifter, e.g. " not " if text is "not ...")
 (function to update sentomeasures [when new texts come in])
+(make transition easy from corpora of other text mining packages to our corpus [cf. quanteda's conversion functions + feature inclusion])
+(interface with lexicon package for access to more lexicons)
+(clean-up GitHub: separate Shiny app + delete irrelevant examples)
+
+
 

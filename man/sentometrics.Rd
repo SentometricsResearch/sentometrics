@@ -5,7 +5,7 @@
 \alias{sentometrics}
 \alias{sentometrics-package}
 \alias{sentometrics-package}
-\title{An Integrated Framework for Textual Sentiment Based Multivariate Time Series Modeling and Forecasting}
+\title{An Integrated Framework for Textual Sentiment Time Series Aggregation and Forecasting}
 \description{
 The sentometrics package is designed to do time series analysis based on textual sentiment. It accounts
 for the intrinsic challenge that, for a given text, sentiment can be computed in hundreds of different ways, as well as
@@ -17,18 +17,19 @@ therefore integrates the qualification of sentiment from texts, the aggregation 
 and the optimized forecasting based on these measures.
 }
 \note{
-The ideas behind the sentiment aggregation framework can be consulted in the working paper titled `Questioning the
-news about economic growth: Sparse forecasting using thousands of news-based sentiment values' (Ardia, Bluteau & Boudt,
+The ideas behind the sentiment aggregation framework can be consulted in the working paper titled ``Questioning the
+news about economic growth: Sparse forecasting using thousands of news-based sentiment values" (Ardia, Bluteau & Boudt,
 2017) at \url{https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2976084}.
 
 Please cite the package in publications. Use \code{citation("sentometrics")}.
 }
-\section{Functions}{
+\section{Main functions}{
 
 \itemize{
-\item Sentiment computation and aggregation into sentiment measures: to do
-\item Sparse modelling: to do
-\item Forecasting and post-modelling analysis: to do
+\item Sentiment computation and aggregation into sentiment measures: \code{\link{sento_corpus}}, \code{\link{ctr_agg}},
+\code{\link{compute_sentiment}}, \code{\link{sento_measures}}, \code{\link{to_global}}
+\item Sparse modelling: \code{\link{ctr_model}}, \code{\link{sento_model}}
+\item Forecasting and post-modelling analysis: \code{\link{retrieve_attributions}}, \code{\link{perform_MCS}}
 }
 }
 

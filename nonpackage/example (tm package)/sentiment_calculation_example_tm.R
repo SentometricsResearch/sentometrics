@@ -34,7 +34,7 @@ timelist = lapply(corpus, meta, tag = "datetimestamp")
 
 BigramTokenizer = function(x) RWeka::NGramTokenizer(x, Weka_control(min = 1, max = 1))
 tdmControl = list(tokenize = BigramTokenizer, wordLengths = c(1, Inf))
-if(weighting == "weightTfIdf"){
+if(weighting == "weightTfIdf") {
   tdmControl$weighting =   function(x) weightTfIdf(x, normalize = FALSE)
 }
 

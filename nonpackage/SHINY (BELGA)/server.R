@@ -15,6 +15,7 @@ library(gridExtra)
 # extrafont::loadfonts(device = "win", quiet = TRUE)
 
 ### TODO: selection via data.table, not dplyr
+### TODO: input values should be bigger than zero
 
 load("sentimentShinyAll.rda") # out
 
@@ -433,7 +434,7 @@ function(input, output) {
     data <- selData$data
 
     p1 <- ggplot(data = data,
-                aes(x = date, y = net_sent, color = name)) +
+                 aes(x = date, y = net_sent, color = name)) +
       {if (as.numeric(input$dots)) geom_point()} +
       # geom_line() +
       geom_line(aes(y = sma), size = 1.25) +

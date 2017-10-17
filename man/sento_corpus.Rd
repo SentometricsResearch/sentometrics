@@ -11,25 +11,36 @@ sento_corpus(corpusdf, do.clean = FALSE)
 \code{id} column, a \code{date} column, a \code{text} column (i.e. the columns where all texts to analyze reside), and a
 series of feature columns of type \code{numeric}, with values pointing to the applicability of a particular feature to
 a particular text. The latter columns are often binary (1 means the feature is applicable to the document in the same row)
-or as a percentage to specify the degree of connectedness of a feature to a document. Features could be for example topics
-(e.g. economic, political or legal), but also article sources (e.g. online or printed press), amongst many more
-possibilities. Feature column names should be unique. Provide the \code{date} column as \code{"yyyy-mm-dd"}.}
+or as a percentage to specify the degree of connectedness of a feature to a document. Features could be topics (e.g. legal,
+political or economic), but also article sources (e.g. online or printed press), amongst many more options. If no particular
+features are of interest to your analysis, have only one additional column with all values set to 1. Provide the \code{date}
+column as \code{"yyyy-mm-dd"}. All spaces in the names of the features are automatically replaced by underscores.}
 
 \item{do.clean}{a \code{logical}, if \code{TRUE} all texts undergo a cleaning routine to eliminate common textual
 garbage. This includes a brute force replacement of HTML tags and non-alphanumeric characters by an empty string.}
 }
 \value{
-A \code{sentocorpus} object, as a \code{quanteda} classed list keeping the elements \code{documents},
-\code{metadata} and\code{settings}, while adding the elements \code{features} (a \code{character} vector of
-all features part of the corpus.), and \code{nDocs} (the number of documents in the corpus).
+A \code{sentocorpus} object, derived from a \pkg{quanteda} corpus classed list keeping the elements \code{documents},
+\code{metadata} and\code{settings}. The \code{documents} element incorporates the corpus represented as a \code{data.table}.
 }
 \description{
-Assembles a collection of texts (i.e. a corpus), by calling the \code{corpus()} instructor from the
-\pkg{quanteda} package, perform a set of checks and prepare it for further analysis.
+Formalizes the structure of a collection of texts into a well-defined corpus, by calling the \code{corpus()}
+constructor from the \pkg{quanteda} package, performing a set of checks and preparing it for further sentiment analysis.
+}
+\details{
+A \code{sentocorpus} object can be regarded as a specialized instance of a \pkg{quanteda} corpus. In theory, all
+\pkg{quanteda} functions applicable to its corpus object can also be applied to a \code{sentocorpus} object. However,
+changing a given \code{sentocorpus} object too drastically using some of \pkg{quanteda}'s functions might alter the very
+structure the corpus is meant to have (as defined in the \code{"corpusdf"} argument) to be able to be used as an input
+in other functions of the \pkg{sentometrics} package. There are functions, including \code{quanteda::corpus_sample()} or
+\code{quanteda::corpus_subset()}, that do not change the actual corpus structure and may come in handy. To add additional
+additional features, we recommend to use \code{add_features()}. In the future, we will formalize the interaction between the
+\pkg{quanteda} package (as well as other text mining packages).
 }
 \examples{
-# corpus construction
 data("useconomynews")
+
+# corpus construction
 corpus <- sento_corpus(corpusdf = useconomynews)
 
 # take a random subset using a quanteda's package function
@@ -38,4 +49,7 @@ corpusSmall <- quanteda::corpus_sample(corpus, size = 500)
 }
 \seealso{
 \code{\link[quanteda]{corpus}}
+}
+\author{
+Samuel Borms
 }
