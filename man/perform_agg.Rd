@@ -8,7 +8,7 @@ perform_agg(toAgg, ctr)
 }
 \arguments{
 \item{toAgg}{output from a \code{compute_sentiment()} call, a list with as main component a sentiment scores
-\code{data.table} with dates and feature--lexicon sentiment scores columns.}
+\code{data.table} with dates and lexicon--feature sentiment scores columns.}
 
 \item{ctr}{output from a \code{ctr_agg()} call.}
 }
@@ -20,8 +20,11 @@ Condense document-level textual sentiment scores into a panel of textual sentime
 measures by aggregating across documents and time.
 }
 \examples{
-# computation of sentiment and aggregation into sentiment measures
 data("useconomynews")
+data("lexicons")
+data("valence")
+
+# computation of sentiment and aggregation into sentiment measures
 corpus <- sento_corpus(corpusdf = useconomynews)
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 sent <- compute_sentiment(corpus, l, how = "counts")
@@ -31,4 +34,7 @@ sentomeasures <- perform_agg(sent, ctr)
 }
 \seealso{
 \code{\link{compute_sentiment}}, \code{\link{ctr_agg}}
+}
+\author{
+Samuel Borms, Keven Bluteau
 }

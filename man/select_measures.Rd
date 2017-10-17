@@ -4,15 +4,24 @@
 \alias{select_measures}
 \title{Select a subset of sentiment measures}
 \usage{
-select_measures(sentomeasures, toSelect, do.combine = TRUE)
+select_measures(sentomeasures, toSelect = "all", do.combine = TRUE,
+  dates = NA)
 }
 \arguments{
 \item{sentomeasures}{a \code{sentomeasures} object.}
 
-\item{toSelect}{a vector of components (lexicon, time weighting and feature names) which form the measures selected.}
+\item{toSelect}{a \code{"character"} vector of the lexicon, feature and time weighting scheme names, to indicate which measures
+need to be selected. By default equal to \code{"all"}, which means no selection of the sentiment measures is made; this may be
+used if one only wants to extract a subset of dates via the \code{dates} argument.}
 
 \item{do.combine}{a \code{logical} indicating if only measures for wich all (\code{TRUE}) or at least one (\code{FALSE}) of
-the selection components should occur in each sentiment measure's name in the subset.}
+the selection components should occur in each sentiment measure's name in the subset. If \code{do.combine == TRUE}, the
+\code{toSelect} argument can only consist of one lexicon, one feature and one time weighting scheme at maximum.}
+
+\item{dates}{any expression, in the form of a \code{character} vector, that would correctly evaluate to a \code{logical} vector,
+features the variable \code{date} and has dates specified as \code{"yyyy-mm-dd"}, e.g. \code{dates = "date >= '2000-01-15'"}.
+This argument may also be a vector of class \code{Date} which extracts all dates that show up in that vector. See the examples.
+By default equal to \code{NA}, meaning no subsetting based on dates is done.}
 }
 \value{
 A modified \code{sentomeasures} object, with only the sentiment measures required, including updated information
@@ -20,11 +29,14 @@ and statistics, but the original sentiment scores \code{data.table} untouched.
 }
 \description{
 Selects the subset of sentiment measures which include either all of the given selection components combined,
-or those who's name consist of at least one of the selection components.
+or those who's name consist of at least one of the selection components. Selecting a subset of dates
 }
 \examples{
-# construct a sentomeasures object to start with
 data("useconomynews")
+data("lexicons")
+data("valence")
+
+# construct a sentomeasures object to start with
 corpus <- sento_corpus(corpusdf = useconomynews)
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
@@ -36,5 +48,12 @@ sel2 <- select_measures(sentomeasures, c("equal_weight", "linear"), do.combine =
 sel3 <- select_measures(sentomeasures, c("linear", "LM_eng"))
 sel4 <- select_measures(sentomeasures, c("linear", "LM_eng", "wsj", "economy"),
                         do.combine = FALSE)
+sel5 <- select_measures(sentomeasures, c("linear", "LM_eng"),
+                        dates = "date >= '1989-12-31' & date <= '2000-12-31'")
+d <- seq(as.Date("1980-01-01"), as.Date("2013-12-01"), by = "month")
+sel6 <- select_measures(sentomeasures, c("linear", "LM_eng"), dates = d)
 
+}
+\author{
+Samuel Borms
 }

@@ -2,7 +2,7 @@
 #' @name sentometrics
 #' @docType package
 #'
-#' @title An Integrated Framework for Textual Sentiment Based Multivariate Time Series Modeling and Forecasting
+#' @title An Integrated Framework for Textual Sentiment Time Series Aggregation and Forecasting
 #'
 #' @description The sentometrics package is designed to do time series analysis based on textual sentiment. It accounts
 #' for the intrinsic challenge that, for a given text, sentiment can be computed in hundreds of different ways, as well as
@@ -13,11 +13,12 @@
 #' therefore integrates the qualification of sentiment from texts, the aggregation into different sentiment measures
 #' and the optimized forecasting based on these measures.
 #'
-#' @section Functions:
+#' @section Main functions:
 #' \itemize{
-#' \item Sentiment computation and aggregation into sentiment measures: to do
-#' \item Sparse modelling: to do
-#' \item Forecasting and post-modelling analysis: to do
+#' \item Sentiment computation and aggregation into sentiment measures: \code{\link{sento_corpus}}, \code{\link{ctr_agg}},
+#' \code{\link{compute_sentiment}}, \code{\link{sento_measures}}, \code{\link{to_global}}
+#' \item Sparse modelling: \code{\link{ctr_model}}, \code{\link{sento_model}}
+#' \item Forecasting and post-modelling analysis: \code{\link{retrieve_attributions}}, \code{\link{perform_MCS}}
 #' }
 #'
 #' @section Update:
@@ -25,8 +26,8 @@
 #'
 #' @author Samuel Borms, Keven Bluteau, David Ardia and Kris Boudt.
 #'
-#' @note The ideas behind the sentiment aggregation framework can be consulted in the working paper titled `Questioning the
-#' news about economic growth: Sparse forecasting using thousands of news-based sentiment values' (Ardia, Bluteau & Boudt,
+#' @note The ideas behind the sentiment aggregation framework can be consulted in the working paper titled ``Questioning the
+#' news about economic growth: Sparse forecasting using thousands of news-based sentiment values" (Ardia, Bluteau & Boudt,
 #' 2017) at \url{https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2976084}.
 #'
 #' @note Please cite the package in publications. Use \code{citation("sentometrics")}.
@@ -107,7 +108,6 @@
 #'   \item id. ID identifier.
 #'   \item date. Date as \code{"yyyy-mm-dd"}.
 #'   \item text. Texts in \code{character} format.
-#'   \item headline. Headlines in \code{character} format.
 #'   \item wsj. Equals 1 if the article comes from The Wall Street Journal.
 #'   \item wapo. Equals 1 if the article comes from The Washington Post.
 #'   \item economy. Equals 1 if the article is relevant to the US economy.
@@ -127,12 +127,13 @@
 #'
 #' @description
 #' Monthly returns for the S&P 500 Index between March 1988 and December 2014, including a binomial and a multinomial example
-#' series.
+#' series. It has following columns:
 #'
 #' \itemize{
 #'   \item date. Date as \code{"yyyy-mm-01"}.
-#'   \item return. A \code{numeric} monthly return value.
-#'   \item up. A \code{factor} with value \code{"pos"} if return is greater than zero, else \code{"neg"}.
+#'   \item return. A \code{numeric} value as the return that was achieved during the corresponding month; for example the first
+#'   return value is the price change from beginning of March 1988 to beginning of April 1988.
+#'   \item up. A \code{factor} with value \code{"pos"} if the return is greater than zero, else \code{"neg"}.
 #'   \item upMulti. A \code{factor} with values \code{"pos+"}, \code{"pos"}, \code{"neg"} and \code{"neg-"} if returns are
 #'   greater than 0.05 and 0, or smaller than 0 and -0.05, respectively and in a mutually exclusive sense.
 #' }
@@ -143,4 +144,30 @@
 #'
 #' @source \href{https://finance.yahoo.com/quote/\%5EGSPC/history?p=\%5EGSPC}{S&P 500 (^GSPC) at Yahoo Finance}
 "sp500"
+
+#' Monthly Economic Policy Uncertainty Index
+#'
+#' @docType data
+#'
+#' @description
+#' Monthly values of a news-based index of US Economic Policy Uncertainty (EPU) between January 1980 and September
+#' 2014, including a binomial and a multinomial example series. For more information on its calculation, see
+#' \href{http://www.policyuncertainty.com/methodology.html}{this}. Following columns are present:
+#'
+#' \itemize{
+#'   \item date. Date as \code{"yyyy-mm-01"}.
+#'   \item index A \code{numeric} monthly index value.
+#'   \item above. A \code{factor} with value \code{"above"} if the index is greater than the mean of the entire series, else
+#'   \code{"below"}.
+#'   \item aboveMulti. A \code{factor} with values \code{"above+"}, \code{"above"}, \code{"below"} and \code{"below-"} if the index
+#'   is greater than the 75% quantile and the 50% quantile, or smaller than the 50% quantile and the 25% quantile, respectively and
+#'   in a mutually exclusive sense.
+#' }
+#'
+#' @usage data("epu")
+#'
+#' @format A \code{data.frame} with 417 rows and 4 columns.
+#'
+#' @source \href{http://www.policyuncertainty.com/research.html}{Research on Economic Policy Uncertainty}
+"epu"
 

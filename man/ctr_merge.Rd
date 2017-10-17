@@ -2,13 +2,14 @@
 % Please edit documentation in R/sentomeasures.R
 \name{ctr_merge}
 \alias{ctr_merge}
-\title{Setup control for merging sentiment measures}
+\title{Set up control for merging sentiment measures}
 \usage{
 ctr_merge(sentomeasures, feat = NA, lex = NA, time = NA,
   do.keep = FALSE)
 }
 \arguments{
-\item{sentomeasures}{a \code{sentomeasures} object.}
+\item{sentomeasures}{a \code{sentomeasures} object. This is necessary to check whether the other input arguments
+make sense.}
 
 \item{feat}{a list with unique features to merge at given name, e.g. \cr
 \code{list(feat12 = c("feat1", "feat2"))}. See \code{sentomeasures$features} for the exact names to use.}
@@ -19,8 +20,8 @@ ctr_merge(sentomeasures, feat = NA, lex = NA, time = NA,
 \item{time}{a list with unique time weighting schemes to merge at given name, e.g. \cr
 \code{list(tw12 = c("tw1", "tw2"))}. See \code{sentomeasures$time} for the exact names to use.}
 
-\item{do.keep}{a \code{logical} indicating if the original sentiment measures should be kept (i.e. the merged sentiment
-measures will be added to the current sentiment measures as additional indices if \code{TRUE}).}
+\item{do.keep}{a \code{logical} indicating if the original sentiment measures should be kept (i.e. the merged
+sentiment measures will be added to the current sentiment measures as additional indices if \code{TRUE}).}
 }
 \value{
 A list encapsulating the control parameters.
@@ -29,8 +30,11 @@ A list encapsulating the control parameters.
 Sets up control object for the optional merging (additional aggregation) of sentiment measures.
 }
 \examples{
-# construct a sentomeasures object to start with
 data("useconomynews")
+data("lexicons")
+data("valence")
+
+# construct a sentomeasures object to start with
 corpus <- sento_corpus(corpusdf = useconomynews)
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
@@ -51,4 +55,10 @@ ctrMerge <- ctr_merge(sentomeasures,
                       feat = list(journals = c("notInHere", "wapo")))
 }
 
+}
+\seealso{
+\code{\link{merge_measures}}
+}
+\author{
+Samuel Borms
 }

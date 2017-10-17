@@ -2,22 +2,27 @@
 % Please edit documentation in R/sentomeasures.R
 \name{compute_sentiment}
 \alias{compute_sentiment}
-\title{Computation of document-level sentiment across features and lexicons}
+\title{Compute document-level sentiment across features and lexicons}
 \usage{
-compute_sentiment(sentocorpus, lexicons, how = get_hows()$words)
+compute_sentiment(sentocorpus, lexicons, how = get_hows()$words, dfm = NULL)
 }
 \arguments{
 \item{sentocorpus}{a \code{sentocorpus} object.}
 
 \item{lexicons}{output from a \code{setup_lexicons()} call.}
 
-\item{how}{a single \code{character} vector defining how aggregation within documents will be performed. For currently
+\item{how}{a single \code{character} vector defining how aggregation within documents should be performed. For currently
 available options on how aggregation can occer, see \code{get_hows()$words}.}
+
+\item{dfm}{optional; an output from a \code{quanteda::dfm()} call, such that users can specify their own tokenization scheme
+(via \code{quanteda::tokenize()}) as well as other parameters related to the construction of a document-feature matrix
+(dfm). By default, a dfm is created based on a tokenization that removes punctuation, numbers, symbols and separators. We
+suggest to stick to unigrams, as the remainder of the sentiment computation and built-in lexicons assume the same.}
 }
 \value{
 A list containing:
 \item{corpus}{the supplied \code{sentocorpus} object.}
-\item{sentiment}{a sentiment scores \code{data.table} with a \code{date} and feature--lexicon sentiment scores columns.}
+\item{sentiment}{the sentiment scores \code{data.table} with a \code{date} and lexicon--feature sentiment scores columns.}
 \item{features}{a \code{character} vector of the different features.}
 \item{lexicons}{a \code{character} vector of the different lexicons used.}
 \item{howWithin}{a \code{character} vector to remind how sentiment within documents was aggregated.}
@@ -29,15 +34,28 @@ based on the lexicons provided and a choice of aggregation across words per docu
 }
 \details{
 For a separate calculation of positive (resp. negative) sentiment, one has to provide distinct positive (resp. negative)
-lexicons. This can be done using the \code{do.split} option in the \code{setup_lexicons()} function, which automatically
-splits any lexicon into positive and negative polarity. \code{NA}s are converted to 0, under the assumption that this is
-equivalent to no sentiment.
+lexicons. This can be done using the \code{do.split} option in the \code{setup_lexicons()} function, which splits out the
+lexicons into a positive and a negative polarity counterpart. \code{NA}s are converted to 0, under the assumption that this
+is equivalent to no sentiment.
 }
 \examples{
-# sentiment computation based on raw frequency counts
 data("useconomynews")
+data("lexicons")
+data("valence")
+
+# sentiment computation based on raw frequency counts
 corpus <- sento_corpus(corpusdf = useconomynews)
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 sent <- compute_sentiment(corpus, l, how = "counts")
 
+# same sentiment computation based on a user-supplied dfm with default settings
+dfm <- quanteda::dfm(quanteda::tokenize(corpus), verbose = FALSE)
+sent <- compute_sentiment(corpus, l, how = "counts", dfm = dfm)
+
+}
+\seealso{
+\code{\link[quanteda]{dfm}}, \code{\link[quanteda]{tokenize}}
+}
+\author{
+Samuel Borms
 }

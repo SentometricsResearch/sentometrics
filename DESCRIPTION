@@ -1,6 +1,6 @@
 Package: sentometrics
-Title: An Integrated Framework for Textual Sentiment Based Multivariate Time Series Modeling and Forecasting
-Version: 0.1.0
+Title: An Integrated Framework for Textual Sentiment Time Series Aggregation and Forecasting
+Version: 0.2.0
 Authors@R: c(person("Samuel", "Borms", email = "borms_sam@hotmail.com", role = c("aut", "cre")),
   person("David", "Ardia", email = "david.ardia@unine.ch", role = c("aut")),
   person("Keven", "Bluteau", email = "keven.bluteau@unine.ch", role = c("aut")),
@@ -12,5 +12,5 @@ Encoding: UTF-8
 LazyData: true
 Suggests: testthat, e1071, randomForest
 Imports: utils, stats, quanteda, sentimentr, stringi, zoo, abind, glmnet, caret,
-    compiler, Rcpp, RcppRoll, ggthemes, ISOweek
+    compiler, Rcpp, RcppRoll, ggthemes, ISOweek, MCS
 RoxygenNote: 6.0.1

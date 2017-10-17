@@ -68,7 +68,7 @@ plot(global)
 
 data("sp500")
 
-y <- sp500$return # convert to numeric vector
+y <- sp500$return
 sentMeas <- fill_measures(sentMeas)
 sentMeas <- fill_measures(sentMeas, fill = "latest")
 length(y) == nrow(sentMeas$measures) # TRUE

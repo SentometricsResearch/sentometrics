@@ -9,14 +9,15 @@
 \arguments{
 \item{object}{a \code{sentomodel} object.}
 
-\item{newx}{a \code{matrix} of \code{numeric} values for all explanatory variables at which predictions are to be made,
-see documentation for \code{\link{predict.glmnet}}.}
+\item{newx}{a \code{matrix} of \code{numeric} values with all explanatory variables to be used for the prediction(s), structured
+row-by-row; see documentation for \code{\link{predict.glmnet}}. The number of variables should be equal to \code{sentomodel$nVar},
+being the sum of the number of original sentiment measures and the number of additional explanatory variables. Variables
+discarded in the regression process are discarded again here, based on \code{sentomodel$discarded}.}
 
 \item{type}{type of prediction required, a value from \code{c("link", "response", "class")}, see documentation for
 \code{\link{predict.glmnet}}.}
 
-\item{offset}{values to use as offset, only if an offset was also used in the model fitting, see documentation for
-\code{\link{predict.glmnet}}.}
+\item{offset}{not used. Any values here will be ignored.}
 
 \item{...}{not used.}
 }
@@ -24,9 +25,12 @@ see documentation for \code{\link{predict.glmnet}}.}
 A prediction output depending on the \code{type} argument provided.
 }
 \description{
-Prediction (forecasting) method for \code{sentomodel} class, with usage along the lines of \code{predict.glmnet}, but
-simplified in terms of allowed parameters.
+Prediction (forecasting) method for \code{sentomodel} class, with usage along the lines of
+\code{predict.glmnet}, but simplified in terms of allowed parameters.
 }
 \seealso{
 \code{\link{predict.glmnet}}, \code{\link{sento_model}}
+}
+\author{
+Samuel Borms
 }

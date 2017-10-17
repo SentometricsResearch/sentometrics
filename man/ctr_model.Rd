@@ -2,34 +2,37 @@
 % Please edit documentation in R/sentomodel.R
 \name{ctr_model}
 \alias{ctr_model}
-\title{Setup control for sentiment measures-based regression modelling}
+\title{Set up control for sentiment measures-based regression modelling}
 \usage{
-ctr_model(model = c("lm", "binomial", "multinomial"), type = c("BIC", "AIC",
-  "Cp", "cv"), do.iter = FALSE, h = 1, lambdas = 10^seq(2, -2, length.out
-  = 50), alphas = seq(0, 1, by = 0.2), nSample = NULL, trainWindow = NULL,
+ctr_model(model = c("gaussian", "binomial", "multinomial"), type = c("BIC",
+  "AIC", "Cp", "cv"), intercept = TRUE, do.iter = FALSE, h = 0,
+  alphas = seq(0, 1, by = 0.2), nSample = NULL, trainWindow = NULL,
   testWindow = NULL, oos = 0, start = 1, do.progress = TRUE)
 }
 \arguments{
-\item{model}{a \code{character} vector with one of the following: "\code{lm}" (linear regression), "\code{binomial}"
+\item{model}{a \code{character} vector with one of the following: "\code{gaussian}" (linear regression), "\code{binomial}"
 (binomial logistic regression), or "\code{multinomial}" (multinomial logistic regression).}
 
 \item{type}{a \code{character} vector indicating which model selection criteria to use. Currently supports "\code{BIC}",
-"\code{AIC}" and "\code{Cp}" (Mallows's Cp) as sparse-regression adapted information criteria (cf. Zou, Hastie, Tibshirani
-et al. (2007). "On the 'degrees of freedom' of the LASSO."), and "\code{cv}" (cross-validation based on the \code{train}
+"\code{AIC}" and "\code{Cp}" (Mallows's Cp) as sparse regression adapted information criteria (cf. ``On the `degrees of
+freedom' of the LASSO"; Zou, Hastie, Tibshirani et al., 2007), and "\code{cv}" (cross-validation based on the \code{train}
 function from the \pkg{caret} package). The adapted information criteria are currently only available for a linear
 regression.}
 
-\item{do.iter}{a \code{logical}, \code{TRUE} induces an iterative optimization of models through time.}
+\item{intercept}{a \code{logical}, \code{TRUE} by default fits an intercept.}
+
+\item{do.iter}{a \code{logical}, \code{TRUE} induces an iterative estimation of models at the given \code{nSample} size and
+performs the associated one-step ahead out-of-sample forecasting exercise through time.}
 
 \item{h}{an \code{integer} value to shift the time series to have the desired (forecasting) setup, \code{h == 0} means
 no change to the input data (nowcasting assuming data is aligned properly), \code{h > 0} shifts the dependent variable by
 \code{h} periods (i.e. rows) further in time (forecasting), \code{h < 0} shifts the independent variables by \code{h}
 periods.}
 
-\item{lambdas}{a \code{numeric} vector of the different lambdas to test for during optimization.}
-
 \item{alphas}{a \code{numeric} vector of the different alphas to test for during optimization, between 0 and 1. A value of
-0 pertains to Ridge optimization, a value of 1 to LASSO optimization; values in between are pure elastic-net.}
+0 pertains to Ridge optimization, a value of 1 to LASSO optimization; values in between are pure elastic net. The lambda
+values tested for are automatically chosen by the \code{glmnet()} function or set to \code{10^seq(2, -2, length.out = 100)}
+in case of cross-validation.}
 
 \item{nSample}{a positive \code{integer} as the size of the sample for model calibration at every iteration (ignored if
 \code{iter == FALSE}).}
@@ -44,7 +47,8 @@ periods.}
 training sample (out-of-sample) up to the test sample (ignored if \code{type !=} "\code{cv}").}
 
 \item{start}{a positive \code{integer} to indicate at which point the iteration has to start (ignored if
-\code{iter == FALSE}).}
+\code{iter == FALSE}). For example, for 100 out-of-sample iterations, \code{start = 70} only performs the analysis
+for the last 31 samples.}
 
 \item{do.progress}{a \code{logical}, if \code{TRUE} progress statements are displayed during model calibration.}
 }
@@ -52,27 +56,30 @@ training sample (out-of-sample) up to the test sample (ignored if \code{type !=}
 A list encapsulating the control parameters.
 }
 \description{
-Sets up control object for linear or nonlinear modelling of a response variable onto a sparse panel of
-textual sentiment measures (and potentially other variables). Models are computed using the elastic-net regularization as
-implemented in the \pkg{glmnet} package, to account for the sparsity of the sentiment measures. For a helpful introduction
-to \pkg{glmnet}, we refer to their \href{https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html#lin}{vignette}.
-The optimal elastic-net parameters \code{lambda} and \code{alpha} are calibrated either through a to specify information
-criterion or through cross-validation (based on the "rolling forecasting origin" principle).
+Sets up control object for linear or nonlinear modelling of a response variable onto a large panel of
+textual sentiment measures (and potentially other variables). See the \code{\link{sento_model}} function's documentation for
+details on the estimation and calibration procedure.
 }
 \examples{
 # series of example information criterion based model control functions
-ctrIC1 <- ctr_model(model = "lm", type = "BIC", do.iter = FALSE, h = 0,
+ctrIC1 <- ctr_model(model = "gaussian", type = "BIC", do.iter = FALSE, h = 0,
                     alphas = seq(0, 1, by = 0.10))
-ctrIC2 <- ctr_model(model = "lm", type = "BIC", do.iter = TRUE, h = 0, nSample = 100)
+ctrIC2 <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE, h = 0, nSample = 100)
 
 # series of example cross-validation based model control functions
-ctrCV1 <- ctr_model(model = "lm", type = "cv", do.iter = FALSE, h = 0, trainWindow = 250,
+ctrCV1 <- ctr_model(model = "gaussian", type = "cv", do.iter = FALSE, h = 0, trainWindow = 250,
                     testWindow = 4, oos = 0, do.progress = TRUE)
 ctrCV2 <- ctr_model(model = "binomial", type = "cv", h = 0, trainWindow = 250,
                     testWindow = 4, oos = 0, do.progress = TRUE)
 ctrCV3 <- ctr_model(model = "multinomial", type = "cv", h = 0, trainWindow = 250,
                     testWindow = 4, oos = 0, do.progress = TRUE)
-ctrCV4 <- ctr_model(model = "lm", type = "cv", do.iter = TRUE, h = 0, trainWindow = 45,
+ctrCV4 <- ctr_model(model = "gaussian", type = "cv", do.iter = TRUE, h = 0, trainWindow = 45,
                     testWindow = 4, oos = 0, nSample = 70, do.progress = TRUE)
 
+}
+\seealso{
+\code{\link{sento_model}}
+}
+\author{
+Samuel Borms, Keven Bluteau
 }

@@ -22,8 +22,11 @@ Scales and centers the sentiment measures from a \code{sentomeasures} object, co
 the measures are normalized. \code{NA}s are removed first.
 }
 \examples{
-# construct a sentomeasures object to start with
 data("useconomynews")
+data("lexicons")
+data("valence")
+
+# construct a sentomeasures object to start with
 corpus <- sento_corpus(corpusdf = useconomynews)
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
@@ -32,4 +35,7 @@ sentomeasures <- sento_measures(corpus, l, ctr)
 # scale sentimeant measures
 scaled <- scale(sentomeasures)
 
+}
+\author{
+Samuel Borms
 }

@@ -42,7 +42,7 @@ USECONOMYNEWS$noneconomy <- noneconomy
 USECONOMYNEWS$dateNew <- USECONOMYNEWS$`_last_judgment_at` <- USECONOMYNEWS$`_trusted_judgments` <-
 USECONOMYNEWS$`positivity:confidence` <- USECONOMYNEWS$`relevance:confidence` <- USECONOMYNEWS$relevance_gold <-
 USECONOMYNEWS$articleid <- USECONOMYNEWS$`_unit_state` <- USECONOMYNEWS$`_golden` <- USECONOMYNEWS$positivity_gold <-
-USECONOMYNEWS$relevance <- USECONOMYNEWS$positivity <- NULL
+USECONOMYNEWS$relevance <- USECONOMYNEWS$positivity <- USECONOMYNEWS$headline <- NULL
 
 USECONOMYNEWS <- data.table::as.data.table(USECONOMYNEWS)
 USECONOMYNEWS <- USECONOMYNEWS[order(date)]
@@ -80,6 +80,31 @@ levels(ym) <- c("neg-", "neg", "pos", "pos+") # multinomial example series
 
 sp500 <- data.frame(date = zoo::index(sp500), return = as.numeric(sp500), up = yb, upMulti = ym)
 save(sp500, file = "data/sp500.rda", compress = 'xz')
+
+######################### xxx
+
+epu <- readr::read_csv2("data-raw/US_EPU_1900-2014.csv")
+epu$date <- as.Date(paste0(epu$Year, "-", epu$Month, "-01"))
+epu$Year <- epu$Month <- NULL
+colnames(epu)[1] <- "epu"
+epu <- epu[c("date", "epu")]
+epu <- as.data.frame(epu[epu$date >= "1980-01-01" & epu$date <= "2014-09-01", ])
+plot(epu$epu, type = "l")
+
+yb <- ifelse(epu$epu >= mean(epu$epu), 1, -1)
+yb <- as.factor(yb)
+levels(yb) <- c("below", "above") # binomial example series
+
+ym <- epu$epu
+ym[ym >= quantile(epu$epu)[3] & ym < quantile(epu$epu)[4]] <- 1
+ym[ym >= quantile(epu$epu)[4] & ym != 1] <- 2
+ym[ym <= quantile(epu$epu)[3] & ym > quantile(epu$epu)[2] & ym != 1 & ym != 2] <- -1
+ym[ym != -1 & ym != 1 & ym != 2] <- -2
+ym <- as.factor(ym)
+levels(ym) <- c("below-", "below", "above", "above+") # multinomial example series
+
+epu <- data.frame(date = epu$date, index = epu$epu, above = yb, aboveMulti = ym)
+save(epu, file = "data/epu.rda", compress = 'xz')
 
 ######################### LEXICONS
 
