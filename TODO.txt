@@ -16,8 +16,7 @@ TO DO
 - check perform_MCS()
 - change dates in sentomodel object: c(first sample date, last sample date) [cf. attribution function]
 - check ### in-code
-- align code with GitHub margins
-- add features based on if name is in texts (+ entity recognition vs. topic modelling)
+- useconomynews => usnews
 
 (update to newest R version)
 (check compatibility with major quanteda package update in October 2017)

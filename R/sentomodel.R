@@ -135,7 +135,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' @details Models are computed using the elastic net regularization as implemented in the \pkg{glmnet} package, to account for
 #' the multidimensionality of the sentiment measures. Additional explanatory variables are not subject to shrinkage. Independent
 #' variables are normalized in the regression process, but coefficients are returned in their original space. For a helpful
-#' introduction to \pkg{glmnet}, we refer to this \href{https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html#lin}{vignette}.
+#' introduction to \pkg{glmnet}, we refer to the \href{https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html#lin}{vignette}.
 #' The optimal elastic net parameters \code{lambda} and \code{alpha} are calibrated either through a to specify information
 #' criterion or through cross-validation (based on the "rolling forecasting origin" principle). In the latter case, the training
 #' metric is automatically set to \code{"RMSE"} for a linear model and to \code{"Accuracy"} for a logistic model. We suppressed
@@ -146,8 +146,8 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' provided through the \code{x} argument.
 #' @param y a one-column \code{data.frame} or a \code{numeric} vector capturing the dependent (response) variable. In case of
 #' a logistic regression, the response variable is either a \code{factor} or a \code{matrix} with the factors represented by
-#' the columns as binary indicators, with the second factor level or column as the reference class in case of a binomial logistic
-#' regression. No \code{NA} values are allowed.
+#' the columns as binary indicators, with the second factor level or column as the reference class in case of a binomial
+#' logistic regression. No \code{NA} values are allowed.
 #' @param x a named \code{data.frame} with other explanatory variables as \code{numeric}, by default set to \code{NULL}.
 #' @param ctr output from a \code{ctr_model()} call.
 #'
