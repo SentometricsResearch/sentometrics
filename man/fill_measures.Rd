@@ -9,8 +9,8 @@ fill_measures(sentomeasures, fill = "zero")
 \arguments{
 \item{sentomeasures}{a \code{sentomeasures} object.}
 
-\item{fill}{an element of \code{c("zero", "latest", NA)}; the first and last assume missing dates represent zero sentiment, the
-second assumes missing dates represent constant sentiment.}
+\item{fill}{an element of \code{c("zero", "latest", NA)}; the first and last assume missing dates represent zero sentiment,
+the second assumes missing dates represent constant sentiment.}
 }
 \value{
 A modified \code{sentomeasures} object.

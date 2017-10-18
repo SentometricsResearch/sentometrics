@@ -43,12 +43,13 @@ one date step beyond the date found at \code{sentomodel$date}.}
 \item{alphas}{optimized calibrated alphas.}
 \item{lambdas}{optimized calibrated lambdas.}
 \item{performance}{a \code{data.frame} with performance-related measures, being "\code{RMSFE}" (root mean squared
-forecasting error), "\code{MAD}" (mean absolute deviation), "\code{MDA}" (mean directional accuracy, in which's calculation zero
-is considered as a positive; in percentage points), "\code{accuracy}" (proportion of correctly predicted classes in case of a
-logistic regression; in percentage points), and each's respective individual values in the sample. Directional accuracy is
-measured by comparing the change in the realized response with the change in the forecast between two consecutive time points
-(omitting the very first forecast, resulting in \code{NA}). Only the relevant performance statistics are given depending on the
-type of regression. Dates are as in the \code{"models"} output element, i.e. from the perspective of the sentiment measures.}
+forecasting error), "\code{MAD}" (mean absolute deviation), "\code{MDA}" (mean directional accuracy, in which's calculation
+zero is considered as a positive; in percentage points), "\code{accuracy}" (proportion of correctly predicted classes in case
+of a logistic regression; in percentage points), and each's respective individual values in the sample. Directional accuracy
+is measured by comparing the change in the realized response with the change in the forecast between two consecutive time
+points (omitting the very first forecast, resulting in \code{NA}). Only the relevant performance statistics are given
+depending on the type of regression. Dates are as in the \code{"models"} output element, i.e. from the perspective of the
+sentiment measures.}
 }
 \description{
 Linear or nonlinear penalized regression of any dependent variable on the wide number of sentiment measures and
@@ -60,12 +61,12 @@ performance metrics.
 Models are computed using the elastic net regularization as implemented in the \pkg{glmnet} package, to account for
 the multidimensionality of the sentiment measures. Additional explanatory variables are not subject to shrinkage. Independent
 variables are normalized in the regression process, but coefficients are returned in their original space. For a helpful
-introduction to \pkg{glmnet}, we refer to their \href{https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html#lin}{vignette}.
+introduction to \pkg{glmnet}, we refer to this \href{https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html#lin}{vignette}.
 The optimal elastic net parameters \code{lambda} and \code{alpha} are calibrated either through a to specify information
 criterion or through cross-validation (based on the "rolling forecasting origin" principle). In the latter case, the training
-metric is automatically set to \code{"RMSE"} for a linear model and to \code{"Accuracy"} for a logistic model. We suppressed many
-of the details that can be supplied to the \code{glmnet::glmnet()} and \code{caret::train()} functions we rely on for estimation
-and calibration through cross-validation, for the sake of user-friendliness.
+metric is automatically set to \code{"RMSE"} for a linear model and to \code{"Accuracy"} for a logistic model. We suppressed
+many of the details that can be supplied to the \code{glmnet::glmnet()} and \code{caret::train()} functions we rely on for
+estimation and calibration through cross-validation, for the sake of user-friendliness.
 }
 \examples{
 data("useconomynews")
@@ -74,8 +75,8 @@ data("valence")
 data("epu")
 
 # construct a sentomeasures object to start with
-useconomynews <- useconomynews[date >= "1980-01-01" & date < "2014-10-01", ]
-corpus <- sento_corpus(corpusdf = useconomynews)
+corpusAll <- sento_corpus(corpusdf = useconomynews)
+corpus <- quanteda::corpus_subset(corpusAll, date >= "1980-01-01" & date < "2014-10-01")
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional",
                howTime = c("equal_weight", "linear", "almon"),

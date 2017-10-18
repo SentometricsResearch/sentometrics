@@ -16,8 +16,8 @@ ctr_agg(howWithin = "proportional", howDocs = "equal_weight",
 \code{get_hows()$words}.}
 
 \item{howDocs}{a single \code{character} vector defining how aggregation across documents per date will be performed.
-Should \code{length(howDocs) > 1}, the first element is used. For currently available options on how aggregation can occer, see
-\code{get_hows()$docs}.}
+Should \code{length(howDocs) > 1}, the first element is used. For currently available options on how aggregation can occer,
+see \code{get_hows()$docs}.}
 
 \item{howTime}{a \code{character} vector defining how aggregation across dates will be performed. More than one choice
 is possible here. For currently available options on how aggregation can occer, see \code{get_hows()$time}.}

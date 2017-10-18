@@ -3,11 +3,12 @@
 
   ### TODO: application to logistic models (exponentiation? + selection of factor level coefficients if multinomial)
   ### TODO: scaling
-  ### TODO: add attribution_lags() function (handle when fill is "latest" + aggregation across documents per lag needs to be known)
+  ### TODO: add attribution_lags() function (handle fill is "latest" + aggregation across documents per lag needs to be known)
   ### TODO: make cleaner (helper functions for repeting parts)
   ### TODO: document usage of ... in retrieve_attributions() [date(s)] + add example
 
-  ### CHECK: identify sentomeasures with sentomodel object(s) + first date >= first model estimation date & refDates %in% measures$date
+  ### CHECK: identify sentomeasures with sentomodel object(s)
+  ### CHECK: first date >= first model estimation date & refDates %in% measures$date
 
   sentomodel <- model
 
@@ -133,7 +134,7 @@
   f <- rowSums(attribsAll$features[, -1])
   t <- rowSums(attribsAll$time[, -1])
   d <- as.vector(sapply(attribsAll$documents, function(x) return(sum(x$attrib))))
-  print(all.equal(t, l, f, d)) # compares only first elements, beware!
+  # print(all.equal(t, l, f, d)) # compares only first elements, beware!
 
   return(attribsAll)
 }
@@ -175,10 +176,11 @@ retrieve_attributions.sentomodeliter <- compiler::cmpfun(.retrieve_attributions.
 #'
 #' @author Samuel Borms, Keven Bluteau
 #'
-#' @description Computes the attributions to forecasts for a (given) number of dates at all possible sentiment dimensions, based on
-#' the coefficients associated to each sentiment measure, as estimated in the provided model object.
+#' @description Computes the attributions to forecasts for a (given) number of dates at all possible sentiment dimensions, based
+#' on the coefficients associated to each sentiment measure, as estimated in the provided model object.
 #'
-#' @details See \code{\link{sento_model}} for an elaborate modelling example including the calculation and plotting of attributions.
+#' @details See \code{\link{sento_model}} for an elaborate modelling example including the calculation and plotting of
+#' attributions.
 #'
 #' @param model a \code{sentomodel} or \code{sentomodeliter} object.
 #' @param sentomeasures the \code{sentomeasures} object used to estimate the \code{sentomodel} object argument.
@@ -189,8 +191,9 @@ retrieve_attributions.sentomodeliter <- compiler::cmpfun(.retrieve_attributions.
 #'
 #' @return A list with all possible dimensions for which aggregation is computed, being \code{"documents"}, \code{"lexicons"},
 #' \code{"features"}, \code{"time"} and \code{"lags"}. The last four dimensions are \code{data.table}s having a \code{"date"}
-#' column and the other columns the different names of the dimension, with the attributions as values. For document-level attribution,
-#' the list is further decomposed into a \code{data.table} per date, with \code{"id"}, \code{date} and \code{attrib} columns.
+#' column and the other columns the different names of the dimension, with the attributions as values. For document-level
+#' attribution, the list is further decomposed into a \code{data.table} per date, with \code{"id"}, \code{date} and \code{attrib}
+#' columns.
 #'
 #' @seealso \code{\link{sento_model}}
 #'
@@ -205,10 +208,10 @@ retrieve_attributions <- function(model, sentomeasures, ...) {
 #'
 #' @description Shows a plot of the attributions along the dimension provided.
 #'
-#' @details See \code{\link{sento_model}} for an elaborate modelling example including the calculation and plotting of attributions.
-#' This function does not handle the plotting of the attribution of individual documents, since there are often a lot of documents
-#' involved and de facto they appear only once at one date (even though a document may contribute to forecasts at several dates,
-#' depending on the number of lags in the time aggregation.)
+#' @details See \code{\link{sento_model}} for an elaborate modelling example including the calculation and plotting of
+#' attributions. This function does not handle the plotting of the attribution of individual documents, since there are often a
+#' lot of documents involved and de facto they appear only once at one date (even though a document may contribute to forecasts
+#' at several dates, depending on the number of lags in the time aggregation).
 #'
 #' @param attributions an output from a \code{retrieve_attributions()} call.
 #' @param group a value from \code{c("lexicons", "features", "time", "lags")}.

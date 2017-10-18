@@ -227,7 +227,7 @@ clean_panel <- function(x, nx, threshold = 0.25) {
   else xSent <- x
   xSent[is.na(xSent)] <- 0 # check
   duplics <- duplicated(as.matrix(xSent), MARGIN = 2) # duplicated columns
-  manyZeros <- (colSums(as.matrix(xSent) == 0, na.rm = TRUE) / nrow(xSent)) > threshold # columns with a too high proportion of zeros
+  manyZeros <- (colSums(as.matrix(xSent) == 0, na.rm = TRUE) / nrow(xSent)) > threshold # columns with too many zeros
   toDiscard <- duplics | manyZeros
   if (ncol(xSent) == 1) stop("No sentiment measures retained after cleaning: too many duplicated columns and/or zeros.")
   else {

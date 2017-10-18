@@ -21,9 +21,9 @@ Monthly values of a news-based index of US Economic Policy Uncertainty (EPU) bet
   \item index A \code{numeric} monthly index value.
   \item above. A \code{factor} with value \code{"above"} if the index is greater than the mean of the entire series, else
   \code{"below"}.
-  \item aboveMulti. A \code{factor} with values \code{"above+"}, \code{"above"}, \code{"below"} and \code{"below-"} if the index
-  is greater than the 75% quantile and the 50% quantile, or smaller than the 50% quantile and the 25% quantile, respectively and
-  in a mutually exclusive sense.
+  \item aboveMulti. A \code{factor} with values \code{"above+"}, \code{"above"}, \code{"below"} and \code{"below-"} if the
+  index is greater than the 75% quantile and the 50% quantile, or smaller than the 50% quantile and the 25% quantile,
+  respectively and in a mutually exclusive sense.
 }
 }
 \keyword{datasets}

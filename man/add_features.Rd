@@ -4,20 +4,28 @@
 \alias{add_features}
 \title{Add feature columns to a sentocorpus}
 \usage{
-add_features(sentocorpus, featuresdf)
+add_features(sentocorpus, featuresdf = NULL, keywords = NULL)
 }
 \arguments{
 \item{sentocorpus}{a \code{sentocorpus} object.}
 
-\item{featuresdf}{a named \code{data.table} (or \code{data.frame}) with as columns the new features of type \code{numeric}
-to add to the \code{sentocorpus} inputted. If the number of rows in \code{featuresdf} is not equal to the number of documents
+\item{featuresdf}{a named \code{data.frame} with as columns the new features of type \code{numeric} to add to the
+\code{sentocorpus} inputted. If the number of rows in \code{featuresdf} is not equal to the number of documents
 in \code{sentocorpus}, recycling will occur.}
+
+\item{keywords}{a named \code{character} vector. For every element in this vector, a new feature column will be added with
+as value 1 for the texts in which the element (e.g. a word) appears, and 0 if not. The names of the vector are used as the
+names of the new features.}
 }
 \value{
 An updated \code{sentocorpus} object.
 }
 \description{
 Adds new named feature columns to provided \code{sentocorpus} object.
+}
+\details{
+If a provided feature name is already part of the corpus, it will be replaced. The \code{featuresdf} and
+\code{keywords} arguments can be provided at the same time, or only one of them, leaving the other at \code{NULL}.
 }
 \examples{
 data("useconomynews")
@@ -26,7 +34,9 @@ data("useconomynews")
 corpus <- sento_corpus(corpusdf = useconomynews)
 corpus <- add_features(corpus,
                        featuresdf = data.table(random = runif(quanteda::ndoc(corpus))))
-
+corpus <- add_features(corpus,
+                       featuresdf = data.table(random = runif(quanteda::ndoc(corpus))),
+                       keywords = c(pres = "president", war = "war"))
 }
 \author{
 Samuel Borms

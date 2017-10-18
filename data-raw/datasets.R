@@ -49,7 +49,8 @@ USECONOMYNEWS <- USECONOMYNEWS[order(date)]
 colnames(USECONOMYNEWS)[1] <- "id"
 USECONOMYNEWS <- subset(USECONOMYNEWS, date >= "1980-01-01") # drop all before 1980
 setcolorder(USECONOMYNEWS, c("id", "date", "text", "headline", "wsj", "wapo", "economy", "noneconomy"))
-useconomynews <- USECONOMYNEWS # back to lowercase before saving
+useconomynews <- as.data.frame(USECONOMYNEWS) # back to lowercase before saving
+useconomynews$id <- as.character(useconomynews$id)
 
 save(useconomynews, file = "data/useconomynews.rda", compress = 'xz')
 # load("data/useconomynews.rda")
