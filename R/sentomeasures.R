@@ -257,10 +257,11 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 #' @param lexicons output from a \code{setup_lexicons()} call.
 #' @param how a single \code{character} vector defining how aggregation within documents should be performed. For currently
 #' available options on how aggregation can occer, see \code{get_hows()$words}.
-#' @param dfm optional; an output from a \code{quanteda::dfm()} call, such that users can specify their own tokenization scheme
-#' (via \code{quanteda::tokenize()}) as well as other parameters related to the construction of a document-feature matrix
-#' (dfm). By default, a dfm is created based on a tokenization that removes punctuation, numbers, symbols and separators. We
-#' suggest to stick to unigrams, as the remainder of the sentiment computation and built-in lexicons assume the same.
+#' @param dfm optional; an output from a \code{quanteda::dfm()} call, such that users can specify their own tokenization
+#' scheme (via \code{quanteda::tokenize()}) as well as other parameters related to the construction of a document-feature
+#' matrix (dfm). By default, a dfm is created based on a tokenization that removes punctuation, numbers, symbols and
+#' separators. We suggest to stick to unigrams, as the remainder of the sentiment computation and built-in lexicons assume
+#' the same.
 #'
 #' @return A list containing:
 #' \item{corpus}{the supplied \code{sentocorpus} object.}
@@ -647,15 +648,16 @@ to_global <- function(sentomeasures, lex = 1, feat = 1, time = 1) {
 #' if \code{"almon" \%in\% howTime}.
 #' @param do.normalizeAlm a \code{logical} indicating if every Almon polynomial weights column should sum to one, used if
 #' \code{"almon" \%in\% howTime}.
-#' @param weights an optional own weighting scheme, always used if provided as a \code{data.frame} with the number of rows equal
-#' to the desired \code{lag}. The automatic Almon polynomials and exponential weighting functions are created sequentially; if
-#' the user wants only specific of such time weighting series it can use \code{almons()} and \code{exponentials()}, select the
-#' columns it requires, combine it into a \code{data.frame} and supply it under this argument (see examples).
+#' @param weights an optional own weighting scheme, always used if provided as a \code{data.frame} with the number of rows
+#' equal to the desired \code{lag}. The automatic Almon polynomials and exponential weighting functions are created
+#' sequentially; if the user wants only specific of such time weighting series it can use \code{almons()} and
+#' \code{exponentials()}, select the columns it requires, combine it into a \code{data.frame} and supply it under this
+#' argument (see examples).
 #' @param dfm optional; an output from a \code{quanteda::dfm()} call, such that users can specify their own tokenization scheme
-#' (via \code{quanteda::tokenize()}) as well as other parameters related to the construction of a document-feature matrix (dfm).
-#' By default, a dfm is created based on a tokenization that removes punctuation, numbers, symbols and separators. We suggest to
-#' stick to unigrams, as the remainder of the sentiment computation (in \code{compute_sentiment()}) and built-in lexicons assume
-#' the same.
+#' (via \code{quanteda::tokenize()}) as well as other parameters related to the construction of a document-feature matrix
+#' (dfm). By default, a dfm is created based on a tokenization that removes punctuation, numbers, symbols and separators. We
+#' suggest to stick to unigrams, as the remainder of the sentiment computation (in \code{compute_sentiment()}) and built-in
+#' lexicons assume the same.
 #'
 #' @return A list encapsulating the control parameters.
 #'
@@ -940,9 +942,9 @@ select_measures <- function(sentomeasures, toSelect = "all", do.combine = TRUE, 
 #'
 #' @method plot sentomeasures
 #'
-#' @description Straightforward plotting method that shows all sentiment measures from the provided \code{sentomeasures} object
-#' in one plot, or the average along one of the lexicons, features and time weighting dimensions. We suggest to make use of the
-#' code{select_measures()} function when you desire to plot only a subset of the sentiment measures.
+#' @description Straightforward plotting method that shows all sentiment measures from the provided \code{sentomeasures}
+#' object in one plot, or the average along one of the lexicons, features and time weighting dimensions. We suggest to make
+#' use of the code{select_measures()} function when you desire to plot only a subset of the sentiment measures.
 #'
 #' @param x a \code{sentomeasures} object.
 #' @param group a value from \code{c("lexicons", "features", "time", "all")}. The first three choices display the average of

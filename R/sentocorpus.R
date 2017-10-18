@@ -17,16 +17,17 @@
 #' features, we recommend to use \code{add_features()}. In the future, we will formalize the interaction between the
 #' \pkg{quanteda} package (as well as other text mining packages).
 #'
-#' @param corpusdf a \code{data.frame} with as named columns and \emph{in this order}: a document \code{id} column, a \code{date}
-#' column, a \code{text} column (i.e. the columns where all texts to analyze reside), and a series of feature columns of type
-#' \code{numeric}, with values pointing to the applicability of a particular feature to a particular text. The latter columns are
-#' often binary (1 means the feature is applicable to the document in the same row) or as a percentage to specify the degree of
-#' connectedness of a feature to a document. Features could be topics (e.g. legal, political or economic), but also article
-#' sources (e.g. online or printed press), amongst many more options. If no particular features are of interest to your analysis,
-#' have only one additional column with all values set to 1. Provide the \code{date} column as \code{"yyyy-mm-dd"}. The \code{id}
-#' column should be in \code{character} mode. All spaces in the names of the features are automatically replaced by underscores.
-#' @param do.clean a \code{logical}, if \code{TRUE} all texts undergo a cleaning routine to eliminate common textual
-#' garbage. This includes a brute force replacement of HTML tags and non-alphanumeric characters by an empty string.
+#' @param corpusdf a \code{data.frame} with as named columns and \emph{in this order}: a document \code{id} column, a
+#' \code{date} column, a \code{text} column (i.e. the columns where all texts to analyze reside), and a series of feature
+#' columns of type \code{numeric}, with values pointing to the applicability of a particular feature to a particular text. The
+#' latter columns are often binary (1 means the feature is applicable to the document in the same row) or as a percentage to
+#' specify the degree of connectedness of a feature to a document. Features could be topics (e.g. legal, political or economic),
+#' but also article sources (e.g. online or printed press), amongst many more options. If no particular features are of interest
+#' to your analysis, have only one additional column with all values set to 1. Provide the \code{date} column as
+#' \code{"yyyy-mm-dd"}. The \code{id} column should be in \code{character} mode. All spaces in the names of the features are
+#' automatically replaced by underscores.
+#' @param do.clean a \code{logical}, if \code{TRUE} all texts undergo a cleaning routine to eliminate common textual garbage.
+#' This includes a brute force replacement of HTML tags and non-alphanumeric characters by an empty string.
 #'
 #' @return A \code{sentocorpus} object, derived from a \pkg{quanteda} corpus classed list keeping the elements \code{documents},
 #' \code{metadata} and \code{settings}. The \code{documents} element incorporates the corpus represented as a \code{data.frame}.
@@ -138,8 +139,7 @@ add_features <- function(sentocorpus, featuresdf = NULL, keywords = NULL) {
     if ("" %in% names(keywords) || is.null(names(keywords)))
       stop("Please provide proper names as part of the 'keywords' argument.")
     textsAll <- quanteda::texts(sentocorpus)
-    for (j in seq_along(keywords)) {
-      kw <- keywords[j]
+    for (kw in keywords) {
       kwName <- stringi::stri_replace_all(names(kw), "_", regex = " ")
       quanteda::docvars(sentocorpus, field = kwName) <- as.numeric(stringi::stri_detect(textsAll, regex = kw))
     }

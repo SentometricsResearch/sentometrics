@@ -192,8 +192,8 @@ retrieve_attributions.sentomodeliter <- compiler::cmpfun(.retrieve_attributions.
 #' @return A list with all possible dimensions for which aggregation is computed, being \code{"documents"}, \code{"lexicons"},
 #' \code{"features"}, \code{"time"} and \code{"lags"}. The last four dimensions are \code{data.table}s having a \code{"date"}
 #' column and the other columns the different names of the dimension, with the attributions as values. For document-level
-#' attribution, the list is further decomposed into a \code{data.table} per date, with \code{"id"}, \code{date} and \code{attrib}
-#' columns.
+#' attribution, the list is further decomposed into a \code{data.table} per date, with \code{"id"}, \code{date} and
+#' \code{attrib} columns.
 #'
 #' @seealso \code{\link{sento_model}}
 #'
