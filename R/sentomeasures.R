@@ -199,7 +199,7 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
   if (how == "counts" || how == "proportional") {
     fdm <- quanteda::t(dfm) # feature-document matrix
   } else if (how == "tf-idf") {
-      weights <- quanteda::tfidf(dfm, normalize = TRUE)
+      weights <- quanteda::tfidf(dfm, scheme_tf = "prop")
       fdmWeighted <- quanteda::t(weights)
   } else stop("Please select an appropriate aggregation 'how'.")
 
@@ -221,7 +221,7 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
       scores <- quanteda::rowSums(quanteda::t(fdm * allScores)) / wCounts
     } else scores <- quanteda::rowSums(quanteda::t(fdmWeighted * allScores))
     scores[is.na(scores)] <- 0 # set NA/NaN sentiment to 0 (e.g. if document contains no words)
-    s[, (lexicon) := scores][]
+    s[, (lexicon) := scores]
   }
   # structure: date - feature1 - ... - word_count - lexicon1 (sentiment) - ...
   s <- as.data.table(cbind(id = quanteda::docnames(sentocorpus), quanteda::docvars(sentocorpus), word_count = wCounts, s))
@@ -624,8 +624,8 @@ to_global <- function(sentomeasures, lex = 1, feat = 1, time = 1) {
 #' \code{length(howWithin) > 1}, the first element is used. For currently available options on how aggregation can occer, see
 #' \code{get_hows()$words}.
 #' @param howDocs a single \code{character} vector defining how aggregation across documents per date will be performed.
-#' Should \code{length(howDocs) > 1}, the first element is used. For currently available options on how aggregation can occer, see
-#' \code{get_hows()$docs}.
+#' Should \code{length(howDocs) > 1}, the first element is used. For currently available options on how aggregation can occer,
+#' see \code{get_hows()$docs}.
 #' @param howTime a \code{character} vector defining how aggregation across dates will be performed. More than one choice
 #' is possible here. For currently available options on how aggregation can occer, see \code{get_hows()$time}.
 #' @param do.ignoreZeros a \code{logical} indicating whether zero sentiment values have to be ignored in the determination of
@@ -866,16 +866,16 @@ ctr_merge <- function(sentomeasures, feat = NA, lex = NA, time = NA, do.keep = F
 #' or those who's name consist of at least one of the selection components. Selecting a subset of dates
 #'
 #' @param sentomeasures a \code{sentomeasures} object.
-#' @param toSelect a \code{"character"} vector of the lexicon, feature and time weighting scheme names, to indicate which measures
-#' need to be selected. By default equal to \code{"all"}, which means no selection of the sentiment measures is made; this may be
-#' used if one only wants to extract a subset of dates via the \code{dates} argument.
+#' @param toSelect a \code{"character"} vector of the lexicon, feature and time weighting scheme names, to indicate which
+#' measures need to be selected. By default equal to \code{"all"}, which means no selection of the sentiment measures is made;
+#' this may be used if one only wants to extract a subset of dates via the \code{dates} argument.
 #' @param do.combine a \code{logical} indicating if only measures for wich all (\code{TRUE}) or at least one (\code{FALSE}) of
 #' the selection components should occur in each sentiment measure's name in the subset. If \code{do.combine == TRUE}, the
 #' \code{toSelect} argument can only consist of one lexicon, one feature and one time weighting scheme at maximum.
-#' @param dates any expression, in the form of a \code{character} vector, that would correctly evaluate to a \code{logical} vector,
-#' features the variable \code{date} and has dates specified as \code{"yyyy-mm-dd"}, e.g. \code{dates = "date >= '2000-01-15'"}.
-#' This argument may also be a vector of class \code{Date} which extracts all dates that show up in that vector. See the examples.
-#' By default equal to \code{NA}, meaning no subsetting based on dates is done.
+#' @param dates any expression, in the form of a \code{character} vector, that would correctly evaluate to a \code{logical}
+#' vector, features the variable \code{date} and has dates specified as \code{"yyyy-mm-dd"}, e.g.
+#' \code{dates = "date >= '2000-01-15'"}. This argument may also be a vector of class \code{Date} which extracts all dates that
+#' show up in that vector. See the examples. By default equal to \code{NA}, meaning no subsetting based on dates is done.
 #'
 #' @return A modified \code{sentomeasures} object, with only the sentiment measures required, including updated information
 #' and statistics, but the original sentiment scores \code{data.table} untouched.
@@ -1012,8 +1012,8 @@ plot.sentomeasures <- function(x, group = "all", ...) {
 #' basis. Fills in these dates with either 0, the respective latest non-missing value or \code{NA}.
 #'
 #' @param sentomeasures a \code{sentomeasures} object.
-#' @param fill an element of \code{c("zero", "latest", NA)}; the first and last assume missing dates represent zero sentiment, the
-#' second assumes missing dates represent constant sentiment.
+#' @param fill an element of \code{c("zero", "latest", NA)}; the first and last assume missing dates represent zero sentiment,
+#' the second assumes missing dates represent constant sentiment.
 #'
 #' @return A modified \code{sentomeasures} object.
 #'

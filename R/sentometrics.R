@@ -105,7 +105,7 @@
 #' contains following information:
 #'
 #' \itemize{
-#'   \item id. ID identifier.
+#'   \item id. a \code{character} ID identifier.
 #'   \item date. Date as \code{"yyyy-mm-dd"}.
 #'   \item text. Texts in \code{character} format.
 #'   \item wsj. Equals 1 if the article comes from The Wall Street Journal.
@@ -116,7 +116,12 @@
 #'
 #' @usage data("useconomynews")
 #'
-#' @format A \code{data.table}, formatted as required to be an input for \code{\link{sento_corpus}}.
+#' @examples
+#' data("useconomynews")
+#' useconomynews[3192, "text"]
+#' useconomynews[1:5, c("id", "date", "text")]
+#'
+#' @format A \code{data.frame}, formatted as required to be an input for \code{\link{sento_corpus}}.
 #'
 #' @source \href{https://www.crowdflower.com/data-for-everyone/}{Economic News Article Tone and Relevance}
 "useconomynews"
@@ -159,9 +164,9 @@
 #'   \item index A \code{numeric} monthly index value.
 #'   \item above. A \code{factor} with value \code{"above"} if the index is greater than the mean of the entire series, else
 #'   \code{"below"}.
-#'   \item aboveMulti. A \code{factor} with values \code{"above+"}, \code{"above"}, \code{"below"} and \code{"below-"} if the index
-#'   is greater than the 75% quantile and the 50% quantile, or smaller than the 50% quantile and the 25% quantile, respectively and
-#'   in a mutually exclusive sense.
+#'   \item aboveMulti. A \code{factor} with values \code{"above+"}, \code{"above"}, \code{"below"} and \code{"below-"} if the
+#'   index is greater than the 75% quantile and the 50% quantile, or smaller than the 50% quantile and the 25% quantile,
+#'   respectively and in a mutually exclusive sense.
 #' }
 #'
 #' @usage data("epu")

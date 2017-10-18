@@ -135,12 +135,12 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' @details Models are computed using the elastic net regularization as implemented in the \pkg{glmnet} package, to account for
 #' the multidimensionality of the sentiment measures. Additional explanatory variables are not subject to shrinkage. Independent
 #' variables are normalized in the regression process, but coefficients are returned in their original space. For a helpful
-#' introduction to \pkg{glmnet}, we refer to their \href{https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html#lin}{vignette}.
+#' introduction to \pkg{glmnet}, we refer to this \href{https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html#lin}{vignette}.
 #' The optimal elastic net parameters \code{lambda} and \code{alpha} are calibrated either through a to specify information
 #' criterion or through cross-validation (based on the "rolling forecasting origin" principle). In the latter case, the training
-#' metric is automatically set to \code{"RMSE"} for a linear model and to \code{"Accuracy"} for a logistic model. We suppressed many
-#' of the details that can be supplied to the \code{glmnet::glmnet()} and \code{caret::train()} functions we rely on for estimation
-#' and calibration through cross-validation, for the sake of user-friendliness.
+#' metric is automatically set to \code{"RMSE"} for a linear model and to \code{"Accuracy"} for a logistic model. We suppressed
+#' many of the details that can be supplied to the \code{glmnet::glmnet()} and \code{caret::train()} functions we rely on for
+#' estimation and calibration through cross-validation, for the sake of user-friendliness.
 #'
 #' @param sentomeasures a \code{sentomeasures} object. There should be at least two explanatory variables including the ones
 #' provided through the \code{x} argument.
@@ -174,12 +174,13 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' \item{alphas}{optimized calibrated alphas.}
 #' \item{lambdas}{optimized calibrated lambdas.}
 #' \item{performance}{a \code{data.frame} with performance-related measures, being "\code{RMSFE}" (root mean squared
-#' forecasting error), "\code{MAD}" (mean absolute deviation), "\code{MDA}" (mean directional accuracy, in which's calculation zero
-#' is considered as a positive; in percentage points), "\code{accuracy}" (proportion of correctly predicted classes in case of a
-#' logistic regression; in percentage points), and each's respective individual values in the sample. Directional accuracy is
-#' measured by comparing the change in the realized response with the change in the forecast between two consecutive time points
-#' (omitting the very first forecast, resulting in \code{NA}). Only the relevant performance statistics are given depending on the
-#' type of regression. Dates are as in the \code{"models"} output element, i.e. from the perspective of the sentiment measures.}
+#' forecasting error), "\code{MAD}" (mean absolute deviation), "\code{MDA}" (mean directional accuracy, in which's calculation
+#' zero is considered as a positive; in percentage points), "\code{accuracy}" (proportion of correctly predicted classes in case
+#' of a logistic regression; in percentage points), and each's respective individual values in the sample. Directional accuracy
+#' is measured by comparing the change in the realized response with the change in the forecast between two consecutive time
+#' points (omitting the very first forecast, resulting in \code{NA}). Only the relevant performance statistics are given
+#' depending on the type of regression. Dates are as in the \code{"models"} output element, i.e. from the perspective of the
+#' sentiment measures.}
 #'
 #' @seealso \code{\link{ctr_model}}, \code{\link[glmnet]{glmnet}}, \code{\link[caret]{train}}
 #'
@@ -190,8 +191,8 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' data("epu")
 #'
 #' # construct a sentomeasures object to start with
-#' useconomynews <- useconomynews[date >= "1980-01-01" & date < "2014-10-01", ]
-#' corpus <- sento_corpus(corpusdf = useconomynews)
+#' corpusAll <- sento_corpus(corpusdf = useconomynews)
+#' corpus <- quanteda::corpus_subset(corpusAll, date >= "1980-01-01" & date < "2014-10-01")
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional",
 #'                howTime = c("equal_weight", "linear", "almon"),
@@ -558,7 +559,7 @@ summary.sentomodel <- function(object, ...) {
     printCalib <- paste0("via ", sentomodel$ic[[1]], " information criterion")
   } else {
     printCalib <- paste0("via cross-validation; ",
-                         "Ran trough ", nrow(sentomodel$trained$resample), " samples of size ",
+                         "Ran through ", nrow(sentomodel$trained$resample), " samples of size ",
                          length(sentomodel$trained$control$index[[1]]),
                          ", selection based on ", sentomodel$trained$metric, " metric")
   }
@@ -603,7 +604,7 @@ summary.sentomodeliter <- function(object, ...) {
     printCalib <- paste0("via ", sentomodel$ic[[1]], " information criterion")
   } else {
     printCalib <- paste0("via cross-validation; ",
-                         "Ran trough ", nrow(sentomodel$trained$resample), " samples of size ",
+                         "Ran through ", nrow(sentomodel$trained$resample), " samples of size ",
                          length(sentomodel$trained$control$index[[1]]),
                          ", selection based on ", sentomodel$trained$metric, " metric")
   }
@@ -659,8 +660,8 @@ print.sentomodeliter <- function(x, ...) {
 #' data("epu")
 #'
 #' # construct a sentomeasures object to start with
-#' useconomynews <- useconomynews[date >= "1980-01-01" & date < "2014-10-01", ]
-#' corpus <- sento_corpus(corpusdf = useconomynews)
+#' corpusAll <- sento_corpus(corpusdf = useconomynews)
+#' corpus <- quanteda::corpus_subset(corpusAll, date >= "1980-01-01" & date < "2014-10-01")
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional",
 #'                howTime = c("equal_weight", "linear", "almon"),
@@ -712,10 +713,10 @@ plot.sentomodeliter <- function(x, ...) {
 #' \code{predict.glmnet}, but simplified in terms of allowed parameters.
 #'
 #' @param object a \code{sentomodel} object.
-#' @param newx a \code{matrix} of \code{numeric} values with all explanatory variables to be used for the prediction(s), structured
-#' row-by-row; see documentation for \code{\link{predict.glmnet}}. The number of variables should be equal to \code{sentomodel$nVar},
-#' being the sum of the number of original sentiment measures and the number of additional explanatory variables. Variables
-#' discarded in the regression process are discarded again here, based on \code{sentomodel$discarded}.
+#' @param newx a \code{matrix} of \code{numeric} values with all explanatory variables to be used for the prediction(s),
+#' structured row-by-row; see documentation for \code{\link{predict.glmnet}}. The number of variables should be equal to
+#' \code{sentomodel$nVar}, being the sum of the number of original sentiment measures and the number of additional explanatory
+#' variables. Variables discarded in the regression process are discarded again here, based on \code{sentomodel$discarded}.
 #' @param type type of prediction required, a value from \code{c("link", "response", "class")}, see documentation for
 #' \code{\link{predict.glmnet}}.
 #' @param offset not used. Any values here will be ignored.

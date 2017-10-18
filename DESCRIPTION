@@ -6,7 +6,7 @@ Authors@R: c(person("Samuel", "Borms", email = "borms_sam@hotmail.com", role = c
   person("Keven", "Bluteau", email = "keven.bluteau@unine.ch", role = c("aut")),
   person("Kris", "Boudt", email = "kris.boudt@vub.be", role = c("aut")))
 Description: Time series analysis based on textual sentiment, accounting for the intrinsic challenge that sentiment can be computed and pooled across texts and time in many ways. Provides a means to model the impact of sentiment in texts on a target variable, by first computing a wide range of textual sentiment measures and then selecting those that are most informative.
-Depends: R (>= 3.4.0), data.table, ggplot2
+Depends: R (>= 3.4.2), data.table, ggplot2
 License: GPL-2
 Encoding: UTF-8
 LazyData: true

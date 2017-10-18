@@ -16,12 +16,14 @@ TO DO
 - check perform_MCS()
 - change dates in sentomodel object: c(first sample date, last sample date) [cf. attribution function]
 - check ### in-code
+- align code with GitHub margins
+- add features based on if name is in texts (+ entity recognition vs. topic modelling)
 
 (update to newest R version)
 (check compatibility with major quanteda package update in October 2017)
 (valence words not detected if first word is a valence shifter, e.g. " not " if text is "not ...")
 (function to update sentomeasures [when new texts come in])
-(make transition easy from corpora of other text mining packages to our corpus [cf. quanteda's conversion functions + feature inclusion])
+(simplify transition from corpora of other text mining packages to our's [cf. quanteda's conversion functions] + feature inclusion)
 (interface with lexicon package for access to more lexicons)
 (clean-up GitHub: separate Shiny app + delete irrelevant examples)
 

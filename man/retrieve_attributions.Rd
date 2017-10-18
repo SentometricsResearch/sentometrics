@@ -19,15 +19,17 @@ object, for which attribution for all out-of-sample forecasting dates is calcula
 \value{
 A list with all possible dimensions for which aggregation is computed, being \code{"documents"}, \code{"lexicons"},
 \code{"features"}, \code{"time"} and \code{"lags"}. The last four dimensions are \code{data.table}s having a \code{"date"}
-column and the other columns the different names of the dimension, with the attributions as values. For document-level attribution,
-the list is further decomposed into a \code{data.table} per date, with \code{"id"}, \code{date} and \code{attrib} columns.
+column and the other columns the different names of the dimension, with the attributions as values. For document-level
+attribution, the list is further decomposed into a \code{data.table} per date, with \code{"id"}, \code{date} and \code{attrib}
+columns.
 }
 \description{
-Computes the attributions to forecasts for a (given) number of dates at all possible sentiment dimensions, based on
-the coefficients associated to each sentiment measure, as estimated in the provided model object.
+Computes the attributions to forecasts for a (given) number of dates at all possible sentiment dimensions, based
+on the coefficients associated to each sentiment measure, as estimated in the provided model object.
 }
 \details{
-See \code{\link{sento_model}} for an elaborate modelling example including the calculation and plotting of attributions.
+See \code{\link{sento_model}} for an elaborate modelling example including the calculation and plotting of
+attributions.
 }
 \seealso{
 \code{\link{sento_model}}
