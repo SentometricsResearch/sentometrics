@@ -21,9 +21,9 @@ Returns a simple \pkg{ggplot2} plot, which can be added onto (or to alter its de
 plotted.
 }
 \description{
-Straightforward plotting method that shows all sentiment measures from the provided \code{sentomeasures} object
-in one plot, or the average along one of the lexicons, features and time weighting dimensions. We suggest to make use of the
-code{select_measures()} function when you desire to plot only a subset of the sentiment measures.
+Straightforward plotting method that shows all sentiment measures from the provided \code{sentomeasures}
+object in one plot, or the average along one of the lexicons, features and time weighting dimensions. We suggest to make
+use of the code{select_measures()} function when you desire to plot only a subset of the sentiment measures.
 }
 \examples{
 data("useconomynews")
