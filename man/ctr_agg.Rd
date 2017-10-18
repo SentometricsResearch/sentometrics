@@ -49,16 +49,17 @@ if \code{"almon" \%in\% howTime}.}
 \item{do.normalizeAlm}{a \code{logical} indicating if every Almon polynomial weights column should sum to one, used if
 \code{"almon" \%in\% howTime}.}
 
-\item{weights}{an optional own weighting scheme, always used if provided as a \code{data.frame} with the number of rows equal
-to the desired \code{lag}. The automatic Almon polynomials and exponential weighting functions are created sequentially; if
-the user wants only specific of such time weighting series it can use \code{almons()} and \code{exponentials()}, select the
-columns it requires, combine it into a \code{data.frame} and supply it under this argument (see examples).}
+\item{weights}{an optional own weighting scheme, always used if provided as a \code{data.frame} with the number of rows
+equal to the desired \code{lag}. The automatic Almon polynomials and exponential weighting functions are created
+sequentially; if the user wants only specific of such time weighting series it can use \code{almons()} and
+\code{exponentials()}, select the columns it requires, combine it into a \code{data.frame} and supply it under this
+argument (see examples).}
 
 \item{dfm}{optional; an output from a \code{quanteda::dfm()} call, such that users can specify their own tokenization scheme
-(via \code{quanteda::tokenize()}) as well as other parameters related to the construction of a document-feature matrix (dfm).
-By default, a dfm is created based on a tokenization that removes punctuation, numbers, symbols and separators. We suggest to
-stick to unigrams, as the remainder of the sentiment computation (in \code{compute_sentiment()}) and built-in lexicons assume
-the same.}
+(via \code{quanteda::tokenize()}) as well as other parameters related to the construction of a document-feature matrix
+(dfm). By default, a dfm is created based on a tokenization that removes punctuation, numbers, symbols and separators. We
+suggest to stick to unigrams, as the remainder of the sentiment computation (in \code{compute_sentiment()}) and built-in
+lexicons assume the same.}
 }
 \value{
 A list encapsulating the control parameters.

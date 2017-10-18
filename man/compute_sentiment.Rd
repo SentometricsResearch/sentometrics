@@ -14,10 +14,11 @@ compute_sentiment(sentocorpus, lexicons, how = get_hows()$words, dfm = NULL)
 \item{how}{a single \code{character} vector defining how aggregation within documents should be performed. For currently
 available options on how aggregation can occer, see \code{get_hows()$words}.}
 
-\item{dfm}{optional; an output from a \code{quanteda::dfm()} call, such that users can specify their own tokenization scheme
-(via \code{quanteda::tokenize()}) as well as other parameters related to the construction of a document-feature matrix
-(dfm). By default, a dfm is created based on a tokenization that removes punctuation, numbers, symbols and separators. We
-suggest to stick to unigrams, as the remainder of the sentiment computation and built-in lexicons assume the same.}
+\item{dfm}{optional; an output from a \code{quanteda::dfm()} call, such that users can specify their own tokenization
+scheme (via \code{quanteda::tokenize()}) as well as other parameters related to the construction of a document-feature
+matrix (dfm). By default, a dfm is created based on a tokenization that removes punctuation, numbers, symbols and
+separators. We suggest to stick to unigrams, as the remainder of the sentiment computation and built-in lexicons assume
+the same.}
 }
 \value{
 A list containing:

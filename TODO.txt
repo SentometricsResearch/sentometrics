@@ -18,12 +18,11 @@ TO DO
 - check ### in-code
 - useconomynews => usnews
 
-(update to newest R version)
 (check compatibility with major quanteda package update in October 2017)
 (valence words not detected if first word is a valence shifter, e.g. " not " if text is "not ...")
 (function to update sentomeasures [when new texts come in])
-(simplify transition from corpora of other text mining packages to our's [cf. quanteda's conversion functions] + feature inclusion)
-(interface with lexicon package for access to more lexicons)
+(allow transition from corpora of other text mining packages to our's [cf. quanteda's conversion functions] + feature inclusion)
+(interface with lexicon package for access to more lexicons?)
 (clean-up GitHub: separate Shiny app + delete irrelevant examples)
 
 
