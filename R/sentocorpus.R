@@ -139,9 +139,9 @@ add_features <- function(sentocorpus, featuresdf = NULL, keywords = NULL) {
     if ("" %in% names(keywords) || is.null(names(keywords)))
       stop("Please provide proper names as part of the 'keywords' argument.")
     textsAll <- quanteda::texts(sentocorpus)
-    for (kw in keywords) {
-      kwName <- stringi::stri_replace_all(names(kw), "_", regex = " ")
-      quanteda::docvars(sentocorpus, field = kwName) <- as.numeric(stringi::stri_detect(textsAll, regex = kw))
+    for (j in seq_along(keywords)) {
+      kwName <- stringi::stri_replace_all(names(keywords)[j], "_", regex = " ")
+      quanteda::docvars(sentocorpus, field = kwName) <- as.numeric(stringi::stri_detect(textsAll, regex = keywords[j]))
     }
   }
   return(sentocorpus)
