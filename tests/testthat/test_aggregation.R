@@ -6,8 +6,8 @@ library(quanteda)
 library(data.table)
 
 # corpus, lexicon and ctr creation
-data("useconomynews")
-corpus <- corpus_sample(sento_corpus(corpusdf = useconomynews), size = 1000)
+data("usnews")
+corpus <- corpus_sample(sento_corpus(corpusdf = usnews), size = 1000)
 data("lexicons")
 lex <- lexicons[c("GI_eng", "LM_eng")]
 ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional", howTime = "almon", by = "month",

@@ -41,10 +41,10 @@ features, we recommend to use \code{add_features()}. In the future, we will form
 \pkg{quanteda} package (as well as other text mining packages).
 }
 \examples{
-data("useconomynews")
+data("usnews")
 
 # corpus construction
-corpus <- sento_corpus(corpusdf = useconomynews)
+corpus <- sento_corpus(corpusdf = usnews)
 
 # take a random subset using a quanteda's package function
 corpusSmall <- quanteda::corpus_sample(corpus, size = 500)

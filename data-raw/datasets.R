@@ -51,9 +51,10 @@ USECONOMYNEWS <- subset(USECONOMYNEWS, date >= "1980-01-01") # drop all before 1
 setcolorder(USECONOMYNEWS, c("id", "date", "text", "headline", "wsj", "wapo", "economy", "noneconomy"))
 useconomynews <- as.data.frame(USECONOMYNEWS) # back to lowercase before saving
 useconomynews$id <- as.character(useconomynews$id)
+usnews <- useconomynews
 
-save(useconomynews, file = "data/useconomynews.rda", compress = 'xz')
-# load("data/useconomynews.rda")
+save(usnews, file = "data/usnews.rda", compress = 'xz')
+# load("data/usnews.rda")
 
 ######################### S&P500 Index (1988-2014, monthly)
 

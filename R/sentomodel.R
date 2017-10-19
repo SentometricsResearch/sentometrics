@@ -185,13 +185,13 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' @seealso \code{\link{ctr_model}}, \code{\link[glmnet]{glmnet}}, \code{\link[caret]{train}}
 #'
 #' @examples
-#' data("useconomynews")
+#' data("usnews")
 #' data("lexicons")
 #' data("valence")
 #' data("epu")
 #'
 #' # construct a sentomeasures object to start with
-#' corpusAll <- sento_corpus(corpusdf = useconomynews)
+#' corpusAll <- sento_corpus(corpusdf = usnews)
 #' corpus <- quanteda::corpus_subset(corpusAll, date >= "1980-01-01" & date < "2014-10-01")
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional",
@@ -654,13 +654,13 @@ print.sentomodeliter <- function(x, ...) {
 #' \code{+} operator (see examples).
 #'
 #' @examples
-#' data("useconomynews")
+#' data("usnews")
 #' data("lexicons")
 #' data("valence")
 #' data("epu")
 #'
 #' # construct a sentomeasures object to start with
-#' corpusAll <- sento_corpus(corpusdf = useconomynews)
+#' corpusAll <- sento_corpus(corpusdf = usnews)
 #' corpus <- quanteda::corpus_subset(corpusAll, date >= "1980-01-01" & date < "2014-10-01")
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional",

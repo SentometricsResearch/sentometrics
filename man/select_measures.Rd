@@ -32,12 +32,12 @@ Selects the subset of sentiment measures which include either all of the given s
 or those who's name consist of at least one of the selection components. Selecting a subset of dates
 }
 \examples{
-data("useconomynews")
+data("usnews")
 data("lexicons")
 data("valence")
 
 # construct a sentomeasures object to start with
-corpus <- sento_corpus(corpusdf = useconomynews)
+corpus <- sento_corpus(corpusdf = usnews)
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 sentomeasures <- sento_measures(corpus, l, ctr)

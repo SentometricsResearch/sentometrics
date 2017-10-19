@@ -20,12 +20,12 @@ Condense document-level textual sentiment scores into a panel of textual sentime
 measures by aggregating across documents and time.
 }
 \examples{
-data("useconomynews")
+data("usnews")
 data("lexicons")
 data("valence")
 
 # computation of sentiment and aggregation into sentiment measures
-corpus <- sento_corpus(corpusdf = useconomynews)
+corpus <- sento_corpus(corpusdf = usnews)
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 sent <- compute_sentiment(corpus, l, how = "counts")
 ctr <- ctr_agg(howTime = c("linear"), by = "year", lag = 3)

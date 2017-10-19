@@ -33,12 +33,12 @@ This function returns no \code{sentomeasures} object, however the global sentime
 be added to regressions as an additional variable using the \code{x} argument in the \code{sento_model()} function.
 }
 \examples{
-data("useconomynews")
+data("usnews")
 data("lexicons")
 data("valence")
 
 # construct a sentomeasures object to start with
-corpus <- sento_corpus(corpusdf = useconomynews)
+corpus <- sento_corpus(corpusdf = usnews)
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 sentomeasures <- sento_measures(corpus, l, ctr)

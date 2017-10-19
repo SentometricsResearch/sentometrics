@@ -28,10 +28,10 @@ If a provided feature name is already part of the corpus, it will be replaced. T
 \code{keywords} arguments can be provided at the same time, or only one of them, leaving the other at \code{NULL}.
 }
 \examples{
-data("useconomynews")
+data("usnews")
 
 # construct a corpus and add random features to it
-corpus <- sento_corpus(corpusdf = useconomynews)
+corpus <- sento_corpus(corpusdf = usnews)
 corpus <- add_features(corpus,
                        featuresdf = data.table(random = runif(quanteda::ndoc(corpus))))
 corpus <- add_features(corpus,

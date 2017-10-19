@@ -69,13 +69,13 @@ many of the details that can be supplied to the \code{glmnet::glmnet()} and \cod
 estimation and calibration through cross-validation, for the sake of user-friendliness.
 }
 \examples{
-data("useconomynews")
+data("usnews")
 data("lexicons")
 data("valence")
 data("epu")
 
 # construct a sentomeasures object to start with
-corpusAll <- sento_corpus(corpusdf = useconomynews)
+corpusAll <- sento_corpus(corpusdf = usnews)
 corpus <- quanteda::corpus_subset(corpusAll, date >= "1980-01-01" & date < "2014-10-01")
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional",

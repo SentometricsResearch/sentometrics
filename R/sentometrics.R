@@ -114,17 +114,17 @@
 #'   \item noneconomy. Equals 1 if the article is not relevant to the US economy.
 #' }
 #'
-#' @usage data("useconomynews")
+#' @usage data("usnews")
 #'
 #' @examples
-#' data("useconomynews")
-#' useconomynews[3192, "text"]
-#' useconomynews[1:5, c("id", "date", "text")]
+#' data("usnews")
+#' usnews[3192, "text"]
+#' usnews[1:5, c("id", "date", "text")]
 #'
 #' @format A \code{data.frame}, formatted as required to be an input for \code{\link{sento_corpus}}.
 #'
 #' @source \href{https://www.crowdflower.com/data-for-everyone/}{Economic News Article Tone and Relevance}
-"useconomynews"
+"usnews"
 
 #' Monthly S&P 500 Index returns
 #'

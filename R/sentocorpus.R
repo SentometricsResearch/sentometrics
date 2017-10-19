@@ -35,10 +35,10 @@
 #' @seealso \code{\link[quanteda]{corpus}}
 #'
 #' @examples
-#' data("useconomynews")
+#' data("usnews")
 #'
 #' # corpus construction
-#' corpus <- sento_corpus(corpusdf = useconomynews)
+#' corpus <- sento_corpus(corpusdf = usnews)
 #'
 #' # take a random subset using a quanteda's package function
 #' corpusSmall <- quanteda::corpus_sample(corpus, size = 500)
@@ -69,7 +69,7 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
   isNumeric <- sapply(features, function(x) return(is.numeric(corpusdf[[x]])))
   if (any(!isNumeric)) {
     toDrop <- names(isNumeric)[isNumeric == FALSE]
-    corpusdf <- corpusdf[, (toDrop) := NULL]
+    corpusdf[, toDrop] <- NULL
     warning(paste0("Following feature columns were dropped as they are not numeric: ", paste0(toDrop, collapse = ", "), "."))
     if (length(toDrop) == length(isNumeric))
       stop("No remaining feature columns. Please add uniquely named feature columns of type numeric.")
@@ -113,10 +113,10 @@ clean <- function(corpusdf) {
 #' @return An updated \code{sentocorpus} object.
 #'
 #' @examples
-#' data("useconomynews")
+#' data("usnews")
 #'
 #' # construct a corpus and add random features to it
-#' corpus <- sento_corpus(corpusdf = useconomynews)
+#' corpus <- sento_corpus(corpusdf = usnews)
 #' corpus <- add_features(corpus,
 #'                        featuresdf = data.table(random = runif(quanteda::ndoc(corpus))))
 #' corpus <- add_features(corpus,

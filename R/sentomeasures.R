@@ -30,12 +30,12 @@
 #' @seealso \code{\link{compute_sentiment}}, \code{\link{perform_agg}}
 #'
 #' @examples
-#' data("useconomynews")
+#' data("usnews")
 #' data("lexicons")
 #' data("valence")
 #'
 #' # construct a sentomeasures object to start with
-#' corpus <- sento_corpus(corpusdf = useconomynews)
+#' corpus <- sento_corpus(corpusdf = usnews)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howWithin = "tf-idf",
 #'                howDocs = "proportional",
@@ -273,12 +273,12 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 #' @seealso \code{\link[quanteda]{dfm}}, \code{\link[quanteda]{tokenize}}
 #'
 #' @examples
-#' data("useconomynews")
+#' data("usnews")
 #' data("lexicons")
 #' data("valence")
 #'
 #' # sentiment computation based on raw frequency counts
-#' corpus <- sento_corpus(corpusdf = useconomynews)
+#' corpus <- sento_corpus(corpusdf = usnews)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' sent <- compute_sentiment(corpus, l, how = "counts")
 #'
@@ -315,12 +315,12 @@ get_features_sentiment <- compiler::cmpfun(.get_features_sentiment)
 #' @seealso \code{\link{compute_sentiment}}, \code{\link{ctr_agg}}
 #'
 #' @examples
-#' data("useconomynews")
+#' data("usnews")
 #' data("lexicons")
 #' data("valence")
 #'
 #' # computation of sentiment and aggregation into sentiment measures
-#' corpus <- sento_corpus(corpusdf = useconomynews)
+#' corpus <- sento_corpus(corpusdf = usnews)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' sent <- compute_sentiment(corpus, l, how = "counts")
 #' ctr <- ctr_agg(howTime = c("linear"), by = "year", lag = 3)
@@ -456,12 +456,12 @@ agg_time <- function(sentomeasures, lag, fill, how = get_hows()$time, ...) {
 #' @seealso \code{\link{ctr_merge}}
 #'
 #' @examples
-#' data("useconomynews")
+#' data("usnews")
 #' data("lexicons")
 #' data("valence")
 #'
 #' # construct a sentomeasures object to start with
-#' corpus <- sento_corpus(corpusdf = useconomynews)
+#' corpus <- sento_corpus(corpusdf = usnews)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sentomeasures <- sento_measures(corpus, l, ctr)
@@ -548,12 +548,12 @@ merge_measures <- function(ctr) {
 #' @seealso \code{\link{sento_model}}
 #'
 #' @examples
-#' data("useconomynews")
+#' data("usnews")
 #' data("lexicons")
 #' data("valence")
 #'
 #' # construct a sentomeasures object to start with
-#' corpus <- sento_corpus(corpusdf = useconomynews)
+#' corpus <- sento_corpus(corpusdf = usnews)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sentomeasures <- sento_measures(corpus, l, ctr)
@@ -782,12 +782,12 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #' @seealso \code{\link{merge_measures}}
 #'
 #' @examples
-#' data("useconomynews")
+#' data("usnews")
 #' data("lexicons")
 #' data("valence")
 #'
 #' # construct a sentomeasures object to start with
-#' corpus <- sento_corpus(corpusdf = useconomynews)
+#' corpus <- sento_corpus(corpusdf = usnews)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sentomeasures <- sento_measures(corpus, l, ctr)
@@ -883,12 +883,12 @@ ctr_merge <- function(sentomeasures, feat = NA, lex = NA, time = NA, do.keep = F
 #' and statistics, but the original sentiment scores \code{data.table} untouched.
 #'
 #' @examples
-#' data("useconomynews")
+#' data("usnews")
 #' data("lexicons")
 #' data("valence")
 #'
 #' # construct a sentomeasures object to start with
-#' corpus <- sento_corpus(corpusdf = useconomynews)
+#' corpus <- sento_corpus(corpusdf = usnews)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sentomeasures <- sento_measures(corpus, l, ctr)
@@ -957,12 +957,12 @@ select_measures <- function(sentomeasures, toSelect = "all", do.combine = TRUE, 
 #' plotted.
 #'
 #' @examples
-#' data("useconomynews")
+#' data("usnews")
 #' data("lexicons")
 #' data("valence")
 #'
 #' # construct a sentomeasures object to start with
-#' corpus <- sento_corpus(corpusdf = useconomynews)
+#' corpus <- sento_corpus(corpusdf = usnews)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sentomeasures <- sento_measures(corpus, l, ctr)
@@ -1020,12 +1020,12 @@ plot.sentomeasures <- function(x, group = "all", ...) {
 #' @return A modified \code{sentomeasures} object.
 #'
 #' @examples
-#' data("useconomynews")
+#' data("usnews")
 #' data("lexicons")
 #' data("valence")
 #'
 #' # construct a sentomeasures object to start with
-#' corpus <- sento_corpus(corpusdf = useconomynews)
+#' corpus <- sento_corpus(corpusdf = usnews)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sentomeasures <- sento_measures(corpus, l, ctr)
@@ -1076,12 +1076,12 @@ fill_measures <- function(sentomeasures, fill = "zero") {
 #' statistics.
 #'
 #' @examples
-#' data("useconomynews")
+#' data("usnews")
 #' data("lexicons")
 #' data("valence")
 #'
 #' # construct a sentomeasures object to start with
-#' corpus <- sento_corpus(corpusdf = useconomynews)
+#' corpus <- sento_corpus(corpusdf = usnews)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sentomeasures <- sento_measures(corpus, l, ctr)
