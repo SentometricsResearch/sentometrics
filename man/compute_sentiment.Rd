@@ -40,12 +40,12 @@ lexicons into a positive and a negative polarity counterpart. \code{NA}s are con
 is equivalent to no sentiment.
 }
 \examples{
-data("useconomynews")
+data("usnews")
 data("lexicons")
 data("valence")
 
 # sentiment computation based on raw frequency counts
-corpus <- sento_corpus(corpusdf = useconomynews)
+corpus <- sento_corpus(corpusdf = usnews)
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 sent <- compute_sentiment(corpus, l, how = "counts")
 

@@ -1,3 +1,0 @@
-The code in calculate_sentiment.R refers to data that is too big to be put on GitHub.
-
-The particular data is stored in a private Dropbox folder.

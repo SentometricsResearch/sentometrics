@@ -36,12 +36,12 @@ the input \code{sentocorpus} and computed sentiment scores in its output. Serves
 textual sentiment measures, and a \code{sentomeasures} object.
 }
 \examples{
-data("useconomynews")
+data("usnews")
 data("lexicons")
 data("valence")
 
 # construct a sentomeasures object to start with
-corpus <- sento_corpus(corpusdf = useconomynews)
+corpus <- sento_corpus(corpusdf = usnews)
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 ctr <- ctr_agg(howWithin = "tf-idf",
                howDocs = "proportional",

@@ -1,6 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^data-raw$
-^nonpackage$
 ^docs$
 ^TODO\.txt$
