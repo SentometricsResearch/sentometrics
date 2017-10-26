@@ -7,7 +7,8 @@
 ctr_model(model = c("gaussian", "binomial", "multinomial"), type = c("BIC",
   "AIC", "Cp", "cv"), intercept = TRUE, do.iter = FALSE, h = 0,
   alphas = seq(0, 1, by = 0.2), nSample = NULL, trainWindow = NULL,
-  testWindow = NULL, oos = 0, start = 1, do.progress = TRUE)
+  testWindow = NULL, oos = 0, start = 1, do.progress = TRUE,
+  do.parallel = FALSE)
 }
 \arguments{
 \item{model}{a \code{character} vector with one of the following: "\code{gaussian}" (linear regression), "\code{binomial}"
@@ -22,9 +23,9 @@ regression.}
 \item{intercept}{a \code{logical}, \code{TRUE} by default fits an intercept.}
 
 \item{do.iter}{a \code{logical}, \code{TRUE} induces an iterative estimation of models at the given \code{nSample} size and
-performs the associated one-step ahead out-of-sample forecasting exercise through time.}
+performs the associated one-step ahead out-of-sample prediction exercise through time.}
 
-\item{h}{an \code{integer} value to shift the time series to have the desired (forecasting) setup, \code{h == 0} means
+\item{h}{an \code{integer} value to shift the time series to have the desired prediction setup, \code{h == 0} means
 no change to the input data (nowcasting assuming data is aligned properly), \code{h > 0} shifts the dependent variable by
 \code{h} periods (i.e. rows) further in time (forecasting), \code{h < 0} shifts the independent variables by \code{h}
 periods.}
@@ -51,6 +52,11 @@ training sample (out-of-sample) up to the test sample (ignored if \code{type !=}
 for the last 31 samples.}
 
 \item{do.progress}{a \code{logical}, if \code{TRUE} progress statements are displayed during model calibration.}
+
+\item{do.parallel}{a \code{logical}, if \code{TRUE} the \code{\%dopar\%} construct from the \pkg{foreach} package is
+applied for iterative model estimation. A proper parallel backend needs to be set up to make it work. No progress statements
+are displayed whatsoever when \code{TRUE}. For cross-validation models, parallelization is also carried out for single-run
+models, whenever a parallel backend is set up. See the examples in \code{\link{sento_model}}.}
 }
 \value{
 A list encapsulating the control parameters.

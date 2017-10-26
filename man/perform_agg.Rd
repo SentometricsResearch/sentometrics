@@ -33,7 +33,7 @@ sentomeasures <- perform_agg(sent, ctr)
 
 }
 \seealso{
-\code{\link{compute_sentiment}}, \code{\link{ctr_agg}}
+\code{\link{compute_sentiment}}, \code{\link{ctr_agg}}, \code{\link{sento_measures}}
 }
 \author{
 Samuel Borms, Keven Bluteau

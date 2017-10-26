@@ -30,8 +30,8 @@ If \code{ctr$do.iter == FALSE}, a \code{sentomodel} object which is a list conta
 \item{ic}{a \code{list} composed of two elements: the information criterion used in the calibration under
 \code{"criterion"}, and a vector of all minimum information criterion values for each value in \code{alphas}
 under \code{"opts"} (if \code{ctr$type !=} "\code{cv}").}
-\item{date}{a reference date, being the most recent date from the \code{sentomeasures} object accounted for in the
-estimation window.}
+\item{dates}{sample reference dates, being the earliest and most recent date from the \code{sentomeasures} object
+accounted for in the estimation window.}
 \item{nVar}{the sum of the number of sentiment measures and other explanatory variables inputted.}
 \item{discarded}{a named \code{logical} vector of length equal to the number of sentiment measures, in which \code{TRUE}
 indicates that the particular sentiment measure has not been considered in the regression process.}
@@ -46,15 +46,15 @@ one date step beyond the date found at \code{sentomodel$date}.}
 forecasting error), "\code{MAD}" (mean absolute deviation), "\code{MDA}" (mean directional accuracy, in which's calculation
 zero is considered as a positive; in percentage points), "\code{accuracy}" (proportion of correctly predicted classes in case
 of a logistic regression; in percentage points), and each's respective individual values in the sample. Directional accuracy
-is measured by comparing the change in the realized response with the change in the forecast between two consecutive time
-points (omitting the very first forecast, resulting in \code{NA}). Only the relevant performance statistics are given
+is measured by comparing the change in the realized response with the change in the prediction between two consecutive time
+points (omitting the very first prediction, resulting in \code{NA}). Only the relevant performance statistics are given
 depending on the type of regression. Dates are as in the \code{"models"} output element, i.e. from the perspective of the
 sentiment measures.}
 }
 \description{
 Linear or nonlinear penalized regression of any dependent variable on the wide number of sentiment measures and
 potentially other explanatory variables. Either performs a regression given the provided variables at once, or computes
-regressions sequentially for a given sample size over a longer time horizon, with associated one-step ahead forecasting
+regressions sequentially for a given sample size over a longer time horizon, with associated one-step ahead prediction
 performance metrics.
 }
 \details{
@@ -89,12 +89,19 @@ y <- epu[epu$date >= sentomeasures$measures$date[1], ]$index
 length(y) == nrow(sentomeasures$measures) # TRUE
 x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
 colnames(x) <- c("x1", "x2")
+
 # a list with models based on the three implemented information criteria
 out1 <- list()
 for (ic in c("BIC", "AIC", "Cp")) {
  ctrIC <- ctr_model(model = "gaussian", type = ic, do.iter = FALSE, h = 0)
  out1[[ic]] <- sento_model(sentomeasures, y, x = x, ctr = ctrIC)
 }
+
+# some post-analysis (attribution)
+attributions1 <- retrieve_attributions(out1[["Cp"]], sentomeasures)
+attributions2 <- retrieve_attributions(out1[["Cp"]], sentomeasures,
+                                       refDates = sentomeasures$measures$date[20:40])
+
 # a cross-validation based model
 ctrCV <- ctr_model(model = "gaussian", type = "cv", do.iter = FALSE,
                    h = 0, alphas = c(0.10, 0.50, 0.90), trainWindow = 350,
@@ -112,11 +119,21 @@ summary(out3)
 
 # an example of an iterative analysis
 ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE,
-                       h = 0, nSample = 300, start = 106)
+                     h = 0, nSample = 300, start = 106)
 out <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
 summary(out)
 
-# some post-analysis (attribution and prediction)
+# the same iterative analysis, parallelized
+\dontrun{
+cl <- makeCluster(detectCores() - 2)
+registerDoParallel(cl)
+ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE,
+                     h = 0, nSample = 300, start = 106, do.parallel = TRUE)
+out <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
+stopCluster(cl)
+summary(out)}
+
+# some more post-analysis (attribution and prediction)
 attributions <- retrieve_attributions(out, sentomeasures)
 plot_attributions(attributions, "lexicons")
 plot_attributions(attributions, "features")
@@ -129,7 +146,8 @@ preds3 <- predict(out3, newx = as.matrix(newx), type = "class")
 
 }
 \seealso{
-\code{\link{ctr_model}}, \code{\link[glmnet]{glmnet}}, \code{\link[caret]{train}}
+\code{\link{ctr_model}}, \code{\link[glmnet]{glmnet}}, \code{\link[caret]{train}},
+\code{\link{retrieve_attributions}}
 }
 \author{
 Samuel Borms, Keven Bluteau

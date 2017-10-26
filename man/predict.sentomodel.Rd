@@ -25,7 +25,7 @@ variables. Variables discarded in the regression process are discarded again her
 A prediction output depending on the \code{type} argument provided.
 }
 \description{
-Prediction (forecasting) method for \code{sentomodel} class, with usage along the lines of
+Prediction method for \code{sentomodel} class, with usage along the lines of
 \code{predict.glmnet}, but simplified in terms of allowed parameters.
 }
 \seealso{
