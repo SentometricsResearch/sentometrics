@@ -1,17 +1,15 @@
 
 .onLoad <- function(libname = find.package("Sentometrics"), pkgname = "Sentometrics"){
-
   # CRAN note avoidance
   if (getRversion() >= "2.15.1")
     utils::globalVariables(
       c("value", "variable", "word_count", "w",
-        "attrib", "feature", "id")
+        "attrib", "feature", "id", "i")
     )
-
   invisible()
 }
 
-# .onUnload <- function (libpath) {
-#  library.dynam.unload("Sentometrics", libpath)
-# }
+.onUnload <- function (libpath) {
+  library.dynam.unload("sentometrics", libpath)
+}
 

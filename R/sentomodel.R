@@ -15,7 +15,7 @@
 #' function from the \pkg{caret} package). The adapted information criteria are currently only available for a linear
 #' regression.
 #' @param intercept a \code{logical}, \code{TRUE} by default fits an intercept.
-#' @param h an \code{integer} value to shift the time series to have the desired (forecasting) setup, \code{h == 0} means
+#' @param h an \code{integer} value to shift the time series to have the desired prediction setup, \code{h == 0} means
 #' no change to the input data (nowcasting assuming data is aligned properly), \code{h > 0} shifts the dependent variable by
 #' \code{h} periods (i.e. rows) further in time (forecasting), \code{h < 0} shifts the independent variables by \code{h}
 #' periods.
@@ -30,13 +30,17 @@
 #' @param oos a non-negative \code{integer} to indicate the number of periods to skip from the end of the cross-validation
 #' training sample (out-of-sample) up to the test sample (ignored if \code{type !=} "\code{cv}").
 #' @param do.iter a \code{logical}, \code{TRUE} induces an iterative estimation of models at the given \code{nSample} size and
-#' performs the associated one-step ahead out-of-sample forecasting exercise through time.
+#' performs the associated one-step ahead out-of-sample prediction exercise through time.
 #' @param do.progress a \code{logical}, if \code{TRUE} progress statements are displayed during model calibration.
 #' @param nSample a positive \code{integer} as the size of the sample for model calibration at every iteration (ignored if
 #' \code{iter == FALSE}).
 #' @param start a positive \code{integer} to indicate at which point the iteration has to start (ignored if
 #' \code{iter == FALSE}). For example, for 100 out-of-sample iterations, \code{start = 70} only performs the analysis
 #' for the last 31 samples.
+#' @param do.parallel a \code{logical}, if \code{TRUE} the \code{\%dopar\%} construct from the \pkg{foreach} package is
+#' applied for iterative model estimation. A proper parallel backend needs to be set up to make it work. No progress statements
+#' are displayed whatsoever when \code{TRUE}. For cross-validation models, parallelization is also carried out for single-run
+#' models, whenever a parallel backend is set up. See the examples in \code{\link{sento_model}}.
 #'
 #' @return A list encapsulating the control parameters.
 #'
@@ -61,7 +65,8 @@
 #' @export
 ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c("BIC", "AIC", "Cp", "cv"),
                       intercept = TRUE, do.iter = FALSE, h = 0, alphas = seq(0, 1, by = 0.20),
-                      nSample = NULL, trainWindow = NULL, testWindow = NULL, oos = 0, start = 1, do.progress = TRUE) {
+                      nSample = NULL, trainWindow = NULL, testWindow = NULL, oos = 0, start = 1,
+                      do.progress = TRUE, do.parallel = FALSE) {
 
   if (length(model) > 1) model <- model[1]
   else if (!(model %in% c("gaussian", "binomial", "multinomial")))
@@ -83,9 +88,9 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
   if (min(alphas) < 0 | max(alphas) > 1)
     stop("Each alpha value in alphas must be between 0 and 1, inclusive.")
 
-  if (!do.iter) nSample <- start <- NULL
+  if (do.iter == FALSE) nSample <- start <- NULL
 
-  if (do.iter & is.null(nSample))
+  if (do.iter == TRUE & is.null(nSample))
     stop("Iterative modelling requires a non-NULL sample size given by nSample.")
 
   if (!is.null(nSample))
@@ -118,7 +123,8 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
                     alphas = alphas,
                     trainWindow = trainWindow,
                     testWindow = testWindow,
-                    do.progress = do.progress)
+                    do.progress = do.progress,
+                    do.parallel = do.parallel)
 
   return(ctr_model)
 }
@@ -129,7 +135,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #'
 #' @description Linear or nonlinear penalized regression of any dependent variable on the wide number of sentiment measures and
 #' potentially other explanatory variables. Either performs a regression given the provided variables at once, or computes
-#' regressions sequentially for a given sample size over a longer time horizon, with associated one-step ahead forecasting
+#' regressions sequentially for a given sample size over a longer time horizon, with associated one-step ahead prediction
 #' performance metrics.
 #'
 #' @details Models are computed using the elastic net regularization as implemented in the \pkg{glmnet} package, to account for
@@ -161,8 +167,8 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' \item{ic}{a \code{list} composed of two elements: the information criterion used in the calibration under
 #' \code{"criterion"}, and a vector of all minimum information criterion values for each value in \code{alphas}
 #' under \code{"opts"} (if \code{ctr$type !=} "\code{cv}").}
-#' \item{date}{a reference date, being the most recent date from the \code{sentomeasures} object accounted for in the
-#' estimation window.}
+#' \item{dates}{sample reference dates, being the earliest and most recent date from the \code{sentomeasures} object
+#' accounted for in the estimation window.}
 #' \item{nVar}{the sum of the number of sentiment measures and other explanatory variables inputted.}
 #' \item{discarded}{a named \code{logical} vector of length equal to the number of sentiment measures, in which \code{TRUE}
 #' indicates that the particular sentiment measure has not been considered in the regression process.}
@@ -177,12 +183,13 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' forecasting error), "\code{MAD}" (mean absolute deviation), "\code{MDA}" (mean directional accuracy, in which's calculation
 #' zero is considered as a positive; in percentage points), "\code{accuracy}" (proportion of correctly predicted classes in case
 #' of a logistic regression; in percentage points), and each's respective individual values in the sample. Directional accuracy
-#' is measured by comparing the change in the realized response with the change in the forecast between two consecutive time
-#' points (omitting the very first forecast, resulting in \code{NA}). Only the relevant performance statistics are given
+#' is measured by comparing the change in the realized response with the change in the prediction between two consecutive time
+#' points (omitting the very first prediction, resulting in \code{NA}). Only the relevant performance statistics are given
 #' depending on the type of regression. Dates are as in the \code{"models"} output element, i.e. from the perspective of the
 #' sentiment measures.}
 #'
-#' @seealso \code{\link{ctr_model}}, \code{\link[glmnet]{glmnet}}, \code{\link[caret]{train}}
+#' @seealso \code{\link{ctr_model}}, \code{\link[glmnet]{glmnet}}, \code{\link[caret]{train}},
+#' \code{\link{retrieve_attributions}}
 #'
 #' @examples
 #' data("usnews")
@@ -205,14 +212,19 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' length(y) == nrow(sentomeasures$measures) # TRUE
 #' x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
 #' colnames(x) <- c("x1", "x2")
-
+#'
 #' # a list with models based on the three implemented information criteria
 #' out1 <- list()
 #' for (ic in c("BIC", "AIC", "Cp")) {
 #'  ctrIC <- ctr_model(model = "gaussian", type = ic, do.iter = FALSE, h = 0)
 #'  out1[[ic]] <- sento_model(sentomeasures, y, x = x, ctr = ctrIC)
 #' }
-
+#'
+#' # some post-analysis (attribution)
+#' attributions1 <- retrieve_attributions(out1[["Cp"]], sentomeasures)
+#' attributions2 <- retrieve_attributions(out1[["Cp"]], sentomeasures,
+#'                                        refDates = sentomeasures$measures$date[20:40])
+#'
 #' # a cross-validation based model
 #' ctrCV <- ctr_model(model = "gaussian", type = "cv", do.iter = FALSE,
 #'                    h = 0, alphas = c(0.10, 0.50, 0.90), trainWindow = 350,
@@ -230,11 +242,21 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #'
 #' # an example of an iterative analysis
 #' ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE,
-#'                        h = 0, nSample = 300, start = 106)
+#'                      h = 0, nSample = 300, start = 106)
 #' out <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
 #' summary(out)
 #'
-#' # some post-analysis (attribution and prediction)
+#' # the same iterative analysis, parallelized
+#' \dontrun{
+#' cl <- makeCluster(detectCores() - 2)
+#' registerDoParallel(cl)
+#' ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE,
+#'                      h = 0, nSample = 300, start = 106, do.parallel = TRUE)
+#' out <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
+#' stopCluster(cl)
+#' summary(out)}
+#'
+#' # some more post-analysis (attribution and prediction)
 #' attributions <- retrieve_attributions(out, sentomeasures)
 #' plot_attributions(attributions, "lexicons")
 #' plot_attributions(attributions, "features")
@@ -245,6 +267,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' preds2 <- predict(out2, newx = as.matrix(newx), type = "link")
 #' preds3 <- predict(out3, newx = as.matrix(newx), type = "class")
 #'
+#' @import foreach
 #' @export
 sento_model <- function(sentomeasures, y, x = NULL, ctr) {
   check_class(sentomeasures, "sentomeasures")
@@ -268,11 +291,13 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
   oos <- ctr$oos # used when type == "cv"
   nSample <- ctr$nSample # used when do.iter == TRUE
   start <- ctr$start # used when do.iter == TRUE
+  do.parallel <- ctr$do.parallel # used when do.iter == TRUE
 
-  if (do.iter) {
+  if (do.iter == TRUE) {
     out <- sento_model_iter(sentomeasures, y = y, x = x, h = h, family = family, intercept = intercept,
                             alphas = alphas, type = type, nSample = nSample, start = start,
-                            oos = oos, trainWindow = trainWindow, testWindow = testWindow, do.progress = do.progress)
+                            oos = oos, trainWindow = trainWindow, testWindow = testWindow,
+                            do.progress = do.progress, do.parallel = do.parallel)
   } else {
     if (type == "cv") {
       out <- model_CV(sentomeasures, y = y, x = x, h = h, family = family, intercept = intercept,
@@ -303,7 +328,7 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
   cleaned <- clean_panel(xx, nx = nx) # get rid of duplicated or too sparse sentiment measures
   xx <- cleaned$xNew
   discarded <- cleaned$discarded
-  refDate <- alignedVars$datesX[nrow(yy)]
+  sampleDates <- c(alignedVars$datesX[1], alignedVars$datesX[nrow(xx)])
 
   penalty <- rep(1, ncol(xx))
   if (!is.null(x)) penalty[(ncol(xx) - nx + 1):ncol(xx)] <- 0 # no shrinkage for original x variables
@@ -313,7 +338,7 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
   lambdaVals <- numeric(length(alphas))
   for (i in seq_along(alphas)) {
     alpha <- alphas[i]
-    if (do.progress) {
+    if (do.progress == TRUE) {
       if (alpha == alphas[1]) cat("alphas run: ", alpha, ", ", sep = "")
       else if (alpha == alphas[length(alphas)]) cat(alpha, "\n")
       else cat(alpha, ", ", sep = "")
@@ -343,7 +368,7 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
               alpha = alphaOpt,
               lambda = lambdaOpt,
               ic = list(criterion = ic, opts = unlist(minIC)),
-              date = refDate,
+              dates = sampleDates,
               nVar = nVar,
               discarded = discarded)
 
@@ -369,7 +394,7 @@ model_IC <- compiler::cmpfun(.model_IC)
   cleaned <- clean_panel(xx, nx = nx) # get rid of duplicated or too sparse sentiment measures
   xx <- cleaned$xNew
   discarded <- cleaned$discarded
-  refDate <- alignedVars$datesX[nrow(yy)]
+  sampleDates <- c(alignedVars$datesX[1], alignedVars$datesX[nrow(xx)])
 
   penalty <- rep(1, ncol(xx))
   if (!is.null(x)) penalty[(ncol(xx) - nx + 1):ncol(xx)] <- 0 # no shrinkage for original x variables
@@ -386,11 +411,11 @@ model_IC <- compiler::cmpfun(.model_IC)
   # align training metric based on whether family is a linear or classification model
   metric <- ifelse(family == "gaussian", "RMSE", "Accuracy")
 
-  if (do.progress) cat("Training model... ")
+  if (do.progress == TRUE) cat("Training model... ")
   trained <- caret::train(x = xx, y = yyy, method = "glmnet", family = family,
                           standardize = TRUE, penalty.factor = penalty,
                           trControl = ctrTrain, tuneGrid = tuneGrid, metric = metric)
-  if (do.progress) cat("Done.", "\n")
+  if (do.progress == TRUE) cat("Done.", "\n")
 
   # retrieve optimal alphas and lambdas
   alphaOpt <- as.numeric(trained$bestTune[1])
@@ -406,7 +431,7 @@ model_IC <- compiler::cmpfun(.model_IC)
               alpha = alphaOpt,
               lambda = lambdaOpt,
               trained = trained,
-              date = refDate,
+              dates = sampleDates,
               nVar = nVar,
               discarded = discarded)
 
@@ -417,7 +442,8 @@ model_IC <- compiler::cmpfun(.model_IC)
 model_CV <- compiler::cmpfun(.model_CV)
 
 .sento_model_iter <- function(sentomeasures, y, x, h, family, intercept, alphas, type,
-                              nSample, start, trainWindow, testWindow, oos, do.progress) {
+                              nSample, start, trainWindow, testWindow, oos,
+                              do.progress, do.parallel) {
 
   nIter <- ifelse(is.null(nrow(y)), length(y), nrow(y)) - nSample - abs(h) - oos
   if (nIter <= 0 || start > nIter)
@@ -426,20 +452,19 @@ model_CV <- compiler::cmpfun(.model_CV)
   if (type == "cv") fun <- model_CV
   else fun <- model_IC
 
-  ### problems: package (helper) functions need to be registered to clusters + argument x twice + argument i as first argument
-  # cl <- snow::makeCluster(c(rep("localhost", 6)), type = "SOCK")
-  # regsOpt <- snow::clusterApply(cl = cl, x = start:nIter, fun = fun, sentomeasures = sentomeasures, y = y,
-  #                             x = x, h = h, alphas = alphas, intercept = intercept, trainWindow = trainWindow,
-  #                             testWindow = testWindow, oos = oos, ic = type, do.progress = do.progress, i = i,
-  #                             nSample = nSample, family = family)
-  # snow::stopCluster(cl)
-
   # perform all regressions
-  regsOpt <- lapply(start:nIter, function(i) {
-  if (do.progress) cat("iteration: ", (i - start + 1), " from ", (nIter - start + 1), "\n", sep = "")
-  return(fun(sentomeasures, y, x, h, alphas, intercept = intercept, trainWindow = trainWindow, testWindow = testWindow,
-             oos = oos, ic = type, do.progress = do.progress, i = i, nSample = nSample, family = family))
-  })
+  if (do.parallel == TRUE) {
+    regsOpt <- foreach::foreach(i = start:nIter) %dopar% {
+      return(fun(sentomeasures, y, x, h, alphas, intercept = intercept, trainWindow = trainWindow, testWindow = testWindow,
+                 oos = oos, ic = type, do.progress = FALSE, i = i, nSample = nSample, family = family))
+      }
+  } else {
+    regsOpt <- lapply(start:nIter, function(i) {
+      if (do.progress == TRUE) cat("iteration: ", (i - start + 1), " from ", (nIter - start + 1), "\n", sep = "")
+      return(fun(sentomeasures, y, x, h, alphas, intercept = intercept, trainWindow = trainWindow, testWindow = testWindow,
+                 oos = oos, ic = type, do.progress = do.progress, i = i, nSample = nSample, family = family))
+      })
+  }
 
   # get optimal alphas and lambdas
   alphasOpt <- sapply(regsOpt, function(x) return(x$alpha))
@@ -489,31 +514,25 @@ model_CV <- compiler::cmpfun(.model_CV)
 }
 sento_model_iter <- compiler::cmpfun(.sento_model_iter)
 
-.compute_IC <- function(reg, y, x, alpha, ic, family) {
-
+compute_IC <- function(reg, y, x, alpha, ic, family) {
   beta <- reg$beta
   lambda <- reg$lambda
-
   if (family == "gaussian") type <- "link"
   else stop("To implement for 'binomial' and 'multinomial'.")
-
   yEst <- stats::predict(reg, newx = x, type = type)
-  df_A <- compute_df(alpha, beta, lambda, x)
-  RSS <- apply(yEst, 2, FUN = function(est) sum((y - est)^2))
-  sigma2 <- RSS[length(RSS)] / (nrow(y) - df_A[length(RSS)]) ### why is last value taken?
-
-  if (ic == "BIC") {
-    fun <- compute_BIC
-  } else if (ic == "AIC") {
-    fun <- compute_AIC
-  } else if (ic == "Cp") {
-    fun <- compute_Cp
-  }
-  IC <- fun(y, yEst, df_A, RSS, sigma2)
-
-  return(IC)
+  xScaled <- scale(x) # scale x first
+  xA <- lapply(1:length(lambda), function(i) return(as.matrix(xScaled[, which(beta[, i] != 0)])))
+  dfA <- compute_df(alpha, lambda, xA)
+  # dfA <- compute_df_Old(alpha, beta, lambda, x)
+  RSS <- apply(yEst, 2, function(est) return(sum((y - est)^2)))
+  sigma2 <- RSS[length(RSS)] / (nrow(y) - dfA[length(RSS)]) ### why is last value taken?
+  if (ic == "BIC")
+    return(compute_BIC(y, yEst, dfA, RSS, sigma2))
+  else if (ic == "AIC")
+    return(compute_AIC(y, yEst, dfA, RSS, sigma2))
+  else if (ic == "Cp")
+    return(compute_Cp(y, yEst, dfA, RSS, sigma2))
 }
-compute_IC <- compiler::cmpfun(.compute_IC)
 
 model_performance <- function(yEst, yReal, family, dates, ...) {
 
@@ -614,14 +633,14 @@ summary.sentomodeliter <- function(object, ...) {
   cat("Model type:", sentomodel$model, "\n")
   cat("Calibration:", printCalib, "\n")
   cat("Sample size:", reg$nobs, "\n")
-  cat("Total number of iterations/forecasts:", length(sentomodeliter$models), "\n")
+  cat("Total number of iterations/predictions:", length(sentomodeliter$models), "\n")
   cat("Optimal average elastic net alpha parameter:", mean(sentomodeliter$alphas, na.rm = TRUE), "\n")
   cat("Optimal average elastic net lambda parameter:", mean(sentomodeliter$lambdas, na.rm = TRUE), "\n \n")
   cat("Out-of-sample performance \n")
   cat(rep("-", 20), "\n \n")
   if (model == "gaussian") {
     cat("Mean directional accuracy:", sentomodeliter$performance$MDA, "% \n")
-    cat("Root mean squared forecasting error:", sentomodeliter$performance$RMSFE, "\n")
+    cat("Root mean squared prediction error:", sentomodeliter$performance$RMSFE, "\n")
     cat("Mean absolute deviation:", sentomodeliter$performance$MAD, "\n \n")
 
   } else {
@@ -638,13 +657,13 @@ print.sentomodeliter <- function(x, ...) {
   cat("A sentomodeliter object.")
 }
 
-#' Plot iterative forecasts versus realized values
+#' Plot iterative predictions versus realized values
 #'
 #' @author Samuel Borms
 #'
 #' @method plot sentomodeliter
 #'
-#' @description Displays a plot of all forecasts made through the iterative model computation as incorporated in the
+#' @description Displays a plot of all predictions made through the iterative model computation as incorporated in the
 #' input \code{sentomodeliter} object, as well as the corresponding true values.
 #'
 #' @param x a \code{sentomeasures} object.
@@ -691,14 +710,22 @@ print.sentomodeliter <- function(x, ...) {
 #' @export
 plot.sentomodeliter <- function(x, ...) {
   sentomodeliter <- x
+  mF <- sentomodeliter$models[[1]]$model
+  if (mF == "gaussian") {
+    plotter <- geom_line()
+    scaleY <- scale_y_continuous(name = "Response")
+  } else {
+    plotter <- geom_point()
+    scaleY <- scale_y_discrete(name = "Response")
+  }
   data <- data.frame(date = row.names(sentomodeliter$performance$raw),
                      realized = sentomodeliter$performance$raw$response,
-                     forecast = sentomodeliter$performance$raw$predicted)
+                     prediction = sentomodeliter$performance$raw$predicted)
   melt <- melt(data, id.vars = "date")
   p <- ggplot(data = melt, aes(x = as.Date(date), y = value, color = variable)) +
-    geom_line() +
+    plotter +
     scale_x_date(name = "Date", date_labels = "%m-%Y") +
-    scale_y_continuous(name = "Response") +
+    scaleY +
     ggthemes::theme_tufte() +
     theme(legend.title = element_blank(), legend.position = "top", text = element_text(size = 11))
 
@@ -709,7 +736,7 @@ plot.sentomodeliter <- function(x, ...) {
 #'
 #' @author Samuel Borms
 #'
-#' @description Prediction (forecasting) method for \code{sentomodel} class, with usage along the lines of
+#' @description Prediction method for \code{sentomodel} class, with usage along the lines of
 #' \code{predict.glmnet}, but simplified in terms of allowed parameters.
 #'
 #' @param object a \code{sentomodel} object.
@@ -765,7 +792,7 @@ perform_MCS <- function(models, loss = c("DA", "errorSq", "AD", "accuracy"), ...
   if (any(checkClass)) stop("Not all elements of the 'models' list are sentomodeliter objects.")
   modelFamilies <- unlist(lapply(models, function(m) return(m$models[[1]]$model)))
   if (!(length(table(modelFamilies)) == 1)) stop("All models should come from the same family.")
-  mF <- modelFamilies[1]
+  mF <- as.character(modelFamilies[1])
   if (length(loss) != 1) stop("The 'loss' argument should contain only a single argument.")
   checkGaussian <- (mF == "gaussian" & (loss %in% c("DA", "errorSq", "AD")))
   checkLogistic <- (mF %in% c("binomial", "multinomial") & (loss == "accuracy"))
@@ -781,10 +808,14 @@ perform_MCS <- function(models, loss = c("DA", "errorSq", "AD", "accuracy"), ...
   dots <- list(...)
   alpha <- ifelse(is.null(dots$alpha), 0.15, dots$alpha)
   B <- ifelse(is.null(dots$B), 5000, dots$B)
-  cl <- ifelse(is.null(dots$cl), NULL, dots$cl)
+  if (is.null(dots$cl)) {
+    cl <- NULL
+  } else cl <- dots$cl
   ram.allocation <- ifelse(is.null(dots$ram.allocation), TRUE, dots$ram.allocation)
   statistic <- ifelse(is.null(dots$statistic), "Tmax", dots$statistic)
-  k <- ifelse(is.null(dots$k), NULL, dots$k)
+  if (is.null(dots$k)) {
+    k <- NULL
+  } else k <- dots$k
   min.k <- ifelse(is.null(dots$min.k), 3, dots$min.k)
   verbose <- ifelse(is.null(dots$verbose), TRUE, dots$verbose)
 

@@ -3,22 +3,19 @@ TO DO
 -------------------------------------------------------------------------------
 
 - write unit tests
-- speeding up:
-	> apply where for loops if desirable + optimal use of data.table and its methods
-	> memory: rm() & gc()
-	> Rcpp implementation of compute_df()
-	> parallelization (internally + pointers in documentation on how to use)
-- check warnings and sanity in caret::train() setup + parallelize
-- check binomial and multinomial regressions
-- plot function for sentomodeliter if logistic model (other type of plot or "link" predictions)
-- finalize retrieve_attribution() (incl. documentation + attribution plotting + clustering)
-- add IC/df estimator appropriate for logistic regression in elastic net-context (cf. Keven on GitHub)
-- check perform_MCS()
-- change dates in sentomodel object: c(first sample date, last sample date) [cf. attribution function]
+- speeding up: parallelization (internally + pointers in documentation on how to use)
+- check warnings and sanity in caret::train() setup [check error due to latest release] + parallelize (+ example in doc.)
+- check binomial and multinomial regressions, e.g. for performance measures + plotting
 - check ### in-code
+- plot function for sentomodeliter if logistic model (other type of plot or "link" predictions)
+- finalize retrieve_attribution() (incl. documentation + attribution plotting + clustering; attribution_lags()?)
+- check perform_MCS() [==> try DA, does it handle NAs?] + add example(s)
+- test h < 0
+- examples < 5s. ==> otherwise don't run > bring down time for R CMD check + package size (< 5 Mb <=> data)
 
 (check compatibility with major quanteda package update in October 2017)
 (valence words not detected if first word is a valence shifter, e.g. " not " if text is "not ...")
+(add IC/df estimator appropriate for logistic regression in elastic net-context; cf. Keven on GitHub)
 (function to update sentomeasures [when new texts come in])
 (allow transition from corpora of other text mining packages to our's [cf. quanteda's conversion functions] + feature inclusion)
 (interface with lexicon package for access to more lexicons?)

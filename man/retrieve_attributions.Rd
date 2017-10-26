@@ -2,19 +2,23 @@
 % Please edit documentation in R/attribution.R
 \name{retrieve_attributions}
 \alias{retrieve_attributions}
-\title{Retrieve top-down sentiment attributions given forecasting model object}
+\title{Retrieve top-down sentiment attributions given model object}
 \usage{
-retrieve_attributions(model, sentomeasures, ...)
+retrieve_attributions(model, sentomeasures, do.normalize, refDates)
 }
 \arguments{
 \item{model}{a \code{sentomodel} or \code{sentomodeliter} object.}
 
 \item{sentomeasures}{the \code{sentomeasures} object used to estimate the \code{sentomodel} object argument.}
 
-\item{...}{the dates at which attribution is to be performed. The dates should be between the latest date avaiable in the
-input \code{sentomeasures} object and the first date of the sample used to estimate the model in the \code{model} argument.
-If not provided, attribution will be calculated for all in-sample dates. Not used if \code{model} is a \code{sentomodeliter}
-object, for which attribution for all out-of-sample forecasting dates is calculated.}
+\item{do.normalize}{a \code{logical}, \code{TRUE} divides each element of every attribution vector at a given date by its
+L2-norm at that date. The document attributions are not normalized.}
+
+\item{refDates}{the dates at which attribution is to be performed. These should be between the latest date available in the
+input \code{sentomeasures} object and the first date of the sample used to estimate the model, i.e. \code{model$dates[1]}
+if \code{model} is a \code{sentomodel} object. All dates should also be present in \code{sentomeasures$measures$date}.
+If \code{NULL} (default), attribution is calculated for all in-sample dates. Ignored if \code{model} is a
+\code{sentomodeliter} object, for which attribution is calculated for all out-of-sample prediction dates.}
 }
 \value{
 A list with all possible dimensions for which aggregation is computed, being \code{"documents"}, \code{"lexicons"},
@@ -24,8 +28,8 @@ attribution, the list is further decomposed into a \code{data.table} per date, w
 \code{attrib} columns.
 }
 \description{
-Computes the attributions to forecasts for a (given) number of dates at all possible sentiment dimensions, based
-on the coefficients associated to each sentiment measure, as estimated in the provided model object.
+Computes the attributions to predictions for a (given) number of dates at all possible sentiment dimensions,
+based on the coefficients associated to each sentiment measure, as estimated in the provided model object.
 }
 \details{
 See \code{\link{sento_model}} for an elaborate modelling example including the calculation and plotting of

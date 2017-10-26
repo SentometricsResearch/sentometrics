@@ -5,7 +5,7 @@
 \alias{sentometrics}
 \alias{sentometrics-package}
 \alias{sentometrics-package}
-\title{An Integrated Framework for Textual Sentiment Time Series Aggregation and Forecasting}
+\title{An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction}
 \description{
 The sentometrics package is designed to do time series analysis based on textual sentiment. It accounts
 for the intrinsic challenge that, for a given text, sentiment can be computed in hundreds of different ways, as well as
@@ -14,7 +14,7 @@ does not exist in standard time series analysis packages. As a final outcome, th
 to econometrically model the impact of sentiment in texts on a given variable, by first computing a wide range of textual
 sentiment time series and then selecting the sentiment times series that are most informative. The package created
 therefore integrates the qualification of sentiment from texts, the aggregation into different sentiment measures
-and the optimized forecasting based on these measures.
+and the optimized prediction based on these measures.
 }
 \note{
 The ideas behind the sentiment aggregation framework can be consulted in the working paper titled ``Questioning the
@@ -29,7 +29,8 @@ Please cite the package in publications. Use \code{citation("sentometrics")}.
 \item Sentiment computation and aggregation into sentiment measures: \code{\link{sento_corpus}}, \code{\link{ctr_agg}},
 \code{\link{compute_sentiment}}, \code{\link{sento_measures}}, \code{\link{to_global}}
 \item Sparse modelling: \code{\link{ctr_model}}, \code{\link{sento_model}}
-\item Forecasting and post-modelling analysis: \code{\link{retrieve_attributions}}, \code{\link{perform_MCS}}
+\item Prediction and post-modelling analysis: \code{\link{predict.sentomodel}}, \code{\link{retrieve_attributions}},
+\code{\link{perform_MCS}}
 }
 }
 

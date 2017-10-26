@@ -2,7 +2,7 @@
 % Please edit documentation in R/sentomodel.R
 \name{plot.sentomodeliter}
 \alias{plot.sentomodeliter}
-\title{Plot iterative forecasts versus realized values}
+\title{Plot iterative predictions versus realized values}
 \usage{
 \method{plot}{sentomodeliter}(x, ...)
 }
@@ -16,7 +16,7 @@ Returns a simple \pkg{ggplot2} plot, which can be added onto (or to alter its de
 \code{+} operator (see examples).
 }
 \description{
-Displays a plot of all forecasts made through the iterative model computation as incorporated in the
+Displays a plot of all predictions made through the iterative model computation as incorporated in the
 input \code{sentomodeliter} object, as well as the corresponding true values.
 }
 \examples{

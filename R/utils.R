@@ -276,7 +276,7 @@ compute_stats <- function(sentomeasures) {
   return(stats)
 }
 
-compute_df <- function(alpha, beta, lambda, x) { # elastic net degrees-of-freedom estimator (Tibshirani and Taylor, 2012)
+compute_df_Old <- function(alpha, beta, lambda, x) { # elastic net degrees-of-freedom estimator (Tibshirani and Taylor, 2012)
   x <- scale(x) # scale x first
   df_A <- lapply(1:length(lambda), function(df) {
     A <- which(beta[, df] != 0)

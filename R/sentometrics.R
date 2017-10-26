@@ -2,7 +2,7 @@
 #' @name sentometrics
 #' @docType package
 #'
-#' @title An Integrated Framework for Textual Sentiment Time Series Aggregation and Forecasting
+#' @title An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction
 #'
 #' @description The sentometrics package is designed to do time series analysis based on textual sentiment. It accounts
 #' for the intrinsic challenge that, for a given text, sentiment can be computed in hundreds of different ways, as well as
@@ -11,14 +11,15 @@
 #' to econometrically model the impact of sentiment in texts on a given variable, by first computing a wide range of textual
 #' sentiment time series and then selecting the sentiment times series that are most informative. The package created
 #' therefore integrates the qualification of sentiment from texts, the aggregation into different sentiment measures
-#' and the optimized forecasting based on these measures.
+#' and the optimized prediction based on these measures.
 #'
 #' @section Main functions:
 #' \itemize{
 #' \item Sentiment computation and aggregation into sentiment measures: \code{\link{sento_corpus}}, \code{\link{ctr_agg}},
 #' \code{\link{compute_sentiment}}, \code{\link{sento_measures}}, \code{\link{to_global}}
 #' \item Sparse modelling: \code{\link{ctr_model}}, \code{\link{sento_model}}
-#' \item Forecasting and post-modelling analysis: \code{\link{retrieve_attributions}}, \code{\link{perform_MCS}}
+#' \item Prediction and post-modelling analysis: \code{\link{predict.sentomodel}}, \code{\link{retrieve_attributions}},
+#' \code{\link{perform_MCS}}
 #' }
 #'
 #' @section Update:
@@ -175,4 +176,8 @@
 #'
 #' @source \href{http://www.policyuncertainty.com/research.html}{Research on Economic Policy Uncertainty}
 "epu"
+
+#' @useDynLib sentometrics,.registration = TRUE
+#' @importFrom Rcpp evalCpp
+NULL
 
