@@ -30,6 +30,11 @@ t <- rowSums(attributions$time[, -1])
 d <- as.vector(sapply(attributions$documents, function(x) return(sum(x$attrib))))
 
 test_that("Attributions across all dimensions should be the same across rows", {
-  expect_equal(l, f, t, d) ### sometimes off by e-15...
+  expect_equal(l, f)
+  expect_equal(l, t)
+  expect_equal(l, d)
+  expect_equal(f, t)
+  expect_equal(f, d)
+  expect_equal(t, d)
 })
 

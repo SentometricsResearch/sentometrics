@@ -71,7 +71,7 @@
 #' # set up control function with one linear, two Almon and two exponential weighting schemes
 #' a <- almons(n = 70, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE)
 #' e <- exponentials(n = 70, alphas = c(0.4, 0.8))
-#' ctr3 <- ctr_agg(howTime = c("linear"), by = "year",
+#' ctr3 <- ctr_agg(howTime = c("linear", "own"), by = "year", lag = 70,
 #'                 weights = data.frame(a1 = a[, 1], a2 = a[, 3], e1 = e[, 1], e2 = e[, 2]))
 #'
 #' @export
