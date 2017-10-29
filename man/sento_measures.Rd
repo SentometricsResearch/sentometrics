@@ -9,9 +9,9 @@ sento_measures(sentocorpus, lexicons, ctr)
 \arguments{
 \item{sentocorpus}{a \code{sentocorpus} object.}
 
-\item{lexicons}{output from a \code{setup_lexicons()} call.}
+\item{lexicons}{output from a \code{\link{setup_lexicons}} call.}
 
-\item{ctr}{output from a \code{ctr_agg()} call.}
+\item{ctr}{output from a \code{\link{ctr_agg}} call.}
 }
 \value{
 A \code{sentomeasures} object, which is a list containing:
@@ -28,12 +28,12 @@ average correlation with all other measures) for each individual sentiment measu
 \item{fill}{a single \code{character} vector that specifies if and how missing dates have been added before
 aggregation across time was carried out.}
 \item{attribWeights}{a \code{list} of document weights and time weights that are extracted in a call to
-\code{retrieve_attributions()}. Serves further no direct purpose.}
+\code{\link{retrieve_attributions}}. Serves further no direct purpose.}
 }
 \description{
-Wrapper function which assembles calls to \code{compute_sentiment()} and \code{perform_agg()}, and includes
-the input \code{sentocorpus} and computed sentiment scores in its output. Serves as the most direct way towards a panel of
-textual sentiment measures, and a \code{sentomeasures} object.
+Wrapper function which assembles calls to \code{\link{compute_sentiment}} and \code{\link{perform_agg}}, and
+includes the input \code{sentocorpus} and computed sentiment scores in its output. Serves as the most direct way towards a panel
+of textual sentiment measures, and a \code{sentomeasures} object.
 }
 \examples{
 data("usnews")

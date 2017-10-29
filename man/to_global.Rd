@@ -4,16 +4,16 @@
 \alias{to_global}
 \title{Merge sentiment measures into one global sentiment measure}
 \usage{
-to_global(sentomeasures, lex = 1, feat = 1, time = 1)
+to_global(sentomeasures, lexicons = 1, features = 1, time = 1)
 }
 \arguments{
 \item{sentomeasures}{a \code{sentomeasures} object.}
 
-\item{lex}{a \code{numeric} vector of weights, of size \code{length(sentomeasures$lexicons)}, in the same order and
-summing to one. By default set to 1, which means equally weighted.}
+\item{lexicons}{a \code{numeric} vector of weights, of size \code{length(sentomeasures$lexicons)}, in the same order
+and summing to one. By default set to 1, which means equally weighted.}
 
-\item{feat}{a \code{numeric} vector of weights, of size \code{length(sentomeasures$features)}, in the same order and
-summing to one. By default set to 1, which means equally weighted.}
+\item{features}{a \code{numeric} vector of weights, of size \code{length(sentomeasures$features)}, in the same order
+and summing to one. By default set to 1, which means equally weighted.}
 
 \item{time}{a \code{numeric} vector of weights, of size \code{length(sentomeasures$time)}, in the same order and summing
 to one. By default set to 1, which means equally weighted.}
@@ -30,7 +30,7 @@ across the three dimensions times the sentiment value per date observation.
 }
 \details{
 This function returns no \code{sentomeasures} object, however the global sentiment measure as outputted can
-be added to regressions as an additional variable using the \code{x} argument in the \code{sento_model()} function.
+be added to regressions as an additional variable using the \code{x} argument in the \code{\link{sento_model}} function.
 }
 \examples{
 data("usnews")
@@ -44,8 +44,8 @@ ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 sentomeasures <- sento_measures(corpus, l, ctr)
 
 # merge into one global sentiment measure, with specified weighting for lexicons and features
-global <- to_global(sentomeasures, lex = c(0.40, 0.60),
-                                   feat = c(0.10, 0.20, 0.30, 0.40),
+global <- to_global(sentomeasures, lexicons = c(0.40, 0.60),
+                                   features = c(0.10, 0.20, 0.30, 0.40),
                                    time = 1)
 
 }

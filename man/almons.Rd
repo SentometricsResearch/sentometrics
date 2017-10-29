@@ -17,7 +17,7 @@ almons(n, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE)
 }
 \value{
 A \code{data.frame} of all Almon polynomial weighting curves, of size \code{length(orders)} (times two if
-\code{do.inverse == TRUE}).
+\code{do.inverse = TRUE}).
 }
 \description{
 Computes Almon polynomial weighting curves; handy to self-select specific time aggregation weighting schemes.

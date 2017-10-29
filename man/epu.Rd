@@ -12,7 +12,7 @@
 data("epu")
 }
 \description{
-Monthly values of a news-based index of US Economic Policy Uncertainty (EPU) between January 1980 and September
+Monthly values of a news-based index of U.S. Economic Policy Uncertainty (EPU) between January 1980 and September
 2014, including a binomial and a multinomial example series. For more information on its calculation, see
 \href{http://www.policyuncertainty.com/methodology.html}{this}. Following columns are present:
 

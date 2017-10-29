@@ -4,7 +4,7 @@
 \alias{retrieve_attributions}
 \title{Retrieve top-down sentiment attributions given model object}
 \usage{
-retrieve_attributions(model, sentomeasures, do.normalize, refDates)
+retrieve_attributions(model, sentomeasures, do.normalize, refDates, factor)
 }
 \arguments{
 \item{model}{a \code{sentomodel} or \code{sentomodeliter} object.}
@@ -12,17 +12,20 @@ retrieve_attributions(model, sentomeasures, do.normalize, refDates)
 \item{sentomeasures}{the \code{sentomeasures} object used to estimate the \code{sentomodel} object argument.}
 
 \item{do.normalize}{a \code{logical}, \code{TRUE} divides each element of every attribution vector at a given date by its
-L2-norm at that date. The document attributions are not normalized.}
+L2-norm at that date, normalizing the values between -1 and 1. The document attributions are not normalized.}
 
 \item{refDates}{the dates at which attribution is to be performed. These should be between the latest date available in the
-input \code{sentomeasures} object and the first date of the sample used to estimate the model, i.e. \code{model$dates[1]}
-if \code{model} is a \code{sentomodel} object. All dates should also be present in \code{sentomeasures$measures$date}.
-If \code{NULL} (default), attribution is calculated for all in-sample dates. Ignored if \code{model} is a
+input \code{sentomeasures} object and the first estimation sample date, i.e. \code{model$dates[1]} if \code{model} is
+a \code{sentomodel} object. All dates should also be present in \code{sentomeasures$measures$date}. If \code{NULL} (default),
+attribution is calculated for all in-sample dates. Ignored if \code{model} is a
 \code{sentomodeliter} object, for which attribution is calculated for all out-of-sample prediction dates.}
+
+\item{factor}{the factor level as a single \code{character} vector for which attribution has to be calculated in
+case of (a) multinomial model(s). Ignored for linear and binomial models.}
 }
 \value{
-A list with all possible dimensions for which aggregation is computed, being \code{"documents"}, \code{"lexicons"},
-\code{"features"}, \code{"time"} and \code{"lags"}. The last four dimensions are \code{data.table}s having a \code{"date"}
+A list with all dimensions for which aggregation is computed, being \code{"documents"}, \code{"lexicons"},
+\code{"features"} and \code{"time"}. The last four dimensions are \code{data.table}s having a \code{"date"}
 column and the other columns the different names of the dimension, with the attributions as values. For document-level
 attribution, the list is further decomposed into a \code{data.table} per date, with \code{"id"}, \code{date} and
 \code{attrib} columns.
@@ -33,7 +36,8 @@ based on the coefficients associated to each sentiment measure, as estimated in 
 }
 \details{
 See \code{\link{sento_model}} for an elaborate modelling example including the calculation and plotting of
-attributions.
+attributions. The attribution for logistic models is represented in terms of log odds. For binomial models, it is
+calculated with respect to the last factor level or factor column.
 }
 \seealso{
 \code{\link{sento_model}}

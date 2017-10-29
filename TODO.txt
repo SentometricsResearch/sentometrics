@@ -3,15 +3,9 @@ TO DO
 -------------------------------------------------------------------------------
 
 - write unit tests
-- speeding up: parallelization (internally + pointers in documentation on how to use)
-- check warnings and sanity in caret::train() setup [check error due to latest release] + parallelize (+ example in doc.)
-- check binomial and multinomial regressions, e.g. for performance measures + plotting
-- check ### in-code
-- plot function for sentomodeliter if logistic model (other type of plot or "link" predictions)
-- finalize retrieve_attribution() (incl. documentation + attribution plotting + clustering; attribution_lags()?)
-- check perform_MCS() [==> try DA, does it handle NAs?] + add example(s)
-- test h < 0
 - examples < 5s. ==> otherwise don't run > bring down time for R CMD check + package size (< 5 Mb <=> data)
+- check ### in-code
+- add run_vignette.R script + vignette to repo
 
 (check compatibility with major quanteda package update in October 2017)
 (valence words not detected if first word is a valence shifter, e.g. " not " if text is "not ...")
@@ -19,4 +13,8 @@ TO DO
 (function to update sentomeasures [when new texts come in])
 (allow transition from corpora of other text mining packages to our's [cf. quanteda's conversion functions] + feature inclusion)
 (interface with lexicon package for access to more lexicons?)
+(sentiment analysis for multiple languages at same time 
+	==> language features + deletion of wrong lexicon--language combo's + allow multi-language valence shifters (merge?))
+(implement attribution_lags(); handle when fill is "latest" + aggregation across documents per lag needs to be known)
+(make examples via built-in fitted data objects as data sets)
 

@@ -7,10 +7,10 @@
 perform_agg(toAgg, ctr)
 }
 \arguments{
-\item{toAgg}{output from a \code{compute_sentiment()} call, a list with as main component a sentiment scores
+\item{toAgg}{output from a \code{\link{compute_sentiment}} call, a list with as main component a sentiment scores
 \code{data.table} with dates and lexicon--feature sentiment scores columns.}
 
-\item{ctr}{output from a \code{ctr_agg()} call.}
+\item{ctr}{output from a \code{\link{ctr_agg}} call.}
 }
 \value{
 A \code{sentomeasures} object.

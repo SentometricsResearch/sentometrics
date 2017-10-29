@@ -3,18 +3,19 @@
 #'
 #' @author Samuel Borms
 #'
-#' @description Formalizes a collection of texts into a well-defined corpus object, by calling the \code{quanteda::corpus()}
-#' function. The \pkg{quanteda} package is a (very) fast text mining package; for more info, see
-#' \href{http://quanteda.io/index.html}{quanteda}. This function mainly performs a set of checks on the input data
+#' @description Formalizes a collection of texts into a well-defined corpus object, by calling, amongst others, the
+#' \code{\link[quanteda]{corpus}} function. The \pkg{quanteda} package is a (very) fast text mining package; for more info,
+#' see \href{http://quanteda.io/index.html}{quanteda}. Their formal corpus structure is required for better memory management,
+#' corpus manipulation and sentiment calculation. This function mainly performs a set of checks on the input data
 #' and prepares the corpus for further sentiment analysis.
 #'
 #' @details A \code{sentocorpus} object can be regarded as a specialized instance of a \pkg{quanteda} corpus. In theory, all
 #' \pkg{quanteda} functions applicable to its corpus object can also be applied to a \code{sentocorpus} object. However,
 #' changing a given \code{sentocorpus} object too drastically using some of \pkg{quanteda}'s functions might alter the very
 #' structure the corpus is meant to have (as defined in the \code{"corpusdf"} argument) to be able to be used as an input
-#' in other functions of the \pkg{sentometrics} package. There are functions, including \code{quanteda::corpus_sample()} or
-#' \code{quanteda::corpus_subset()}, that do not change the actual corpus structure and may come in handy. To add additional
-#' features, we recommend to use \code{add_features()}. In the future, we will formalize the interaction between the
+#' in other functions of the \pkg{sentometrics} package. There are functions, including \code{\link[quanteda]{corpus_sample}} or
+#' \code{\link[quanteda]{corpus_subset}}, that do not change the actual corpus structure and may come in handy. To add additional
+#' features, we recommend to use \code{\link{add_features}}. In the future, we will formalize the interaction between the
 #' \pkg{quanteda} package (as well as other text mining packages).
 #'
 #' @param corpusdf a \code{data.frame} with as named columns and \emph{in this order}: a document \code{id} column, a
@@ -30,7 +31,7 @@
 #' This includes a brute force replacement of HTML tags and non-alphanumeric characters by an empty string.
 #'
 #' @return A \code{sentocorpus} object, derived from a \pkg{quanteda} corpus classed list keeping the elements \code{documents},
-#' \code{metadata} and \code{settings}. The \code{documents} element incorporates the corpus represented as a \code{data.frame}.
+#' \code{metadata} and \code{settings}. The first element incorporates the corpus represented as a \code{data.frame}.
 #'
 #' @seealso \code{\link[quanteda]{corpus}}
 #'

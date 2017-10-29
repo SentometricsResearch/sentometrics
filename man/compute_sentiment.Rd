@@ -9,13 +9,13 @@ compute_sentiment(sentocorpus, lexicons, how = get_hows()$words, dfm = NULL)
 \arguments{
 \item{sentocorpus}{a \code{sentocorpus} object.}
 
-\item{lexicons}{output from a \code{setup_lexicons()} call.}
+\item{lexicons}{output from a \code{\link{setup_lexicons}} call.}
 
 \item{how}{a single \code{character} vector defining how aggregation within documents should be performed. For currently
 available options on how aggregation can occer, see \code{get_hows()$words}.}
 
-\item{dfm}{optional; an output from a \code{quanteda::dfm()} call, such that users can specify their own tokenization
-scheme (via \code{quanteda::tokenize()}) as well as other parameters related to the construction of a document-feature
+\item{dfm}{optional; an output from a \code{\link[quanteda]{dfm}} call, such that users can specify their own tokenization
+scheme (via \code{\link[quanteda]{tokenize}}) as well as other parameters related to the construction of a document-feature
 matrix (dfm). By default, a dfm is created based on a tokenization that removes punctuation, numbers, symbols and
 separators. We suggest to stick to unigrams, as the remainder of the sentiment computation and built-in lexicons assume
 the same.}
@@ -35,7 +35,7 @@ based on the lexicons provided and a choice of aggregation across words per docu
 }
 \details{
 For a separate calculation of positive (resp. negative) sentiment, one has to provide distinct positive (resp. negative)
-lexicons. This can be done using the \code{do.split} option in the \code{setup_lexicons()} function, which splits out the
+lexicons. This can be done using the \code{do.split} option in the \code{\link{setup_lexicons}} function, which splits out the
 lexicons into a positive and a negative polarity counterpart. \code{NA}s are converted to 0, under the assumption that this
 is equivalent to no sentiment.
 }

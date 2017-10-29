@@ -4,17 +4,17 @@
 \alias{ctr_merge}
 \title{Set up control for merging sentiment measures}
 \usage{
-ctr_merge(sentomeasures, feat = NA, lex = NA, time = NA,
+ctr_merge(sentomeasures, features = NA, lexicons = NA, time = NA,
   do.keep = FALSE)
 }
 \arguments{
 \item{sentomeasures}{a \code{sentomeasures} object. This is necessary to check whether the other input arguments
 make sense.}
 
-\item{feat}{a list with unique features to merge at given name, e.g. \cr
+\item{features}{a list with unique features to merge at given name, e.g. \cr
 \code{list(feat12 = c("feat1", "feat2"))}. See \code{sentomeasures$features} for the exact names to use.}
 
-\item{lex}{a list with unique lexicons to merge at given name, e.g. \cr
+\item{lexicons}{a list with unique lexicons to merge at given name, e.g. \cr
 \code{list(lex12 = c("lex1", "lex2"))}. See \code{sentomeasures$lexicons} for the exact names to use.}
 
 \item{time}{a list with unique time weighting schemes to merge at given name, e.g. \cr
@@ -43,16 +43,16 @@ sentomeasures <- sento_measures(corpus, l, ctr)
 # set up a correct control function
 ctrMerge <- ctr_merge(sentomeasures,
                       time = list(W = c("equal_weight", "linear")),
-                      lex = list(LEX = c("LM_eng", "HENRY_eng")),
-                      feat = list(journals = c("wsj", "wapo")),
+                      lexicons = list(LEX = c("LM_eng", "HENRY_eng")),
+                      features = list(journals = c("wsj", "wapo")),
                       do.keep = TRUE)
 
 \dontrun{
 # produces an informative error message
 ctrMerge <- ctr_merge(sentomeasures,
                       time = list(W = c("equal_weight", "almon1")),
-                      lex = list(LEX = c("LM_eng", "HENRY_eng")),
-                      feat = list(journals = c("notInHere", "wapo")))
+                      lexicons = list(LEX = c("LM_eng", "HENRY_eng")),
+                      features = list(journals = c("notInHere", "wapo")))
 }
 
 }

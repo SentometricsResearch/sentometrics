@@ -15,14 +15,61 @@ perform_MCS(models, loss = c("DA", "errorSq", "AD", "accuracy"), ...)
 defines on what basis the model confidence set is calculated. The first three options are available for \code{"gaussian"}
 models, the last option applies only to \code{"binomial"} or \code{"multinomial"} models.}
 
-\item{...}{other parameters that can be supplied to the \code{MCS::MCSprocedure()} function.}
+\item{...}{other parameters that can be supplied to the \code{\link[MCS]{MCSprocedure}} function.}
 }
 \value{
-An object as returned from the \code{MCS::MCSprocedure()} function.
+An object as returned from the \code{\link[MCS]{MCSprocedure}} function.
 }
 \description{
 Calculates the model confidence set (see ``The Model Confidence Set"; Hansen, Lunde and Nason, 2011) as
 implemented in the \pkg{MCS} package, for a set of different \code{sentomodeliter} objects.
+}
+\examples{
+\dontrun{
+data("usnews")
+data("lexicons")
+data("valence")
+data("epu")
+
+# construct two sentomeasures objects
+corpusAll <- sento_corpus(corpusdf = usnews)
+corpus <- quanteda::corpus_subset(corpusAll, date >= "1980-01-01" & date < "2014-10-01")
+l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+
+ctr1 <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional",
+                howTime = c("equal_weight", "linear"), by = "month", lag = 3)
+sentMeas1 <- sento_measures(corpus, l, ctr1)
+
+ctr2 <- ctr_agg(howWithin = "counts", howDocs = "equal_weight",
+                howTime = c("equal_weight", "linear"), by = "month", lag = 3)
+sentMeas2 <- sento_measures(corpus, l, ctr2)
+
+# prepare y and other x variables
+y <- epu[epu$date >= sentomeasures$measures$date[1], ]$index
+length(y) == nrow(sentomeasures$measures) # TRUE
+x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
+colnames(x) <- c("x1", "x2")
+
+# estimate different type of regressions
+ctr1 <- ctr_model(model = "gaussian", type = "AIC", do.iter = TRUE,
+                  h = 0, nSample = 120, start = 276)
+out1 <- sento_model(sentMeas1, y, x = x, ctr = ctr1)
+
+ctr2 <- ctr_model(model = "gaussian", type = "AIC", do.iter = TRUE,
+                  h = 0, nSample = 120, start = 276)
+out2 <- sento_model(sentMeas1, y, x = NULL, ctr = ctr2)
+
+ctr3 <- ctr_model(model = "gaussian", type = "AIC", do.iter = TRUE,
+                  h = 0, nSample = 120, start = 276)
+out3 <- sento_model(sentMeas2, y, x = x, ctr = ctr3)
+
+ctr4 <- ctr_model(model = "gaussian", type = "AIC", do.iter = TRUE,
+                  h = 0, nSample = 120, start = 276)
+out4 <- sento_model(sentMeas2, y, x = NULL, ctr = ctr4)
+
+mcs <- perform_MCS(models = list(m1 = out1, m2 = out2, m3 = out3, m4 = out4),
+                   loss = "errorSq")}
+
 }
 \seealso{
 \code{\link{sento_model}}, \code{\link[MCS]{MCSprocedure}}

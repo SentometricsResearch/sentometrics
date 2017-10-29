@@ -8,10 +8,10 @@ get_hows()
 }
 \value{
 A list with the supported aggregation hows for arguments \code{howWithin} (within documents), \code{howDows}
-(across documents, per date) and \code{howTime} (across dates), to be supplied to \code{ctr_agg()}.
+(across documents, per date) and \code{howTime} (across dates), to be supplied to \code{\link{ctr_agg}} .
 }
 \description{
-Call for information purposes only. Used within \code{ctr_agg()} to check if supplied
+Call for information purposes only. Used within \code{\link{ctr_agg}} to check if supplied
 aggregation hows are supported.
 }
 \seealso{
