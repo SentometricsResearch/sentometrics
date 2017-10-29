@@ -7,9 +7,9 @@
 plot_attributions(attributions, group = "features")
 }
 \arguments{
-\item{attributions}{an output from a \code{retrieve_attributions()} call.}
+\item{attributions}{an output from a \code{\link{retrieve_attributions}} call.}
 
-\item{group}{a value from \code{c("lexicons", "features", "time", "lags")}.}
+\item{group}{a value from \code{c("lexicons", "features", "time")}.}
 }
 \value{
 Returns a simple \pkg{ggplot2} plot, which can be added onto (or to alter its default elements) by using the

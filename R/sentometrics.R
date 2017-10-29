@@ -5,9 +5,9 @@
 #' @title An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction
 #'
 #' @description The sentometrics package is designed to do time series analysis based on textual sentiment. It accounts
-#' for the intrinsic challenge that, for a given text, sentiment can be computed in hundreds of different ways, as well as
-#' the large number of possibilities to pool sentiment across text and time. This additional layer of manipulation
-#' does not exist in standard time series analysis packages. As a final outcome, this package provides an automated means
+#' for the intrinsic challenge that, for a given text, sentiment can be computed in many ways, as well as the large
+#' number of possibilities to pool sentiment across text and time. This additional layer of manipulation does not
+#' exist in standard time series analysis and text mining packages. As a final outcome, this package provides an automated means
 #' to econometrically model the impact of sentiment in texts on a given variable, by first computing a wide range of textual
 #' sentiment time series and then selecting the sentiment times series that are most informative. The package created
 #' therefore integrates the qualification of sentiment from texts, the aggregation into different sentiment measures
@@ -96,13 +96,13 @@
 #' @source \code{\link[lexicon]{hash_valence_shifters}} (negators)
 "valence"
 
-#' Texts relevant (and not) to the US economy
+#' Texts relevant (and not) to the U.S. economy
 #'
 #' @docType data
 #'
 #' @description
-#' A collection of texts annotated by humans in terms of relevance to the US economoy or not. The texts come from two major
-#' journals in the US (The Wall Street Journal and The Washington Post) and cover 6801 documents between 1980 and 2014. It
+#' A collection of texts annotated by humans in terms of relevance to the U.S. economoy or not. The texts come from two major
+#' journals in the U.S. (The Wall Street Journal and The Washington Post) and cover 6801 documents between 1980 and 2014. It
 #' contains following information:
 #'
 #' \itemize{
@@ -111,8 +111,8 @@
 #'   \item text. Texts in \code{character} format.
 #'   \item wsj. Equals 1 if the article comes from The Wall Street Journal.
 #'   \item wapo. Equals 1 if the article comes from The Washington Post.
-#'   \item economy. Equals 1 if the article is relevant to the US economy.
-#'   \item noneconomy. Equals 1 if the article is not relevant to the US economy.
+#'   \item economy. Equals 1 if the article is relevant to the U.S. economy.
+#'   \item noneconomy. Equals 1 if the article is not relevant to the U.S. economy.
 #' }
 #'
 #' @usage data("usnews")
@@ -156,7 +156,7 @@
 #' @docType data
 #'
 #' @description
-#' Monthly values of a news-based index of US Economic Policy Uncertainty (EPU) between January 1980 and September
+#' Monthly values of a news-based index of U.S. Economic Policy Uncertainty (EPU) between January 1980 and September
 #' 2014, including a binomial and a multinomial example series. For more information on its calculation, see
 #' \href{http://www.policyuncertainty.com/methodology.html}{this}. Following columns are present:
 #'

@@ -34,7 +34,7 @@ equal to 1, meaning no aggregation across time.}
 
 \item{fill}{a single \code{character} vector, one of \code{c("zero", "latest", "none")}, to control how missing
 sentiment values across the continuum of dates considered are added. This impacts the aggregation across time,
-applying the \code{fill_measures()} function before aggregating, except if \code{fill == "none"}. By default equal to
+applying the \code{\link{fill_measures}} function before aggregating, except if \code{fill = "none"}. By default equal to
 \code{"zero"}, which sets the scores (and thus also the weights) of the added dates to zero in the time aggregation.}
 
 \item{alphasExp}{a \code{numeric} vector of all exponential smoothing factors to calculate weights for, used if
@@ -51,14 +51,14 @@ if \code{"almon" \%in\% howTime}.}
 
 \item{weights}{an optional own weighting scheme, always used if provided as a \code{data.frame} with the number of rows
 equal to the desired \code{lag}. The automatic Almon polynomials and exponential weighting functions are created
-sequentially; if the user wants only specific of such time weighting series it can use \code{almons()} and
-\code{exponentials()}, select the columns it requires, combine it into a \code{data.frame} and supply it under this
+sequentially; if the user wants only specific of such time weighting series it can use \code{\link{almons}} and
+\code{\link{exponentials}}, select the columns it requires, combine it into a \code{data.frame} and supply it under this
 argument (see examples).}
 
-\item{dfm}{optional; an output from a \code{quanteda::dfm()} call, such that users can specify their own tokenization scheme
-(via \code{quanteda::tokenize()}) as well as other parameters related to the construction of a document-feature matrix
+\item{dfm}{optional; an output from a \code{\link[quanteda]{dfm}} call, such that users can specify their own tokenization scheme
+(via \code{\link[quanteda]{tokenize}}) as well as other parameters related to the construction of a document-feature matrix
 (dfm). By default, a dfm is created based on a tokenization that removes punctuation, numbers, symbols and separators. We
-suggest to stick to unigrams, as the remainder of the sentiment computation (in \code{compute_sentiment()}) and built-in
+suggest to stick to unigrams, as the remainder of the sentiment computation (in \code{\link{compute_sentiment}}) and built-in
 lexicons assume the same.}
 }
 \value{
@@ -70,7 +70,7 @@ sentiment measures (indices).
 }
 \details{
 For currently available options on how aggregation can occer (via the \code{howWithin},
-\code{howDocs} and \code{howTime} parameters), call \code{get_hows()}.
+\code{howDocs} and \code{howTime} parameters), call \code{\link{get_hows}}.
 }
 \examples{
 # simple control function

@@ -54,7 +54,7 @@ include_valence <- function(texts, val, valIdentifier = c(" NOT_", " VERY_", " H
 #' @param do.normalize \code{TRUE} if polynomials should be normalized to unity.
 #'
 #' @return A \code{data.frame} of all Almon polynomial weighting curves, of size \code{length(orders)} (times two if
-#' \code{do.inverse == TRUE}).
+#' \code{do.inverse = TRUE}).
 #'
 #' @seealso \code{\link{ctr_agg}}
 #'
@@ -139,11 +139,11 @@ setup_time_weights <- function(lag, how, ...) {
 
 #' Options supported to perform aggregation into sentiment measures.
 #'
-#' @description Call for information purposes only. Used within \code{ctr_agg()} to check if supplied
+#' @description Call for information purposes only. Used within \code{\link{ctr_agg}} to check if supplied
 #' aggregation hows are supported.
 #'
 #' @return A list with the supported aggregation hows for arguments \code{howWithin} (within documents), \code{howDows}
-#' (across documents, per date) and \code{howTime} (across dates), to be supplied to \code{ctr_agg()}.
+#' (across documents, per date) and \code{howTime} (across dates), to be supplied to \code{\link{ctr_agg}} .
 #'
 #' @seealso \code{\link{ctr_agg}}
 #'
@@ -187,7 +187,7 @@ align_variables <- function(y, sentomeasures, x, h, i = 1, nSample = NULL) {
     colnames(y) <- levs
   } else {
     y <- as.matrix(y)
-    colnames(y) <- "response"
+    if (length(colnames) == 1) colnames(y) <- "response"
     row.names(y) <- NULL
   }
 
@@ -276,7 +276,7 @@ compute_stats <- function(sentomeasures) {
   return(stats)
 }
 
-compute_df_Old <- function(alpha, beta, lambda, x) { # elastic net degrees-of-freedom estimator (Tibshirani and Taylor, 2012)
+compute_df_old <- function(alpha, beta, lambda, x) { # elastic net degrees-of-freedom estimator (Tibshirani and Taylor, 2012)
   x <- scale(x) # scale x first
   df_A <- lapply(1:length(lambda), function(df) {
     A <- which(beta[, df] != 0)

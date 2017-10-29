@@ -15,7 +15,7 @@ Rcpp::NumericVector compute_df(double alpha, Rcpp::NumericVector lambda, Rcpp::L
     arma::mat matr = xA[i];
     double nA = matr.n_cols;
     if (alpha == 1) {
-      dfA[i] = nA; // ncol matr
+      dfA[i] = nA;
     } else if (nA == 0) {
       dfA[i] = NumericVector::get_na();
     } else {

@@ -7,7 +7,7 @@
 merge_measures(ctr)
 }
 \arguments{
-\item{ctr}{output from a \code{ctr_merge()} call.}
+\item{ctr}{output from a \code{\link{ctr_merge}} call.}
 }
 \value{
 A modified \code{sentomeasures} object, with only the sentiment measures required, including updated information

@@ -11,8 +11,8 @@ setup_lexicons(lexiconsIn, valenceIn = NULL, do.split = FALSE)
 words column and a polarity score column. The lexicons should be appropriately named for clarity in terms of subsequently
 obtained sentiment measures. Alternatively, a subset of the already formatted built-in lexicons accessible via
 \code{lexicons} can be declared too, as part of the same list input. If only (some of) the package built-in lexicons want
-to be used, ony can simply supply \code{lexicons[c(...)]} as an argument to either \code{sento_measures()} or
-\code{compute_sentiment()}. However, it is strongly recommended to pass the lexicons (and a valence word list) that want to
+to be used, ony can simply supply \code{lexicons[c(...)]} as an argument to either \code{\link{sento_measures}} or
+\code{\link{compute_sentiment}}. However, it is strongly recommended to pass the lexicons (and a valence word list) that want to
 be used through this function.}
 
 \item{valenceIn}{a single valence word list as a \code{data.table} or \code{data.frame} with respectively a words column, a
@@ -36,8 +36,7 @@ valence word list.
 \description{
 Structures provided lexicons and potentially integrates valence words. One can also provide (part of) the
 built-in lexicons from \code{data("lexicons")} or a valence word list from \code{data("valence")} as an argument.
-Makes use of the \code{as_key()} function from the \pkg{sentimentr} package to make the output coherent and check for
-duplicates.
+Makes use of the \code{\link[sentimentr]{as_key}} to make the output coherent and check for duplicates.
 }
 \examples{
 data("lexicons")

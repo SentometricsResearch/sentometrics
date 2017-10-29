@@ -1,8 +1,5 @@
 
-.retrieve_attributions.sentomodel <- function(model, sentomeasures, do.normalize = FALSE, refDates = NULL) {
-
-  ### TODO: application to logistic models (exponentiation? + selection of factor level coefficients if multinomial)
-  ### TODO: add attribution_lags() function (handle fill is "latest" + aggregation across documents per lag needs to be known)
+.retrieve_attributions.sentomodel <- function(model, sentomeasures, do.normalize = FALSE, refDates = NULL, factor = NULL) {
 
   sentomodel <- model
 
@@ -46,7 +43,10 @@
   if (length(lexDropped) > 0)
     sent <- sent[, !stringi::stri_detect(colnames(sent),
                                          regex = paste0(paste0("\\b", lexDropped, "\\b"), collapse = "|")), with = FALSE]
-  coeffs <- stats::coef(sentomodel$reg)[cols, ] # only keep sentiment coefficients
+
+  # extract sentiment coefficients
+  if (is.null(factor)) coeffs <- stats::coef(sentomodel$reg)[cols, ]
+  else coeffs <- stats::coef(sentomodel$reg)[[factor]][cols, ]
 
   # create attribution calculation functions (makes use of variables defined in this environment)
   attribution_docs <- function() {
@@ -87,9 +87,10 @@
     if (length(missingNames) > 0) attribsDim[, (missingNames) := 0]
     attribsDim <- attribsDim[, c("date", sentomeasures[[type]]), with = FALSE]
     if (do.normalize) {
-      scaled <- attribsDim[, -1] / sqrt(rowSums(attribsDim[, -1]^2))
-      attribsDim[, colnames(attribsDim)[-1] := ifelse(is.na(scaled), 0, scaled)][]
+      attribsDim[, colnames(attribsDim)[-1] := attribsDim[, -1] / sqrt(rowSums(attribsDim[, -1]^2))][]
     }
+    for (i in seq_along(attribsDim)[-1]) # set NaNs to zero (due to zero norm division)
+      set(attribsDim, i = which(is.na(attribsDim[[i]])), j = i, value = 0)
     return(attribsDim)
   }
 
@@ -104,18 +105,15 @@
   return(attribsAll)
 }
 
-.retrieve_attributions.sentomodeliter <- function(model, sentomeasures, do.normalize = FALSE, refDates = NULL) {
+.retrieve_attributions.sentomodeliter <- function(model, sentomeasures, do.normalize = FALSE, refDates = NULL, factor = NULL) {
 
   sentomodeliter <- model
-
-  if (FALSE)
-    stop("The provided sentomeasures object does not coincide with the sentiment measures used for the sentomodel estimation.")
 
   refDates <- as.Date(names(sentomodeliter$models))
   attribsFull <- lapply(1:length(refDates), function(d) {
     date <- refDates[d]
     model <- sentomodeliter$models[[d]]
-    attribs <- retrieve_attributions(model, sentomeasures, do.normalize = do.normalize, refDates = date)
+    attribs <- retrieve_attributions(model, sentomeasures, do.normalize = do.normalize, refDates = date, factor = factor)
     return(attribs)
   })
 
@@ -143,20 +141,23 @@ retrieve_attributions.sentomodeliter <- compiler::cmpfun(.retrieve_attributions.
 #' based on the coefficients associated to each sentiment measure, as estimated in the provided model object.
 #'
 #' @details See \code{\link{sento_model}} for an elaborate modelling example including the calculation and plotting of
-#' attributions.
+#' attributions. The attribution for logistic models is represented in terms of log odds. For binomial models, it is
+#' calculated with respect to the last factor level or factor column.
 #'
 #' @param model a \code{sentomodel} or \code{sentomodeliter} object.
 #' @param sentomeasures the \code{sentomeasures} object used to estimate the \code{sentomodel} object argument.
 #' @param do.normalize a \code{logical}, \code{TRUE} divides each element of every attribution vector at a given date by its
-#' L2-norm at that date. The document attributions are not normalized.
+#' L2-norm at that date, normalizing the values between -1 and 1. The document attributions are not normalized.
 #' @param refDates the dates at which attribution is to be performed. These should be between the latest date available in the
-#' input \code{sentomeasures} object and the first date of the sample used to estimate the model, i.e. \code{model$dates[1]}
-#' if \code{model} is a \code{sentomodel} object. All dates should also be present in \code{sentomeasures$measures$date}.
-#' If \code{NULL} (default), attribution is calculated for all in-sample dates. Ignored if \code{model} is a
+#' input \code{sentomeasures} object and the first estimation sample date, i.e. \code{model$dates[1]} if \code{model} is
+#' a \code{sentomodel} object. All dates should also be present in \code{sentomeasures$measures$date}. If \code{NULL} (default),
+#' attribution is calculated for all in-sample dates. Ignored if \code{model} is a
 #' \code{sentomodeliter} object, for which attribution is calculated for all out-of-sample prediction dates.
+#' @param factor the factor level as a single \code{character} vector for which attribution has to be calculated in
+#' case of (a) multinomial model(s). Ignored for linear and binomial models.
 #'
-#' @return A list with all possible dimensions for which aggregation is computed, being \code{"documents"}, \code{"lexicons"},
-#' \code{"features"}, \code{"time"} and \code{"lags"}. The last four dimensions are \code{data.table}s having a \code{"date"}
+#' @return A list with all dimensions for which aggregation is computed, being \code{"documents"}, \code{"lexicons"},
+#' \code{"features"} and \code{"time"}. The last four dimensions are \code{data.table}s having a \code{"date"}
 #' column and the other columns the different names of the dimension, with the attributions as values. For document-level
 #' attribution, the list is further decomposed into a \code{data.table} per date, with \code{"id"}, \code{date} and
 #' \code{attrib} columns.
@@ -164,7 +165,7 @@ retrieve_attributions.sentomodeliter <- compiler::cmpfun(.retrieve_attributions.
 #' @seealso \code{\link{sento_model}}
 #'
 #' @export
-retrieve_attributions <- function(model, sentomeasures, do.normalize, refDates) {
+retrieve_attributions <- function(model, sentomeasures, do.normalize, refDates, factor) {
   UseMethod("retrieve_attributions", model)
 }
 
@@ -179,8 +180,8 @@ retrieve_attributions <- function(model, sentomeasures, do.normalize, refDates) 
 #' lot of documents involved and de facto they appear only once at one date (even though a document may contribute to
 #' predictions at several dates, depending on the number of lags in the time aggregation).
 #'
-#' @param attributions an output from a \code{retrieve_attributions()} call.
-#' @param group a value from \code{c("lexicons", "features", "time", "lags")}.
+#' @param attributions an output from a \code{\link{retrieve_attributions}} call.
+#' @param group a value from \code{c("lexicons", "features", "time")}.
 #'
 #' @return Returns a simple \pkg{ggplot2} plot, which can be added onto (or to alter its default elements) by using the
 #' \code{+} operator (see examples). By default, a legend is positioned at the top if the number of dimensions (thus, individual
@@ -190,8 +191,8 @@ retrieve_attributions <- function(model, sentomeasures, do.normalize, refDates) 
 #' @export
 plot_attributions <- function(attributions, group = "features") {
 
-  if (!(group %in% c("lexicons", "features", "time", "lags")))
-    stop("The 'group' argument should be either 'lexicons', 'features', 'time' or 'lags'.")
+  if (!(group %in% c("lexicons", "features", "time")))
+    stop("The 'group' argument should be either 'lexicons', 'features' or 'time'.")
   # melt attributions for plotting
   attributions <- attributions[[group]]
   attributionsMelt <- melt(attributions, id.vars = "date")
@@ -201,8 +202,8 @@ plot_attributions <- function(attributions, group = "features") {
     geom_hline(yintercept = 0, size = 0.50, linetype = "dotted") +
     scale_x_date(name = "Date", date_labels = "%m-%Y") +
     scale_y_continuous(name = "Attribution") +
-    ggthemes::theme_tufte() +
-    theme(legend.title = element_blank(), legend.position = legendPos, text = element_text(size = 11))
+    ggthemes::theme_tufte(base_size = 12) +
+    theme(legend.title = element_blank(), legend.position = legendPos)
 
   return(p)
 }

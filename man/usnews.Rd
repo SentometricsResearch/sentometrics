@@ -3,7 +3,7 @@
 \docType{data}
 \name{usnews}
 \alias{usnews}
-\title{Texts relevant (and not) to the US economy}
+\title{Texts relevant (and not) to the U.S. economy}
 \format{A \code{data.frame}, formatted as required to be an input for \code{\link{sento_corpus}}.}
 \source{
 \href{https://www.crowdflower.com/data-for-everyone/}{Economic News Article Tone and Relevance}
@@ -12,8 +12,8 @@
 data("usnews")
 }
 \description{
-A collection of texts annotated by humans in terms of relevance to the US economoy or not. The texts come from two major
-journals in the US (The Wall Street Journal and The Washington Post) and cover 6801 documents between 1980 and 2014. It
+A collection of texts annotated by humans in terms of relevance to the U.S. economoy or not. The texts come from two major
+journals in the U.S. (The Wall Street Journal and The Washington Post) and cover 6801 documents between 1980 and 2014. It
 contains following information:
 
 \itemize{
@@ -22,8 +22,8 @@ contains following information:
   \item text. Texts in \code{character} format.
   \item wsj. Equals 1 if the article comes from The Wall Street Journal.
   \item wapo. Equals 1 if the article comes from The Washington Post.
-  \item economy. Equals 1 if the article is relevant to the US economy.
-  \item noneconomy. Equals 1 if the article is not relevant to the US economy.
+  \item economy. Equals 1 if the article is relevant to the U.S. economy.
+  \item noneconomy. Equals 1 if the article is not relevant to the U.S. economy.
 }
 }
 \examples{

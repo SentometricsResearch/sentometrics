@@ -16,27 +16,27 @@ ctr_model(model = c("gaussian", "binomial", "multinomial"), type = c("BIC",
 
 \item{type}{a \code{character} vector indicating which model selection criteria to use. Currently supports "\code{BIC}",
 "\code{AIC}" and "\code{Cp}" (Mallows's Cp) as sparse regression adapted information criteria (cf. ``On the `degrees of
-freedom' of the LASSO"; Zou, Hastie, Tibshirani et al., 2007), and "\code{cv}" (cross-validation based on the \code{train}
-function from the \pkg{caret} package). The adapted information criteria are currently only available for a linear
-regression.}
+freedom' of the LASSO"; Zou, Hastie, Tibshirani et al., 2007), and "\code{cv}" (cross-validation based on the
+\code{\link[caret]{train}} function from the \pkg{caret} package). The adapted information criteria are currently
+only available for a linear regression.}
 
 \item{intercept}{a \code{logical}, \code{TRUE} by default fits an intercept.}
 
 \item{do.iter}{a \code{logical}, \code{TRUE} induces an iterative estimation of models at the given \code{nSample} size and
 performs the associated one-step ahead out-of-sample prediction exercise through time.}
 
-\item{h}{an \code{integer} value to shift the time series to have the desired prediction setup, \code{h == 0} means
+\item{h}{an \code{integer} value to shift the time series to have the desired prediction setup, \code{h = 0} means
 no change to the input data (nowcasting assuming data is aligned properly), \code{h > 0} shifts the dependent variable by
 \code{h} periods (i.e. rows) further in time (forecasting), \code{h < 0} shifts the independent variables by \code{h}
 periods.}
 
 \item{alphas}{a \code{numeric} vector of the different alphas to test for during optimization, between 0 and 1. A value of
 0 pertains to Ridge optimization, a value of 1 to LASSO optimization; values in between are pure elastic net. The lambda
-values tested for are automatically chosen by the \code{glmnet()} function or set to \code{10^seq(2, -2, length.out = 100)}
-in case of cross-validation.}
+values tested for are automatically chosen by the \code{\link[glmnet]{glmnet}} function or set to
+\code{10^seq(2, -2, length.out = 100)} in case of cross-validation.}
 
 \item{nSample}{a positive \code{integer} as the size of the sample for model calibration at every iteration (ignored if
-\code{iter == FALSE}).}
+\code{iter = FALSE}).}
 
 \item{trainWindow}{a positive \code{integer} as the size of the training sample in cross-validation (ignored if
 \code{type !=} "\code{cv}").}
@@ -48,7 +48,7 @@ in case of cross-validation.}
 training sample (out-of-sample) up to the test sample (ignored if \code{type !=} "\code{cv}").}
 
 \item{start}{a positive \code{integer} to indicate at which point the iteration has to start (ignored if
-\code{iter == FALSE}). For example, for 100 out-of-sample iterations, \code{start = 70} only performs the analysis
+\code{iter = FALSE}). For example, for 100 out-of-sample iterations, \code{start = 70} only performs the analysis
 for the last 31 samples.}
 
 \item{do.progress}{a \code{logical}, if \code{TRUE} progress statements are displayed during model calibration.}

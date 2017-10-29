@@ -17,26 +17,27 @@ logistic regression. No \code{NA} values are allowed.}
 
 \item{x}{a named \code{data.frame} with other explanatory variables as \code{numeric}, by default set to \code{NULL}.}
 
-\item{ctr}{output from a \code{ctr_model()} call.}
+\item{ctr}{output from a \code{\link{ctr_model}} call.}
 }
 \value{
-If \code{ctr$do.iter == FALSE}, a \code{sentomodel} object which is a list containing:
+If \code{ctr$do.iter = FALSE}, a \code{sentomodel} object which is a list containing:
 \item{reg}{optimized regression, i.e. a model-specific \code{glmnet} object.}
 \item{model}{the input argument \code{ctr$model}, to remind of the type of model that was estimated.}
 \item{x}{the \code{matrix} of the values used in the regression for all explanatory variables.}
 \item{alpha}{optimized calibrated alpha.}
 \item{lambda}{optimized calibrated lambda.}
-\item{trained}{output from \code{caret::train} call (if \code{ctr$type ==} "\code{cv}").}
+\item{trained}{output from \code{\link[caret]{train}} call (if \code{ctr$type =} "\code{cv}").}
 \item{ic}{a \code{list} composed of two elements: the information criterion used in the calibration under
 \code{"criterion"}, and a vector of all minimum information criterion values for each value in \code{alphas}
 under \code{"opts"} (if \code{ctr$type !=} "\code{cv}").}
-\item{dates}{sample reference dates, being the earliest and most recent date from the \code{sentomeasures} object
-accounted for in the estimation window.}
+\item{dates}{sample reference dates as a two-element \code{character} vector, being the earliest and most recent date from
+the \code{sentomeasures} object accounted for in the estimation window.}
 \item{nVar}{the sum of the number of sentiment measures and other explanatory variables inputted.}
 \item{discarded}{a named \code{logical} vector of length equal to the number of sentiment measures, in which \code{TRUE}
-indicates that the particular sentiment measure has not been considered in the regression process.}
+indicates that the particular sentiment measure has not been considered in the regression process. A sentiment measure is
+not considered when it is a duplicate of another, or when at least 25\% of the observations are equal to zero.}
 
-If \code{ctr$do.iter == TRUE}, a \code{sentomodeliter} object which is a list containing:
+If \code{ctr$do.iter = TRUE}, a \code{sentomodeliter} object which is a list containing:
 \item{models}{all sparse regressions, i.e. separate \code{sentomodel} objects as above, as a \code{list} with as names the
 dates from the perspective of the sentiment measures at which predictions for performance measurement are carried out (i.e.
 one date step beyond the date found at \code{sentomodel$date}.}
@@ -65,8 +66,8 @@ introduction to \pkg{glmnet}, we refer to the \href{https://web.stanford.edu/~ha
 The optimal elastic net parameters \code{lambda} and \code{alpha} are calibrated either through a to specify information
 criterion or through cross-validation (based on the "rolling forecasting origin" principle). In the latter case, the training
 metric is automatically set to \code{"RMSE"} for a linear model and to \code{"Accuracy"} for a logistic model. We suppressed
-many of the details that can be supplied to the \code{glmnet::glmnet()} and \code{caret::train()} functions we rely on for
-estimation and calibration through cross-validation, for the sake of user-friendliness.
+many of the details that can be supplied to the \code{\link[glmnet]{glmnet}} and \code{\link[caret]{train}} functions we rely
+on for estimation and calibration through cross-validation, for the sake of user-friendliness.
 }
 \examples{
 data("usnews")
@@ -98,16 +99,19 @@ for (ic in c("BIC", "AIC", "Cp")) {
 }
 
 # some post-analysis (attribution)
-attributions1 <- retrieve_attributions(out1[["Cp"]], sentomeasures)
-attributions2 <- retrieve_attributions(out1[["Cp"]], sentomeasures,
+attributions1 <- retrieve_attributions(out1[["Cp"]], sentomeasures,
                                        refDates = sentomeasures$measures$date[20:40])
 
 # a cross-validation based model
+\dontrun{
+cl <- makeCluster(detectCores() - 2)
+registerDoParallel(cl)
 ctrCV <- ctr_model(model = "gaussian", type = "cv", do.iter = FALSE,
                    h = 0, alphas = c(0.10, 0.50, 0.90), trainWindow = 350,
                    testWindow = 40, oos = 0, do.progress = TRUE)
 out2 <- sento_model(sentomeasures, y, x = x, ctr = ctrCV)
-summary(out2)
+stopCluster(cl)
+summary(out2)}
 
 # a cross-validation based model but for a binomial target
 yb <- epu[epu$date >= sentomeasures$measures$date[1], ]$above
@@ -119,7 +123,7 @@ summary(out3)
 
 # an example of an iterative analysis
 ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE,
-                     h = 0, nSample = 300, start = 106)
+                     alphas = c(0, 0.5, 1), h = 0, nSample = 300, start = 106)
 out <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
 summary(out)
 
@@ -134,15 +138,14 @@ stopCluster(cl)
 summary(out)}
 
 # some more post-analysis (attribution and prediction)
-attributions <- retrieve_attributions(out, sentomeasures)
-plot_attributions(attributions, "lexicons")
-plot_attributions(attributions, "features")
-plot_attributions(attributions, "time")
+attributions2 <- retrieve_attributions(out, sentomeasures)
+plot_attributions(attributions2, "lexicons")
+plot_attributions(attributions2, "features")
+plot_attributions(attributions2, "time")
 
 nx <- ncol(sentomeasures$measures) - 1 + ncol(x) # don't count date column
 newx <- runif(nx) * cbind(sentomeasures$measures[, -1], x)[1:nrow(x), ]
-preds2 <- predict(out2, newx = as.matrix(newx), type = "link")
-preds3 <- predict(out3, newx = as.matrix(newx), type = "class")
+preds <- predict(out3, newx = as.matrix(newx), type = "class")
 
 }
 \seealso{
