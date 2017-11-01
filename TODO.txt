@@ -20,3 +20,5 @@ TO DO
 (implement attribution_lags(); handle when fill is "latest" + aggregation across documents per lag needs to be known)
 (make examples via built-in fitted data objects as data sets)
 (more advanced sentiment calculation + ability to add own sentiment calculation function?)
+(do.ignoreZeros ==> discriminate between when 0 because feature-weight is 0 or sentiment is 0)
+
