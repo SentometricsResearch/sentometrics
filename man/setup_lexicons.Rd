@@ -7,7 +7,7 @@
 setup_lexicons(lexiconsIn, valenceIn = NULL, do.split = FALSE)
 }
 \arguments{
-\item{lexiconsIn}{a list of (raw) lexicons, each element being a \code{data.table} or \code{data.frame} with respectively a
+\item{lexiconsIn}{a list of (raw) lexicons, each element being a \code{data.table} or a \code{data.frame} with respectively a
 words column and a polarity score column. The lexicons should be appropriately named for clarity in terms of subsequently
 obtained sentiment measures. Alternatively, a subset of the already formatted built-in lexicons accessible via
 \code{lexicons} can be declared too, as part of the same list input. If only (some of) the package built-in lexicons want

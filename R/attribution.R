@@ -37,12 +37,22 @@
   timeDropped <- sentomeasures$time[which(!(sentomeasures$time %in% timeNames))]
 
   # ignore dropped components in sentiment data.table (only composed of lexicon--feature combinations)
-  if (length(featDropped) > 0)
+  if (length(featDropped) > 0) {
     sent <- sent[, !stringi::stri_detect(colnames(sent),
                                          regex = paste0(paste0("\\b", featDropped, "\\b"), collapse = "|")), with = FALSE]
-  if (length(lexDropped) > 0)
+    if (sentomeasures$do.ignoreZeros == TRUE) {
+      W <- W[, !stringi::stri_detect(colnames(W),
+                                     regex = paste0(paste0("\\b", featDropped, "\\b"), collapse = "|")), with = FALSE]
+    }
+  }
+  if (length(lexDropped) > 0) {
     sent <- sent[, !stringi::stri_detect(colnames(sent),
                                          regex = paste0(paste0("\\b", lexDropped, "\\b"), collapse = "|")), with = FALSE]
+    if (sentomeasures$do.ignoreZeros == TRUE) {
+      W <- W[, !stringi::stri_detect(colnames(W),
+                                     regex = paste0(paste0("\\b", lexDropped, "\\b"), collapse = "|")), with = FALSE]
+    }
+  }
 
   # extract sentiment coefficients
   if (is.null(factor)) coeffs <- stats::coef(sentomodel$reg)[cols, ]
@@ -55,11 +65,17 @@
     else dates <- sentDates
     attribsDocs <- lapply(refDates, function(t) {
       datesIn <- dates[(which(dates %in% t) - nrow(B) + 1):which(dates == t)] # dates between t and lag number
-      docWeights <- W[date %in% datesIn, "w"]
-      if (dim(docWeights)[1] == 0) return("No documents on this date.")
+      if (sentomeasures$do.ignoreZeros == FALSE) {
+        docWeights <- W[date %in% datesIn, -1:-2]$weights
+        fun <- length
+      } else {
+        docWeights <- W[date %in% datesIn, -1:-2]
+        fun <- nrow
+      }
+      if (fun(docWeights) == 0) return("No documents on this date.")
       B$date <- datesIn
       sents <- sent[date %in% datesIn, ]
-      sentWeighted <- docWeights$w * sents[, -1:-3] # drop id, date and word_count columns
+      sentWeighted <- docWeights * sents[, -1:-3] # drop id, date and word_count columns
       n <- sents[, list(count = .N), by = list(date)] # number of individual occurrences of the dates
       sentFull <- lapply(timeNames, function(b) {
         coeffsIn <- coeffs[stringi::stri_detect(cols, regex = paste0("\\b", b))] # get coefficients for weighting scheme
@@ -195,7 +211,8 @@ plot_attributions <- function(attributions, group = "features") {
     stop("The 'group' argument should be either 'lexicons', 'features' or 'time'.")
   # melt attributions for plotting
   attributions <- attributions[[group]]
-  attributionsMelt <- melt(attributions, id.vars = "date")
+  attributionsMelt <- melt(attributions, id.vars = "date", variable.factor = FALSE)
+  attributionsMelt <- attributionsMelt[order(rank(variable))]
   legendPos <- ifelse(length(unique(attributionsMelt[["variable"]])) <= 12, "top", "none")
   p <- ggplot(data = attributionsMelt, aes(x = date, y = value, color = variable)) +
     geom_line() +

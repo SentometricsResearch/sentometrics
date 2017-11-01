@@ -39,7 +39,7 @@
 #' for the last 31 samples.
 #' @param do.parallel a \code{logical}, if \code{TRUE} the \code{\%dopar\%} construct from the \pkg{foreach} package is
 #' applied for iterative model estimation. A proper parallel backend needs to be set up to make it work. No progress statements
-#' are displayed whatsoever when \code{TRUE}. For cross-validation models, parallelization is also carried out for single-run
+#' are displayed whatsoever when \code{TRUE}. For cross-validation models, parallelization can also be carried out for single-run
 #' models, whenever a parallel backend is set up. See the examples in \code{\link{sento_model}}.
 #'
 #' @return A list encapsulating the control parameters.
@@ -346,10 +346,8 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
       else if (alpha == alphas[length(alphas)]) cat(alpha, "\n")
       else cat(alpha, ", ", sep = "")
     }
-
     reg <- glmnet::glmnet(x = xx, y = yy, penalty.factor = penalty, intercept = intercept,
                           alpha = alpha, standardize = TRUE, family = family)
-
     IC <- compute_IC(reg, yy, xx, alpha, ic, family = family) # vector of ic values for lambdas sequence in reg
     minIC[[i]] <- suppressWarnings(min(IC, na.rm = TRUE))
     lambdaTmp <- ifelse(length(reg$lambda[which.min(IC)]) > 0, reg$lambda[which.min(IC)], Inf)

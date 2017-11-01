@@ -24,10 +24,10 @@ out <- sento_model(sentomeasures, y, x = x, ctr = ctr)
 # tests from here
 attributions <- retrieve_attributions(out, sentomeasures, do.normalize = FALSE)
 
-l <- rowSums(attributions$lexicons[, -1])
-f <- rowSums(attributions$features[, -1])
-t <- rowSums(attributions$time[, -1])
-d <- as.vector(sapply(attributions$documents, function(x) return(sum(x$attrib))))
+l <- rowSums(attributions$lexicons[, -1], na.rm = TRUE)
+f <- rowSums(attributions$features[, -1], na.rm = TRUE)
+t <- rowSums(attributions$time[, -1], na.rm = TRUE)
+d <- as.vector(sapply(attributions$documents, function(x) return(sum(x$attrib, na.rm = TRUE))))
 
 test_that("Attributions across all dimensions should be the same across rows", {
   expect_equal(l, f)

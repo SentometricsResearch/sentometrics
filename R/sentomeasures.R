@@ -18,7 +18,8 @@
 #' @param howTime a \code{character} vector defining how aggregation across dates will be performed. More than one choice
 #' is possible here. For currently available options on how aggregation can occer, see \code{get_hows()$time}.
 #' @param do.ignoreZeros a \code{logical} indicating whether zero sentiment values have to be ignored in the determination of
-#' the document weights while aggregating across documents.
+#' the document weights while aggregating across documents. By default \code{TRUE}, such that documents with an exact score of
+#' zero are considered irrelevant.
 #' @param by a single \code{character} vector, either \code{"day", "week", "month"} or \code{"year"}, to indicate at what
 #' level the dates should be aggregated. Dates will be displayed as the first day of the period, if applicable (e.g.
 #' \code{"2017-03-01"} for March 2017).
@@ -76,7 +77,7 @@
 #'
 #' @export
 ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTime = "equal_weight",
-                    do.ignoreZeros = FALSE, by = "day", lag = 1, fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1),
+                    do.ignoreZeros = TRUE, by = "day", lag = 1, fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1),
                     ordersAlm = 1:3, do.inverseAlm = TRUE, do.normalizeAlm = TRUE, weights = NULL, dfm = NULL) {
 
   if (length(howWithin) > 1) howWithin <- howWithin[1]
@@ -168,11 +169,14 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #' \item{by}{a single \code{character} vector specifying the time interval of aggregation used.}
 #' \item{stats}{a \code{data.frame} with a series of elementary statistics (mean, standard deviation, maximum, minimum, and
 #' average correlation with all other measures) for each individual sentiment measure.}
-#' \item{sentiment}{the sentiment scores \code{data.table} with a \code{date} and lexicon--feature sentiment scores columns.}
-#' \item{howWithin}{a \code{character} vector to remind how sentiment within documents was aggregated.}
-#' \item{howDocs}{a \code{character} vector to remind how sentiment across documents was aggregated.}
+#' \item{sentiment}{the sentiment scores \code{data.table} with a \code{date} and lexicon--feature sentiment scores columns.
+#' If \code{ctr$do.ignoreZeros = TRUE}, all zeros are replaces by \code{NA}.}
+#' \item{howWithin}{a single \code{character} vector to remind how sentiment within documents was aggregated.}
+#' \item{howDocs}{a single \code{character} vector to remind how sentiment across documents was aggregated.}
 #' \item{fill}{a single \code{character} vector that specifies if and how missing dates have been added before
 #' aggregation across time was carried out.}
+#' \item{do.ignoreZeros}{a single \code{character} vector to remind if documents with zero sentiment have been ignored in the
+#' within-document aggregation.}
 #' \item{attribWeights}{a \code{list} of document weights and time weights that are extracted in a call to
 #' \code{\link{retrieve_attributions}}. Serves further no direct purpose.}
 #'
@@ -239,7 +243,7 @@ print.sentomeasures <- function(x, ...) {
 #' built-in lexicons from \code{data("lexicons")} or a valence word list from \code{data("valence")} as an argument.
 #' Makes use of the \code{\link[sentimentr]{as_key}} to make the output coherent and check for duplicates.
 #'
-#' @param lexiconsIn a list of (raw) lexicons, each element being a \code{data.table} or \code{data.frame} with respectively a
+#' @param lexiconsIn a list of (raw) lexicons, each element being a \code{data.table} or a \code{data.frame} with respectively a
 #' words column and a polarity score column. The lexicons should be appropriately named for clarity in terms of subsequently
 #' obtained sentiment measures. Alternatively, a subset of the already formatted built-in lexicons accessible via
 #' \code{lexicons} can be declared too, as part of the same list input. If only (some of) the package built-in lexicons want
@@ -485,7 +489,7 @@ perform_agg <- function(toAgg, ctr) {
   return(sentomeasures)
 }
 
-agg_documents <- function(toAgg, by, how = get_hows()$docs, do.ignoreZeros = FALSE) {
+agg_documents <- function(toAgg, by, how = get_hows()$docs, do.ignoreZeros = TRUE) {
 
   features <- toAgg$features
   lexNames <- toAgg$lexicons
@@ -514,14 +518,24 @@ agg_documents <- function(toAgg, by, how = get_hows()$docs, do.ignoreZeros = FAL
   # aggregate feature-sentiment per document by date for all lexicon columns
   s <- sent[, -1]
   if (how == "equal_weight") {
-    attribWeights[["W"]] <- data.table(id = sent$id, s[, w := 1 / .N, by = date][, c("date", "w")])
-    s[, w := NULL]
-    measures <- s[, lapply(.SD, mean, na.rm = TRUE), by = date]
+    if (do.ignoreZeros == TRUE) {
+      docsIn <- s[, lapply(.SD, function(x) (x * 1) / x), by = date] # indicator of 1 if document score not equal to NA
+      weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = date][, -1:-2]
+    } else {
+      weights <- s[, w := 1 / .N, by = date][["w"]]
+      s[, w := NULL]
+    }
   } else if (how == "proportional") { # proportional w.r.t. words in document vs. total words in all documents per date
-    attribWeights[["W"]] <- data.table(id = sent$id, s[, list(w = word_count / sum(word_count, na.rm = TRUE)), by = date])
-    measures <- s[, lapply(.SD, function(x) sum(x * word_count / sum(word_count, na.rm = TRUE), na.rm = TRUE)), by = date]
+    if (do.ignoreZeros == TRUE) {
+      docsIn <- s[, lapply(.SD, function(x) (x * word_count) / x), by = date] # sets word_count of documents with zero sentoment to NA
+      weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = date][, -1:-2]
+    } else {
+      weights <- s[, list(w = word_count / sum(word_count, na.rm = TRUE)), by = date][["w"]]
+    }
   }
-  measures$word_count <- NULL
+  attribWeights[["W"]] <- data.table(id = sent$id, date = sent$date, weights)
+  sw <- data.table(date = s$date, s[, -1:-2] * weights)
+  measures <- sw[, lapply(.SD, function(x) sum(x, na.rm = TRUE)), by = date]
 
   sentomeasures <- list(measures = measures,
                         features = features,
@@ -533,6 +547,7 @@ agg_documents <- function(toAgg, by, how = get_hows()$docs, do.ignoreZeros = FAL
                         howWithin = toAgg$howWithin,
                         howDocs = how,
                         fill = NA,
+                        do.ignoreZeros = do.ignoreZeros,
                         attribWeights = attribWeights)
 
   class(sentomeasures) <- c("sentomeasures")
@@ -745,7 +760,7 @@ merge_measures <- function(ctr) {
       # take element-wise average for every row/column combination across columns to merge
       if (ncol(ls[[1]] >= 2)) { # ncol across elements of ls is the same
         all <- abind::abind(ls, along = 3)
-        merged <- apply(all, c(1, 2), mean)
+        merged <- apply(all, c(1, 2), mean, na.rm = TRUE)
       } else merged <- rowSums(abind::abind(ls, along = 2))
       # insert new name at name location of aggregation level (e.g. "lex1--top1" + "lex2--top1" = "lex12--top1")
       nms <- stringi::stri_split(colnames(merged), regex = "--") # list
@@ -968,11 +983,12 @@ plot.sentomeasures <- function(x, group = "all", ...) {
   sentomeasures <- x
   measures <- sentomeasures$measures
   if (group == "all") {
-    measuresMelt <- melt(measures, id.vars = "date")
+    measuresMelt <- melt(measures, id.vars = "date", variable.factor = FALSE)
   } else {
     measuresMelt <- to_long(measures)[, c("date", group, "value"), with = FALSE]
     measuresMelt <- measuresMelt[, list(value = mean(value)), by = list(date, variable = eval(parse(text = group)))]
   }
+  measuresMelt <- measuresMelt[order(rank(as.character(variable)))]
   legendPos <- ifelse(length(unique(measuresMelt[["variable"]])) <= 12, "top", "none")
   p <- ggplot(data = measuresMelt, aes(x = date, y = value, color = variable)) +
     geom_line() +
