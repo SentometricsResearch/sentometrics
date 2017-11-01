@@ -15,18 +15,18 @@
 #' structure the corpus is meant to have (as defined in the \code{"corpusdf"} argument) to be able to be used as an input
 #' in other functions of the \pkg{sentometrics} package. There are functions, including \code{\link[quanteda]{corpus_sample}} or
 #' \code{\link[quanteda]{corpus_subset}}, that do not change the actual corpus structure and may come in handy. To add additional
-#' features, we recommend to use \code{\link{add_features}}. In the future, we will formalize the interaction between the
-#' \pkg{quanteda} package (as well as other text mining packages).
+#' features, we recommend to use \code{\link{add_features}}.
 #'
 #' @param corpusdf a \code{data.frame} with as named columns and \emph{in this order}: a document \code{id} column, a
 #' \code{date} column, a \code{text} column (i.e. the columns where all texts to analyze reside), and a series of feature
 #' columns of type \code{numeric}, with values pointing to the applicability of a particular feature to a particular text. The
 #' latter columns are often binary (1 means the feature is applicable to the document in the same row) or as a percentage to
 #' specify the degree of connectedness of a feature to a document. Features could be topics (e.g. legal, political or economic),
-#' but also article sources (e.g. online or printed press), amongst many more options. If no particular features are of interest
-#' to your analysis, have only one additional column with all values set to 1. Provide the \code{date} column as
+#' but also article sources (e.g. online or printed press), amongst many more options. If you have no knowledge about features or
+#' no particular features are of interest to your analysis, provide no feature columns. In that case, the corpus
+#' constructor automatically adds an additional feature column named \code{"dummy"}. Provide the \code{date} column as
 #' \code{"yyyy-mm-dd"}. The \code{id} column should be in \code{character} mode. All spaces in the names of the features are
-#' automatically replaced by underscores.
+#' replaced by underscores.
 #' @param do.clean a \code{logical}, if \code{TRUE} all texts undergo a cleaning routine to eliminate common textual garbage.
 #' This includes a brute force replacement of HTML tags and non-alphanumeric characters by an empty string.
 #'
@@ -44,6 +44,12 @@
 #' # take a random subset using a quanteda's package function
 #' corpusSmall <- quanteda::corpus_sample(corpus, size = 500)
 #'
+#' # deleting a feature
+#' quanteda::docvars(corpus, field = "wapo") <- NULL
+#'
+#' # corpus creation when no features are present
+#' corpusDummy <- sento_corpus(corpusdf = usnews[, 1:3])
+#'
 #' @export
 sento_corpus <- function(corpusdf, do.clean = FALSE) {
 
@@ -58,22 +64,27 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
   if (!is.character(corpusdf[["text"]])) stop("The 'text' column should be of type character.")
   # check for date format
   dates <- as.Date(corpusdf$date, format = "%Y-%m-%d")
-  if (any(is.na(dates))) stop("At least some dates are not in appropriate format. Should be 'yyyy-mm-dd'.")
+  if (any(is.na(dates))) stop("Some dates are not in appropriate format. Should be 'yyyy-mm-dd'.")
   else corpusdf$date <- dates
   # check for duplicated feature names, if no issues add to output list
   features <- cols[!(cols %in% nonfeatures)]
-  if (sum(duplicated(features)) > 0) {
-    duplics <- unique(features[duplicated(features)])
-    stop(paste0("Names of feature columns are not unique. Following names occur at least twice: ",
-                paste0(duplics, collapse = ", "), "."))
-  }
-  isNumeric <- sapply(features, function(x) return(is.numeric(corpusdf[[x]])))
-  if (any(!isNumeric)) {
-    toDrop <- names(isNumeric)[isNumeric == FALSE]
-    corpusdf[, toDrop] <- NULL
-    warning(paste0("Following feature columns were dropped as they are not numeric: ", paste0(toDrop, collapse = ", "), "."))
-    if (length(toDrop) == length(isNumeric))
-      stop("No remaining feature columns. Please add uniquely named feature columns of type numeric.")
+  if (length(features) == 0) {
+    corpusdf[["dummy"]] <- 1
+    warning("No features detected. A 'dummy' feature valued at 1 throughout is added.")
+  } else {
+    if (sum(duplicated(features)) > 0) {
+      duplics <- unique(features[duplicated(features)])
+      stop(paste0("Names of feature columns are not unique. Following names occur at least twice: ",
+                  paste0(duplics, collapse = ", "), "."))
+    }
+    isNumeric <- sapply(features, function(x) return(is.numeric(corpusdf[[x]])))
+    if (any(!isNumeric)) {
+      toDrop <- names(isNumeric)[isNumeric == FALSE]
+      corpusdf[, toDrop] <- NULL
+      warning(paste0("Following feature columns were dropped as they are not numeric: ", paste0(toDrop, collapse = ", "), "."))
+      if (length(toDrop) == length(isNumeric))
+        stop("No remaining feature columns. Please add uniquely named feature columns of type numeric.")
+    }
   }
   if (do.clean) corpusdf <- clean(corpusdf)
 
@@ -142,7 +153,9 @@ add_features <- function(sentocorpus, featuresdf = NULL, keywords = NULL) {
     textsAll <- quanteda::texts(sentocorpus)
     for (j in seq_along(keywords)) {
       kwName <- stringi::stri_replace_all(names(keywords)[j], "_", regex = " ")
-      quanteda::docvars(sentocorpus, field = kwName) <- as.numeric(stringi::stri_detect(textsAll, regex = keywords[j]))
+      occurrences <- as.numeric(stringi::stri_detect(textsAll, regex = keywords[j]))
+      if (sum(occurrences) == 0) warning(paste0("Feature ", kwName, " is not added as it occurs in none of the documents."))
+      else quanteda::docvars(sentocorpus, field = kwName) <- occurrences
     }
   }
   return(sentocorpus)

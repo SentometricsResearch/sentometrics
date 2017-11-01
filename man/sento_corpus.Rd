@@ -12,10 +12,11 @@ sento_corpus(corpusdf, do.clean = FALSE)
 columns of type \code{numeric}, with values pointing to the applicability of a particular feature to a particular text. The
 latter columns are often binary (1 means the feature is applicable to the document in the same row) or as a percentage to
 specify the degree of connectedness of a feature to a document. Features could be topics (e.g. legal, political or economic),
-but also article sources (e.g. online or printed press), amongst many more options. If no particular features are of interest
-to your analysis, have only one additional column with all values set to 1. Provide the \code{date} column as
+but also article sources (e.g. online or printed press), amongst many more options. If you have no knowledge about features or
+no particular features are of interest to your analysis, provide no feature columns. In that case, the corpus
+constructor automatically adds an additional feature column named \code{"dummy"}. Provide the \code{date} column as
 \code{"yyyy-mm-dd"}. The \code{id} column should be in \code{character} mode. All spaces in the names of the features are
-automatically replaced by underscores.}
+replaced by underscores.}
 
 \item{do.clean}{a \code{logical}, if \code{TRUE} all texts undergo a cleaning routine to eliminate common textual garbage.
 This includes a brute force replacement of HTML tags and non-alphanumeric characters by an empty string.}
@@ -38,8 +39,7 @@ changing a given \code{sentocorpus} object too drastically using some of \pkg{qu
 structure the corpus is meant to have (as defined in the \code{"corpusdf"} argument) to be able to be used as an input
 in other functions of the \pkg{sentometrics} package. There are functions, including \code{\link[quanteda]{corpus_sample}} or
 \code{\link[quanteda]{corpus_subset}}, that do not change the actual corpus structure and may come in handy. To add additional
-features, we recommend to use \code{\link{add_features}}. In the future, we will formalize the interaction between the
-\pkg{quanteda} package (as well as other text mining packages).
+features, we recommend to use \code{\link{add_features}}.
 }
 \examples{
 data("usnews")
@@ -49,6 +49,12 @@ corpus <- sento_corpus(corpusdf = usnews)
 
 # take a random subset using a quanteda's package function
 corpusSmall <- quanteda::corpus_sample(corpus, size = 500)
+
+# deleting a feature
+quanteda::docvars(corpus, field = "wapo") <- NULL
+
+# corpus creation when no features are present
+corpusDummy <- sento_corpus(corpusdf = usnews[, 1:3])
 
 }
 \seealso{
