@@ -4,21 +4,23 @@ TO DO
 
 - write unit tests
 - examples < 5s. ==> otherwise don't run > bring down time for R CMD check + package size (< 5 Mb <=> data)
+	==> make examples via built-in fitted data objects as data sets
 - check ### in-code
 - add run_vignette.R script + vignette to repo
-- open up GitHub + merge project page with central repo
+- open up GitHub + merge project page with central repo + clean GitHub (issues)
 - pass R CMD check
+- check compatibility with major quanteda package update, and update all used packages
+- check calibration (e.g. df calculation); why alpha set to 0 even if 0.5 clearly better?
 
-(check compatibility with major quanteda package update in October 2017)
-(valence words not detected if first word is a valence shifter, e.g. " not " if text is "not ...")
-(add IC/df estimator appropriate for logistic regression in elastic net-context; cf. Keven on GitHub)
-(function to update sentomeasures [when new texts come in])
-(allow transition from corpora of other text mining packages to our's [cf. quanteda's conversion functions] + feature inclusion)
-(interface with lexicon package for access to more lexicons?)
-(sentiment analysis for multiple languages at same time
-	==> language features + deletion of wrong lexicon--language combo's + allow multi-language valence shifters (merge?))
-(implement attribution_lags(); handle when fill is "latest" + aggregation across documents per lag needs to be known)
-(make examples via built-in fitted data objects as data sets)
-(more advanced sentiment calculation + ability to add own sentiment calculation function?)
-(do.ignoreZeros ==> discriminate between when 0 because feature-weight is 0 or sentiment is 0)
+FUTURE:
+- valence words not detected if first word is a valence shifter, e.g. " not " if text is "not ..."
+- add IC/df estimator appropriate for logistic regression in elastic net-context; cf. Keven on GitHub
+- function to update sentomeasures [when new texts come in]
+- allow transition from corpora of other text mining packages to our's [cf. quanteda's conversion functions] + feature inclusion
+- interface with lexicon package for access to more lexicons?
+- sentiment analysis for multiple languages at same time
+	==> language features + deletion of wrong lexicon--language combo's + allow multi-language valence shifters (merge?)
+- implement attribution_lags(); handle when fill is "latest" + aggregation across documents per lag needs to be known
+- more advanced sentiment calculation + ability to add own sentiment calculation function?
+- do.ignoreZeros ==> discriminate between when 0 because feature-weight is 0 or sentiment is 0
 
