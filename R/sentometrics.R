@@ -102,7 +102,7 @@
 #'
 #' @description
 #' A collection of texts annotated by humans in terms of relevance to the U.S. economoy or not. The texts come from two major
-#' journals in the U.S. (The Wall Street Journal and The Washington Post) and cover 6801 documents between 1980 and 2014. It
+#' journals in the U.S. (The Wall Street Journal and The Washington Post) and cover 6801 documents between 1995 and 2014. It
 #' contains following information:
 #'
 #' \itemize{
@@ -126,30 +126,6 @@
 #'
 #' @source \href{https://www.crowdflower.com/data-for-everyone/}{Economic News Article Tone and Relevance}
 "usnews"
-
-#' Monthly S&P 500 Index returns
-#'
-#' @docType data
-#'
-#' @description
-#' Monthly returns for the S&P 500 Index between March 1988 and December 2014, including a binomial and a multinomial example
-#' series. It has following columns:
-#'
-#' \itemize{
-#'   \item date. Date as \code{"yyyy-mm-01"}.
-#'   \item return. A \code{numeric} value as the return that was achieved during the corresponding month; for example the first
-#'   return value is the price change from beginning of March 1988 to beginning of April 1988.
-#'   \item up. A \code{factor} with value \code{"pos"} if the return is greater than zero, else \code{"neg"}.
-#'   \item upMulti. A \code{factor} with values \code{"pos+"}, \code{"pos"}, \code{"neg"} and \code{"neg-"} if returns are
-#'   greater than 0.05 and 0, or smaller than 0 and -0.05, respectively and in a mutually exclusive sense.
-#' }
-#'
-#' @usage data("sp500")
-#'
-#' @format A \code{data.frame} with 322 rows and 4 columns.
-#'
-#' @source \href{https://finance.yahoo.com/quote/\%5EGSPC/history?p=\%5EGSPC}{S&P 500 (^GSPC) at Yahoo Finance}
-"sp500"
 
 #' Monthly Economic Policy Uncertainty Index
 #'
@@ -179,5 +155,6 @@
 
 #' @useDynLib sentometrics,.registration = TRUE
 #' @importFrom Rcpp evalCpp
+#' @exportPattern ("^[[:alpha:]]+")
 NULL
 

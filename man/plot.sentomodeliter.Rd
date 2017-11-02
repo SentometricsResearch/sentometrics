@@ -27,24 +27,21 @@ data("epu")
 
 # construct a sentomeasures object to start with
 corpusAll <- sento_corpus(corpusdf = usnews)
-corpus <- quanteda::corpus_subset(corpusAll, date >= "1980-01-01" & date < "2014-10-01")
+corpus <- quanteda::corpus_subset(corpusAll, date >= "2007-01-01" & date < "2014-10-01")
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional",
-               howTime = c("equal_weight", "linear", "almon"),
-               by = "month", lag = 3, ordersAlm = 1:3,
-               do.inverseAlm = TRUE, do.normalizeAlm = TRUE)
+               howTime = c("equal_weight", "linear"),
+               by = "month", lag = 3)
 sentomeasures <- sento_measures(corpus, l, ctr)
 
 # prepare y and other x variables
 y <- epu[epu$date >= sentomeasures$measures$date[1], ]$index
 length(y) == nrow(sentomeasures$measures) # TRUE
-x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
-colnames(x) <- c("x1", "x2")
 
-# estimate regression iteratively based on a sample of 120, skipping the first 275 samples
+# estimate regression iteratively based on a sample of 60, skipping the first 25 samples
 ctr <- ctr_model(model = "gaussian", type = "AIC", do.iter = TRUE,
-                 h = 0, nSample = 120, start = 276)
-out <- sento_model(sentomeasures, y, x = x, ctr = ctr)
+                 h = 0, nSample = 60, start = 26)
+out <- sento_model(sentomeasures, y, ctr = ctr)
 summary(out)
 
 # plotting

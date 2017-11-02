@@ -26,8 +26,9 @@ data("valence")
 
 # computation of sentiment and aggregation into sentiment measures
 corpus <- sento_corpus(corpusdf = usnews)
+corpusSample <- quanteda::corpus_sample(corpus, size = 1000)
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
-sent <- compute_sentiment(corpus, l, how = "counts")
+sent <- compute_sentiment(corpusSample, l, how = "counts")
 ctr <- ctr_agg(howTime = c("linear"), by = "year", lag = 3)
 sentomeasures <- perform_agg(sent, ctr)
 

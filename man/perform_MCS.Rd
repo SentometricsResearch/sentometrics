@@ -33,7 +33,7 @@ data("epu")
 
 # construct two sentomeasures objects
 corpusAll <- sento_corpus(corpusdf = usnews)
-corpus <- quanteda::corpus_subset(corpusAll, date >= "1980-01-01" & date < "2014-10-01")
+corpus <- quanteda::corpus_subset(corpusAll, date >= "1997-01-01" & date < "2014-10-01")
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 
 ctr1 <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional",

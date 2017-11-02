@@ -36,9 +36,10 @@ data("valence")
 
 # construct a sentomeasures object to start with
 corpus <- sento_corpus(corpusdf = usnews)
+corpusSample <- quanteda::corpus_sample(corpus, size = 750)
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
-sentomeasures <- sento_measures(corpus, l, ctr)
+sentomeasures <- sento_measures(corpusSample, l, ctr)
 
 # set up a correct control function
 ctrMerge <- ctr_merge(sentomeasures,
@@ -52,8 +53,7 @@ ctrMerge <- ctr_merge(sentomeasures,
 ctrMerge <- ctr_merge(sentomeasures,
                       time = list(W = c("equal_weight", "almon1")),
                       lexicons = list(LEX = c("LM_eng", "HENRY_eng")),
-                      features = list(journals = c("notInHere", "wapo")))
-}
+                      features = list(journals = c("notInHere", "wapo")))}
 
 }
 \seealso{

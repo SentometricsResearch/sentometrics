@@ -83,7 +83,7 @@
         colAttr <- matrix(rep(coeffsIn, sum(n$count)), nrow = sum(n$count), byrow = TRUE) * timeWeights * sentWeighted
         return(colAttr)
       })
-      attribs <- Reduce(`+`, lapply(sentFull, rowSums)) # sum document values over time weighting schemes
+      attribs <- Reduce(`+`, lapply(sentFull, rowSums, na.rm = TRUE)) # sum document values over time weighting schemes
       out <- data.table(sents[, c("id")], date = sents$date, attrib = attribs)
       return(out)
     })
@@ -94,7 +94,7 @@
     attribsDim <- lapply(dimNames, function(x) {
       sel <- cols[stringi::stri_detect(cols, regex = paste0("\\b", x, "\\b"))]
       coeffsIn <- data.table(matrix(coeffs[sel], nrow = length(loc), ncol = length(coeffs[sel]), byrow = TRUE))
-      attribs <- rowSums(coeffsIn * measures[loc, sel, with = FALSE, drop = FALSE])
+      attribs <- rowSums(coeffsIn * measures[loc, sel, with = FALSE, drop = FALSE], na.rm = TRUE)
       attr <- data.table(date = refDates, attrib = attribs)
       return(attr)
     })
@@ -103,7 +103,7 @@
     if (length(missingNames) > 0) attribsDim[, (missingNames) := 0]
     attribsDim <- attribsDim[, c("date", sentomeasures[[type]]), with = FALSE]
     if (do.normalize) {
-      attribsDim[, colnames(attribsDim)[-1] := attribsDim[, -1] / sqrt(rowSums(attribsDim[, -1]^2))][]
+      attribsDim[, colnames(attribsDim)[-1] := attribsDim[, -1] / sqrt(rowSums(attribsDim[, -1]^2, na.rm = TRUE))][]
     }
     for (i in seq_along(attribsDim)[-1]) # set NaNs to zero (due to zero norm division)
       set(attribsDim, i = which(is.na(attribsDim[[i]])), j = i, value = 0)
@@ -189,11 +189,11 @@ retrieve_attributions <- function(model, sentomeasures, do.normalize, refDates, 
 #'
 #' @author Samuel Borms
 #'
-#' @description Shows a plot of the attributions along the dimension provided.
+#' @description Shows a plot of the attributions along the dimension provided, stacked per date.
 #'
 #' @details See \code{\link{sento_model}} for an elaborate modelling example including the calculation and plotting of
-#' attributions. This function does not handle the plotting of the attribution of individual documents, since there are often a
-#' lot of documents involved and de facto they appear only once at one date (even though a document may contribute to
+#' attributions. This function does not handle the plotting of the attribution of individual documents, since there are often
+#' a lot of documents involved and de facto they appear only once at one date (even though a document may contribute to
 #' predictions at several dates, depending on the number of lags in the time aggregation).
 #'
 #' @param attributions an output from a \code{\link{retrieve_attributions}} call.
@@ -214,9 +214,10 @@ plot_attributions <- function(attributions, group = "features") {
   attributionsMelt <- melt(attributions, id.vars = "date", variable.factor = FALSE)
   attributionsMelt <- attributionsMelt[order(rank(variable))]
   legendPos <- ifelse(length(unique(attributionsMelt[["variable"]])) <= 12, "top", "none")
-  p <- ggplot(data = attributionsMelt, aes(x = date, y = value, color = variable)) +
-    geom_line() +
+  p <- ggplot(data = attributionsMelt, aes(x = date, y = value, group = variable, color = variable)) +
+    geom_area(aes(colour = variable, fill = variable), alpha = 1) +
     geom_hline(yintercept = 0, size = 0.50, linetype = "dotted") +
+    scale_fill_grey(start = 0, end = 1) +
     scale_x_date(name = "Date", date_labels = "%m-%Y") +
     scale_y_continuous(name = "Attribution") +
     ggthemes::theme_tufte(base_size = 12) +

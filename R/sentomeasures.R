@@ -189,6 +189,7 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #'
 #' # construct a sentomeasures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
+#' corpusSample <- quanteda::corpus_sample(corpus, size = 750)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howWithin = "tf-idf",
 #'                howDocs = "proportional",
@@ -198,7 +199,7 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #'                ordersAlm = 1:3,
 #'                do.inverseAlm = TRUE,
 #'                do.normalizeAlm = TRUE)
-#' sentomeasures <- sento_measures(corpus, l, ctr)
+#' sentomeasures <- sento_measures(corpusSample, l, ctr)
 #' summary(sentomeasures)
 #'
 #' @import data.table
@@ -428,12 +429,14 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 #'
 #' # sentiment computation based on raw frequency counts
 #' corpus <- sento_corpus(corpusdf = usnews)
+#' corpusSample <- quanteda::corpus_sample(corpus, size = 1000)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
-#' sent <- compute_sentiment(corpus, l, how = "counts")
+#' sent <- compute_sentiment(corpusSample, l, how = "counts")
 #'
+#' \dontrun{
 #' # same sentiment computation based on a user-supplied dfm with default settings
 #' dfm <- quanteda::dfm(quanteda::tokenize(corpus), verbose = FALSE)
-#' sent <- compute_sentiment(corpus, l, how = "counts", dfm = dfm)
+#' sent <- compute_sentiment(corpus, l, how = "counts", dfm = dfm)}
 #'
 #' @export
 compute_sentiment <- compiler::cmpfun(.compute_sentiment)
@@ -470,8 +473,9 @@ get_features_sentiment <- compiler::cmpfun(.get_features_sentiment)
 #'
 #' # computation of sentiment and aggregation into sentiment measures
 #' corpus <- sento_corpus(corpusdf = usnews)
+#' corpusSample <- quanteda::corpus_sample(corpus, size = 1000)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
-#' sent <- compute_sentiment(corpus, l, how = "counts")
+#' sent <- compute_sentiment(corpusSample, l, how = "counts")
 #' ctr <- ctr_agg(howTime = c("linear"), by = "year", lag = 3)
 #' sentomeasures <- perform_agg(sent, ctr)
 #'
@@ -628,9 +632,10 @@ agg_time <- function(sentomeasures, lag, fill, how = get_hows()$time, ...) {
 #'
 #' # construct a sentomeasures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
+#' corpusSample <- quanteda::corpus_sample(corpus, size = 750)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
-#' sentomeasures <- sento_measures(corpus, l, ctr)
+#' sentomeasures <- sento_measures(corpusSample, l, ctr)
 #'
 #' # set up a correct control function
 #' ctrMerge <- ctr_merge(sentomeasures,
@@ -644,8 +649,7 @@ agg_time <- function(sentomeasures, lag, fill, how = get_hows()$time, ...) {
 #' ctrMerge <- ctr_merge(sentomeasures,
 #'                       time = list(W = c("equal_weight", "almon1")),
 #'                       lexicons = list(LEX = c("LM_eng", "HENRY_eng")),
-#'                       features = list(journals = c("notInHere", "wapo")))
-#' }
+#'                       features = list(journals = c("notInHere", "wapo")))}
 #'
 #' @export
 ctr_merge <- function(sentomeasures, features = NA, lexicons = NA, time = NA, do.keep = FALSE) {
@@ -721,9 +725,10 @@ ctr_merge <- function(sentomeasures, features = NA, lexicons = NA, time = NA, do
 #'
 #' # construct a sentomeasures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
+#' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
-#' sentomeasures <- sento_measures(corpus, l, ctr)
+#' sentomeasures <- sento_measures(corpusSample, l, ctr)
 #'
 #' # set up control function and perform the merging
 #' ctrMerge <- ctr_merge(sentomeasures,
@@ -813,9 +818,10 @@ merge_measures <- function(ctr) {
 #'
 #' # construct a sentomeasures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
+#' corpusSample <- quanteda::corpus_sample(corpus, size = 1250)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
-#' sentomeasures <- sento_measures(corpus, l, ctr)
+#' sentomeasures <- sento_measures(corpusSample, l, ctr)
 #'
 #' # merge into one global sentiment measure, with specified weighting for lexicons and features
 #' global <- to_global(sentomeasures, lexicons = c(0.40, 0.60),
@@ -883,9 +889,10 @@ to_global <- function(sentomeasures, lexicons = 1, features = 1, time = 1) {
 #'
 #' # construct a sentomeasures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
+#' corpusSample <- quanteda::corpus_sample(corpus, size = 1000)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
-#' sentomeasures <- sento_measures(corpus, l, ctr)
+#' sentomeasures <- sento_measures(corpusSample, l, ctr)
 #'
 #' # different selections
 #' sel1 <- select_measures(sentomeasures, c("equal_weight"))
@@ -894,8 +901,8 @@ to_global <- function(sentomeasures, lexicons = 1, features = 1, time = 1) {
 #' sel4 <- select_measures(sentomeasures, c("linear", "LM_eng", "wsj", "economy"),
 #'                         do.combine = FALSE)
 #' sel5 <- select_measures(sentomeasures, c("linear", "LM_eng"),
-#'                         dates = "date >= '1989-12-31' & date <= '2000-12-31'")
-#' d <- seq(as.Date("1980-01-01"), as.Date("2013-12-01"), by = "month")
+#'                         dates = "date >= '1996-12-31' & date <= '2000-12-31'")
+#' d <- seq(as.Date("2000-01-01"), as.Date("2013-12-01"), by = "month")
 #' sel6 <- select_measures(sentomeasures, c("linear", "LM_eng"), dates = d)
 #'
 #' @export
@@ -957,13 +964,14 @@ select_measures <- function(sentomeasures, toSelect = "all", do.combine = TRUE, 
 #'
 #' # construct a sentomeasures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
-#' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+#' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
+#' l <- setup_lexicons(lexicons[c("LM_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
-#' sentomeasures <- sento_measures(corpus, l, ctr)
+#' sentomeasures <- sento_measures(corpusSample, l, ctr)
 #'
 #' # plot sentiment measures
 #' plot(sentomeasures)
-#' plot(sentomeasures, group = "lexicons")
+#' plot(sentomeasures, group = "features")
 #'
 #' # adjust appearance of plot
 #' p <- plot(sentomeasures)
@@ -1021,9 +1029,10 @@ plot.sentomeasures <- function(x, group = "all", ...) {
 #'
 #' # construct a sentomeasures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
+#' corpusSample <- quanteda::corpus_sample(corpus, sample = 500)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
-#' sentomeasures <- sento_measures(corpus, l, ctr)
+#' sentomeasures <- sento_measures(corpusSample, l, ctr)
 #'
 #' # fill measures
 #' f1 <- fill_measures(sentomeasures)
