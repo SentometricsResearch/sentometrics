@@ -19,7 +19,6 @@ The latest development version of `sentometrics` is available at [https://github
   
 To install the latest development version (which may contain bugs!), execute these lines:
 
-      R > install.packages("devtools")
       R > require("devtools")
       R > devtools::install_github("ArdiaD/Sentometrics")
 
