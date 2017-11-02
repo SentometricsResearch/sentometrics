@@ -22,11 +22,14 @@ A \code{sentomeasures} object, which is a list containing:
 \item{by}{a single \code{character} vector specifying the time interval of aggregation used.}
 \item{stats}{a \code{data.frame} with a series of elementary statistics (mean, standard deviation, maximum, minimum, and
 average correlation with all other measures) for each individual sentiment measure.}
-\item{sentiment}{the sentiment scores \code{data.table} with a \code{date} and lexicon--feature sentiment scores columns.}
-\item{howWithin}{a \code{character} vector to remind how sentiment within documents was aggregated.}
-\item{howDocs}{a \code{character} vector to remind how sentiment across documents was aggregated.}
+\item{sentiment}{the sentiment scores \code{data.table} with a \code{date} and lexicon--feature sentiment scores columns.
+If \code{ctr$do.ignoreZeros = TRUE}, all zeros are replaces by \code{NA}.}
+\item{howWithin}{a single \code{character} vector to remind how sentiment within documents was aggregated.}
+\item{howDocs}{a single \code{character} vector to remind how sentiment across documents was aggregated.}
 \item{fill}{a single \code{character} vector that specifies if and how missing dates have been added before
 aggregation across time was carried out.}
+\item{do.ignoreZeros}{a single \code{character} vector to remind if documents with zero sentiment have been ignored in the
+within-document aggregation.}
 \item{attribWeights}{a \code{list} of document weights and time weights that are extracted in a call to
 \code{\link{retrieve_attributions}}. Serves further no direct purpose.}
 }
@@ -42,6 +45,7 @@ data("valence")
 
 # construct a sentomeasures object to start with
 corpus <- sento_corpus(corpusdf = usnews)
+corpusSample <- quanteda::corpus_sample(corpus, size = 750)
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 ctr <- ctr_agg(howWithin = "tf-idf",
                howDocs = "proportional",
@@ -51,7 +55,7 @@ ctr <- ctr_agg(howWithin = "tf-idf",
                ordersAlm = 1:3,
                do.inverseAlm = TRUE,
                do.normalizeAlm = TRUE)
-sentomeasures <- sento_measures(corpus, l, ctr)
+sentomeasures <- sento_measures(corpusSample, l, ctr)
 summary(sentomeasures)
 
 }

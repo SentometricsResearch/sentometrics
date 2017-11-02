@@ -47,8 +47,8 @@ USECONOMYNEWS$relevance <- USECONOMYNEWS$positivity <- USECONOMYNEWS$headline <-
 USECONOMYNEWS <- data.table::as.data.table(USECONOMYNEWS)
 USECONOMYNEWS <- USECONOMYNEWS[order(date)]
 colnames(USECONOMYNEWS)[1] <- "id"
-USECONOMYNEWS <- subset(USECONOMYNEWS, date >= "1980-01-01") # drop all before 1980
-setcolorder(USECONOMYNEWS, c("id", "date", "text", "headline", "wsj", "wapo", "economy", "noneconomy"))
+USECONOMYNEWS <- subset(USECONOMYNEWS, date >= "1995-01-01") # drop all before 1980
+setcolorder(USECONOMYNEWS, c("id", "date", "text", "wsj", "wapo", "economy", "noneconomy"))
 useconomynews <- as.data.frame(USECONOMYNEWS) # back to lowercase before saving
 useconomynews$id <- as.character(useconomynews$id)
 usnews <- useconomynews
@@ -56,34 +56,7 @@ usnews <- useconomynews
 save(usnews, file = "data/usnews.rda", compress = 'xz')
 # load("data/usnews.rda")
 
-######################### S&P500 Index (1988-2014, monthly)
-
-# makes returns in line with USECONOMYNEWS corpus
-# "1988-03-01" means monthly return from March to April 1988, such that it aligns with all articles in March
-
-sp500 <- readr::read_csv("data-raw/S&P500.csv")
-sp500 <- as.data.frame(sp500[c("Date", "Adj Close")])
-sp500 <- sp500[sp500$Date <= "2015-01-01", ]
-sp500 <- xts::xts(sp500$`Adj Close`[-1], sp500$Date[-nrow(sp500)])
-sp500 <- PerformanceAnalytics::Return.calculate(sp500)
-sp500 <- sp500[-1, ]
-
-yb <- ifelse(sp500 >= 0, 1, -1)
-yb <- as.factor(yb)
-levels(yb) <- c("neg", "pos") # binomial example series
-
-ym <- sp500
-ym[ym >= 0 & ym < 0.05] <- 1
-ym[ym >= 0.05 & ym != 1] <- 2
-ym[ym <= 0 & ym > -0.05] <- -1
-ym[ym <= -0.05 & ym != -1] <- -2
-ym <- as.factor(ym)
-levels(ym) <- c("neg-", "neg", "pos", "pos+") # multinomial example series
-
-sp500 <- data.frame(date = zoo::index(sp500), return = as.numeric(sp500), up = yb, upMulti = ym)
-save(sp500, file = "data/sp500.rda", compress = 'xz')
-
-######################### xxx
+######################### Economic Policy Uncertainty Index (1980-2014, monthly)
 
 epu <- readr::read_csv2("data-raw/US_EPU_1900-2014.csv")
 epu$date <- as.Date(paste0(epu$Year, "-", epu$Month, "-01"))

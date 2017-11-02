@@ -32,13 +32,14 @@ data("valence")
 
 # construct a sentomeasures object to start with
 corpus <- sento_corpus(corpusdf = usnews)
-l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+corpusSample <- quanteda::corpus_sample(corpus, size = 500)
+l <- setup_lexicons(lexicons[c("LM_eng")], valence[["valence_eng"]])
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
-sentomeasures <- sento_measures(corpus, l, ctr)
+sentomeasures <- sento_measures(corpusSample, l, ctr)
 
 # plot sentiment measures
 plot(sentomeasures)
-plot(sentomeasures, group = "lexicons")
+plot(sentomeasures, group = "features")
 
 # adjust appearance of plot
 p <- plot(sentomeasures)

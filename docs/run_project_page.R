@@ -17,22 +17,22 @@ colnames(usnews) # id, date, text, wsj, wapo, economy, noneconomy
 ####
 
 corpusAll <- sento_corpus(usnews)
-quanteda::ndoc(corpusAll) # 6801
+quanteda::ndoc(corpusAll) # 4145
 
 corpusSample <- quanteda::corpus_sample(corpusAll, size = 1000)
 quanteda::ndoc(corpusSample) # 1000
 
 corpus <- quanteda::corpus_subset(corpusAll, date >= "1988-01-01" & date < "2014-10-01")
-quanteda::ndoc(corpus) # 5688
+quanteda::ndoc(corpus) # 4097
 
 ####
 
 corpus <- add_features(corpus,
                        keywords = c(war = "war", election = "election", president = "president", crisis = "crisis"))
-sum(corpus$documents$war) # 1486
-sum(corpus$documents$election) # 256
-sum(corpus$documents$president) # 785
-sum(corpus$documents$crisis) # 455
+sum(corpus$documents$war) # 1099
+sum(corpus$documents$election) # 187
+sum(corpus$documents$president) # 490
+sum(corpus$documents$crisis) # 381
 
 ####
 
@@ -164,7 +164,7 @@ ctrCVBi <- ctr_model(model = "binomial",
                      type = "cv",
                      h = 1,
                      do.iter = FALSE,
-                     trainWindow = 275,
+                     trainWindow = 200,
                      testWindow = 20)
 outBi <- sento_model(sentMeas, yb, ctr = ctrCVBi)
 summary(outBi)
@@ -182,8 +182,8 @@ ctrIter <- ctr_model(model = "gaussian",
                      h = 1,
                      alphas = seq(0.10, 0.90, by = 0.20),
                      do.iter = TRUE,
-                     nSample = 120,
-                     start = 89)
+                     nSample = 60,
+                     start = 115)
 outIter <- sento_model(sentMeasShift, y, x = NULL, ctr = ctrIter)
 summary(outIter)
 outIter$performance
@@ -195,22 +195,24 @@ r
 
 ###
 
-attributions <- retrieve_attributions(outIter, sentMeasShift, do.normalize = TRUE)
+attributions <- retrieve_attributions(outIter, sentMeasShift, do.normalize = FALSE)
 attributions$features
 attributions$lexicons
 attributions$time
 
-f <- plot_attributions(attributions, group = "features")
+f <- plot_attributions(attributions, group = "features") +
+  guides(fill = guide_legend(nrow = 1))
 l <- plot_attributions(attributions, group = "lexicons")
-t <- plot_attributions(attributions, group = "time")
+t <- plot_attributions(attributions, group = "time") +
+  guides(fill = guide_legend(nrow = 1))
 
 grid.arrange(f, l, t, ncol = 1, nrow = 3)
 
 ###
 
-ggsave("C:/Users/gebruiker/Dropbox/SENTOMETRICS R PACKAGE/gh-pages/plots/timeWeights.png", arrangeGrob(p))
-ggsave("C:/Users/gebruiker/Dropbox/SENTOMETRICS R PACKAGE/gh-pages/plots/selects.png", arrangeGrob(p1, p2, p3, p4, ncol = 2))
-ggsave("C:/Users/gebruiker/Dropbox/SENTOMETRICS R PACKAGE/gh-pages/plots/glob.png", arrangeGrob(g))
-ggsave("C:/Users/gebruiker/Dropbox/SENTOMETRICS R PACKAGE/gh-pages/plots/forecasts.png", arrangeGrob(r))
-ggsave("C:/Users/gebruiker/Dropbox/SENTOMETRICS R PACKAGE/gh-pages/plots/attribs.png", arrangeGrob(f, l, t, ncol = 1, nrow = 3))
+ggsave("docs/plots/timeWeights.png", arrangeGrob(p))
+ggsave("docs/plots/selects.png", arrangeGrob(p1, p2, p3, p4, ncol = 2))
+ggsave("docs/plots/glob.png", arrangeGrob(g))
+ggsave("docs/plots/forecasts.png", arrangeGrob(r))
+ggsave("docs/plots/attribs.png", arrangeGrob(f, l, t, ncol = 1, nrow = 3))
 

@@ -46,12 +46,14 @@ data("valence")
 
 # sentiment computation based on raw frequency counts
 corpus <- sento_corpus(corpusdf = usnews)
+corpusSample <- quanteda::corpus_sample(corpus, size = 1000)
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
-sent <- compute_sentiment(corpus, l, how = "counts")
+sent <- compute_sentiment(corpusSample, l, how = "counts")
 
+\dontrun{
 # same sentiment computation based on a user-supplied dfm with default settings
 dfm <- quanteda::dfm(quanteda::tokenize(corpus), verbose = FALSE)
-sent <- compute_sentiment(corpus, l, how = "counts", dfm = dfm)
+sent <- compute_sentiment(corpus, l, how = "counts", dfm = dfm)}
 
 }
 \seealso{

@@ -38,9 +38,10 @@ data("valence")
 
 # construct a sentomeasures object to start with
 corpus <- sento_corpus(corpusdf = usnews)
+corpusSample <- quanteda::corpus_sample(corpus, size = 1000)
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
-sentomeasures <- sento_measures(corpus, l, ctr)
+sentomeasures <- sento_measures(corpusSample, l, ctr)
 
 # different selections
 sel1 <- select_measures(sentomeasures, c("equal_weight"))
@@ -49,8 +50,8 @@ sel3 <- select_measures(sentomeasures, c("linear", "LM_eng"))
 sel4 <- select_measures(sentomeasures, c("linear", "LM_eng", "wsj", "economy"),
                         do.combine = FALSE)
 sel5 <- select_measures(sentomeasures, c("linear", "LM_eng"),
-                        dates = "date >= '1989-12-31' & date <= '2000-12-31'")
-d <- seq(as.Date("1980-01-01"), as.Date("2013-12-01"), by = "month")
+                        dates = "date >= '1996-12-31' & date <= '2000-12-31'")
+d <- seq(as.Date("2000-01-01"), as.Date("2013-12-01"), by = "month")
 sel6 <- select_measures(sentomeasures, c("linear", "LM_eng"), dates = d)
 
 }

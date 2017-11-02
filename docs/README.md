@@ -21,7 +21,7 @@ require(gridExtra)
 
 We impose texts and the features metadata to be structured as a `data.frame`. The texts are accompanied by columns that indicate which feature(s) belong(s) to a certain text. For example, a feature can be termed _economy_. Indicating which texts are relevant to the economy is usually done in a binary way (1 for relevant, 0 for not relevant), or by a score (the higher, the more relevant). There are news providers that enrich their texts with such information. Otherwise, some preparatory work is needed to come up with a good mapping from texts to features. The art of topic modelling or entity recognition might help with that, but the art of common sense (i.e. human classification) may serve your purpose equally well. There is also another way to add features to your corpus, once it is already created, as we'll show later.
 
-Back to your collection of texts. You have 6801 articles between 1980 and 2014 from two major US journals: The Wall Street Journal and The Washington Post. Some of these articles are effectively relevant to the US economy, and by contrast the others are not. This information is captured into the four features _wsj_, _wapo_, _economy_ and _noneconomy_ respectively. The data can be accessed as shown below.
+Back to your collection of texts. You have a few thousand articles between 1995 and 2014 from two major US journals: The Wall Street Journal and The Washington Post. Some of these articles are effectively relevant to the US economy, and by contrast the others are not. This information is captured into the four features _wsj_, _wapo_, _economy_ and _noneconomy_ respectively. The data can be accessed as shown below.
 
 ```R
 data("usnews")
@@ -32,13 +32,13 @@ This data structure of texts needs to be plugged into a more formal corpus data 
 
 ```R
 corpusAll <- sento_corpus(usnews)
-quanteda::ndoc(corpusAll) # 6801
+quanteda::ndoc(corpusAll) # 4145
 
 corpusSample <- quanteda::corpus_sample(corpusAll, size = 1000)
 
-# we'll continue with this corpus, with articles from 1988 to 2014
-corpus <- quanteda::corpus_subset(corpusAll, date >= "1988-01-01" & date < "2014-10-01")
-quanteda::ndoc(corpus) # 5688
+# we'll continue with this corpus
+corpus <- quanteda::corpus_subset(corpusAll, date < "2014-10-01")
+quanteda::ndoc(corpus) # 4097
 ```
 
 Coming back to the feature columns, the `add_features()` function gives you the option to add in features ex-ante the creation of a corpus. It simply looks for texts that mention a specified keyword at least once and denote these texts with a value of 1. If you have no knowledge about any features, a features-less corpus input `data.frame` can be provided. In that case, a dummy feature valued at 1 throughout is added automatically to the corpus. Here, we define four features related to politics and potential sources of uncertainty, based on the words 'war', 'election', 'president' and 'crisis'. This finalizes the corpus we are about to analyse.
@@ -47,10 +47,10 @@ Coming back to the feature columns, the `add_features()` function gives you the 
 corpus <- add_features(corpus,
                        keywords = c(war = "war", election = "election", 
                                     president = "president", crisis = "crisis"))
-sum(corpus$documents$war) # 1486
-sum(corpus$documents$election) # 256
-sum(corpus$documents$president) # 785
-sum(corpus$documents$crisis) # 455
+sum(corpus$documents$war) # 1099
+sum(corpus$documents$election) # 187
+sum(corpus$documents$president) # 490
+sum(corpus$documents$crisis) # 381
 ```
 
 The assignment of textual sentiment is based on the **bag-of-words** model. This approach looks for words in a text that are included in a predefined word list, called a lexicon, and then assigns a score to these words as also given by the lexicon. Typically, the word 'good' carries with it a positive connotation, thus it is given a score of 1. On the other hand, 'ugly' will most likely have a negative connotation, equivalent to a score of -1. What about when you have something like 'not good'? This is where valence shifters kick in. The word 'not' is a classical examply of a negator, which inverses the sentiment of the word that it precedes. _Textual sentiment analysis gets increasingly complex if one wants to account for word sequences such as 'not very ugly', let alone entire sentence or paragraph structures. We currently refrain from this complexity due to its cost in efficiency with respect to the large dimensionality of the task we face, being computing sentiment and aggregating scores in one go for a lot of texts. Future versions of the package may integrate more complex sentiment analysis computation algorithms._ Applying valence word lists in combination with lexicons gives an accurate enough picture of the sentiment embedded in a text. The `sentometrics` package includes four well-known default lexicons ([FEEL](http://www.lirmm.fr/~abdaoui/FEEL), [GI](http://www.wjh.harvard.edu/~inquirer/spreadsheet_guide.htm), [HENRY](https://study.sagepub.com/sites/default/files/1\%20Henry\%202008_0.pdf) and [LM](https://www3.nd.edu/~mcdonald/Word_Lists.html)) and a negators valence word list. The word lists are available in English (_eng_), French (_fr_) and Dutch (_nl_), the latter two often as a result of a translation from English.
@@ -99,7 +99,7 @@ The reference paper, vignette and manual explain more in detail what is meant by
 
 ```R
 lag <- 30
-a <- almons(n = lag, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE)
+a <- almons(n = lag, orders = 1:3, do.inverse = TRUE, do.normalize = FALSE)
 e <- exponentials(n = lag, alphas = c(0.1))
 lin <- (1:lag)/sum(1:lag)
 weights <- data.frame(id = 1:lag, almon = a[, 6], exponential = e[, 1],
@@ -132,7 +132,7 @@ sent <- compute_sentiment(corpus, lexicons = lexIn, how = ctrIn$howWithin)
 sentMeasAlt <- perform_agg(sent, ctr = ctrIn)
 ```
 
-The sentiment measures are found within a `sentomeasures` object, which is a list composed of several elements. The main element is accessed through `sentMeas$measures`, being all the sentiment measures, each of them in a separate column. Our output object contains 256 different monthly sentiment measures between December 1988 and September 2014. The other list elements are merely for informational purposes, such that you can easily retrieve back how the measures were computed. Under `sentMeas$sentiment`, you find the original sentiment scores, and under `sentMeas$stats` there are a few key statistics, including the average correlation of one series with all the others. 
+The sentiment measures are found within a `sentomeasures` object, which is a list composed of several elements. The main element is accessed through `sentMeas$measures`, being all the sentiment measures, each of them in a separate column. Our output object contains 256 different monthly sentiment measures. The other list elements are merely for informational purposes, such that you can easily retrieve back how the measures were computed. Under `sentMeas$sentiment`, you find the original sentiment scores, and under `sentMeas$stats` there are a few key statistics, including the average correlation of one series with all the others. 
 
 Apart from scaling the sentiment time series, you can also select measures from a `sentomeasures` object in a few ways. Additionally, there is also the `fill_measures()` function with which you can add in dates ex-post aggregation, though this has no further purpose if dates have already been filled in the aggregation process.
 
@@ -239,13 +239,13 @@ ctrCVBi <- ctr_model(model = "binomial", # change this
                      type = "cv",
                      h = 1,
                      do.iter = FALSE,
-                     trainWindow = 275,
+                     trainWindow = 200,
                      testWindow = 20)
 outBi <- sento_model(sentMeas, yb, ctr = ctrCVBi)
 summary(outBi)
 ```
 
-Instead of estimating the model once for the entire sample, it might be more interesting to perform the analysis several times with time rolling forward for a smaller sample size. This is enacted by setting `do.iter = TRUE`. At the same time, this will perform one-step ahead forecasts and provide an assessment of out-of-sample model performance across all iterations, both numerically and visually. Trying this out for a sample size of 10 years and only taking interest in the last 100 out-of-sample forecasts, you run the code below. We also add the lag of the target variable as an explanatory variable. The output is an object of class `sentomodeliter`, in which you can find the repeated model estimations, but most importantly an overview of performance measures with respect to forecasting errors. The type of performance measures obviously depends on whether you run a linear or a logistic regression.
+Instead of estimating the model once for the entire sample, it might be more interesting to perform the analysis several times with time rolling forward for a smaller sample size. This is enacted by setting `do.iter = TRUE`. At the same time, this will perform one-step ahead forecasts and provide an assessment of out-of-sample model performance across all iterations, both numerically and visually. Trying this out for a sample size of 5 years and only taking interest in the last 50 out-of-sample forecasts, you run the code below. We also add the lag of the target variable as an explanatory variable. The output is an object of class `sentomodeliter`, in which you can find the repeated model estimations, but most importantly an overview of performance measures with respect to forecasting errors. The type of performance measures obviously depends on whether you run a linear or a logistic regression.
 
 ```R
 # adjust data to incorporate ESU's lag into the model
@@ -261,8 +261,8 @@ ctrIter <- ctr_model(model = "gaussian",
                      h = 1,
                      alphas = seq(0.10, 0.90, by = 0.20),
                      do.iter = TRUE,
-                     nSample = 120, # 10 years
-                     start = 89) # iterations: length(y) - nSample - abs(h)  (- oos) - start + 1
+                     nSample = 60, 
+                     start = 115) # iterations: length(y) - nSample - abs(h)  (- oos) - start + 1
 outIter <- sento_model(sentMeasShift, y, x = x, ctr = ctrIter)
 summary(outIter) # now you also have information on the out-of-sample fit
 outIter$performance # displays all forecasting performance information
@@ -289,9 +289,11 @@ There are two interesting post-analysis functions. The first one is inherent to 
 # to retrieve all attributions, input the corresponding modelling and sentiment measures objects
 attributions <- retrieve_attributions(outIter, sentMeasShift, do.normalize = TRUE)
 
-f <- plot_attributions(attributions, group = "features")
+f <- plot_attributions(attributions, group = "features") +
+  guides(fill = guide_legend(nrow = 1))
 l <- plot_attributions(attributions, group = "lexicons")
-t <- plot_attributions(attributions, group = "time")
+t <- plot_attributions(attributions, group = "time") +
+  guides(fill = guide_legend(nrow = 1))
 
 grid.arrange(f, l, t, ncol = 1, nrow = 3)
 ```

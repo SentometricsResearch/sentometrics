@@ -55,7 +55,7 @@ for the last 31 samples.}
 
 \item{do.parallel}{a \code{logical}, if \code{TRUE} the \code{\%dopar\%} construct from the \pkg{foreach} package is
 applied for iterative model estimation. A proper parallel backend needs to be set up to make it work. No progress statements
-are displayed whatsoever when \code{TRUE}. For cross-validation models, parallelization is also carried out for single-run
+are displayed whatsoever when \code{TRUE}. For cross-validation models, parallelization can also be carried out for single-run
 models, whenever a parallel backend is set up. See the examples in \code{\link{sento_model}}.}
 }
 \value{

@@ -2,15 +2,12 @@
 TO DO
 -------------------------------------------------------------------------------
 
-- write unit tests
-- examples < 5s. ==> otherwise don't run > bring down time for R CMD check + package size (< 5 Mb <=> data)
-	==> make examples via built-in fitted data objects as data sets
 - check ### in-code
-- add run_vignette.R script + vignette to repo
-- open up GitHub + merge project page with central repo + clean GitHub (issues)
-- pass R CMD check
+- open up GitHub + merge project page with central repo + add vignette (+ script) + clean GitHub (issues)
+- pass R CMD check (1. registerSymbols... + 2. sometimes cannot change directory to "sentometrics")
 - check compatibility with major quanteda package update, and update all used packages
 - check calibration (e.g. df calculation); why alpha set to 0 even if 0.5 clearly better?
+- cut down + update project page
 
 FUTURE:
 - valence words not detected if first word is a valence shifter, e.g. " not " if text is "not ..."

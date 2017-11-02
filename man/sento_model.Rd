@@ -77,11 +77,11 @@ data("epu")
 
 # construct a sentomeasures object to start with
 corpusAll <- sento_corpus(corpusdf = usnews)
-corpus <- quanteda::corpus_subset(corpusAll, date >= "1980-01-01" & date < "2014-10-01")
+corpus <- quanteda::corpus_subset(corpusAll, date >= "2004-01-01" & date < "2014-10-01")
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional",
-               howTime = c("equal_weight", "linear", "almon"),
-               by = "month", lag = 3, ordersAlm = 1:3,
+               howTime = c("equal_weight", "almon"),
+               by = "month", lag = 3, ordersAlm = 1:2,
                do.inverseAlm = TRUE, do.normalizeAlm = TRUE)
 sentomeasures <- sento_measures(corpus, l, ctr)
 
@@ -91,61 +91,57 @@ length(y) == nrow(sentomeasures$measures) # TRUE
 x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
 colnames(x) <- c("x1", "x2")
 
-# a list with models based on the three implemented information criteria
-out1 <- list()
-for (ic in c("BIC", "AIC", "Cp")) {
- ctrIC <- ctr_model(model = "gaussian", type = ic, do.iter = FALSE, h = 0)
- out1[[ic]] <- sento_model(sentomeasures, y, x = x, ctr = ctrIC)
-}
+# a linear model based on the Akaike information criterion
+ctrIC <- ctr_model(model = "gaussian", type = "AIC", do.iter = FALSE, h = 0)
+out1 <- sento_model(sentomeasures, y, x = x, ctr = ctrIC)
 
 # some post-analysis (attribution)
-attributions1 <- retrieve_attributions(out1[["Cp"]], sentomeasures,
+attributions1 <- retrieve_attributions(out1, sentomeasures,
                                        refDates = sentomeasures$measures$date[20:40])
 
-# a cross-validation based model
 \dontrun{
+# a cross-validation based model
 cl <- makeCluster(detectCores() - 2)
 registerDoParallel(cl)
 ctrCV <- ctr_model(model = "gaussian", type = "cv", do.iter = FALSE,
-                   h = 0, alphas = c(0.10, 0.50, 0.90), trainWindow = 350,
-                   testWindow = 40, oos = 0, do.progress = TRUE)
+                   h = 0, alphas = c(0.10, 0.50, 0.90), trainWindow = 100,
+                   testWindow = 20, oos = 0, do.progress = TRUE)
 out2 <- sento_model(sentomeasures, y, x = x, ctr = ctrCV)
 stopCluster(cl)
 summary(out2)}
 
+\dontrun{
 # a cross-validation based model but for a binomial target
 yb <- epu[epu$date >= sentomeasures$measures$date[1], ]$above
 ctrCVb <- ctr_model(model = "binomial", type = "cv", do.iter = FALSE,
                     h = 0, alphas = c(0.10, 0.50, 0.90), trainWindow = 350,
                     testWindow = 40, oos = 0, do.progress = TRUE)
 out3 <- sento_model(sentomeasures, yb, x = x, ctr = ctrCVb)
-summary(out3)
+summary(out3)}
 
 # an example of an iterative analysis
 ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE,
-                     alphas = c(0, 0.5, 1), h = 0, nSample = 300, start = 106)
+                     alphas = c(0.25, 0.75), h = 0, nSample = 100, start = 21)
 out <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
 summary(out)
 
-# the same iterative analysis, parallelized
 \dontrun{
+# the same iterative analysis, parallelized
 cl <- makeCluster(detectCores() - 2)
 registerDoParallel(cl)
-ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE,
-                     h = 0, nSample = 300, start = 106, do.parallel = TRUE)
+ctrIter <- ctr_model(model = "gaussian", type = "Cp", do.iter = TRUE,
+                     h = 0, nSample = 100, start = 21, do.parallel = TRUE)
 out <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
 stopCluster(cl)
 summary(out)}
 
 # some more post-analysis (attribution and prediction)
 attributions2 <- retrieve_attributions(out, sentomeasures)
-plot_attributions(attributions2, "lexicons")
 plot_attributions(attributions2, "features")
-plot_attributions(attributions2, "time")
 
 nx <- ncol(sentomeasures$measures) - 1 + ncol(x) # don't count date column
 newx <- runif(nx) * cbind(sentomeasures$measures[, -1], x)[1:nrow(x), ]
-preds <- predict(out3, newx = as.matrix(newx), type = "class")
+preds <- predict(out1, newx = as.matrix(newx), type = "link")
 
 }
 \seealso{

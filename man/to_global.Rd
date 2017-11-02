@@ -39,9 +39,10 @@ data("valence")
 
 # construct a sentomeasures object to start with
 corpus <- sento_corpus(corpusdf = usnews)
+corpusSample <- quanteda::corpus_sample(corpus, size = 1250)
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
-sentomeasures <- sento_measures(corpus, l, ctr)
+sentomeasures <- sento_measures(corpusSample, l, ctr)
 
 # merge into one global sentiment measure, with specified weighting for lexicons and features
 global <- to_global(sentomeasures, lexicons = c(0.40, 0.60),
