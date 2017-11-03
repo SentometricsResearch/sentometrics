@@ -137,13 +137,13 @@ setup_time_weights <- function(lag, how, ...) {
   return(weights)
 }
 
-#' Options supported to perform aggregation into sentiment measures.
+#' Options supported to perform aggregation into sentiment measures
 #'
 #' @description Call for information purposes only. Used within \code{\link{ctr_agg}} to check if supplied
 #' aggregation hows are supported.
 #'
 #' @return A list with the supported aggregation hows for arguments \code{howWithin} (within documents), \code{howDows}
-#' (across documents, per date) and \code{howTime} (across dates), to be supplied to \code{\link{ctr_agg}} .
+#' (across documents, per date) and \code{howTime} (across dates), to be supplied to \code{\link{ctr_agg}}.
 #'
 #' @seealso \code{\link{ctr_agg}}
 #'

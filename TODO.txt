@@ -4,7 +4,7 @@ TO DO
 
 - check ### in-code
 - open up GitHub + merge project page with central repo + add vignette (+ script) + clean GitHub (issues)
-- pass R CMD check (1. registerSymbols... + 2. sometimes cannot change directory to "sentometrics")
+- pass R CMD check (1. registerSymbols... + timing of examples)
 - check compatibility with major quanteda package update, and update all used packages
 - check calibration (e.g. df calculation); why alpha set to 0 even if 0.5 clearly better?
 - cut down + update project page

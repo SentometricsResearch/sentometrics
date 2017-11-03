@@ -9,7 +9,7 @@
   invisible()
 }
 
-# .onUnload <- function (libpath) {
-#   library.dynam.unload("sentometrics", libpath)
-# }
+.onUnload <- function (libpath) {
+  library.dynam.unload("sentometrics", libpath)
+}
 
