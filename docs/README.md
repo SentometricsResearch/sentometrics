@@ -324,7 +324,7 @@ The latest development version of `sentometrics` resides at [https://github.com/
 devtools::install_github("ArdiaD/Sentometrics")
 ```
 
-The most up-to-date manual can be found under the _docs/_ folder from the code's GitHub repository.
+The most up-to-date manual can be found on the package's GitHub repository.
 
 ## Contact
 
