@@ -2,5 +2,7 @@
 ^\.Rproj\.user$
 ^data-raw$
 ^docs$
-^CONDUCT\.md$
-^THANKS\.md$
+^examples$
+^THANKS$
+^sentometrics-manual\.pdf$
+^sentometrics-vignette\.pdf$

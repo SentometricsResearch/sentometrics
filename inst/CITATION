@@ -13,9 +13,10 @@ citEntry(entry = "manual",
                          person("Kris","Boudt")),
 	 url = "https://CRAN.R-project.org/package=sentometrics",
 	 year = year,
-	 vers = vers,
+	 note = paste("R Package ", vers, sep = ""),
 	 textVersion =
          paste("David Ardia, Keven Bluteau, Samuel Borms, Kris Boudt (", year,"). ",
-               "sentometrics: An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction. ", vers, ".", sep = "")
+               "sentometrics: An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction. ",
+               paste("R Package ", vers, sep = ""), ".", sep = "")
 )
 
