@@ -517,12 +517,13 @@ compute_IC <- function(reg, y, x, alpha, ic, family) {
   if (family == "gaussian") type <- "link"
   else stop("To implement for 'binomial' and 'multinomial'.")
   yEst <- stats::predict(reg, newx = x, type = type)
-  xScaled <- scale(x) # scale x first
+  xScaled <- scale(x)
   xA <- lapply(1:length(lambda), function(i) return(as.matrix(xScaled[, which(beta[, i] != 0)])))
+  # dfA <- compute_df_old(alpha, beta, lambda, x)
   dfA <- compute_df(alpha, lambda, xA)
-  # dfA <- compute_df_Old(alpha, beta, lambda, x)
   RSS <- apply(yEst, 2, function(est) return(sum((y - est)^2)))
-  sigma2 <- RSS[length(RSS)] / (nrow(y) - dfA[length(RSS)]) ### why is last value taken?
+  # sigma2 <- RSS[length(RSS)] / (nrow(y) - dfA[length(RSS)])
+  sigma2 <- mean(RSS, na.rm = TRUE) / (nrow(y) - mean(dfA, na.rm = TRUE)) # averaged, else bias towards high lambda and alpha
   if (ic == "BIC")
     return(compute_BIC(y, yEst, dfA, RSS, sigma2))
   else if (ic == "AIC")

@@ -1,0 +1,21 @@
+
+if (!exists("meta") || is.null(meta)) meta <- packageDescription("sentometrics")
+year <- sub(".*(2[[:digit:]]{3})-.*", "\\1", meta$Date)
+vers <- paste("Version", meta$Version)
+
+citHeader("To cite 'sentometrics' in publications use:")
+
+citEntry(entry = "manual",
+	 title = "sentometrics: An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction",
+	 author = personList(person("David","Ardia"),
+                         person("Keven","Bluteau"),
+                         person("Samuel","Borms"),
+                         person("Kris","Boudt")),
+	 url = "https://CRAN.R-project.org/package=sentometrics",
+	 year = year,
+	 vers = vers,
+	 textVersion =
+         paste("David Ardia, Keven Bluteau, Samuel Borms, Kris Boudt (", year,"). ",
+               "sentometrics: An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction. ", vers, ".", sep = "")
+)
+
