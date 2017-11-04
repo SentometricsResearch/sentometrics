@@ -1,6 +1,6 @@
 
 ###########################################
-### SENTOMETRICS PROJECT PAGE: EXAMPLES ###
+############ PROJECT PAGE CODE ############
 ###########################################
 
 ####
@@ -208,7 +208,7 @@ t <- plot_attributions(attributions, group = "time") +
 
 grid.arrange(f, l, t, ncol = 1, nrow = 3)
 
-###
+### save plots to project page directory ###
 
 ggsave("docs/plots/timeWeights.png", arrangeGrob(p))
 ggsave("docs/plots/selects.png", arrangeGrob(p1, p2, p3, p4, ncol = 2))

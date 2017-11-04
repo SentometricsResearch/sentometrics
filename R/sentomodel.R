@@ -515,7 +515,7 @@ compute_IC <- function(reg, y, x, alpha, ic, family) {
   beta <- reg$beta
   lambda <- reg$lambda
   if (family == "gaussian") type <- "link"
-  else stop("To implement for 'binomial' and 'multinomial'.")
+  else stop("Calibration via information criteria to implement for 'binomial' and 'multinomial'.")
   yEst <- stats::predict(reg, newx = x, type = type)
   xScaled <- scale(x)
   xA <- lapply(1:length(lambda), function(i) return(as.matrix(xScaled[, which(beta[, i] != 0)])))
