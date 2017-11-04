@@ -278,31 +278,31 @@ compute_stats <- function(sentomeasures) {
 
 compute_df_old <- function(alpha, beta, lambda, x) { # elastic net degrees-of-freedom estimator (Tibshirani and Taylor, 2012)
   x <- scale(x) # scale x first
-  df_A <- lapply(1:length(lambda), function(df) {
+  dfA <- lapply(1:length(lambda), function(df) {
     A <- which(beta[, df] != 0)
     if (alpha == 1) {return(length(A))} # df equal to non-zero parameters if LASSO (alpha = 1)
     if (length(A) == 0) {return(NA)}
     I <- diag(1, ncol = length(A), nrow = length(A))
-    X_A <- as.matrix(x[, A])
-    estimate <- tryCatch(sum(diag(X_A %*% solve((t(X_A) %*% X_A + (1 - alpha) * lambda[df] * I)) %*% t(X_A))),
+    xA <- as.matrix(x[, A])
+    estimate <- tryCatch(sum(diag(xA %*% solve((t(xA) %*% xA + (1 - alpha) * lambda[df] * I)) %*% t(xA))),
                          error = function(x) {NA}) # to handle rare matrix inversion problems
     return(estimate)
   })
-  return(unlist(df_A))
+  return(unlist(dfA))
 }
 
-compute_BIC <- function(y, yEst, df_A, RSS, sigma2) { # BIC-like criterion
-  BIC <- RSS/(nrow(y) * sigma2) + (log(nrow(y))/nrow(y)) * df_A
+compute_BIC <- function(y, yEst, dfA, RSS, sigma2) { # BIC-like criterion
+  BIC <- RSS/(nrow(y) * sigma2) + (log(nrow(y))/nrow(y)) * dfA
   return(BIC)
 }
 
-compute_AIC <- function(y, yEst, df_A, RSS, sigma2) { # AIC-like criterion
-  AIC <- RSS/(nrow(y) * sigma2) + (2/nrow(y)) * df_A
+compute_AIC <- function(y, yEst, dfA, RSS, sigma2) { # AIC-like criterion
+  AIC <- RSS/(nrow(y) * sigma2) + (2/nrow(y)) * dfA
   return(AIC)
 }
 
-compute_Cp <- function(y, yEst, df_A, RSS, sigma2) { # Mallows's Cp-like criterion
-  Cp <- RSS/nrow(y) + (2/nrow(y)) * df_A * sigma2
+compute_Cp <- function(y, yEst, dfA, RSS, sigma2) { # Mallows's Cp-like criterion
+  Cp <- RSS/nrow(y) + (2/nrow(y)) * dfA * sigma2
   return(Cp)
 }
 

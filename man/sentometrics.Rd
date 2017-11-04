@@ -39,6 +39,14 @@ Please cite the package in publications. Use \code{citation("sentometrics")}.
 The latest version of the package is available at \url{https://github.com/ArdiaD/Sentometrics}.
 }
 
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/ArdiaD/Sentometrics}
+  \item Report bugs at \url{https://github.com/ArdiaD/Sentometrics/issues}
+}
+
+}
 \author{
 Samuel Borms, Keven Bluteau, David Ardia and Kris Boudt.
 }

@@ -21,7 +21,7 @@ Rcpp::NumericVector compute_df(double alpha, Rcpp::NumericVector lambda, Rcpp::L
     } else {
       arma::mat inverted = matr * inv(matr.t() * matr + (1 - alpha) * lambda[i] * arma::eye<arma::mat>(nA, nA)) * matr.t();
       double estimate = arma::sum(arma::diagvec(inverted));
-      dfA[i] = estimate; // error handling (in case no inversion feasible)?
+      dfA[i] = estimate; // potential need for error handling in case no inversion feasible
     }
   }
   return dfA;

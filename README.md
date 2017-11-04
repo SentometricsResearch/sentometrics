@@ -1,6 +1,6 @@
 
 # sentometrics
-#### An Integrated Framework for Textual Sentiment Time Series Aggregation and Forecasting
+#### An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction
 
 ## Introduction
 
