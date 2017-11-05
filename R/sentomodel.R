@@ -4,39 +4,39 @@
 #' @author Samuel Borms, Keven Bluteau
 #'
 #' @description Sets up control object for linear or nonlinear modelling of a response variable onto a large panel of
-#' textual sentiment measures (and potentially other variables). See the \code{\link{sento_model}} function's documentation for
-#' details on the estimation and calibration procedure.
+#' textual sentiment measures (and potentially other variables). See \code{\link{sento_model}} for details on the
+#' estimation and calibration procedure.
 #'
 #' @param model a \code{character} vector with one of the following: "\code{gaussian}" (linear regression), "\code{binomial}"
 #' (binomial logistic regression), or "\code{multinomial}" (multinomial logistic regression).
-#' @param type a \code{character} vector indicating which model selection criteria to use. Currently supports "\code{BIC}",
+#' @param type a \code{character} vector indicating which model calibration approach to use. Supports "\code{BIC}",
 #' "\code{AIC}" and "\code{Cp}" (Mallows's Cp) as sparse regression adapted information criteria (cf. ``On the `degrees of
-#' freedom' of the LASSO"; Zou, Hastie, Tibshirani et al., 2007), and "\code{cv}" (cross-validation based on the
+#' freedom' of the LASSO´´; Zou, Hastie, Tibshirani et al., 2007), and "\code{cv}" (cross-validation based on the
 #' \code{\link[caret]{train}} function from the \pkg{caret} package). The adapted information criteria are currently
 #' only available for a linear regression.
 #' @param intercept a \code{logical}, \code{TRUE} by default fits an intercept.
-#' @param h an \code{integer} value to shift the time series to have the desired prediction setup, \code{h = 0} means
+#' @param h an \code{integer} value that shifts the time series to have the desired prediction setup; \code{h = 0} means
 #' no change to the input data (nowcasting assuming data is aligned properly), \code{h > 0} shifts the dependent variable by
 #' \code{h} periods (i.e. rows) further in time (forecasting), \code{h < 0} shifts the independent variables by \code{h}
 #' periods.
-#' @param alphas a \code{numeric} vector of the different alphas to test for during optimization, between 0 and 1. A value of
-#' 0 pertains to Ridge optimization, a value of 1 to LASSO optimization; values in between are pure elastic net. The lambda
+#' @param alphas a \code{numeric} vector of the different alphas to test for during calibration, between 0 and 1. A value of
+#' 0 pertains to Ridge regression, a value of 1 to LASSO regression; values in between are pure elastic net. The lambda
 #' values tested for are automatically chosen by the \code{\link[glmnet]{glmnet}} function or set to
 #' \code{10^seq(2, -2, length.out = 100)} in case of cross-validation.
 #' @param trainWindow a positive \code{integer} as the size of the training sample in cross-validation (ignored if
-#' \code{type !=} "\code{cv}").
-#' @param testWindow a positive \code{integer} as the size of the test sample in cross-validation (ignored if \code{type !=}
+#' \code{type != } "\code{cv}").
+#' @param testWindow a positive \code{integer} as the size of the test sample in cross-validation (ignored if \code{type != }
 #' "\code{cv}").
 #' @param oos a non-negative \code{integer} to indicate the number of periods to skip from the end of the cross-validation
-#' training sample (out-of-sample) up to the test sample (ignored if \code{type !=} "\code{cv}").
+#' training sample (out-of-sample) up to the test sample (ignored if \code{type != } "\code{cv}").
 #' @param do.iter a \code{logical}, \code{TRUE} induces an iterative estimation of models at the given \code{nSample} size and
 #' performs the associated one-step ahead out-of-sample prediction exercise through time.
 #' @param do.progress a \code{logical}, if \code{TRUE} progress statements are displayed during model calibration.
-#' @param nSample a positive \code{integer} as the size of the sample for model calibration at every iteration (ignored if
+#' @param nSample a positive \code{integer} as the size of the sample for model estimation at every iteration (ignored if
 #' \code{iter = FALSE}).
 #' @param start a positive \code{integer} to indicate at which point the iteration has to start (ignored if
-#' \code{iter = FALSE}). For example, for 100 out-of-sample iterations, \code{start = 70} only performs the analysis
-#' for the last 31 samples.
+#' \code{iter = FALSE}). For example, given 100 possible iterations, \code{start = 70} leads to model estimations
+#' only for the last 31 samples.
 #' @param do.parallel a \code{logical}, if \code{TRUE} the \code{\%dopar\%} construct from the \pkg{foreach} package is
 #' applied for iterative model estimation. A proper parallel backend needs to be set up to make it work. No progress statements
 #' are displayed whatsoever when \code{TRUE}. For cross-validation models, parallelization can also be carried out for single-run
@@ -47,12 +47,12 @@
 #' @seealso \code{\link{sento_model}}
 #'
 #' @examples
-#' # series of example information criterion based model control functions
+#' # information criterion based model control functions
 #' ctrIC1 <- ctr_model(model = "gaussian", type = "BIC", do.iter = FALSE, h = 0,
 #'                     alphas = seq(0, 1, by = 0.10))
-#' ctrIC2 <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE, h = 0, nSample = 100)
+#' ctrIC2 <- ctr_model(model = "gaussian", type = "AIC", do.iter = TRUE, h = 0, nSample = 100)
 #'
-#' # series of example cross-validation based model control functions
+#' # cross-validation based model control functions
 #' ctrCV1 <- ctr_model(model = "gaussian", type = "cv", do.iter = FALSE, h = 0, trainWindow = 250,
 #'                     testWindow = 4, oos = 0, do.progress = TRUE)
 #' ctrCV2 <- ctr_model(model = "binomial", type = "cv", h = 0, trainWindow = 250,
@@ -143,26 +143,26 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' variables are normalized in the regression process, but coefficients are returned in their original space. For a helpful
 #' introduction to \pkg{glmnet}, we refer to the \href{https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html#lin}{vignette}.
 #' The optimal elastic net parameters \code{lambda} and \code{alpha} are calibrated either through a to specify information
-#' criterion or through cross-validation (based on the "rolling forecasting origin" principle). In the latter case, the training
-#' metric is automatically set to \code{"RMSE"} for a linear model and to \code{"Accuracy"} for a logistic model. We suppressed
-#' many of the details that can be supplied to the \code{\link[glmnet]{glmnet}} and \code{\link[caret]{train}} functions we rely
-#' on for estimation and calibration through cross-validation, for the sake of user-friendliness.
+#' criterion or through cross-validation (based on the "rolling forecasting origin" principle, using the
+#' \code{\link[caret]{train}} function). In the latter case, the training metric is automatically set to \code{"RMSE"} for
+#' a linear model and to \code{"Accuracy"} for a logistic model. We suppress many of the details that can be supplied to the
+#' \code{\link[glmnet]{glmnet}} and \code{\link[caret]{train}} functions we rely on, for the sake of user-friendliness.
 #'
 #' @param sentomeasures a \code{sentomeasures} object. There should be at least two explanatory variables including the ones
 #' provided through the \code{x} argument.
 #' @param y a one-column \code{data.frame} or a \code{numeric} vector capturing the dependent (response) variable. In case of
 #' a logistic regression, the response variable is either a \code{factor} or a \code{matrix} with the factors represented by
 #' the columns as binary indicators, with the second factor level or column as the reference class in case of a binomial
-#' logistic regression. No \code{NA} values are allowed.
+#' regression. No \code{NA} values are allowed.
 #' @param x a named \code{data.frame} with other explanatory variables as \code{numeric}, by default set to \code{NULL}.
 #' @param ctr output from a \code{\link{ctr_model}} call.
 #'
 #' @return If \code{ctr$do.iter = FALSE}, a \code{sentomodel} object which is a list containing:
 #' \item{reg}{optimized regression, i.e. a model-specific \code{glmnet} object.}
-#' \item{model}{the input argument \code{ctr$model}, to remind of the type of model that was estimated.}
-#' \item{x}{the \code{matrix} of the values used in the regression for all explanatory variables.}
-#' \item{alpha}{optimized calibrated alpha.}
-#' \item{lambda}{optimized calibrated lambda.}
+#' \item{model}{the input argument \code{ctr$model}, to indicate the type of model estimated.}
+#' \item{x}{a \code{matrix} of the values used in the regression for all explanatory variables.}
+#' \item{alpha}{calibrated alpha.}
+#' \item{lambda}{calibrated lambda.}
 #' \item{trained}{output from \code{\link[caret]{train}} call (if \code{ctr$type =} "\code{cv}").}
 #' \item{ic}{a \code{list} composed of two elements: the information criterion used in the calibration under
 #' \code{"criterion"}, and a vector of all minimum information criterion values for each value in \code{alphas}
@@ -177,9 +177,9 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' @return If \code{ctr$do.iter = TRUE}, a \code{sentomodeliter} object which is a list containing:
 #' \item{models}{all sparse regressions, i.e. separate \code{sentomodel} objects as above, as a \code{list} with as names the
 #' dates from the perspective of the sentiment measures at which predictions for performance measurement are carried out (i.e.
-#' one date step beyond the date found at \code{sentomodel$date}.}
-#' \item{alphas}{optimized calibrated alphas.}
-#' \item{lambdas}{optimized calibrated lambdas.}
+#' one date step beyond the date \code{sentomodel$dates[2]}).}
+#' \item{alphas}{calibrated alphas.}
+#' \item{lambdas}{calibrated lambdas.}
 #' \item{performance}{a \code{data.frame} with performance-related measures, being "\code{RMSFE}" (root mean squared
 #' forecasting error), "\code{MAD}" (mean absolute deviation), "\code{MDA}" (mean directional accuracy, in which's calculation
 #' zero is considered as a positive; in percentage points), "\code{accuracy}" (proportion of correctly predicted classes in case
@@ -227,8 +227,8 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' cl <- makeCluster(detectCores() - 2)
 #' registerDoParallel(cl)
 #' ctrCV <- ctr_model(model = "gaussian", type = "cv", do.iter = FALSE,
-#'                    h = 0, alphas = c(0.10, 0.50, 0.90), trainWindow = 100,
-#'                    testWindow = 20, oos = 0, do.progress = TRUE)
+#'                    h = 0, alphas = c(0.10, 0.50, 0.90), trainWindow = 70,
+#'                    testWindow = 10, oos = 0, do.progress = TRUE)
 #' out2 <- sento_model(sentomeasures, y, x = x, ctr = ctrCV)
 #' stopCluster(cl)
 #' summary(out2)}
@@ -237,33 +237,33 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' # a cross-validation based model but for a binomial target
 #' yb <- epu[epu$date >= sentomeasures$measures$date[1], ]$above
 #' ctrCVb <- ctr_model(model = "binomial", type = "cv", do.iter = FALSE,
-#'                     h = 0, alphas = c(0.10, 0.50, 0.90), trainWindow = 350,
-#'                     testWindow = 40, oos = 0, do.progress = TRUE)
+#'                     h = 0, alphas = c(0.10, 0.50, 0.90), trainWindow = 70,
+#'                     testWindow = 10, oos = 0, do.progress = TRUE)
 #' out3 <- sento_model(sentomeasures, yb, x = x, ctr = ctrCVb)
 #' summary(out3)}
 #'
 #' # an example of an iterative analysis
 #' ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE,
 #'                      alphas = c(0.25, 0.75), h = 0, nSample = 100, start = 21)
-#' out <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
-#' summary(out)
+#' out4 <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
+#' summary(out4)
 #'
 #' \dontrun{
-#' # the same iterative analysis, parallelized
+#' # a similar iterative analysis, parallelized
 #' cl <- makeCluster(detectCores() - 2)
 #' registerDoParallel(cl)
 #' ctrIter <- ctr_model(model = "gaussian", type = "Cp", do.iter = TRUE,
-#'                      h = 0, nSample = 100, start = 21, do.parallel = TRUE)
-#' out <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
+#'                      h = 0, nSample = 100, do.parallel = TRUE)
+#' out5 <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
 #' stopCluster(cl)
-#' summary(out)}
+#' summary(out5)}
 #'
 #' # some more post-analysis (attribution and prediction)
-#' attributions2 <- retrieve_attributions(out, sentomeasures)
+#' attributions2 <- retrieve_attributions(out4, sentomeasures)
 #' plot_attributions(attributions2, "features")
 #'
 #' nx <- ncol(sentomeasures$measures) - 1 + ncol(x) # don't count date column
-#' newx <- runif(nx) * cbind(sentomeasures$measures[, -1], x)[1:nrow(x), ]
+#' newx <- runif(nx) * cbind(sentomeasures$measures[, -1], x)[30:50, ]
 #' preds <- predict(out1, newx = as.matrix(newx), type = "link")
 #'
 #' @import foreach
@@ -664,10 +664,10 @@ print.sentomodeliter <- function(x, ...) {
 #' @description Displays a plot of all predictions made through the iterative model computation as incorporated in the
 #' input \code{sentomodeliter} object, as well as the corresponding true values.
 #'
-#' @param x a \code{sentomeasures} object.
+#' @param x a \code{sentomodeliter} object.
 #' @param ... not used.
 #'
-#' @return Returns a simple \pkg{ggplot2} plot, which can be added onto (or to alter its default elements) by using the
+#' @return Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using the
 #' \code{+} operator (see examples).
 #'
 #' @examples
@@ -685,11 +685,11 @@ print.sentomodeliter <- function(x, ...) {
 #'                by = "month", lag = 3)
 #' sentomeasures <- sento_measures(corpus, l, ctr)
 #'
-#' # prepare y and other x variables
+#' # prepare y variable
 #' y <- epu[epu$date >= sentomeasures$measures$date[1], ]$index
 #' length(y) == nrow(sentomeasures$measures) # TRUE
 #'
-#' # estimate regression iteratively based on a sample of 60, skipping the first 25 samples
+#' # estimate regression iteratively based on a sample of 60, skipping first 25 iterations
 #' ctr <- ctr_model(model = "gaussian", type = "AIC", do.iter = TRUE,
 #'                  h = 0, nSample = 60, start = 26)
 #' out <- sento_model(sentomeasures, y, ctr = ctr)
@@ -745,7 +745,7 @@ plot.sentomodeliter <- function(x, ...) {
 #' @param offset not used. Any values here will be ignored.
 #' @param ... not used.
 #'
-#' @return A prediction output depending on the \code{type} argument provided.
+#' @return A prediction output depending on the \code{type} argument.
 #'
 #' @seealso \code{\link{predict.glmnet}}, \code{\link{sento_model}}
 #'
@@ -760,11 +760,11 @@ predict.sentomodel <- function(object, newx, type, offset = NULL, ...) {
   return(pred)
 }
 
-#' Apply the model confidence set (MCS) procedure to a selection of models
+#' Apply model confidence set (MCS) procedure to a selection of models
 #'
 #' @author Samuel Borms
 #'
-#' @description Calculates the model confidence set (see ``The Model Confidence Set"; Hansen, Lunde and Nason, 2011) as
+#' @description Calculates the model confidence set (see ``The Model Confidence Set´´; Hansen, Lunde and Nason, 2011) as
 #' implemented in the \pkg{MCS} package, for a set of different \code{sentomodeliter} objects.
 #'
 #' @param models a named list of \code{sentomodeliter} objects. All models should be of the same family, being either
@@ -772,10 +772,11 @@ predict.sentomodel <- function(object, newx, type, offset = NULL, ...) {
 #' @param loss a single \code{character} vector, either \code{"DA"} (directional \emph{in}accuracy), \code{"errorSq"}
 #' (squared errors), \code{"AD"} (absolute errors) or \code{"accuracy"} (\emph{in}accurate class predictions). This argument
 #' defines on what basis the model confidence set is calculated. The first three options are available for \code{"gaussian"}
-#' models, the last option applies only to \code{"binomial"} or \code{"multinomial"} models.
-#' @param ... other parameters that can be supplied to the \code{\link[MCS]{MCSprocedure}} function.
+#' models, the last option applies only to \code{"binomial"} and \code{"multinomial"} models.
+#' @param ... other parameters that can be supplied to the \code{\link[MCS]{MCSprocedure}} function. If empty, its default
+#' values are used.
 #'
-#' @return An object as returned from the \code{\link[MCS]{MCSprocedure}} function.
+#' @return An object as returned by the \code{\link[MCS]{MCSprocedure}} function.
 #'
 #' @seealso \code{\link{sento_model}}, \code{\link[MCS]{MCSprocedure}}
 #'
@@ -800,26 +801,26 @@ predict.sentomodel <- function(object, newx, type, offset = NULL, ...) {
 #' sentMeas2 <- sento_measures(corpus, l, ctr2)
 #'
 #' # prepare y and other x variables
-#' y <- epu[epu$date >= sentomeasures$measures$date[1], ]$index
-#' length(y) == nrow(sentomeasures$measures) # TRUE
+#' y <- epu[epu$date >= sentMeas1$measures$date[1], ]$index
+#' length(y) == nrow(sentMeas1$measures) # TRUE
 #' x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
 #' colnames(x) <- c("x1", "x2")
 #'
 #' # estimate different type of regressions
 #' ctr1 <- ctr_model(model = "gaussian", type = "AIC", do.iter = TRUE,
-#'                   h = 0, nSample = 120, start = 276)
+#'                   h = 0, nSample = 120, start = 50)
 #' out1 <- sento_model(sentMeas1, y, x = x, ctr = ctr1)
 #'
 #' ctr2 <- ctr_model(model = "gaussian", type = "AIC", do.iter = TRUE,
-#'                   h = 0, nSample = 120, start = 276)
+#'                   h = 0, nSample = 120, start = 50)
 #' out2 <- sento_model(sentMeas1, y, x = NULL, ctr = ctr2)
 #'
 #' ctr3 <- ctr_model(model = "gaussian", type = "AIC", do.iter = TRUE,
-#'                   h = 0, nSample = 120, start = 276)
+#'                   h = 0, nSample = 120, start = 50)
 #' out3 <- sento_model(sentMeas2, y, x = x, ctr = ctr3)
 #'
 #' ctr4 <- ctr_model(model = "gaussian", type = "AIC", do.iter = TRUE,
-#'                   h = 0, nSample = 120, start = 276)
+#'                   h = 0, nSample = 120, start = 50)
 #' out4 <- sento_model(sentMeas2, y, x = NULL, ctr = ctr4)
 #'
 #' mcs <- perform_MCS(models = list(m1 = out1, m2 = out2, m3 = out3, m4 = out4),

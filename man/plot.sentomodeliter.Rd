@@ -7,12 +7,12 @@
 \method{plot}{sentomodeliter}(x, ...)
 }
 \arguments{
-\item{x}{a \code{sentomeasures} object.}
+\item{x}{a \code{sentomodeliter} object.}
 
 \item{...}{not used.}
 }
 \value{
-Returns a simple \pkg{ggplot2} plot, which can be added onto (or to alter its default elements) by using the
+Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using the
 \code{+} operator (see examples).
 }
 \description{
@@ -34,11 +34,11 @@ ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional",
                by = "month", lag = 3)
 sentomeasures <- sento_measures(corpus, l, ctr)
 
-# prepare y and other x variables
+# prepare y variable
 y <- epu[epu$date >= sentomeasures$measures$date[1], ]$index
 length(y) == nrow(sentomeasures$measures) # TRUE
 
-# estimate regression iteratively based on a sample of 60, skipping the first 25 samples
+# estimate regression iteratively based on a sample of 60, skipping first 25 iterations
 ctr <- ctr_model(model = "gaussian", type = "AIC", do.iter = TRUE,
                  h = 0, nSample = 60, start = 26)
 out <- sento_model(sentomeasures, y, ctr = ctr)

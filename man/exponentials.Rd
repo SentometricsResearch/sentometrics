@@ -15,7 +15,8 @@ exponentials(n, alphas = seq(0.1, 0.5, by = 0.1))
 A \code{data.frame} of exponential weighting curves per value of \code{alphas}.
 }
 \description{
-Computes exponential weighting curves; handy to self-select specific time aggregation weighting schemes.
+Computes exponential weighting curves. Handy to self-select specific time aggregation weighting schemes
+for input in \code{\link{ctr_agg}}.
 }
 \seealso{
 \code{\link{ctr_agg}}

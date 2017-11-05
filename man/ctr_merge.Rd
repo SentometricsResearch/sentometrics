@@ -12,13 +12,16 @@ ctr_merge(sentomeasures, features = NA, lexicons = NA, time = NA,
 make sense.}
 
 \item{features}{a list with unique features to merge at given name, e.g. \cr
-\code{list(feat12 = c("feat1", "feat2"))}. See \code{sentomeasures$features} for the exact names to use.}
+\code{list(feat12 = c("feat1", "feat2"))}. See \code{sentomeasures$features} for the exact names to use. Use \code{NA} to
+apply no merging across this dimension.}
 
 \item{lexicons}{a list with unique lexicons to merge at given name, e.g. \cr
-\code{list(lex12 = c("lex1", "lex2"))}. See \code{sentomeasures$lexicons} for the exact names to use.}
+\code{list(lex12 = c("lex1", "lex2"))}. See \code{sentomeasures$lexicons} for the exact names to use. Use \code{NA} to
+apply no merging across this dimension.}
 
 \item{time}{a list with unique time weighting schemes to merge at given name, e.g. \cr
-\code{list(tw12 = c("tw1", "tw2"))}. See \code{sentomeasures$time} for the exact names to use.}
+\code{list(tw12 = c("tw1", "tw2"))}. See \code{sentomeasures$time} for the exact names to use. Use \code{NA} to
+apply no merging across this dimension.}
 
 \item{do.keep}{a \code{logical} indicating if the original sentiment measures should be kept (i.e. the merged
 sentiment measures will be added to the current sentiment measures as additional indices if \code{TRUE}).}
@@ -27,7 +30,8 @@ sentiment measures will be added to the current sentiment measures as additional
 A list encapsulating the control parameters.
 }
 \description{
-Sets up control object for the optional merging (additional aggregation) of sentiment measures.
+Sets up control object for the optional merging (additional aggregation) of sentiment measures as
+done by \code{\link{merge_measures}}.
 }
 \examples{
 data("usnews")

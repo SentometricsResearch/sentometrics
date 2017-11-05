@@ -7,9 +7,10 @@
 almons(n, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE)
 }
 \arguments{
-\item{n}{a single \code{numeric} to indicate the length of the curve (the number of lags, cf. \emph{n} in the formula).}
+\item{n}{a single \code{numeric} to indicate the length of the curve (the number of lags, cf. \emph{n}).}
 
-\item{orders}{a \code{numeric} vector as the sequence the Almon orders (cf. \emph{b} in the formula).}
+\item{orders}{a \code{numeric} vector as the sequence of the Almon orders (cf. \emph{b}). The maximum value
+corresponds to \emph{B}.}
 
 \item{do.inverse}{\code{TRUE} if the inverse Almon polynomials should be calculated as well.}
 
@@ -20,11 +21,12 @@ A \code{data.frame} of all Almon polynomial weighting curves, of size \code{leng
 \code{do.inverse = TRUE}).
 }
 \description{
-Computes Almon polynomial weighting curves; handy to self-select specific time aggregation weighting schemes.
+Computes Almon polynomial weighting curves. Handy to self-select specific time aggregation weighting schemes
+for input in \code{\link{ctr_agg}}.
 }
 \details{
 The Almon polynomial formula implemented is:
-\eqn{(1 - (i/n)^{b})(i/n)^{max(b) - b}}{(1 - (i/n)^b) * (i/n)^(max(b) - b)}.
+\eqn{(1 - (i/n)^{b})(i/n)^{B - b}}{(1 - (i/n)^b) * (i/n)^(B - b)}.
 }
 \seealso{
 \code{\link{ctr_agg}}

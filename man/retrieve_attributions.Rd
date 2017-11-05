@@ -9,7 +9,7 @@ retrieve_attributions(model, sentomeasures, do.normalize, refDates, factor)
 \arguments{
 \item{model}{a \code{sentomodel} or \code{sentomodeliter} object.}
 
-\item{sentomeasures}{the \code{sentomeasures} object used to estimate the \code{sentomodel} object argument.}
+\item{sentomeasures}{the \code{sentomeasures} object used to estimate the model from the first argument.}
 
 \item{do.normalize}{a \code{logical}, \code{TRUE} divides each element of every attribution vector at a given date by its
 L2-norm at that date, normalizing the values between -1 and 1. The document attributions are not normalized.}
@@ -25,10 +25,10 @@ case of (a) multinomial model(s). Ignored for linear and binomial models.}
 }
 \value{
 A list with all dimensions for which aggregation is computed, being \code{"documents"}, \code{"lexicons"},
-\code{"features"} and \code{"time"}. The last four dimensions are \code{data.table}s having a \code{"date"}
-column and the other columns the different names of the dimension, with the attributions as values. For document-level
-attribution, the list is further decomposed into a \code{data.table} per date, with \code{"id"}, \code{date} and
-\code{attrib} columns.
+\code{"features"} and \code{"time"}. The last three dimensions are \code{data.table}s having a \code{"date"}
+column and the other columns the different components of the dimension, with the attributions as values. For document-level
+attribution, the list is further decomposed into a \code{data.table} per date, with \code{"id"}, \code{"date"} and
+\code{"attrib"} columns.
 }
 \description{
 Computes the attributions to predictions for a (given) number of dates at all possible sentiment dimensions,

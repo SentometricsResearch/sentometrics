@@ -161,7 +161,7 @@ retrieve_attributions.sentomodeliter <- compiler::cmpfun(.retrieve_attributions.
 #' calculated with respect to the last factor level or factor column.
 #'
 #' @param model a \code{sentomodel} or \code{sentomodeliter} object.
-#' @param sentomeasures the \code{sentomeasures} object used to estimate the \code{sentomodel} object argument.
+#' @param sentomeasures the \code{sentomeasures} object used to estimate the model from the first argument.
 #' @param do.normalize a \code{logical}, \code{TRUE} divides each element of every attribution vector at a given date by its
 #' L2-norm at that date, normalizing the values between -1 and 1. The document attributions are not normalized.
 #' @param refDates the dates at which attribution is to be performed. These should be between the latest date available in the
@@ -173,10 +173,10 @@ retrieve_attributions.sentomodeliter <- compiler::cmpfun(.retrieve_attributions.
 #' case of (a) multinomial model(s). Ignored for linear and binomial models.
 #'
 #' @return A list with all dimensions for which aggregation is computed, being \code{"documents"}, \code{"lexicons"},
-#' \code{"features"} and \code{"time"}. The last four dimensions are \code{data.table}s having a \code{"date"}
-#' column and the other columns the different names of the dimension, with the attributions as values. For document-level
-#' attribution, the list is further decomposed into a \code{data.table} per date, with \code{"id"}, \code{date} and
-#' \code{attrib} columns.
+#' \code{"features"} and \code{"time"}. The last three dimensions are \code{data.table}s having a \code{"date"}
+#' column and the other columns the different components of the dimension, with the attributions as values. For document-level
+#' attribution, the list is further decomposed into a \code{data.table} per date, with \code{"id"}, \code{"date"} and
+#' \code{"attrib"} columns.
 #'
 #' @seealso \code{\link{sento_model}}
 #'
@@ -185,23 +185,23 @@ retrieve_attributions <- function(model, sentomeasures, do.normalize, refDates, 
   UseMethod("retrieve_attributions", model)
 }
 
-#' Plot prediction attribution at specified level
+#' Plot prediction attributions at specified level
 #'
-#' @author Samuel Borms
+#' @author Samuel Borms, Keven Bluteau
 #'
 #' @description Shows a plot of the attributions along the dimension provided, stacked per date.
 #'
 #' @details See \code{\link{sento_model}} for an elaborate modelling example including the calculation and plotting of
-#' attributions. This function does not handle the plotting of the attribution of individual documents, since there are often
-#' a lot of documents involved and de facto they appear only once at one date (even though a document may contribute to
+#' attributions. This function does not handle the plotting of the attribution of individual documents, since there are
+#' often a lot of documents involved and they appear only once at one date (even though a document may contribute to
 #' predictions at several dates, depending on the number of lags in the time aggregation).
 #'
 #' @param attributions an output from a \code{\link{retrieve_attributions}} call.
 #' @param group a value from \code{c("lexicons", "features", "time")}.
 #'
-#' @return Returns a simple \pkg{ggplot2} plot, which can be added onto (or to alter its default elements) by using the
-#' \code{+} operator (see examples). By default, a legend is positioned at the top if the number of dimensions (thus, individual
-#' plots) is at maximum twelve.
+#' @return Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using the
+#' \code{+} operator (see examples). By default, a legend is positioned at the top if the number of components of the dimension
+#' (thus, individual line graphs) is at maximum twelve.
 #'
 #' @import ggplot2
 #' @export

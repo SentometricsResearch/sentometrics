@@ -12,22 +12,22 @@ ctr_agg(howWithin = "proportional", howDocs = "equal_weight",
 }
 \arguments{
 \item{howWithin}{a single \code{character} vector defining how aggregation within documents will be performed. Should
-\code{length(howWithin) > 1}, the first element is used. For currently available options on how aggregation can occer, see
+\code{length(howWithin) > 1}, the first element is used. For currently available options on how aggregation can occur, see
 \code{get_hows()$words}.}
 
 \item{howDocs}{a single \code{character} vector defining how aggregation across documents per date will be performed.
-Should \code{length(howDocs) > 1}, the first element is used. For currently available options on how aggregation can occer,
+Should \code{length(howDocs) > 1}, the first element is used. For currently available options on how aggregation can occur,
 see \code{get_hows()$docs}.}
 
 \item{howTime}{a \code{character} vector defining how aggregation across dates will be performed. More than one choice
-is possible here. For currently available options on how aggregation can occer, see \code{get_hows()$time}.}
+is possible. For currently available options on how aggregation can occur, see \code{get_hows()$time}.}
 
 \item{do.ignoreZeros}{a \code{logical} indicating whether zero sentiment values have to be ignored in the determination of
 the document weights while aggregating across documents. By default \code{TRUE}, such that documents with an exact score of
 zero are considered irrelevant.}
 
 \item{by}{a single \code{character} vector, either \code{"day", "week", "month"} or \code{"year"}, to indicate at what
-level the dates should be aggregated. Dates will be displayed as the first day of the period, if applicable (e.g.
+level the dates should be aggregated. Dates are displayed as the first day of the period, if applicable (e.g.
 \code{"2017-03-01"} for March 2017).}
 
 \item{lag}{a single \code{integer} vector, being the time lag to be specified for aggregation across time. By default
@@ -39,28 +39,23 @@ applying the \code{\link{fill_measures}} function before aggregating, except if 
 \code{"zero"}, which sets the scores (and thus also the weights) of the added dates to zero in the time aggregation.}
 
 \item{alphasExp}{a \code{numeric} vector of all exponential smoothing factors to calculate weights for, used if
-\code{"exponential" \%in\% howTime}. Values should be betwoon 0 and 1 (both excluded).}
+\code{"exponential" \%in\% howTime}. Values should be between 0 and 1 (both excluded).}
 
 \item{ordersAlm}{a \code{numeric} vector of all Almon polynomial orders to calcalute weights for, used if
 \code{"almon" \%in\% howTime}.}
 
-\item{do.inverseAlm}{a \code{logical} indicating if for every Almon polynomial its inverse has to be calculated too, used
+\item{do.inverseAlm}{a \code{logical} indicating if for every Almon polynomial its inverse has to be added, used
 if \code{"almon" \%in\% howTime}.}
 
 \item{do.normalizeAlm}{a \code{logical} indicating if every Almon polynomial weights column should sum to one, used if
 \code{"almon" \%in\% howTime}.}
 
 \item{weights}{an optional own weighting scheme, always used if provided as a \code{data.frame} with the number of rows
-equal to the desired \code{lag}. The automatic Almon polynomials and exponential weighting functions are created
-sequentially; if the user wants only specific of such time weighting series it can use \code{\link{almons}} and
-\code{\link{exponentials}}, select the columns it requires, combine it into a \code{data.frame} and supply it under this
-argument (see examples).}
+equal to the desired \code{lag}. The automatic Almon polynomials are created sequentially; if the user wants only specific
+of such time weighting series it can use \code{\link{almons}}, select the columns it requires, combine it into a
+\code{data.frame} and supply it under this argument (see examples).}
 
-\item{dfm}{optional; an output from a \code{\link[quanteda]{dfm}} call, such that users can specify their own tokenization scheme
-(via \code{\link[quanteda]{tokenize}}) as well as other parameters related to the construction of a document-feature matrix
-(dfm). By default, a dfm is created based on a tokenization that removes punctuation, numbers, symbols and separators. We
-suggest to stick to unigrams, as the remainder of the sentiment computation (in \code{\link{compute_sentiment}}) and built-in
-lexicons assume the same.}
+\item{dfm}{optional; see \code{\link{compute_sentiment}}.}
 }
 \value{
 A list encapsulating the control parameters.
@@ -70,8 +65,8 @@ Sets up control object for aggregation of document-level textual sentiment into 
 sentiment measures (indices).
 }
 \details{
-For currently available options on how aggregation can occer (via the \code{howWithin},
-\code{howDocs} and \code{howTime} parameters), call \code{\link{get_hows}}.
+For currently available options on how aggregation can occur (via the \code{howWithin},
+\code{howDocs} and \code{howTime} arguments), call \code{\link{get_hows}}.
 }
 \examples{
 # simple control function
@@ -90,15 +85,14 @@ ctr2 <- ctr_agg(howWithin = "tf-idf",
                 alphasExp = c(0.20, 0.50, 0.70, 0.95),
                 weights = data.frame(myWeights = runif(20)))
 
-# set up control function with one linear, two Almon and two exponential weighting schemes
+# set up control function with one linear and two chosen Almon weighting schemes
 a <- almons(n = 70, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE)
-e <- exponentials(n = 70, alphas = c(0.4, 0.8))
 ctr3 <- ctr_agg(howTime = c("linear", "own"), by = "year", lag = 70,
-                weights = data.frame(a1 = a[, 1], a2 = a[, 3], e1 = e[, 1], e2 = e[, 2]))
+                weights = data.frame(a1 = a[, 1], a2 = a[, 3]))
 
 }
 \seealso{
-\code{\link{fill_measures}}, \code{\link{compute_sentiment}}
+\code{\link{fill_measures}}, \code{\link{almons}}, \code{\link{compute_sentiment}}
 }
 \author{
 Samuel Borms, Keven Bluteau

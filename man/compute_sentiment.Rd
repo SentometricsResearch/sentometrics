@@ -12,25 +12,25 @@ compute_sentiment(sentocorpus, lexicons, how = get_hows()$words, dfm = NULL)
 \item{lexicons}{output from a \code{\link{setup_lexicons}} call.}
 
 \item{how}{a single \code{character} vector defining how aggregation within documents should be performed. For currently
-available options on how aggregation can occer, see \code{get_hows()$words}.}
+available options on how aggregation can occur, see \code{get_hows()$words}.}
 
-\item{dfm}{optional; an output from a \code{\link[quanteda]{dfm}} call, such that users can specify their own tokenization
-scheme (via \code{\link[quanteda]{tokenize}}) as well as other parameters related to the construction of a document-feature
-matrix (dfm). By default, a dfm is created based on a tokenization that removes punctuation, numbers, symbols and
-separators. We suggest to stick to unigrams, as the remainder of the sentiment computation and built-in lexicons assume
-the same.}
+\item{dfm}{optional; an output from a \pkg{quanteda} \code{\link[quanteda]{dfm}} call, such that users can specify their own
+tokenization scheme (via \code{\link[quanteda]{tokenize}}) as well as other parameters related to the construction of a
+document-feature matrix (dfm). By default, a dfm is created based on a tokenization that removes punctuation, numbers,
+symbols and separators. We suggest to stick to unigrams, as the remainder of the sentiment computation and built-in lexicons
+assume the same.}
 }
 \value{
 A list containing:
 \item{corpus}{the supplied \code{sentocorpus} object; the texts are altered if valence shifters are part of the lexicons.}
-\item{sentiment}{the sentiment scores \code{data.table} with a \code{date} and lexicon--feature sentiment scores columns.}
+\item{sentiment}{the sentiment scores \code{data.table} with a \code{"date"} and all lexicon--feature sentiment scores columns.}
 \item{features}{a \code{character} vector of the different features.}
 \item{lexicons}{a \code{character} vector of the different lexicons used.}
 \item{howWithin}{a \code{character} vector to remind how sentiment within documents was aggregated.}
 }
 \description{
 Given a corpus of texts, computes sentiment per document using the bag-of-words approach,
-based on the lexicons provided and a choice of aggregation across words per document scheme. Relies partly on the
+based on the lexicons provided and a choice of aggregation across words per document. Relies partly on the
 \pkg{quanteda} package. The scores computed are net sentiment (sum of positive minus sum of negative scores).
 }
 \details{
@@ -53,7 +53,7 @@ sent <- compute_sentiment(corpusSample, l, how = "counts")
 \dontrun{
 # same sentiment computation based on a user-supplied dfm with default settings
 dfm <- quanteda::dfm(quanteda::tokenize(corpus), verbose = FALSE)
-sent <- compute_sentiment(corpus, l, how = "counts", dfm = dfm)}
+sent <- compute_sentiment(corpusSample, l, how = "counts", dfm = dfm)}
 
 }
 \seealso{

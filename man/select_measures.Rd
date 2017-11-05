@@ -29,7 +29,8 @@ and statistics, but the original sentiment scores \code{data.table} untouched.
 }
 \description{
 Selects the subset of sentiment measures which include either all of the given selection components combined,
-or those who's name consist of at least one of the selection components. Selecting a subset of dates
+or those who's name consist of at least one of the selection components. One can also extract measures within a subset
+of dates.
 }
 \examples{
 data("usnews")
