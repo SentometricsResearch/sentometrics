@@ -3,7 +3,7 @@
 \docType{data}
 \name{usnews}
 \alias{usnews}
-\title{Texts relevant (and not) to the U.S. economy}
+\title{Texts (not) relevant to the U.S. economy}
 \format{A \code{data.frame}, formatted as required to be an input for \code{\link{sento_corpus}}.}
 \source{
 \href{https://www.crowdflower.com/data-for-everyone/}{Economic News Article Tone and Relevance}
@@ -17,7 +17,7 @@ journals in the U.S. (The Wall Street Journal and The Washington Post) and cover
 contains following information:
 
 \itemize{
-  \item id. a \code{character} ID identifier.
+  \item id. A \code{character} ID identifier.
   \item date. Date as \code{"yyyy-mm-dd"}.
   \item text. Texts in \code{character} format.
   \item wsj. Equals 1 if the article comes from The Wall Street Journal.

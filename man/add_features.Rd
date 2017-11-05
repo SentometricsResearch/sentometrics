@@ -13,15 +13,16 @@ add_features(sentocorpus, featuresdf = NULL, keywords = NULL)
 \code{sentocorpus} inputted. If the number of rows in \code{featuresdf} is not equal to the number of documents
 in \code{sentocorpus}, recycling will occur.}
 
-\item{keywords}{a named \code{character} vector. For every element in this vector, a new feature column will be added with
-as value 1 for the texts in which the element (e.g. a word) appears, and 0 if not. The names of the vector are used as the
-names of the new features.}
+\item{keywords}{a named \code{character} vector. For every element in this vector, a new feature column is added with a
+value of 1 for the texts in which the element (e.g. a word) appears, and 0 if not. If no texts match a keyword, no column
+is added. The names of the vector are used as the names of the new features.}
 }
 \value{
 An updated \code{sentocorpus} object.
 }
 \description{
-Adds new named feature columns to provided \code{sentocorpus} object.
+Adds new feature columns, either user-supplied or based on a simple keyword(s) search, to provided
+\code{sentocorpus} object.
 }
 \details{
 If a provided feature name is already part of the corpus, it will be replaced. The \code{featuresdf} and
@@ -32,11 +33,11 @@ data("usnews")
 
 # construct a corpus and add random features to it
 corpus <- sento_corpus(corpusdf = usnews)
-corpus <- add_features(corpus,
-                       featuresdf = data.table(random = runif(quanteda::ndoc(corpus))))
-corpus <- add_features(corpus,
-                       featuresdf = data.table(random = runif(quanteda::ndoc(corpus))),
-                       keywords = c(pres = "president", war = "war"))
+corpus1 <- add_features(corpus,
+                        featuresdf = data.frame(random = runif(quanteda::ndoc(corpus))))
+corpus2 <- add_features(corpus,
+                        keywords = c(pres = "president", war = "war"))
+
 }
 \author{
 Samuel Borms

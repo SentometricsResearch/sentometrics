@@ -25,8 +25,9 @@ row names.
 \description{
 Merges all sentiment measures into one global textual sentiment measure based on a set of weights to
 indicate the importance of each component in the \code{lexicons}, \code{features} and \code{time} vectors as specified
-in the input \code{sentomeasures} object. The global measure is composed as the multiplication of the individual weights
-across the three dimensions times the sentiment value per date observation.
+in the input \code{sentomeasures} object. Every measure receives a weight in the global measure equal to the multiplication
+of the supplied weights of the components it is contained of. The global sentiment measure then corresponds to a
+weighted average of these weights times the sentiment scores, per date.
 }
 \details{
 This function returns no \code{sentomeasures} object, however the global sentiment measure as outputted can

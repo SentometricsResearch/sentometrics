@@ -16,8 +16,8 @@ the second assumes missing dates represent constant sentiment.}
 A modified \code{sentomeasures} object.
 }
 \description{
-Adds missing dates between earliest and latest date, such that time series is continuous on a period-by-period
-basis. Fills in these dates with either 0, the respective latest non-missing value or \code{NA}.
+Adds missing dates between earliest and latest date of a \code{sentomeasures} object, such that time series
+is continuous date-wise. Fills in these dates with either 0, the respective latest non-missing value or \code{NA}.
 }
 \examples{
 data("usnews")

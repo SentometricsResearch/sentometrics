@@ -7,17 +7,17 @@
 perform_agg(toAgg, ctr)
 }
 \arguments{
-\item{toAgg}{output from a \code{\link{compute_sentiment}} call, a list with as main component a sentiment scores
-\code{data.table} with dates and lexicon--feature sentiment scores columns.}
+\item{toAgg}{output from a \code{\link{compute_sentiment}} call.}
 
-\item{ctr}{output from a \code{\link{ctr_agg}} call.}
+\item{ctr}{output from a \code{\link{ctr_agg}} call. The \code{"howWithin"} argument plays no more role.}
 }
 \value{
 A \code{sentomeasures} object.
 }
 \description{
 Condense document-level textual sentiment scores into a panel of textual sentiment
-measures by aggregating across documents and time.
+measures by aggregating across documents and time. This function is called within \code{\link{sento_measures}},
+applied on the output of \code{\link{compute_sentiment}}.
 }
 \examples{
 data("usnews")

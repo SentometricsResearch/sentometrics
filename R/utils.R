@@ -43,13 +43,15 @@ include_valence <- function(texts, val, valIdentifier = c(" NOT_", " VERY_", " H
 
 #' Compute Almon polynomials
 #'
-#' @description Computes Almon polynomial weighting curves; handy to self-select specific time aggregation weighting schemes.
+#' @description Computes Almon polynomial weighting curves. Handy to self-select specific time aggregation weighting schemes
+#' for input in \code{\link{ctr_agg}}.
 #'
 #' @details The Almon polynomial formula implemented is:
-#' \eqn{(1 - (i/n)^{b})(i/n)^{max(b) - b}}{(1 - (i/n)^b) * (i/n)^(max(b) - b)}.
+#' \eqn{(1 - (i/n)^{b})(i/n)^{B - b}}{(1 - (i/n)^b) * (i/n)^(B - b)}.
 #'
-#' @param n a single \code{numeric} to indicate the length of the curve (the number of lags, cf. \emph{n} in the formula).
-#' @param orders a \code{numeric} vector as the sequence the Almon orders (cf. \emph{b} in the formula).
+#' @param n a single \code{numeric} to indicate the length of the curve (the number of lags, cf. \emph{n}).
+#' @param orders a \code{numeric} vector as the sequence of the Almon orders (cf. \emph{b}). The maximum value
+#' corresponds to \emph{B}.
 #' @param do.inverse \code{TRUE} if the inverse Almon polynomials should be calculated as well.
 #' @param do.normalize \code{TRUE} if polynomials should be normalized to unity.
 #'
@@ -73,7 +75,7 @@ almons <- function(n, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE) {
     stdindex <- vals/max(vals)
     if (do.inverse) {
       stdindex <- cbind(stdindex, - stdindex + 1)
-      ind <- (i*2-1):(i*2)
+      ind <- (i*2 - 1):(i*2)
     } else {
       ind <- i
     }
@@ -86,7 +88,8 @@ almons <- function(n, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE) {
 
 #' Compute exponential weighting curves
 #'
-#' @description Computes exponential weighting curves; handy to self-select specific time aggregation weighting schemes.
+#' @description Computes exponential weighting curves. Handy to self-select specific time aggregation weighting schemes
+#' for input in \code{\link{ctr_agg}}.
 #'
 #' @param n a single \code{numeric} to indicate the length of the curve (the number of lags).
 #' @param alphas a \code{numeric} vector of decay factors.
@@ -142,8 +145,8 @@ setup_time_weights <- function(lag, how, ...) {
 #' @description Call for information purposes only. Used within \code{\link{ctr_agg}} to check if supplied
 #' aggregation hows are supported.
 #'
-#' @return A list with the supported aggregation hows for arguments \code{howWithin} (within documents), \code{howDows}
-#' (across documents, per date) and \code{howTime} (across dates), to be supplied to \code{\link{ctr_agg}}.
+#' @return A list with the supported aggregation hows for arguments \code{howWithin} (\code{"words"}), \code{howDows}
+#' (\code{"docs"}) and \code{howTime} (\code{"time"}), to be supplied to \code{\link{ctr_agg}}.
 #'
 #' @seealso \code{\link{ctr_agg}}
 #'

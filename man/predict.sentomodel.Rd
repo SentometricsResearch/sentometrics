@@ -22,7 +22,7 @@ variables. Variables discarded in the regression process are discarded again her
 \item{...}{not used.}
 }
 \value{
-A prediction output depending on the \code{type} argument provided.
+A prediction output depending on the \code{type} argument.
 }
 \description{
 Prediction method for \code{sentomodel} class, with usage along the lines of

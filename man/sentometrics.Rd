@@ -7,18 +7,18 @@
 \alias{sentometrics-package}
 \title{An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction}
 \description{
-The sentometrics package is designed to do time series analysis based on textual sentiment. It accounts
+The \pkg{sentometrics} package is designed to do time series analysis based on textual sentiment. It accounts
 for the intrinsic challenge that, for a given text, sentiment can be computed in many ways, as well as the large
 number of possibilities to pool sentiment across text and time. This additional layer of manipulation does not
 exist in standard time series analysis and text mining packages. As a final outcome, this package provides an automated means
 to econometrically model the impact of sentiment in texts on a given variable, by first computing a wide range of textual
 sentiment time series and then selecting the sentiment times series that are most informative. The package created
-therefore integrates the qualification of sentiment from texts, the aggregation into different sentiment measures
-and the optimized prediction based on these measures.
+therefore integrates the \emph{qualification} of sentiment from texts, the \emph{aggregation} into different sentiment measures
+and the optimized \emph{prediction} based on these measures.
 }
 \note{
 The ideas behind the sentiment aggregation framework can be consulted in the working paper titled ``Questioning the
-news about economic growth: Sparse forecasting using thousands of news-based sentiment values" (Ardia, Bluteau & Boudt,
+news about economic growth: Sparse forecasting using thousands of news-based sentiment values´´ (Ardia, Bluteau and Boudt,
 2017) at \url{https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2976084}.
 
 Please cite the package in publications. Use \code{citation("sentometrics")}.
@@ -36,7 +36,7 @@ Please cite the package in publications. Use \code{citation("sentometrics")}.
 
 \section{Update}{
 
-The latest version of the package is available at \url{https://github.com/ArdiaD/Sentometrics}.
+The development version of the package is available at \url{https://github.com/ArdiaD/Sentometrics}.
 }
 
 \seealso{

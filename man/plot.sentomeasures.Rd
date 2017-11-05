@@ -16,7 +16,7 @@ in a separate color, but this may look visually overwhelming very fast, and can 
 \item{...}{not used.}
 }
 \value{
-Returns a simple \pkg{ggplot2} plot, which can be added onto (or to alter its default elements) by using the
+Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using the
 \code{+} operator (see examples). By default, a legend is positioned at the top if there are at maximum twelve line graphs
 plotted.
 }
@@ -45,7 +45,7 @@ plot(sentomeasures, group = "features")
 p <- plot(sentomeasures)
 p <- p +
   ggthemes::theme_base() +
-  scale_x_date(name = "date") +
+  scale_x_date(name = "month-year") +
   scale_y_continuous(name = "newName")
 p
 

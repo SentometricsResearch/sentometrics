@@ -2,7 +2,7 @@
 % Please edit documentation in R/attribution.R
 \name{plot_attributions}
 \alias{plot_attributions}
-\title{Plot prediction attribution at specified level}
+\title{Plot prediction attributions at specified level}
 \usage{
 plot_attributions(attributions, group = "features")
 }
@@ -12,19 +12,19 @@ plot_attributions(attributions, group = "features")
 \item{group}{a value from \code{c("lexicons", "features", "time")}.}
 }
 \value{
-Returns a simple \pkg{ggplot2} plot, which can be added onto (or to alter its default elements) by using the
-\code{+} operator (see examples). By default, a legend is positioned at the top if the number of dimensions (thus, individual
-plots) is at maximum twelve.
+Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using the
+\code{+} operator (see examples). By default, a legend is positioned at the top if the number of components of the dimension
+(thus, individual line graphs) is at maximum twelve.
 }
 \description{
 Shows a plot of the attributions along the dimension provided, stacked per date.
 }
 \details{
 See \code{\link{sento_model}} for an elaborate modelling example including the calculation and plotting of
-attributions. This function does not handle the plotting of the attribution of individual documents, since there are often
-a lot of documents involved and de facto they appear only once at one date (even though a document may contribute to
+attributions. This function does not handle the plotting of the attribution of individual documents, since there are
+often a lot of documents involved and they appear only once at one date (even though a document may contribute to
 predictions at several dates, depending on the number of lags in the time aggregation).
 }
 \author{
-Samuel Borms
+Samuel Borms, Keven Bluteau
 }

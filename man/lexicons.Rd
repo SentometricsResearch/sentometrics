@@ -20,7 +20,7 @@ data("lexicons")
 \description{
 A list containing all built-in lexicons as a \code{data.table} with two columns: a \code{x} column with the words, and a
 \code{y} column with the polarities. The list element names incorporate consecutively the name and language, and
-\code{"_tr"} as suffix if the lexicon is translated. The lexicons are in the form required for further sentiment analysis.
+\code{"_tr"} as suffix if the lexicon is translated. The lexicons are in the format required for further sentiment analysis.
 The built-in lexicons are the following:
 
 \itemize{

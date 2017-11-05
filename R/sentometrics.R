@@ -4,14 +4,14 @@
 #'
 #' @title An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction
 #'
-#' @description The sentometrics package is designed to do time series analysis based on textual sentiment. It accounts
+#' @description The \pkg{sentometrics} package is designed to do time series analysis based on textual sentiment. It accounts
 #' for the intrinsic challenge that, for a given text, sentiment can be computed in many ways, as well as the large
 #' number of possibilities to pool sentiment across text and time. This additional layer of manipulation does not
 #' exist in standard time series analysis and text mining packages. As a final outcome, this package provides an automated means
 #' to econometrically model the impact of sentiment in texts on a given variable, by first computing a wide range of textual
 #' sentiment time series and then selecting the sentiment times series that are most informative. The package created
-#' therefore integrates the qualification of sentiment from texts, the aggregation into different sentiment measures
-#' and the optimized prediction based on these measures.
+#' therefore integrates the \emph{qualification} of sentiment from texts, the \emph{aggregation} into different sentiment measures
+#' and the optimized \emph{prediction} based on these measures.
 #'
 #' @section Main functions:
 #' \itemize{
@@ -23,12 +23,12 @@
 #' }
 #'
 #' @section Update:
-#' The latest version of the package is available at \url{https://github.com/ArdiaD/Sentometrics}.
+#' The development version of the package is available at \url{https://github.com/ArdiaD/Sentometrics}.
 #'
 #' @author Samuel Borms, Keven Bluteau, David Ardia and Kris Boudt.
 #'
 #' @note The ideas behind the sentiment aggregation framework can be consulted in the working paper titled ``Questioning the
-#' news about economic growth: Sparse forecasting using thousands of news-based sentiment values" (Ardia, Bluteau & Boudt,
+#' news about economic growth: Sparse forecasting using thousands of news-based sentiment values´´ (Ardia, Bluteau and Boudt,
 #' 2017) at \url{https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2976084}.
 #'
 #' @note Please cite the package in publications. Use \code{citation("sentometrics")}.
@@ -41,7 +41,7 @@
 #' @description
 #' A list containing all built-in lexicons as a \code{data.table} with two columns: a \code{x} column with the words, and a
 #' \code{y} column with the polarities. The list element names incorporate consecutively the name and language, and
-#' \code{"_tr"} as suffix if the lexicon is translated. The lexicons are in the form required for further sentiment analysis.
+#' \code{"_tr"} as suffix if the lexicon is translated. The lexicons are in the format required for further sentiment analysis.
 #' The built-in lexicons are the following:
 #'
 #' \itemize{
@@ -78,7 +78,7 @@
 #'
 #' @description
 #' A list containing all built-in valence word lists, a \code{data.table} with three columns: a \code{x} column with the
-#' words, a \code{t} column with the type of valence words, and a \code{y} column with the value associated to a word and
+#' words, a \code{t} column with the type of valence words, and a \code{y} column with the values associated to each word and
 #' type of valence shifter. The list element names incorporate the language of the valence word list. All non-English word
 #' lists are translated. The valence word lists are in the form required for further sentiment analysis. The built-in valence
 #' word lists are the following:
@@ -96,7 +96,7 @@
 #' @source \code{\link[lexicon]{hash_valence_shifters}} (negators)
 "valence"
 
-#' Texts relevant (and not) to the U.S. economy
+#' Texts (not) relevant to the U.S. economy
 #'
 #' @docType data
 #'
@@ -106,7 +106,7 @@
 #' contains following information:
 #'
 #' \itemize{
-#'   \item id. a \code{character} ID identifier.
+#'   \item id. A \code{character} ID identifier.
 #'   \item date. Date as \code{"yyyy-mm-dd"}.
 #'   \item text. Texts in \code{character} format.
 #'   \item wsj. Equals 1 if the article comes from The Wall Street Journal.
@@ -138,11 +138,11 @@
 #'
 #' \itemize{
 #'   \item date. Date as \code{"yyyy-mm-01"}.
-#'   \item index A \code{numeric} monthly index value.
+#'   \item index. A \code{numeric} monthly index value.
 #'   \item above. A \code{factor} with value \code{"above"} if the index is greater than the mean of the entire series, else
 #'   \code{"below"}.
 #'   \item aboveMulti. A \code{factor} with values \code{"above+"}, \code{"above"}, \code{"below"} and \code{"below-"} if the
-#'   index is greater than the 75% quantile and the 50% quantile, or smaller than the 50% quantile and the 25% quantile,
+#'   index is greater than the 75\% quantile and the 50\% quantile, or smaller than the 50\% quantile and the 25\% quantile,
 #'   respectively and in a mutually exclusive sense.
 #' }
 #'

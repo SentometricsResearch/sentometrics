@@ -13,7 +13,7 @@ data("valence")
 }
 \description{
 A list containing all built-in valence word lists, a \code{data.table} with three columns: a \code{x} column with the
-words, a \code{t} column with the type of valence words, and a \code{y} column with the value associated to a word and
+words, a \code{t} column with the type of valence words, and a \code{y} column with the values associated to each word and
 type of valence shifter. The list element names incorporate the language of the valence word list. All non-English word
 lists are translated. The valence word lists are in the form required for further sentiment analysis. The built-in valence
 word lists are the following:

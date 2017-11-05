@@ -14,7 +14,7 @@ A modified \code{sentomeasures} object, with only the sentiment measures require
 and statistics, but the original sentiment scores \code{data.table} untouched.
 }
 \description{
-Merge (further aggregate) measures by combining across the lexicons, features and time weighting schemes
+Merge (further aggregate) measures by combining across provided lexicons, features and time weighting schemes
 dimensions. The combination occurs by taking the mean of the relevant measures.
 }
 \examples{
