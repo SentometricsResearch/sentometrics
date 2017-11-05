@@ -239,15 +239,15 @@ print.sentomeasures <- function(x, ...) {
 #' Makes use of \code{\link[sentimentr]{as_key}} from the \pkg{sentimentr} package to make the output coherent and
 #' check for duplicates.
 #'
-#' @param lexiconsIn a list of (raw) lexicons, each element being a \code{data.table} or a \code{data.frame} with respectively a
-#' words column and a polarity score column. The lexicons should be appropriately named for clarity in terms of subsequently
+#' @param lexiconsIn a list of (raw) lexicons, each element being a \code{data.table} or a \code{data.frame} with respectively
+#' a words column and a polarity score column. The lexicons should be appropriately named for clarity in terms of subsequently
 #' obtained sentiment measures. Alternatively, a subset of the already formatted built-in lexicons accessible via
 #' \code{lexicons} can be declared too, as part of the same list input. If only (some of) the package built-in lexicons want
 #' to be used (and \emph{no} valence shifters), ony can simply supply \code{lexicons[c(...)]} as an argument to either
 #' \code{\link{sento_measures}} or \code{\link{compute_sentiment}}. However, it is strongly recommended to pass all lexicons
 #' (and a valence word list) to this function first, in any case.
-#' @param valenceIn a single valence word list as a \code{data.table} or a \code{data.frame} with respectively a words column, a
-#' type column (1 for negators, 2 for amplifiers/intensifiers, and 3 for deamplifiers/downtoners) and a score column.
+#' @param valenceIn a single valence word list as a \code{data.table} or a \code{data.frame} with respectively a words column,
+#' a type column (1 for negators, 2 for amplifiers/intensifiers, and 3 for deamplifiers/downtoners) and a score column.
 #' Suggested scores are -1, 2 and 0.5 respectively, and should be the same within each type. This argument can also
 #' be one of the already formatted built-in valence word lists accessible via \code{valence}. If \code{NULL}, no valence word
 #' list is part of this function's output, nor will it applied in the sentiment analysis.
@@ -257,10 +257,10 @@ print.sentomeasures <- function(x, ...) {
 #' @return A \code{list} with each lexicon as a separate element according to its name, as a \code{data.table}, and optionally
 #' an element named \code{valence} that comprises the valence words. Every \code{x} column contains the words, every \code{y}
 #' column contains the polarity score, and for the valence word list, \code{t} contains the word type. If a valence word list
-#' is provided, all lexicons are expanded by copying the respective lexicon, and changing the words and scores according to the
-#' valence word type: "NOT_" is added for negators, "VERY_" is added for amplifiers and "HARDLY_" is added for deamplifiers.
-#' Lexicon scores are multiplied by -1, 2 and 0.5 by default, respectively, or the first value of the scores column of the
-#' valence word list.
+#' is provided, all lexicons are expanded by copying the respective lexicon, and changing the words and scores according to
+#' the valence word type: "NOT_" is added for negators, "VERY_" is added for amplifiers and "HARDLY_" is added for
+#' deamplifiers. Lexicon scores are multiplied by -1, 2 and 0.5 by default, respectively, or the first value of the scores
+#' column of the valence word list.
 #'
 #' @seealso \code{\link[sentimentr]{as_key}}
 #'
@@ -394,23 +394,24 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 #'
 #' @details
 #' For a separate calculation of positive (resp. negative) sentiment, one has to provide distinct positive (resp. negative)
-#' lexicons. This can be done using the \code{do.split} option in the \code{\link{setup_lexicons}} function, which splits out the
-#' lexicons into a positive and a negative polarity counterpart. \code{NA}s are converted to 0, under the assumption that this
-#' is equivalent to no sentiment.
+#' lexicons. This can be done using the \code{do.split} option in the \code{\link{setup_lexicons}} function, which splits out
+#' the lexicons into a positive and a negative polarity counterpart. \code{NA}s are converted to 0, under the assumption that
+#' this is equivalent to no sentiment.
 #'
 #' @param sentocorpus a \code{sentocorpus} object.
 #' @param lexicons output from a \code{\link{setup_lexicons}} call.
 #' @param how a single \code{character} vector defining how aggregation within documents should be performed. For currently
 #' available options on how aggregation can occur, see \code{get_hows()$words}.
-#' @param dfm optional; an output from a \pkg{quanteda} \code{\link[quanteda]{dfm}} call, such that users can specify their own
-#' tokenization scheme (via \code{\link[quanteda]{tokenize}}) as well as other parameters related to the construction of a
-#' document-feature matrix (dfm). By default, a dfm is created based on a tokenization that removes punctuation, numbers,
-#' symbols and separators. We suggest to stick to unigrams, as the remainder of the sentiment computation and built-in lexicons
-#' assume the same.
+#' @param dfm optional; an output from a \pkg{quanteda} \code{\link[quanteda]{dfm}} call, such that users can specify their
+#' own tokenization scheme (via \code{\link[quanteda]{tokenize}}) as well as other parameters related to the construction of
+#' a document-feature matrix (dfm). By default, a dfm is created based on a tokenization that removes punctuation, numbers,
+#' symbols and separators. We suggest to stick to unigrams, as the remainder of the sentiment computation and built-in
+#' lexicons assume the same.
 #'
 #' @return A \code{list} containing:
 #' \item{corpus}{the supplied \code{sentocorpus} object; the texts are altered if valence shifters are part of the lexicons.}
-#' \item{sentiment}{the sentiment scores \code{data.table} with a \code{"date"} and all lexicon--feature sentiment scores columns.}
+#' \item{sentiment}{the sentiment scores \code{data.table} with a \code{"date"} and all lexicon--feature sentiment scores
+#' columns.}
 #' \item{features}{a \code{character} vector of the different features.}
 #' \item{lexicons}{a \code{character} vector of the different lexicons used.}
 #' \item{howWithin}{a \code{character} vector to remind how sentiment within documents was aggregated.}
@@ -526,7 +527,7 @@ agg_documents <- function(toAgg, by, how = get_hows()$docs, do.ignoreZeros = TRU
     }
   } else if (how == "proportional") { # proportional w.r.t. words in document vs. total words in all documents per date
     if (do.ignoreZeros == TRUE) {
-      docsIn <- s[, lapply(.SD, function(x) (x * word_count) / x), by = date] # sets word_count of documents with zero sentoment to NA
+      docsIn <- s[, lapply(.SD, function(x) (x * word_count) / x), by = date]
       weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = date][, -1:-2]
     } else {
       weights <- s[, list(w = word_count / sum(word_count, na.rm = TRUE)), by = date][["w"]]
@@ -877,8 +878,8 @@ to_global <- function(sentomeasures, lexicons = 1, features = 1, time = 1) {
 #' \code{toSelect} argument can only consist of one lexicon, one feature and one time weighting scheme at maximum.
 #' @param dates any expression, in the form of a \code{character} vector, that would correctly evaluate to a \code{logical}
 #' vector, features the variable \code{date} and has dates specified as \code{"yyyy-mm-dd"}, e.g.
-#' \code{dates = "date >= '2000-01-15'"}. This argument may also be a vector of class \code{Date} which extracts all dates that
-#' show up in that vector. See the examples. By default equal to \code{NA}, meaning no subsetting based on dates is done.
+#' \code{dates = "date >= '2000-01-15'"}. This argument may also be a vector of class \code{Date} which extracts all dates
+#' that show up in that vector. See the examples. By default equal to \code{NA}, meaning no subsetting based on dates is done.
 #'
 #' @return A modified \code{sentomeasures} object, with only the sentiment measures required, including updated information
 #' and statistics, but the original sentiment scores \code{data.table} untouched.
@@ -954,9 +955,9 @@ select_measures <- function(sentomeasures, toSelect = "all", do.combine = TRUE, 
 #' in a separate color, but this may look visually overwhelming very fast, and can be quite slow.
 #' @param ... not used.
 #'
-#' @return Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using the
-#' \code{+} operator (see examples). By default, a legend is positioned at the top if there are at maximum twelve line graphs
-#' plotted.
+#' @return Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using
+#' the \code{+} operator (see examples). By default, a legend is positioned at the top if there are at maximum twelve line
+#' graphs plotted.
 #'
 #' @examples
 #' data("usnews")
