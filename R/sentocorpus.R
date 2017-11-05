@@ -119,9 +119,9 @@ clean <- function(corpusdf) {
 #' @param featuresdf a named \code{data.frame} with as columns the new features of type \code{numeric} to add to the
 #' \code{sentocorpus} inputted. If the number of rows in \code{featuresdf} is not equal to the number of documents
 #' in \code{sentocorpus}, recycling will occur.
-#' @param keywords a named \code{character} vector. For every element in this vector, a new feature column is added with a
-#' value of 1 for the texts in which the element (e.g. a word) appears, and 0 if not. If no texts match a keyword, no column
-#' is added. The names of the vector are used as the names of the new features.
+#' @param keywords a named \code{list}. For every element, a new feature column is added with a value of 1 for the texts
+#' in which the keyword(s) appear(s), and 0 if not. If no texts match a keyword, no column is added. The names are used
+#' as the names of the new features.
 #'
 #' @return An updated \code{sentocorpus} object.
 #'
@@ -133,7 +133,7 @@ clean <- function(corpusdf) {
 #' corpus1 <- add_features(corpus,
 #'                         featuresdf = data.frame(random = runif(quanteda::ndoc(corpus))))
 #' corpus2 <- add_features(corpus,
-#'                         keywords = c(pres = "president", war = "war"))
+#'                         keywords = list(pres = "president", war = "war"))
 #'
 #' @export
 add_features <- function(sentocorpus, featuresdf = NULL, keywords = NULL) {
@@ -154,7 +154,12 @@ add_features <- function(sentocorpus, featuresdf = NULL, keywords = NULL) {
     textsAll <- quanteda::texts(sentocorpus)
     for (j in seq_along(keywords)) {
       kwName <- stringi::stri_replace_all(names(keywords)[j], "_", regex = " ")
-      occurrences <- as.numeric(stringi::stri_detect(textsAll, regex = keywords[j]))
+      if (length(keywords[[j]]) == 1) {
+        regex <- paste0("\\b", keywords[[j]], "\\b")
+      } else {
+        regex <- paste0("\\b", paste0(keywords[[j]], collapse = "\\b|\\b"), "\\b")
+      }
+      occurrences <- as.numeric(stringi::stri_detect(textsAll, regex = regex))
       if (sum(occurrences) == 0) warning(paste0("Feature ", kwName, " is not added as it occurs in none of the documents."))
       else quanteda::docvars(sentocorpus, field = kwName) <- occurrences
     }

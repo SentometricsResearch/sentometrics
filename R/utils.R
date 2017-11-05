@@ -336,9 +336,9 @@ nonzero_coeffs <- function(reg) {
   return(nz)
 }
 
-pdf_manual <- function(wd = "C:/Users/gebruiker/Desktop/") {
+pdf_manual <- function(wd) {
   setwd(wd)
-  shell('R CMD Rd2pdf --encoding=UTF-8 Sentometrics')
-  setwd(paste0(wd, "/Sentometrics"))
+  shell('R CMD Rd2pdf --encoding=UTF-8 sentometrics')
+  setwd(paste0(wd, "/sentometrics"))
 }
 

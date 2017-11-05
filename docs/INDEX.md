@@ -5,7 +5,7 @@
 
 The **`sentometrics`** package is designed to do time series analysis based on textual sentiment. Put differently, it is **an integrated framework for textual sentiment time series aggregation and prediction**. It accounts for the intrinsic challenge that, for a given text, sentiment can be computed in many different ways, as well as the large number of possibilities to pool sentiment across text and time. This additional layer of manipulation does not exist in standard text mining and time series analysis packages. As a final outcome, the package provides an automated means to econometrically model the impact of sentiment in texts on a given variable, by first computing a wide range of textual sentiment time series and then selecting those that are most informative. The package created therefore integrates the _qualification_ of sentiment from texts, the _aggregation_ into different sentiment measures and the optimized _prediction_ based on these measures.
 
-The sentometrics R package was created during [Google Summer of Code 2017](https://github.com/rstats-gsoc/gsoc2017/wiki/Sentometrics:-An-integrated-framework-for-text-based-multivariate-time-series-modeling-and-forecasting). The current release is a first version, but we will continue these efforts and have ideas to expand the package in multiple directions while further improving its present setting. So far, the package implements the main methodology developed in the paper "[Questioning the news about economic growth: Sparse forecasting using thousands of news-based sentiment values](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2976084)" (Ardia, Bluteau and Boudt, 2017). We do believe the package in its current state may already be of strong interest to many people. Below, we present an overview of the different functionalities of the package, largely by means of a step-by-step example. The associated code can be found in the `run_project_page.R` script under the _/examples_ folder on the dedicated GitHub repository.
+The sentometrics R package was created during [Google Summer of Code 2017](https://github.com/rstats-gsoc/gsoc2017/wiki/Sentometrics:-An-integrated-framework-for-text-based-multivariate-time-series-modeling-and-forecasting). So far, the package implements the main methodology developed in the paper "[Questioning the news about economic growth: Sparse forecasting using thousands of news-based sentiment values](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2976084)" (Ardia, Bluteau and Boudt, 2017). We do believe the package in its current state may already be of strong interest to many people. Below, we present an overview of the different functionalities of the package, largely by means of a step-by-step example. The associated code can be found in the `run_project_page.R` script under the _/examples_ folder on the dedicated GitHub repository.
 
 ## The functionalities of sentometrics
 
@@ -19,7 +19,7 @@ require(gridExtra)
 
 ### Textual sentiment aggregation
 
-We impose texts and the features metadata to be structured as a `data.frame`. The texts are accompanied by columns that indicate which feature(s) belong(s) to a certain text. For example, a feature can be termed _economy_. Indicating which texts are relevant to the economy is usually done in a binary way (1 for relevant, 0 for not relevant), or by a score (the higher, the more relevant). There are news providers that enrich their texts with such information. Otherwise, some preparatory work is needed to come up with a good mapping from texts to features. The art of topic modelling or entity recognition might help with that, but the art of common sense (i.e. human classification) may serve your purpose equally well. There is also another way to add features to your corpus, once it is already created, as we'll show later.
+We impose texts and the features metadata to be structured as a `data.frame`. The texts are accompanied by columns that indicate which feature(s) belong(s) to a certain text. For example, a feature can be termed _economy_. Indicating which texts are relevant to the economy is usually done in a binary way (1 for relevant, 0 for not relevant), or by a score (the higher, the more relevant). There are news providers that enrich their texts with such information. Otherwise, some preparatory work is needed to come up with a good mapping from texts to features. The art of topic modelling or entity recognition might help with that, but the art of common sense (i.e. human classification) may serve your purpose equally well. There is also another way to add features to your corpus, once it is already created, as we'll see later.
 
 Back to your collection of texts. You have a few thousand articles between 1995 and 2014 from two major US journals: The Wall Street Journal and The Washington Post. Some of these articles are effectively relevant to the US economy, and by contrast the others are not. This information is captured into the four features _wsj_, _wapo_, _economy_ and _noneconomy_ respectively. The data can be accessed as shown below.
 
@@ -28,65 +28,45 @@ data("usnews")
 colnames(usnews) # id, date, text, wsj, wapo, economy, noneconomy
 ```
 
-This data structure of texts needs to be plugged into a more formal corpus data structure to make it more easy to manipulate the corpus and compute sentiment. Luckily, we were able to rely on the **`quanteda`** package which has a fast and well supported corpus mechanism, on which the `sentometrics` corpus constructor is based. It checks that the original structure is respected and prepares the corpus specifically for further sentiment computation and aggregation analysis. Below code excerpt summarizes the corpus construction, and shows that some `quanteda` corpus routines are also applicable.
+This data structure of texts needs to be plugged into a more formal corpus data structure to make it more easy to manipulate the corpus and compute sentiment. Luckily, we were able to rely on the **`quanteda`** package which has a fast and well supported corpus mechanism, on which the `sentometrics` corpus constructor is based. It checks that the original structure is respected and prepares the corpus specifically for further sentiment computation and aggregation analysis. Below code excerpt summarizes the corpus construction, and shows that (most) `quanteda` corpus routines are also applicable.
 
 ```R
 corpusAll <- sento_corpus(usnews)
-quanteda::ndoc(corpusAll) # 4145
-
-corpusSample <- quanteda::corpus_sample(corpusAll, size = 1000)
-
-# we'll continue with this corpus
 corpus <- quanteda::corpus_subset(corpusAll, date < "2014-10-01")
-quanteda::ndoc(corpus) # 4097
 ```
 
-Coming back to the feature columns, the `add_features()` function gives you the option to add in features ex-ante the creation of a corpus. It simply looks for texts that mention a specified keyword at least once and denote these texts with a value of 1. If you have no knowledge about any features, a features-less corpus input `data.frame` can be provided. In that case, a dummy feature valued at 1 throughout is added automatically to the corpus. Here, we define four features related to politics and potential sources of uncertainty, based on the words 'war', 'election', 'president' and 'crisis'. This finalizes the corpus we are about to analyse.
+Coming back to the feature columns one last time, the `add_features()` function gives you the option to add in features after the creation of a corpus. It simply looks for texts that mention a specified keyword at least once and denote these texts with a value of 1. If you have no knowledge about any features, a features-less corpus input `data.frame` can be provided. In that case, a dummy feature valued at 1 throughout is added automatically to the corpus. Here, we define three new features related to politics and potential sources of uncertainty, based on the words 'war', 'election', 'president' and 'crisis'. For example, 488 texts mention the words 'election' or 'president'. This finalizes the corpus we are about to analyse.
 
 ```R
 corpus <- add_features(corpus,
-                       keywords = c(war = "war", election = "election", 
-                                    president = "president", crisis = "crisis"))
-sum(corpus$documents$war) # 1099
-sum(corpus$documents$election) # 187
-sum(corpus$documents$president) # 490
-sum(corpus$documents$crisis) # 381
+                       keywords = list(war = "war", pol = c("election", "president"), crisis = "crisis"))
+sum(corpus$documents$pol) # 488
 ```
 
-The assignment of textual sentiment is based on the **bag-of-words** model. This approach looks for words in a text that are included in a predefined word list, called a lexicon, and then assigns a score to these words as also given by the lexicon. Typically, the word 'good' carries with it a positive connotation, thus it is given a score of 1. On the other hand, 'ugly' will most likely have a negative connotation, equivalent to a score of -1. What about when you have something like 'not good'? This is where valence shifters kick in. The word 'not' is a classical examply of a negator, which inverses the sentiment of the word that it precedes. _Textual sentiment analysis gets increasingly complex if one wants to account for word sequences such as 'not very ugly', let alone entire sentence or paragraph structures. We currently refrain from this complexity due to its cost in efficiency with respect to the large dimensionality of the task we face, being computing sentiment and aggregating scores in one go for a lot of texts. Future versions of the package may integrate more complex sentiment analysis computation algorithms._ Applying valence word lists in combination with lexicons gives an accurate enough picture of the sentiment embedded in a text. The `sentometrics` package includes four well-known default lexicons ([FEEL](http://www.lirmm.fr/~abdaoui/FEEL), [GI](http://www.wjh.harvard.edu/~inquirer/spreadsheet_guide.htm), [HENRY](https://study.sagepub.com/sites/default/files/1\%20Henry\%202008_0.pdf) and [LM](https://www3.nd.edu/~mcdonald/Word_Lists.html)) and a negators valence word list. The word lists are available in English (_eng_), French (_fr_) and Dutch (_nl_), the latter two often as a result of a translation from English.
+The assignment of textual sentiment is based on the **bag-of-words** model. This approach looks for words in a text that are included in a predefined word list, called a lexicon, and then assigns a score to these words as also given by the lexicon. Typically, the word 'good' carries with it a positive connotation, thus it is given a score of 1. On the other hand, 'ugly' will most likely have a negative connotation, equivalent to a score of -1. What if you have something like 'not good'? This is where valence shifters kick in. The word 'not' is a classical examply of a negator, which inverses the sentiment of the word that it precedes. _Textual sentiment analysis gets increasingly complex if one wants to account for word sequences such as 'not very ugly', let alone entire sentence or paragraph structures. We currently refrain from this complexity due to its cost in efficiency with respect to the large dimensionality of the task we face, being computing sentiment and aggregating scores in one go for a lot of texts. Future versions of the package may integrate more complex sentiment analysis computation algorithms._ Applying valence word lists in combination with lexicons gives an accurate enough picture of the sentiment embedded in a text. The `sentometrics` package includes four well-known default lexicons ([FEEL](http://www.lirmm.fr/~abdaoui/FEEL), [GI](http://www.wjh.harvard.edu/~inquirer/spreadsheet_guide.htm), [HENRY](https://study.sagepub.com/sites/default/files/1\%20Henry\%202008_0.pdf) and [LM](https://www3.nd.edu/~mcdonald/Word_Lists.html)) and a negators valence word list. The word lists are available in English (_eng_), French (_fr_) and Dutch (_nl_), the latter two often as a result of a translation from English.
 
 ```R
 # loading the built-in lexicons and valence word lists
 data("lexicons")
-names(lexicons) # '..._tr' means the word list has been translated
-
 data("valence")
-names(valence) # valence_eng, valence_fr, valence_nl
 ```
 
-As long as you stick to the format from above built-in lexicons and valence word lists (and as explicited in the documentation), any other word list can be passed on to the `setup_lexicons()` function to specify which lexicons and valence shifters to use in the sentiment computation. This function validates the input, applies the valence word list (if included) to the lexicons, and optionally splits out the lexicons into a positive and a negative counterpart. The overall structure and validation procedure of the word lists is inspired by the **`sentimentr`** package. The three main lexical input possibilities are displayed herunder, and we'll continue with the last option.
+As long as you stick to the format from above built-in lexicons and valence word lists (and as explicited in the documentation), any other word list can be passed on to the `setup_lexicons()` function to specify which lexicons and valence shifters to use in the sentiment computation. This function validates the input, applies the valence word list (if included) to the lexicons, and optionally splits out the lexicons into a positive and a negative counterpart. The overall structure and validation procedure of the word lists is inspired by the **`sentimentr`** package. We continue with the Loughran & McDonald and Henry lexicons, include the built-in negators and split out each lexicon.
 
 ```R
-# only the original Loughran & McDonald and Henry lexicons...
-lexNoVal <- setup_lexicons(lexiconsIn = lexicons[c("LM_eng", "HENRY_eng")])
-
-# ... including the built-in list of negators...
-lexVal <- setup_lexicons(lexiconsIn = lexicons[c("LM_eng", "HENRY_eng")],
-                         valenceIn = valence[["valence_eng"]])
-
-# ... and splitting each lexicon into positive and negative words
+# prepare the lexicons
 lexIn <- setup_lexicons(lexiconsIn = lexicons[c("LM_eng", "HENRY_eng")],
                         valenceIn = valence[["valence_eng"]],
                         do.split = TRUE)
 ```
 
-We allow for many ways to aggregate sentiment within documents, across documents and across time, to arrive at fully fledged textual sentiment time series. Combining all the input features, lexicons and aggregation options gives effectively multiple time series of textual sentiment. The sentiment aggregation specifications can be chosen through the `ctr_agg()` control function. For example, if you know the variable you ultimately want to predict with sentiment is available at a monthly frequency, set `by = "month"`. Else, you can also aggregate at a daily, weekly or yearly frequency; we'll take care of it.
+We allow for many ways to aggregate sentiment within documents, across documents and across time, to arrive at fully fledged textual sentiment time series. Combining all the input features, lexicons and aggregation options gives effectively multiple time series of textual sentiment. The sentiment aggregation specifications is chosen through the `ctr_agg()` control function. For example, if you know the variable you ultimately want to predict with sentiment is available at a monthly frequency, set `by = "month"`. Else, you can also aggregate at a daily, weekly or yearly frequency; we'll take care of it.
 
 ```R
 ctrIn <- ctr_agg(howWithin = "tf-idf", 
                  howDocs = "proportional", 
                  howTime = c("equal_weight", "linear", "almon"),
-                 do.ignoreZeros = FALSE,
+                 do.ignoreZeros = TRUE,
                  by = "month", # change this if you want a time series at a different frequency
                  fill = "zero",
                  lag = 12, 
@@ -95,7 +75,7 @@ ctrIn <- ctr_agg(howWithin = "tf-idf",
                  do.normalizeAlm = TRUE)
 ```
 
-The reference paper, vignette and manual explain more in detail what is meant by each main aggregation argument. Here we proceed by noting that the choice of `howWithin = "tf-idf"` aggregates the word scores within documents based on the term frequency-inverse document frequency statistic, which downweights words which appear very often across all documents. The choice of `howDocs = "proportional"` considers documents with more words as more important in the pooling of sentiment across documents at the same date. Finally, the `howTime` option sets out several weighting schemes to smooth sentiment across time. To give an example of an Almon polynomial, a linear and an exponential weighting curve, see below bit of code and graph. The choice is yours! Or actually it is not, since we can compute all of the time weighting aggregation schemes you select at once, and give you the various sentiment measures.
+The reference paper, vignette and manual explain more in detail what is meant by each main aggregation argument. Here we proceed by noting that the choice of `howWithin = "tf-idf"` aggregates the word scores within documents based on the term frequency-inverse document frequency statistic, which downweights words that appear very often across all documents. The choice of `howDocs = "proportional"` considers documents with more words as more important in the pooling of sentiment across documents at the same date. Finally, the `howTime` option sets out several weighting schemes to smooth sentiment across time. To give an example of an Almon polynomial, a linear and an exponential weighting curve, see below bit of code and graph. The choice is yours! Or actually it is not, since we can compute all of the time weighting aggregation schemes you select at once, and give you the various sentiment measures.
 
 ```R
 lag <- 30
@@ -122,49 +102,32 @@ On to the actual creation of many sentiment measures. All the hard work in setti
 
 ```R
 sentMeas <- sento_measures(corpus, lexicons = lexIn, ctr = ctrIn)
-sentMeas # this prints out the number of sentiment measures and time series observations
-sentMeas$measures # the sentiment measures say hello, with a preceding 'date' column 
-sentMeas$stats # some statistics
 summary(sentMeas)
 
-# alternatively, you could also achieve the same output in these two steps
+# you can also achieve the same output in these two steps
 sent <- compute_sentiment(corpus, lexicons = lexIn, how = ctrIn$howWithin)
 sentMeasAlt <- perform_agg(sent, ctr = ctrIn)
 ```
 
-The sentiment measures are found within a `sentomeasures` object, which is a list composed of several elements. The main element is accessed through `sentMeas$measures`, being all the sentiment measures, each of them in a separate column. Our output object contains 256 different monthly sentiment measures. The other list elements are merely for informational purposes, such that you can easily retrieve back how the measures were computed. Under `sentMeas$sentiment`, you find the original sentiment scores, and under `sentMeas$stats` there are a few key statistics, including the average correlation of one series with all the others. 
-
-Apart from scaling the sentiment time series, you can also select measures from a `sentomeasures` object in a few ways. Additionally, there is also the `fill_measures()` function with which you can add in dates ex-post aggregation, though this has no further purpose if dates have already been filled in the aggregation process.
+The sentiment measures are found within a `sentomeasures` object, which is a list composed of several elements. In our example, the main element is accessed through `sentMeas$measures`, being all the sentiment measures, each of them in a separate column. Under `sentMeas$sentiment`, you find the original sentiment scores, and under `sentMeas$stats` there are a few key statistics, including the average correlation of one series with all the others. The other list elements are merely for informational purposes, such that you can easily retrieve back how the measures were computed. To select particular measures from a `sentomeasures` object, you can use the `select_measures()` function as below.
 
 ```R
-# substract from every sentiment measure its mean and divide by its standard deviation
-sentMeasScaled <- scale(sentMeas, center = TRUE, scale = TRUE)
-
 # select all measures defined by the 'wsj' feature
 sentMeasWSJ <- select_measures(sentMeas, toSelect = "wsj")
-colnames(sentMeasWSJ$measures)[-1]
 
-# select all measures defined by a linear or a first order Almon time weighting scheme
-sentMeasLinAlm1 <- select_measures(sentMeas, toSelect = c("linear", "equal_weight"),
-                                   do.combine = FALSE)
-colnames(sentMeasLinAlm1$measures)[-1]
-
-# select all measures but limit the time series to early 2005
-sentMeasSel <- select_measures(sentMeas, toSelect = "all", dates = "date <= '2005-04-01'")
-max(sentMeasSel$measures$date)
+# select all measures defined by a linear or equally weighted time aggregation scheme
+sentMeasLinEw <- select_measures(sentMeas, toSelect = c("linear", "equal_weight"),
+                                 do.combine = FALSE)
 ```
 
-All `sentomeasures` objects can be plotted instantly, most handily according to a particular dimension of the textual sentiment time series. The series are then shown as the average of all sentiment measures pertaining to each dimension's component (e.g. by each feature). In general, these plots can be used to compare the average evolution of all sentiment measures pertaining to each lexicon, feature or time-weighting scheme. Sneak peak: if you want more detailed information about the added value of individual lexicons, features, time-weighting schemes or even documents in terms of a forecasting model, this is possible too through what we call _attribution_. Read on!
+All `sentomeasures` objects can be plotted instantly, most handily according to a particular dimension of the textual sentiment time series. The series are then shown as the average of all sentiment measures pertaining to each dimension's component (e.g. by each feature). In general, these plots can be used to compare the average evolution of all sentiment measures pertaining to each dimension. Sneak peak: if you want more detailed information about the added value of individual lexicons, features, time-weighting schemes or even documents in terms of a forecasting model, this is possible too through what we call _attribution_. Read on!
 
 ```R
-# plot it all out for comparison
-p1 <- plot(sentMeasScaled, group = "feature")
-p2 <- plot(sentMeasWSJ, group = "lexicon") +
-  guides(colour = guide_legend(nrow = 2))
-p3 <- plot(sentMeasLinAlm1, group = "time")
-p4 <- plot(sentMeasSel)
+# plotting is very easy...
+p1 <- plot(sentMeasWSJ, group = "lexicons")
+p2 <- plot(scale(sentMeasLinEw), group = "time")
 
-grid.arrange(p1, p2, p3, p4, ncol = 2)
+grid.arrange(p1, p2, nrow = 2, ncol = 1)
 ```
 
 <p align="center">
@@ -183,7 +146,7 @@ sentMeasMerged <- merge_measures(ctrMerge)
 sentMeasMerged[c("features", "lexicons", "time")] # the new names replace the collapsed components
 ```
 
-Last but not least, one could also merge all sentiment measures into one, global, sentiment measure. To do so, you have to give weights to the different lexicons, features and time weighting schemes; higher weights for some dimensions will make the global sentiment measure tilt more towards the measures composed of these dimensions. This can give a nice picture of the overall evolution of sentiment present in a set of texts on different topics, as presented in the figure.
+Last but not least, one could also merge all sentiment measures into one, global, sentiment measure. To do so, you have to give weights to the different lexicons, features and time weighting schemes; higher weights for some components will make the global sentiment measure tilt more towards the measures composed of these components. This gives a nice picture of the overall evolution of sentiment present in a set of texts on different topics, as presented in the figure.
 
 ```R
 # making a global sentiment measure
@@ -211,12 +174,17 @@ We now have a large number of aggregated sentiment time series, encapsulated in 
 
 The other main purpose of this package is to use the previously obtained sentiment measures as explanatory variables to forecast any other variable. The underlying question is: "Does sentiment from texts achieve good (or improve) prediction performance?". 
 
-We provide the possibility of three types of regressions: linear, binomial and multinomial. To select the most important sentiment variables, the models are all in the form of an elastic net regularized regression. The graphs tell there is salient correlation between the different sentiment variables, inherently due to similarities in aggregation schemes. A penalized regression is thus the most designated route to incorporate these variables into forecasting models, shrinking the coefficients of the sentiment indices that are not important in explaining the independent variable. We heavily rely on the **`glmnet`** package to carry out this part of the analysis. Check out their online [vignette](https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html#intro) for an introduction to the models we apply, amongst others. Model calibration (meaning selection of the optimal elastic net _alpha_ and _lambda_ parameters), can be done through cross-validation or on the basis of one of three information criteria (AIC, BIC and Mallows's Cp).  
+We provide the possibility of three types of regressions: linear, binomial and multinomial. To select the most important sentiment variables, the models are all in the form of an elastic net regularized regression. There is salient correlation between the different sentiment variables, inherently due to similarities in aggregation schemes. A penalized regression is thus the most designated route to incorporate these variables into forecasting models, shrinking the coefficients of the sentiment indices that are not important in explaining the independent variable. We heavily rely on the **`glmnet`** package to carry out this part of the analysis. Check out their online [vignette](https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html#intro) for an introduction to the models we apply, amongst others. Model calibration (meaning selection of the optimal elastic net _alpha_ and _lambda_ parameters), can be done through cross-validation or on the basis of one of three information criteria (AIC, BIC and Mallows's Cp).  
 
-The following example displays the workflow. The `ctr_model()` function establishes the model type and the estimation strategy. Your target independent variable is the [Economic Policy Uncertainty](http://www.policyuncertainty.com/index.html) index, hereafter referred to as EPU. The EPU data can be found in the built-in `epu` dataset. We begin by simply inputting the `sentomeasures` object which houses the sentiment measures as the only potential explanatory variables, but non-sentiment variables can be supplied too. We study the explanatory power of the sentiment variables in forecasting next-month's EPU value. We first test for a linear model, carrying out parameter calibration based on the Bayesian information criterion. If the target variable, the sentiment measures and potentially other explanatory variables are aligned, the `h` parameter can be adjusted to reflect the forecasting horizon. The output of a single model run is a `sentomodel` object, and the model results are most easily displayed through the generic summary function. Other than that, the object contains the input values, the calibrated _alpha_ and _lambda_, other information, as well as the fitted `glmnet` object.
+The following example displays the workflow. The `ctr_model()` function establishes the model type and the estimation strategy. Your target independent variable is the [Economic Policy Uncertainty](http://www.policyuncertainty.com/index.html) index, hereafter referred to as EPU. The EPU data can be found in the built-in `epu` dataset. 
 
 ```R
 data("epu")
+```
+
+We study the explanatory power of the sentiment variables in forecasting next-month's EPU value. We first test a linear model, carrying out parameter calibration based on the Bayesian information criterion. If the target variable, the sentiment measures and potentially other explanatory variables are aligned, the `h` parameter can be adjusted to reflect the forecasting horizon. The output of a single model run is a `sentomodel` object, and the model results are most easily displayed through the generic `summary()` function. Other than that, the object contains the input values, the calibrated _alpha_ and _lambda_, other information, as well as the fitted `glmnet` object.
+
+```R
 y <- epu[epu$date >= sentMeas$measures$date[1], ]$index
 length(y) == nrow(sentMeas$measures) # TRUE
 
@@ -224,17 +192,18 @@ length(y) == nrow(sentMeas$measures) # TRUE
 ctrIC <- ctr_model(model = "gaussian",
                    type = "BIC",
                    h = 1, # induces one-month forecasting
-                   alphas = seq(0, 1, by = 0.10), # one alpha is picked for the final regression
+                   alphas = seq(0.2, 0.8, by = 0.1), # one alpha is picked for the final regression
                    do.iter = FALSE)
 outIC <- sento_model(sentMeas, y, ctr = ctrIC)
-summary(outIC) # shows the type of model, alpha, lambda, non-zero coefficients and in-sample fit
+summary(outIC)
 ```
 
-Binomial and multinomial logistic regressions are estimated equally easily. Have a look at below example for a binomial EPU variable, coded as being either above or below the historical average. The logic for a multinomial response variable is exactly the same, and can be tested using the series in `epu$aboveMulti`. _Currently, logistic regressions can only be calibrated through cross-validation. We will add in a future release information criteria for logistic regressions appropriate to the elastic net context, similar to what we did for the linear regression._ Doing parameter calibration by cross-validation requires only a few changes in the control function, in particular the inclusion of a training window and test window size. The cross-validation setup is as such that the model is estimated at a sample of size `trainWindow` for all possible _alpha_ and _lambda_ combinations, and forecasting performance is measured for the subsequent `testWindow` out-of-sample values. The procedure is repeated in a rolling-forward way until the total input sample is exhausted, which is called _training the model_. The optimal _alpha_ and _lambda_ values are then those that minimize forecasting errors across all the subsamples. The cross-validation is performed with the **`caret`** package. It may take a while to run, due to the nature of the calibration approach. 
+Binomial and multinomial logistic regressions are estimated equally easily. Have a look at below example for a binomial EPU variable, coded as being either above or below the historical average. The logic for a multinomial response variable is exactly the same, and can be tested using the series in `epu$aboveMulti`. _Currently, logistic regressions can only be calibrated through cross-validation. We will add in a future release information criteria for logistic regressions appropriate to the elastic net context, similar to what we did for the linear regression._ Doing parameter calibration by cross-validation requires only a few changes in the control function, in particular the inclusion of a training window and test window size. The cross-validation setup is as such that the model is estimated at a sample of size `trainWindow` for all possible _alpha_ and _lambda_ combinations, and forecasting performance is measured for the subsequent `testWindow` out-of-sample values. The procedure is repeated in a rolling-forward way until the total input sample is exhausted, which is called _training the model_. The optimal _alpha_ and _lambda_ values are then those that minimize forecasting errors across all the subsamples. The cross-validation is performed with the **`caret`** package. It may take a while to run, due to the nature of the calibration approach (however, it can be speed up using parallel computation, as explained in the package's manual).
 
 ```R
-# model estimation with a binomial target variable
 yb <- epu[epu$date >= sentMeas$measures$date[1], ]$above
+
+# model estimation with a binomial target variable and cross-validation
 ctrCVBi <- ctr_model(model = "binomial", # change this
                      type = "cv",
                      h = 1,
@@ -245,7 +214,7 @@ outBi <- sento_model(sentMeas, yb, ctr = ctrCVBi)
 summary(outBi)
 ```
 
-Instead of estimating the model once for the entire sample, it might be more interesting to perform the analysis several times with time rolling forward for a smaller sample size. This is enacted by setting `do.iter = TRUE`. At the same time, this will perform one-step ahead forecasts and provide an assessment of out-of-sample model performance across all iterations, both numerically and visually. Trying this out for a sample size of 5 years and only taking interest in the last 50 out-of-sample forecasts, you run the code below. We also add the lag of the target variable as an explanatory variable. The output is an object of class `sentomodeliter`, in which you can find the repeated model estimations, but most importantly an overview of performance measures with respect to forecasting errors. The type of performance measures obviously depends on whether you run a linear or a logistic regression.
+Instead of estimating the model once for the entire sample, it might be more interesting to perform the analysis several times with time rolling forward for a smaller sample size. This is enacted by setting `do.iter = TRUE`. At the same time, this will perform one-step ahead forecasts and provide an assessment of out-of-sample model performance across all iterations, both numerically and visually. Trying this out for a sample size of 5 years and only taking interest in the last 50 out-of-sample forecasts, you run the code below. We also add the lag of the target variable as an explanatory variable. The output is an object of class `sentomodeliter`, in which you can find the repeated model estimations, but most importantly an overview of performance measures with respect to forecasting errors. The performance measures obviously depend on whether you run a linear or a logistic regression.
 
 ```R
 # adjust data to incorporate ESU's lag into the model
@@ -264,11 +233,10 @@ ctrIter <- ctr_model(model = "gaussian",
                      nSample = 60, 
                      start = 115) # iterations: length(y) - nSample - abs(h)  (- oos) - start + 1
 outIter <- sento_model(sentMeasShift, y, x = x, ctr = ctrIter)
-summary(outIter) # now you also have information on the out-of-sample fit
-outIter$performance # displays all forecasting performance information
+summary(outIter)
 ```
 
-To inspect the out-of-sample forecasting performance visually, call the generic plot function on the modelling object.
+The list element `"performance"` has all performance measures. To inspect the out-of-sample forecasting performance visually, call the generic plot function on the modelling object.
 
 ```R
 r <- plot(outIter)
@@ -279,11 +247,11 @@ r
   <img src="https://raw.githubusercontent.com/sborms/sentometrics/master/plots/forecasts.png">
 </p>
 
-Not that bad of a fit, isn't it? One could suspect it is mainly due to the lagged response variable, but re-running the exercise without this variable shows in fact it is not. Sentiment in the texts you have at hand seems to be truly driving the EPU index.
+Not that bad of a fit, isn't it? One could suspect it is mainly due to the lagged response variable, but re-running the exercise without this variable shows in fact it is not. Sentiment in the texts you have at hand seems to be partly driving the EPU index.
 
 ### Post-analysis
 
-There are two interesting post-analysis functions. The first one is inherent to the aggregation framework and allows to pinpoint the attribution to forecasts of lexicons, time weighting schemes, features and individual documents, for any provided forecasting model and its coefficients. This can be done by one simple function call.
+There are two interesting post-analysis functions. The first one is inherent to the aggregation framework and allows to pinpoint the attribution to forecasts of lexicons, time weighting schemes, features and individual documents, for any provided forecasting model and its coefficients. This can be done by one simple function call, which outputs a list with all attributions at the respective dimensions.
 
 ```R
 # to retrieve all attributions, input the corresponding modelling and sentiment measures objects
@@ -302,7 +270,7 @@ grid.arrange(f, l, t, ncol = 1, nrow = 3)
   <img src="https://raw.githubusercontent.com/sborms/sentometrics/master/plots/attribs.png">
 </p>
 
-Document-level attribution is found under `attributions$documents`, which can be inspected to determine whether there are documents that are more meaningful than others at a specific forecasting date. As can be seen from the plots, all attributions are related to some extent, since every sentiment measure is composed of a combination of a lexicon, feature and time weighting scheme. However, attribution analysis can give you quick insights into which dimensions are important at what time. Clustering related features with each other could give a more robust idea into what broad sentiment is steering forecasts, which can then be used as a basis for an analysis into why. It appears that The Wall Street Journal but at the same time non-economic articles are more important to forecasting the EPU. 
+As can be seen from the plots, some components are more important than others at specific forecasting dates. Document-level attribution, not plotted, can be inspected to determine whether there are documents that seem more meaningful than others. An attribution analysis can give you quick insights into what is steering forecasts, which can then be used as a basis for an analysis into why. 
 
 The second post-analysis function allows to compare several models and construct what is called a _model confidence set_ with the best models remaining. For this, we deploy the **`MCS`** package and make available the simple wrapper function `perform_MCS()`. If you want to compare different sentiment-based models or compare the performance of several sentiment-based models with a selection of key benchmark models, this is the function you should use. 
 
