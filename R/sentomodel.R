@@ -356,8 +356,8 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
   alphaOpt <- alphas[minLoc]
 
   # actual elastic net optimization
-  regOpt <- glmnet::glmnet(x = xx, y = yy, penalty.factor = penalty, lambda = lambdaOpt,
-                           alpha = alphaOpt, standardize = TRUE, family = family)
+  regOpt <- glmnet::glmnet(x = xx, y = yy, penalty.factor = penalty, lambda = lambdaOpt, alpha = alphaOpt,
+                           standardize = TRUE, family = family, intercept = intercept)
 
   out <- list(reg = regOpt,
               model = family,

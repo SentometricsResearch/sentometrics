@@ -179,9 +179,9 @@ grid.arrange(f, l, t, ncol = 1, nrow = 3)
 
 ### save plots to project page directory ###
 
-ggsave("docs/plots/timeWeights.png", arrangeGrob(p))
-ggsave("docs/plots/selects.png", arrangeGrob(p1, p2, nrow = 2))
-ggsave("docs/plots/glob.png", arrangeGrob(g))
-ggsave("docs/plots/forecasts.png", arrangeGrob(r))
-ggsave("docs/plots/attribs.png", arrangeGrob(f, l, t, ncol = 1, nrow = 3))
+ggsave("docs/plots/time.png", arrangeGrob(p))
+ggsave("docs/plots/examples.png", arrangeGrob(p1, p2, nrow = 2))
+ggsave("docs/plots/global.png", arrangeGrob(g))
+ggsave("docs/plots/for.png", arrangeGrob(r))
+ggsave("docs/plots/attr.png", arrangeGrob(f, l, t, ncol = 1, nrow = 3))
 

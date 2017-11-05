@@ -95,7 +95,7 @@ p
 ```
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/sborms/sentometrics/master/plots/timeWeights.png">
+  <img src="https://raw.githubusercontent.com/sborms/sentometrics/master/plots/time.png">
 </p>
 
 On to the actual creation of many sentiment measures. All the hard work in setting up your corpus, deciding on the right lexicons (and valence word list) to include and thinking about how to aggregate sentiment will soon bear fruit, because all you need is...
@@ -131,7 +131,7 @@ grid.arrange(p1, p2, nrow = 2, ncol = 1)
 ```
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/sborms/sentometrics/master/plots/selects.png">
+  <img src="https://raw.githubusercontent.com/sborms/sentometrics/master/plots/examples.png">
 </p>
 
 There are two more ways to alter the sentiment measures. A first one is to merge selected time series with each other as an average through the `ctr_merge()` and `merge_measures()` functions. In the example, two time weighting schemes, two lexicons and two features are collapsed into one by taking the average across the relevant sentiment measures. 
@@ -165,7 +165,7 @@ g
 ```
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/sborms/sentometrics/master/plots/glob.png">
+  <img src="https://raw.githubusercontent.com/sborms/sentometrics/master/plots/global.png">
 </p>
 
 We now have a large number of aggregated sentiment time series, encapsulated in the `sentomeasures` object named `sentMeas`. But how performant are these measures in a forecasting framework? And which dimensions are most important?
@@ -244,7 +244,7 @@ r
 ```
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/sborms/sentometrics/master/plots/forecasts.png">
+  <img src="https://raw.githubusercontent.com/sborms/sentometrics/master/plots/for.png">
 </p>
 
 Not that bad of a fit, isn't it? One could suspect it is mainly due to the lagged response variable, but re-running the exercise without this variable shows in fact it is not. Sentiment in the texts you have at hand seems to be partly driving the EPU index.
@@ -267,7 +267,7 @@ grid.arrange(f, l, t, ncol = 1, nrow = 3)
 ```
  
 <p align="center">
-  <img src="https://raw.githubusercontent.com/sborms/sentometrics/master/plots/attribs.png">
+  <img src="https://raw.githubusercontent.com/sborms/sentometrics/master/plots/attr.png">
 </p>
 
 As can be seen from the plots, some components are more important than others at specific forecasting dates. Document-level attribution, not plotted, can be inspected to determine whether there are documents that seem more meaningful than others. An attribution analysis can give you quick insights into what is steering forecasts, which can then be used as a basis for an analysis into why. 
