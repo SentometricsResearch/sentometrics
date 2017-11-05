@@ -6,6 +6,8 @@
 require(sentometrics)
 
 data("usnews")
+class(usnews)
+
 colnames(usnews)
 
 corpusAll <- sento_corpus(usnews)
@@ -14,7 +16,7 @@ class(corpusAll)
 corpus <- quanteda::corpus_subset(corpusAll, date < "2014-10-1")
 corpus
 
-corpus <- add_features(corpus, keywords = c(el = "election", war = "war"))
+corpus <- add_features(corpus, keywords = list(el = "election", war = "war"))
 c(sum(corpus$documents$el), sum(corpus$documents$war))
 
 data("lexicons")

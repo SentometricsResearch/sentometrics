@@ -12,42 +12,25 @@ require(gridExtra)
 ####
 
 data("usnews")
-colnames(usnews) # id, date, text, wsj, wapo, economy, noneconomy
+colnames(usnews)
 
 ####
 
 corpusAll <- sento_corpus(usnews)
-quanteda::ndoc(corpusAll) # 4145
-
-corpusSample <- quanteda::corpus_sample(corpusAll, size = 1000)
-quanteda::ndoc(corpusSample) # 1000
-
 corpus <- quanteda::corpus_subset(corpusAll, date >= "1988-01-01" & date < "2014-10-01")
-quanteda::ndoc(corpus) # 4097
 
 ####
 
 corpus <- add_features(corpus,
-                       keywords = c(war = "war", election = "election", president = "president", crisis = "crisis"))
-sum(corpus$documents$war) # 1099
-sum(corpus$documents$election) # 187
-sum(corpus$documents$president) # 490
-sum(corpus$documents$crisis) # 381
+                       keywords = list(war = "war", pol = c("election", "president"), crisis = "crisis"))
+sum(corpus$documents$pol)
 
 ####
 
 data("lexicons")
-names(lexicons)
-
 data("valence")
-names(valence)
 
 ####
-
-lexNoVal <- setup_lexicons(lexiconsIn = lexicons[c("LM_eng", "HENRY_eng")])
-
-lexVal <- setup_lexicons(lexiconsIn = lexicons[c("LM_eng", "HENRY_eng")],
-                         valenceIn = valence[["valence_eng"]])
 
 lexIn <- setup_lexicons(lexiconsIn = lexicons[c("LM_eng", "HENRY_eng")],
                         valenceIn = valence[["valence_eng"]],
@@ -58,7 +41,7 @@ lexIn <- setup_lexicons(lexiconsIn = lexicons[c("LM_eng", "HENRY_eng")],
 ctrIn <- ctr_agg(howWithin = "tf-idf",
                  howDocs = "proportional",
                  howTime = c("equal_weight", "linear", "almon"),
-                 do.ignoreZeros = FALSE,
+                 do.ignoreZeros = TRUE,
                  by = "month",
                  fill = "zero",
                  lag = 12,
@@ -86,9 +69,6 @@ p
 ####
 
 sentMeas <- sento_measures(corpus, lexicons = lexIn, ctr = ctrIn)
-sentMeas
-sentMeas$measures
-sentMeas$stats
 summary(sentMeas)
 
 sent <- compute_sentiment(corpus, lexicons = lexIn, how = ctrIn$howWithin)
@@ -96,26 +76,16 @@ sentMeasAlt <- perform_agg(sent, ctr = ctrIn)
 
 ###
 
-sentMeasScaled <- scale(sentMeas, center = TRUE, scale = TRUE)
-
 sentMeasWSJ <- select_measures(sentMeas, toSelect = "wsj")
-colnames(sentMeasWSJ$measures)[-1]
-
-sentMeasLinAlm1 <- select_measures(sentMeas, toSelect = c("linear", "equal_weight"), do.combine = FALSE)
-colnames(sentMeasLinAlm1$measures)[-1]
-
-sentMeasSel <- select_measures(sentMeas, toSelect = "all", dates = "date <= '2005-04-01'")
-max(sentMeasSel$measures$date)
+sentMeasLinEw <- select_measures(sentMeas, toSelect = c("linear", "equal_weight"),
+                                   do.combine = FALSE)
 
 ###
 
-p1 <- plot(sentMeasScaled, group = "features")
-p2 <- plot(sentMeasWSJ, group = "lexicons") +
-  guides(colour = guide_legend(nrow = 2))
-p3 <- plot(sentMeasLinAlm1, group = "time")
-p4 <- plot(sentMeasSel)
+p1 <- plot(sentMeasWSJ, group = "lexicons")
+p2 <- plot(scale(sentMeasLinEw), group = "time")
 
-grid.arrange(p1, p2, p3, p4, ncol = 2)
+grid.arrange(p1, p2, nrow = 2, ncol = 1)
 
 ####
 
@@ -131,7 +101,7 @@ sentMeasMerged[c("features", "lexicons", "time")]
 
 glob <- to_global(sentMeas,
                   lexicons = c(0.50, 0, 0.50, 0),
-                  features = c(0.10, 0.10, 0.10, 0.10, 0.15, 0.15, 0.15, 0.15),
+                  features = c(0.10, 0.10, 0.10, 0.10, 0.20, 0.20, 0.20),
                   time = 1)
 
 g <- ggplot(data = glob, aes(x = as.Date(row.names(glob)), y = global)) +
@@ -145,13 +115,16 @@ g
 ###
 
 data("epu")
+
+###
+
 y <- epu[epu$date >= sentMeas$measures$date[1], ]$index
 length(y) == nrow(sentMeas$measures)
 
 ctrIC <- ctr_model(model = "gaussian",
                    type = "BIC",
                    h = 1,
-                   alphas = seq(0, 1, by = 0.10),
+                   alphas = seq(0.2, 0.8, by = 0.1),
                    do.iter = FALSE)
 outIC <- sento_model(sentMeas, y, ctr = ctrIC)
 summary(outIC)
@@ -159,7 +132,7 @@ summary(outIC)
 ###
 
 yb <- epu[epu$date >= sentMeas$measures$date[1], ]$above
-length(yb) == nrow(sentMeas$measures)
+
 ctrCVBi <- ctr_model(model = "binomial",
                      type = "cv",
                      h = 1,
@@ -180,13 +153,12 @@ all(c(all.equal(length(y), nrow(x)), all.equal(nrow(x), nrow(sentMeasShift$measu
 ctrIter <- ctr_model(model = "gaussian",
                      type = "BIC",
                      h = 1,
-                     alphas = seq(0.10, 0.90, by = 0.20),
+                     alphas = seq(0.1, 0.9, by = 0.2),
                      do.iter = TRUE,
                      nSample = 60,
                      start = 115)
-outIter <- sento_model(sentMeasShift, y, x = NULL, ctr = ctrIter)
+outIter <- sento_model(sentMeasShift, y, x = x, ctr = ctrIter)
 summary(outIter)
-outIter$performance
 
 ###
 
@@ -196,9 +168,6 @@ r
 ###
 
 attributions <- retrieve_attributions(outIter, sentMeasShift, do.normalize = FALSE)
-attributions$features
-attributions$lexicons
-attributions$time
 
 f <- plot_attributions(attributions, group = "features") +
   guides(fill = guide_legend(nrow = 1))
@@ -211,7 +180,7 @@ grid.arrange(f, l, t, ncol = 1, nrow = 3)
 ### save plots to project page directory ###
 
 ggsave("docs/plots/timeWeights.png", arrangeGrob(p))
-ggsave("docs/plots/selects.png", arrangeGrob(p1, p2, p3, p4, ncol = 2))
+ggsave("docs/plots/selects.png", arrangeGrob(p1, p2, nrow = 2))
 ggsave("docs/plots/glob.png", arrangeGrob(g))
 ggsave("docs/plots/forecasts.png", arrangeGrob(r))
 ggsave("docs/plots/attribs.png", arrangeGrob(f, l, t, ncol = 1, nrow = 3))
