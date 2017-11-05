@@ -94,6 +94,8 @@ p <- ggplot(data = melt(weights, id.vars = "id"), aes(x = id, y = value, color =
 p
 ```
 
+![](docs/plots/time.png)
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/ArdiaD/Sentometrics/master/docs/plots/time.png">
 </p>
