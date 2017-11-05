@@ -166,8 +166,8 @@ retrieve_attributions.sentomodeliter <- compiler::cmpfun(.retrieve_attributions.
 #' L2-norm at that date, normalizing the values between -1 and 1. The document attributions are not normalized.
 #' @param refDates the dates at which attribution is to be performed. These should be between the latest date available in the
 #' input \code{sentomeasures} object and the first estimation sample date, i.e. \code{model$dates[1]} if \code{model} is
-#' a \code{sentomodel} object. All dates should also be present in \code{sentomeasures$measures$date}. If \code{NULL} (default),
-#' attribution is calculated for all in-sample dates. Ignored if \code{model} is a
+#' a \code{sentomodel} object. All dates should also be present in \code{sentomeasures$measures$date}. If \code{NULL}
+#' (default), attribution is calculated for all in-sample dates. Ignored if \code{model} is a
 #' \code{sentomodeliter} object, for which attribution is calculated for all out-of-sample prediction dates.
 #' @param factor the factor level as a single \code{character} vector for which attribution has to be calculated in
 #' case of (a) multinomial model(s). Ignored for linear and binomial models.
@@ -199,9 +199,9 @@ retrieve_attributions <- function(model, sentomeasures, do.normalize, refDates, 
 #' @param attributions an output from a \code{\link{retrieve_attributions}} call.
 #' @param group a value from \code{c("lexicons", "features", "time")}.
 #'
-#' @return Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using the
-#' \code{+} operator (see examples). By default, a legend is positioned at the top if the number of components of the dimension
-#' (thus, individual line graphs) is at maximum twelve.
+#' @return Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using
+#' the \code{+} operator (see examples). By default, a legend is positioned at the top if the number of components of the
+#' dimension (thus, individual line graphs) is at maximum twelve.
 #'
 #' @import ggplot2
 #' @export

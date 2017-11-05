@@ -39,8 +39,8 @@
 #' only for the last 31 samples.
 #' @param do.parallel a \code{logical}, if \code{TRUE} the \code{\%dopar\%} construct from the \pkg{foreach} package is
 #' applied for iterative model estimation. A proper parallel backend needs to be set up to make it work. No progress statements
-#' are displayed whatsoever when \code{TRUE}. For cross-validation models, parallelization can also be carried out for single-run
-#' models, whenever a parallel backend is set up. See the examples in \code{\link{sento_model}}.
+#' are displayed whatsoever when \code{TRUE}. For cross-validation models, parallelization can also be carried out for
+#' single-run models, whenever a parallel backend is set up. See the examples in \code{\link{sento_model}}.
 #'
 #' @return A \code{list} encapsulating the control parameters.
 #'
@@ -667,8 +667,8 @@ print.sentomodeliter <- function(x, ...) {
 #' @param x a \code{sentomodeliter} object.
 #' @param ... not used.
 #'
-#' @return Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using the
-#' \code{+} operator (see examples).
+#' @return Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using
+#' the \code{+} operator (see examples).
 #'
 #' @examples
 #' data("usnews")
