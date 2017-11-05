@@ -21,7 +21,7 @@ symbols and separators. We suggest to stick to unigrams, as the remainder of the
 assume the same.}
 }
 \value{
-A list containing:
+A \code{list} containing:
 \item{corpus}{the supplied \code{sentocorpus} object; the texts are altered if valence shifters are part of the lexicons.}
 \item{sentiment}{the sentiment scores \code{data.table} with a \code{"date"} and all lexicon--feature sentiment scores columns.}
 \item{features}{a \code{character} vector of the different features.}

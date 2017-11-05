@@ -58,7 +58,7 @@ of such time weighting series it can use \code{\link{almons}}, select the column
 \item{dfm}{optional; see \code{\link{compute_sentiment}}.}
 }
 \value{
-A list encapsulating the control parameters.
+A \code{list} encapsulating the control parameters.
 }
 \description{
 Sets up control object for aggregation of document-level textual sentiment into textual

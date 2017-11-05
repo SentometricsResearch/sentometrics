@@ -172,10 +172,10 @@ retrieve_attributions.sentomodeliter <- compiler::cmpfun(.retrieve_attributions.
 #' @param factor the factor level as a single \code{character} vector for which attribution has to be calculated in
 #' case of (a) multinomial model(s). Ignored for linear and binomial models.
 #'
-#' @return A list with all dimensions for which aggregation is computed, being \code{"documents"}, \code{"lexicons"},
+#' @return A \code{list} with all dimensions for which aggregation is computed, being \code{"documents"}, \code{"lexicons"},
 #' \code{"features"} and \code{"time"}. The last three dimensions are \code{data.table}s having a \code{"date"}
-#' column and the other columns the different components of the dimension, with the attributions as values. For document-level
-#' attribution, the list is further decomposed into a \code{data.table} per date, with \code{"id"}, \code{"date"} and
+#' column and the other columns the different components of the dimension, with the attributions as values. Document-level
+#' attribution is further decomposed into a \code{data.table} per date, with \code{"id"}, \code{"date"} and
 #' \code{"attrib"} columns.
 #'
 #' @seealso \code{\link{sento_model}}

@@ -14,7 +14,7 @@ sento_measures(sentocorpus, lexicons, ctr)
 \item{ctr}{output from a \code{\link{ctr_agg}} call.}
 }
 \value{
-A \code{sentomeasures} object, which is a list containing:
+A \code{sentomeasures} object, which is a \code{list} containing:
 \item{measures}{a \code{data.table} with a \code{"date"} column and all textual sentiment measures as remaining columns.}
 \item{features}{a \code{character} vector of the different features.}
 \item{lexicons}{a \code{character} vector of the different lexicons used.}
@@ -30,8 +30,8 @@ If \code{ctr$do.ignoreZeros = TRUE}, all zeros are replaces by \code{NA}.}
 aggregation across time was carried out.}
 \item{do.ignoreZeros}{a single \code{character} vector to remind if documents with zero sentiment have been ignored in the
 within-document aggregation.}
-\item{attribWeights}{a \code{list} of document weights and time weights that are used in the
-\code{\link{retrieve_attributions}} function. Serves further no direct purpose.}
+\item{attribWeights}{a \code{list} of document and time weights used in the \code{\link{retrieve_attributions}} function.
+Serves further no direct purpose.}
 }
 \description{
 Wrapper function which assembles calls to \code{\link{compute_sentiment}} and \code{\link{perform_agg}}, and

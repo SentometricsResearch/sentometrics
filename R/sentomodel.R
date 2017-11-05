@@ -11,7 +11,7 @@
 #' (binomial logistic regression), or "\code{multinomial}" (multinomial logistic regression).
 #' @param type a \code{character} vector indicating which model calibration approach to use. Supports "\code{BIC}",
 #' "\code{AIC}" and "\code{Cp}" (Mallows's Cp) as sparse regression adapted information criteria (cf. ``On the `degrees of
-#' freedom' of the LASSO´´; Zou, Hastie, Tibshirani et al., 2007), and "\code{cv}" (cross-validation based on the
+#' freedom' of the LASSO''; Zou, Hastie, Tibshirani et al., 2007), and "\code{cv}" (cross-validation based on the
 #' \code{\link[caret]{train}} function from the \pkg{caret} package). The adapted information criteria are currently
 #' only available for a linear regression.
 #' @param intercept a \code{logical}, \code{TRUE} by default fits an intercept.
@@ -21,8 +21,8 @@
 #' periods.
 #' @param alphas a \code{numeric} vector of the different alphas to test for during calibration, between 0 and 1. A value of
 #' 0 pertains to Ridge regression, a value of 1 to LASSO regression; values in between are pure elastic net. The lambda
-#' values tested for are automatically chosen by the \code{\link[glmnet]{glmnet}} function or set to
-#' \code{10^seq(2, -2, length.out = 100)} in case of cross-validation.
+#' values tested for are chosen by the \code{\link[glmnet]{glmnet}} function or set to \code{10^seq(2, -2, length.out = 100)}
+#' in case of cross-validation.
 #' @param trainWindow a positive \code{integer} as the size of the training sample in cross-validation (ignored if
 #' \code{type != } "\code{cv}").
 #' @param testWindow a positive \code{integer} as the size of the test sample in cross-validation (ignored if \code{type != }
@@ -42,7 +42,7 @@
 #' are displayed whatsoever when \code{TRUE}. For cross-validation models, parallelization can also be carried out for single-run
 #' models, whenever a parallel backend is set up. See the examples in \code{\link{sento_model}}.
 #'
-#' @return A list encapsulating the control parameters.
+#' @return A \code{list} encapsulating the control parameters.
 #'
 #' @seealso \code{\link{sento_model}}
 #'
@@ -157,7 +157,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' @param x a named \code{data.frame} with other explanatory variables as \code{numeric}, by default set to \code{NULL}.
 #' @param ctr output from a \code{\link{ctr_model}} call.
 #'
-#' @return If \code{ctr$do.iter = FALSE}, a \code{sentomodel} object which is a list containing:
+#' @return If \code{ctr$do.iter = FALSE}, a \code{sentomodel} object which is a \code{list} containing:
 #' \item{reg}{optimized regression, i.e. a model-specific \code{glmnet} object.}
 #' \item{model}{the input argument \code{ctr$model}, to indicate the type of model estimated.}
 #' \item{x}{a \code{matrix} of the values used in the regression for all explanatory variables.}
@@ -174,7 +174,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' indicates that the particular sentiment measure has not been considered in the regression process. A sentiment measure is
 #' not considered when it is a duplicate of another, or when at least 25\% of the observations are equal to zero.}
 #'
-#' @return If \code{ctr$do.iter = TRUE}, a \code{sentomodeliter} object which is a list containing:
+#' @return If \code{ctr$do.iter = TRUE}, a \code{sentomodeliter} object which is a \code{list} containing:
 #' \item{models}{all sparse regressions, i.e. separate \code{sentomodel} objects as above, as a \code{list} with as names the
 #' dates from the perspective of the sentiment measures at which predictions for performance measurement are carried out (i.e.
 #' one date step beyond the date \code{sentomodel$dates[2]}).}
@@ -764,10 +764,10 @@ predict.sentomodel <- function(object, newx, type, offset = NULL, ...) {
 #'
 #' @author Samuel Borms
 #'
-#' @description Calculates the model confidence set (see ``The Model Confidence Set´´; Hansen, Lunde and Nason, 2011) as
+#' @description Calculates the model confidence set (see ``The Model Confidence Set''; Hansen, Lunde and Nason, 2011) as
 #' implemented in the \pkg{MCS} package, for a set of different \code{sentomodeliter} objects.
 #'
-#' @param models a named list of \code{sentomodeliter} objects. All models should be of the same family, being either
+#' @param models a named \code{list} of \code{sentomodeliter} objects. All models should be of the same family, being either
 #' \code{"gaussian"}, \code{"binomial"} or \code{"multinomial"}, and have performance data of the same dimensions.
 #' @param loss a single \code{character} vector, either \code{"DA"} (directional \emph{in}accuracy), \code{"errorSq"}
 #' (squared errors), \code{"AD"} (absolute errors) or \code{"accuracy"} (\emph{in}accurate class predictions). This argument

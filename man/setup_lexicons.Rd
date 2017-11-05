@@ -25,8 +25,8 @@ list is part of this function's output, nor will it applied in the sentiment ana
 polarity lexicon.}
 }
 \value{
-A list with each lexicon as a separate element according to its name, as a \code{data.table}, and optionally a list
-element named \code{valence} that comprises the valence words. Every \code{x} column contains the words, every \code{y}
+A \code{list} with each lexicon as a separate element according to its name, as a \code{data.table}, and optionally
+an element named \code{valence} that comprises the valence words. Every \code{x} column contains the words, every \code{y}
 column contains the polarity score, and for the valence word list, \code{t} contains the word type. If a valence word list
 is provided, all lexicons are expanded by copying the respective lexicon, and changing the words and scores according to the
 valence word type: "NOT_" is added for negators, "VERY_" is added for amplifiers and "HARDLY_" is added for deamplifiers.

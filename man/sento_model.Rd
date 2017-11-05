@@ -20,7 +20,7 @@ regression. No \code{NA} values are allowed.}
 \item{ctr}{output from a \code{\link{ctr_model}} call.}
 }
 \value{
-If \code{ctr$do.iter = FALSE}, a \code{sentomodel} object which is a list containing:
+If \code{ctr$do.iter = FALSE}, a \code{sentomodel} object which is a \code{list} containing:
 \item{reg}{optimized regression, i.e. a model-specific \code{glmnet} object.}
 \item{model}{the input argument \code{ctr$model}, to indicate the type of model estimated.}
 \item{x}{a \code{matrix} of the values used in the regression for all explanatory variables.}
@@ -37,7 +37,7 @@ the \code{sentomeasures} object accounted for in the estimation window.}
 indicates that the particular sentiment measure has not been considered in the regression process. A sentiment measure is
 not considered when it is a duplicate of another, or when at least 25\% of the observations are equal to zero.}
 
-If \code{ctr$do.iter = TRUE}, a \code{sentomodeliter} object which is a list containing:
+If \code{ctr$do.iter = TRUE}, a \code{sentomodeliter} object which is a \code{list} containing:
 \item{models}{all sparse regressions, i.e. separate \code{sentomodel} objects as above, as a \code{list} with as names the
 dates from the perspective of the sentiment measures at which predictions for performance measurement are carried out (i.e.
 one date step beyond the date \code{sentomodel$dates[2]}).}

@@ -18,7 +18,7 @@ and the optimized \emph{prediction} based on these measures.
 }
 \note{
 The ideas behind the sentiment aggregation framework can be consulted in the working paper titled ``Questioning the
-news about economic growth: Sparse forecasting using thousands of news-based sentiment values´´ (Ardia, Bluteau and Boudt,
+news about economic growth: Sparse forecasting using thousands of news-based sentiment values'' (Ardia, Bluteau and Boudt,
 2017) at \url{https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2976084}.
 
 Please cite the package in publications. Use \code{citation("sentometrics")}.
