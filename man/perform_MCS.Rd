@@ -7,7 +7,7 @@
 perform_MCS(models, loss = c("DA", "errorSq", "AD", "accuracy"), ...)
 }
 \arguments{
-\item{models}{a named list of \code{sentomodeliter} objects. All models should be of the same family, being either
+\item{models}{a named \code{list} of \code{sentomodeliter} objects. All models should be of the same family, being either
 \code{"gaussian"}, \code{"binomial"} or \code{"multinomial"}, and have performance data of the same dimensions.}
 
 \item{loss}{a single \code{character} vector, either \code{"DA"} (directional \emph{in}accuracy), \code{"errorSq"}
@@ -22,7 +22,7 @@ values are used.}
 An object as returned by the \code{\link[MCS]{MCSprocedure}} function.
 }
 \description{
-Calculates the model confidence set (see ``The Model Confidence Set´´; Hansen, Lunde and Nason, 2011) as
+Calculates the model confidence set (see ``The Model Confidence Set''; Hansen, Lunde and Nason, 2011) as
 implemented in the \pkg{MCS} package, for a set of different \code{sentomodeliter} objects.
 }
 \examples{

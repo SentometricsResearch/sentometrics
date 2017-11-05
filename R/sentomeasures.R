@@ -43,7 +43,7 @@
 #' \code{data.frame} and supply it under this argument (see examples).
 #' @param dfm optional; see \code{\link{compute_sentiment}}.
 #'
-#' @return A list encapsulating the control parameters.
+#' @return A \code{list} encapsulating the control parameters.
 #'
 #' @seealso \code{\link{fill_measures}}, \code{\link{almons}}, \code{\link{compute_sentiment}}
 #'
@@ -155,7 +155,7 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #' @param lexicons output from a \code{\link{setup_lexicons}} call.
 #' @param ctr output from a \code{\link{ctr_agg}} call.
 #'
-#' @return A \code{sentomeasures} object, which is a list containing:
+#' @return A \code{sentomeasures} object, which is a \code{list} containing:
 #' \item{measures}{a \code{data.table} with a \code{"date"} column and all textual sentiment measures as remaining columns.}
 #' \item{features}{a \code{character} vector of the different features.}
 #' \item{lexicons}{a \code{character} vector of the different lexicons used.}
@@ -171,8 +171,8 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #' aggregation across time was carried out.}
 #' \item{do.ignoreZeros}{a single \code{character} vector to remind if documents with zero sentiment have been ignored in the
 #' within-document aggregation.}
-#' \item{attribWeights}{a \code{list} of document weights and time weights that are used in the
-#' \code{\link{retrieve_attributions}} function. Serves further no direct purpose.}
+#' \item{attribWeights}{a \code{list} of document and time weights used in the \code{\link{retrieve_attributions}} function.
+#' Serves further no direct purpose.}
 #'
 #' @seealso \code{\link{compute_sentiment}}, \code{\link{perform_agg}}
 #'
@@ -254,8 +254,8 @@ print.sentomeasures <- function(x, ...) {
 #' @param do.split a \code{logical} that if \code{TRUE} splits every lexicon into a separate positive polarity and negative
 #' polarity lexicon.
 #'
-#' @return A list with each lexicon as a separate element according to its name, as a \code{data.table}, and optionally a list
-#' element named \code{valence} that comprises the valence words. Every \code{x} column contains the words, every \code{y}
+#' @return A \code{list} with each lexicon as a separate element according to its name, as a \code{data.table}, and optionally
+#' an element named \code{valence} that comprises the valence words. Every \code{x} column contains the words, every \code{y}
 #' column contains the polarity score, and for the valence word list, \code{t} contains the word type. If a valence word list
 #' is provided, all lexicons are expanded by copying the respective lexicon, and changing the words and scores according to the
 #' valence word type: "NOT_" is added for negators, "VERY_" is added for amplifiers and "HARDLY_" is added for deamplifiers.
@@ -408,7 +408,7 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 #' symbols and separators. We suggest to stick to unigrams, as the remainder of the sentiment computation and built-in lexicons
 #' assume the same.
 #'
-#' @return A list containing:
+#' @return A \code{list} containing:
 #' \item{corpus}{the supplied \code{sentocorpus} object; the texts are altered if valence shifters are part of the lexicons.}
 #' \item{sentiment}{the sentiment scores \code{data.table} with a \code{"date"} and all lexicon--feature sentiment scores columns.}
 #' \item{features}{a \code{character} vector of the different features.}
@@ -608,19 +608,19 @@ agg_time <- function(sentomeasures, lag, fill, how = get_hows()$time, ...) {
 #'
 #' @param sentomeasures a \code{sentomeasures} object. This is necessary to check whether the other input arguments
 #' make sense.
-#' @param lexicons a list with unique lexicons to merge at given name, e.g. \cr
+#' @param lexicons a \code{list} with unique lexicons to merge at given name, e.g. \cr
 #' \code{list(lex12 = c("lex1", "lex2"))}. See \code{sentomeasures$lexicons} for the exact names to use. Use \code{NA} to
 #' apply no merging across this dimension.
-#' @param features a list with unique features to merge at given name, e.g. \cr
+#' @param features a \code{list} with unique features to merge at given name, e.g. \cr
 #' \code{list(feat12 = c("feat1", "feat2"))}. See \code{sentomeasures$features} for the exact names to use. Use \code{NA} to
 #' apply no merging across this dimension.
-#' @param time a list with unique time weighting schemes to merge at given name, e.g. \cr
+#' @param time a \code{list} with unique time weighting schemes to merge at given name, e.g. \cr
 #' \code{list(tw12 = c("tw1", "tw2"))}. See \code{sentomeasures$time} for the exact names to use. Use \code{NA} to
 #' apply no merging across this dimension.
 #' @param do.keep a \code{logical} indicating if the original sentiment measures should be kept (i.e. the merged
 #' sentiment measures will be added to the current sentiment measures as additional indices if \code{TRUE}).
 #'
-#' @return A list encapsulating the control parameters.
+#' @return A \code{list} encapsulating the control parameters.
 #'
 #' @seealso \code{\link{merge_measures}}
 #'

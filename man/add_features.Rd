@@ -13,9 +13,9 @@ add_features(sentocorpus, featuresdf = NULL, keywords = NULL)
 \code{sentocorpus} inputted. If the number of rows in \code{featuresdf} is not equal to the number of documents
 in \code{sentocorpus}, recycling will occur.}
 
-\item{keywords}{a named \code{character} vector. For every element in this vector, a new feature column is added with a
-value of 1 for the texts in which the element (e.g. a word) appears, and 0 if not. If no texts match a keyword, no column
-is added. The names of the vector are used as the names of the new features.}
+\item{keywords}{a named \code{list}. For every element, a new feature column is added with a value of 1 for the texts
+in which the keyword(s) appear(s), and 0 if not. If no texts match a keyword, no column is added. The names are used
+as the names of the new features.}
 }
 \value{
 An updated \code{sentocorpus} object.
@@ -36,7 +36,7 @@ corpus <- sento_corpus(corpusdf = usnews)
 corpus1 <- add_features(corpus,
                         featuresdf = data.frame(random = runif(quanteda::ndoc(corpus))))
 corpus2 <- add_features(corpus,
-                        keywords = c(pres = "president", war = "war"))
+                        keywords = list(pres = "president", war = "war"))
 
 }
 \author{

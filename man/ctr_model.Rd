@@ -16,7 +16,7 @@ ctr_model(model = c("gaussian", "binomial", "multinomial"), type = c("BIC",
 
 \item{type}{a \code{character} vector indicating which model calibration approach to use. Supports "\code{BIC}",
 "\code{AIC}" and "\code{Cp}" (Mallows's Cp) as sparse regression adapted information criteria (cf. ``On the `degrees of
-freedom' of the LASSO´´; Zou, Hastie, Tibshirani et al., 2007), and "\code{cv}" (cross-validation based on the
+freedom' of the LASSO''; Zou, Hastie, Tibshirani et al., 2007), and "\code{cv}" (cross-validation based on the
 \code{\link[caret]{train}} function from the \pkg{caret} package). The adapted information criteria are currently
 only available for a linear regression.}
 
@@ -32,8 +32,8 @@ periods.}
 
 \item{alphas}{a \code{numeric} vector of the different alphas to test for during calibration, between 0 and 1. A value of
 0 pertains to Ridge regression, a value of 1 to LASSO regression; values in between are pure elastic net. The lambda
-values tested for are automatically chosen by the \code{\link[glmnet]{glmnet}} function or set to
-\code{10^seq(2, -2, length.out = 100)} in case of cross-validation.}
+values tested for are chosen by the \code{\link[glmnet]{glmnet}} function or set to \code{10^seq(2, -2, length.out = 100)}
+in case of cross-validation.}
 
 \item{nSample}{a positive \code{integer} as the size of the sample for model estimation at every iteration (ignored if
 \code{iter = FALSE}).}
@@ -59,7 +59,7 @@ are displayed whatsoever when \code{TRUE}. For cross-validation models, parallel
 models, whenever a parallel backend is set up. See the examples in \code{\link{sento_model}}.}
 }
 \value{
-A list encapsulating the control parameters.
+A \code{list} encapsulating the control parameters.
 }
 \description{
 Sets up control object for linear or nonlinear modelling of a response variable onto a large panel of
