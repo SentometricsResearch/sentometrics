@@ -181,7 +181,7 @@ retrieve_attributions.sentomodeliter <- compiler::cmpfun(.retrieve_attributions.
 #' @seealso \code{\link{sento_model}}
 #'
 #' @export
-retrieve_attributions <- function(model, sentomeasures, do.normalize, refDates, factor) {
+retrieve_attributions <- function(model, sentomeasures, do.normalize = FALSE, refDates = NULL, factor = NULL) {
   UseMethod("retrieve_attributions", model)
 }
 
