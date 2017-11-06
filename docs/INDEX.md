@@ -9,7 +9,7 @@ The sentometrics R package was created during [Google Summer of Code 2017](https
 
 ## The functionalities of sentometrics
 
-Assume you have a collection of texts available and you have mapped the relevance of each text to a given number of metadata features. You think it might be a good idea to summarize the texts into several sentiment time series across these features, which you ponder could help forecasting some variable you are interested in. However, you do not really know how to proceed next... Fortunately, you come across the `sentometrics` package, which does exactly what you need! Great! Go on and load the package to begin with, together with some plotting devices.
+Assume you have a collection of texts available and you have mapped the relevance of each text to a given number of metadata features. You think it might be a good idea to summarize the texts into several sentiment time series across these features, which you ponder could help predicting some variable you are interested in. However, you do not really know how to proceed next... Fortunately, you come across the `sentometrics` package, which does exactly what you need! Great! Go on and load the package to begin with, together with some plotting devices.
 
 ```R
 require(sentometrics)
@@ -94,8 +94,6 @@ p <- ggplot(data = melt(weights, id.vars = "id"), aes(x = id, y = value, color =
 p
 ```
 
-![](docs/plots/time.png)
-
 <p align="center">
   <img src="https://raw.githubusercontent.com/ArdiaD/Sentometrics/master/docs/plots/time.png">
 </p>
@@ -122,7 +120,7 @@ sentMeasLinEw <- select_measures(sentMeas, toSelect = c("linear", "equal_weight"
                                  do.combine = FALSE)
 ```
 
-All `sentomeasures` objects can be plotted instantly, most handily according to a particular dimension of the textual sentiment time series. The series are then shown as the average of all sentiment measures pertaining to each dimension's component (e.g. by each feature). In general, these plots can be used to compare the average evolution of all sentiment measures pertaining to each dimension. Sneak peak: if you want more detailed information about the added value of individual lexicons, features, time-weighting schemes or even documents in terms of a forecasting model, this is possible too through what we call _attribution_. Read on!
+All `sentomeasures` objects can be plotted instantly, most handily according to a particular dimension of the textual sentiment time series. The series are then shown as the average of all sentiment measures pertaining to each dimension's component (e.g. by each feature). In general, these plots can be used to compare the average evolution of all sentiment measures pertaining to each dimension. Sneak peak: if you want more detailed information about the added value of individual lexicons, features, time-weighting schemes or even documents in terms of a prediction model, this is possible too through what we call _attribution_. Read on!
 
 ```R
 # plotting is very easy...
@@ -170,13 +168,13 @@ g
   <img src="https://raw.githubusercontent.com/ArdiaD/Sentometrics/master/docs/plots/global.png">
 </p>
 
-We now have a large number of aggregated sentiment time series, encapsulated in the `sentomeasures` object named `sentMeas`. But how performant are these measures in a forecasting framework? And which dimensions are most important?
+We now have a large number of aggregated sentiment time series, encapsulated in the `sentomeasures` object named `sentMeas`. But how performant are these measures in a prediction framework? And which dimensions are most important?
 
-### Modelling and forecasting
+### Modelling and prediction
 
-The other main purpose of this package is to use the previously obtained sentiment measures as explanatory variables to forecast any other variable. The underlying question is: "Does sentiment from texts achieve good (or improve) prediction performance?". 
+The other main purpose of this package is to use the previously obtained sentiment measures as explanatory variables to predict any other variable. The underlying question is: "Does sentiment from texts achieve good (or improve) prediction performance?". 
 
-We provide the possibility of three types of regressions: linear, binomial and multinomial. To select the most important sentiment variables, the models are all in the form of an elastic net regularized regression. There is salient correlation between the different sentiment variables, inherently due to similarities in aggregation schemes. A penalized regression is thus the most designated route to incorporate these variables into forecasting models, shrinking the coefficients of the sentiment indices that are not important in explaining the independent variable. We heavily rely on the **`glmnet`** package to carry out this part of the analysis. Check out their online [vignette](https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html#intro) for an introduction to the models we apply, amongst others. Model calibration (meaning selection of the optimal elastic net _alpha_ and _lambda_ parameters), can be done through cross-validation or on the basis of one of three information criteria (AIC, BIC and Mallows's Cp).  
+We provide the possibility of three types of regressions: linear, binomial and multinomial. To select the most important sentiment variables, the models are all in the form of an elastic net regularized regression. There is salient correlation between the different sentiment variables, inherently due to similarities in aggregation schemes. A penalized regression is thus the most designated route to incorporate these variables into prediction models, shrinking the coefficients of the sentiment indices that are not important in explaining the independent variable. We heavily rely on the **`glmnet`** package to carry out this part of the analysis. Check out their online [vignette](https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html#intro) for an introduction to the models we apply, amongst others. Model calibration (meaning selection of the optimal elastic net _alpha_ and _lambda_ parameters), can be done through cross-validation or on the basis of one of three information criteria (AIC, BIC and Mallows's Cp).  
 
 The following example displays the workflow. The `ctr_model()` function establishes the model type and the estimation strategy. Your target independent variable is the [Economic Policy Uncertainty](http://www.policyuncertainty.com/index.html) index, hereafter referred to as EPU. The EPU data can be found in the built-in `epu` dataset. 
 
@@ -200,7 +198,7 @@ outIC <- sento_model(sentMeas, y, ctr = ctrIC)
 summary(outIC)
 ```
 
-Binomial and multinomial logistic regressions are estimated equally easily. Have a look at below example for a binomial EPU variable, coded as being either above or below the historical average. The logic for a multinomial response variable is exactly the same, and can be tested using the series in `epu$aboveMulti`. _Currently, logistic regressions can only be calibrated through cross-validation. We will add in a future release information criteria for logistic regressions appropriate to the elastic net context, similar to what we did for the linear regression._ Doing parameter calibration by cross-validation requires only a few changes in the control function, in particular the inclusion of a training window and test window size. The cross-validation setup is as such that the model is estimated at a sample of size `trainWindow` for all possible _alpha_ and _lambda_ combinations, and forecasting performance is measured for the subsequent `testWindow` out-of-sample values. The procedure is repeated in a rolling-forward way until the total input sample is exhausted, which is called _training the model_. The optimal _alpha_ and _lambda_ values are then those that minimize forecasting errors across all the subsamples. The cross-validation is performed with the **`caret`** package. It may take a while to run, due to the nature of the calibration approach (however, it can be speed up using parallel computation, as explained in the package's manual).
+Binomial and multinomial logistic regressions are estimated equally easily. Have a look at below example for a binomial EPU variable, coded as being either above or below the historical average. The logic for a multinomial response variable is exactly the same, and can be tested using the series in `epu$aboveMulti`. _Currently, logistic regressions can only be calibrated through cross-validation. We will add in a future release information criteria for logistic regressions appropriate to the elastic net context, similar to what we did for the linear regression._ Doing parameter calibration by cross-validation requires only a few changes in the control function, in particular the inclusion of a training window and test window size. The cross-validation setup is as such that the model is estimated at a sample of size `trainWindow` for all possible _alpha_ and _lambda_ combinations, and prediction performance is measured for the subsequent `testWindow` out-of-sample values. The procedure is repeated in a rolling-forward way until the total input sample is exhausted, which is called _training the model_. The optimal _alpha_ and _lambda_ values are then those that minimize prediction errors across all the subsamples. The cross-validation is performed with the **`caret`** package. It may take a while to run, due to the nature of the calibration approach (however, it can be speed up using parallel computation, as explained in the package's manual).
 
 ```R
 yb <- epu[epu$date >= sentMeas$measures$date[1], ]$above
@@ -216,7 +214,7 @@ outBi <- sento_model(sentMeas, yb, ctr = ctrCVBi)
 summary(outBi)
 ```
 
-Instead of estimating the model once for the entire sample, it might be more interesting to perform the analysis several times with time rolling forward for a smaller sample size. This is enacted by setting `do.iter = TRUE`. At the same time, this will perform one-step ahead forecasts and provide an assessment of out-of-sample model performance across all iterations, both numerically and visually. Trying this out for a sample size of 5 years and only taking interest in the last 50 out-of-sample forecasts, you run the code below. We also add the lag of the target variable as an explanatory variable. The output is an object of class `sentomodeliter`, in which you can find the repeated model estimations, but most importantly an overview of performance measures with respect to forecasting errors. The performance measures obviously depend on whether you run a linear or a logistic regression.
+Instead of estimating the model once for the entire sample, it might be more interesting to perform the analysis several times with time rolling forward for a smaller sample size. This is enacted by setting `do.iter = TRUE`. At the same time, this will perform one-step ahead forecasts and provide an assessment of out-of-sample model performance across all iterations, both numerically and visually. Trying this out for a sample size of 5 years and only taking interest in the last 50 out-of-sample predictions, you run the code below. We also add the lag of the target variable as an explanatory variable. The output is an object of class `sentomodeliter`, in which you can find the repeated model estimations, but most importantly an overview of performance measures with respect to prediction errors. The performance measures obviously depend on whether you run a linear or a logistic regression.
 
 ```R
 # adjust data to incorporate ESU's lag into the model
@@ -238,7 +236,7 @@ outIter <- sento_model(sentMeasShift, y, x = x, ctr = ctrIter)
 summary(outIter)
 ```
 
-The list element `"performance"` has all performance measures. To inspect the out-of-sample forecasting performance visually, call the generic plot function on the modelling object.
+The list element `"performance"` has all performance measures. To inspect the out-of-sample prediction performance visually, call the generic plot function on the modelling object.
 
 ```R
 r <- plot(outIter)
@@ -253,7 +251,7 @@ Not that bad of a fit, isn't it? One could suspect it is mainly due to the lagge
 
 ### Post-analysis
 
-There are two interesting post-analysis functions. The first one is inherent to the aggregation framework and allows to pinpoint the attribution to forecasts of lexicons, time weighting schemes, features and individual documents, for any provided forecasting model and its coefficients. This can be done by one simple function call, which outputs a list with all attributions at the respective dimensions.
+There are two interesting post-analysis functions. The first one is inherent to the aggregation framework and allows to pinpoint the attribution to predictions of lexicons, time weighting schemes, features and individual documents, for any provided model and its coefficients. This can be done by one simple function call, which outputs a list with all attributions at the respective dimensions.
 
 ```R
 # to retrieve all attributions, input the corresponding modelling and sentiment measures objects
@@ -272,7 +270,7 @@ grid.arrange(f, l, t, ncol = 1, nrow = 3)
   <img src="https://raw.githubusercontent.com/ArdiaD/Sentometrics/master/docs/plots/attr.png">
 </p>
 
-As can be seen from the plots, some components are more important than others at specific forecasting dates. Document-level attribution, not plotted, can be inspected to determine whether there are documents that seem more meaningful than others. An attribution analysis can give you quick insights into what is steering forecasts, which can then be used as a basis for an analysis into why. 
+As can be seen from the plots, some components are more important than others at specific prediction dates. Document-level attribution, not plotted, can be inspected to determine whether there are documents that seem more meaningful than others. An attribution analysis can give you quick insights into what is steering forecasts, which can then be used as a basis for an analysis into why. 
 
 The second post-analysis function allows to compare several models and construct what is called a _model confidence set_ with the best models remaining. For this, we deploy the **`MCS`** package and make available the simple wrapper function `perform_MCS()`. If you want to compare different sentiment-based models or compare the performance of several sentiment-based models with a selection of key benchmark models, this is the function you should use. 
 
