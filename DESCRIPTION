@@ -2,14 +2,14 @@ Package: sentometrics
 Type: Package
 Title: An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction
 Version: 0.2
-Authors@R: c(person("Samuel", "Borms", email = "samuel.borms@unine.ch", role = c("aut", "cre")),
-			 person("David", "Ardia", email = "david.ardia@unine.ch", role = c("aut")),
-			 person("Keven", "Bluteau", email = "keven.bluteau@unine.ch", role = c("aut")),
-			 person("Kris", "Boudt", email = "kris.boudt@vub.be", role = c("aut")))
+Authors@R: c(person("Samuel", "Borms", email = "borms_sam@hotmail.com", role = c("aut", "cre")),
+  person("David", "Ardia", email = "david.ardia@unine.ch", role = c("aut")),
+  person("Keven", "Bluteau", email = "keven.bluteau@unine.ch", role = c("aut")),
+  person("Kris", "Boudt", email = "kris.boudt@vub.be", role = c("aut")))
 Author: David Ardia [aut],
-    Keven Bluteau [aut],
-		Samuel Borms [aut, cre],
-    Kris Boudt [aut],
+  Keven Bluteau [aut],
+  Samuel Borms [aut, cre],
+  Kris Boudt [aut],
 Maintainer: Samuel Borms <samuel.borms@unine.ch>
 Description: Time series analysis based on textual sentiment, accounting for the intrinsic challenge that sentiment can be computed and pooled across texts and time in many ways. Provides a means to model the impact of sentiment in texts on a target variable, by first computing a wide range of textual sentiment measures and then selecting those that are most informative.
 Depends: R (>= 3.4.2), data.table, ggplot2, foreach
