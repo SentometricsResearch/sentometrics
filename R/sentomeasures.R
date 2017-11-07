@@ -31,7 +31,7 @@
 #' \code{"zero"}, which sets the scores (and thus also the weights) of the added dates to zero in the time aggregation.
 #' @param alphasExp a \code{numeric} vector of all exponential smoothing factors to calculate weights for, used if
 #'  \code{"exponential" \%in\% howTime}. Values should be between 0 and 1 (both excluded).
-#' @param ordersAlm a \code{numeric} vector of all Almon polynomial orders to calcalute weights for, used if
+#' @param ordersAlm a \code{numeric} vector of all Almon polynomial orders to calculate weights for, used if
 #' \code{"almon" \%in\% howTime}.
 #' @param do.inverseAlm a \code{logical} indicating if for every Almon polynomial its inverse has to be added, used
 #' if \code{"almon" \%in\% howTime}.

@@ -41,7 +41,7 @@ applying the \code{\link{fill_measures}} function before aggregating, except if 
 \item{alphasExp}{a \code{numeric} vector of all exponential smoothing factors to calculate weights for, used if
 \code{"exponential" \%in\% howTime}. Values should be between 0 and 1 (both excluded).}
 
-\item{ordersAlm}{a \code{numeric} vector of all Almon polynomial orders to calcalute weights for, used if
+\item{ordersAlm}{a \code{numeric} vector of all Almon polynomial orders to calculate weights for, used if
 \code{"almon" \%in\% howTime}.}
 
 \item{do.inverseAlm}{a \code{logical} indicating if for every Almon polynomial its inverse has to be added, used
