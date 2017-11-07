@@ -7,21 +7,21 @@
 add_features(sentocorpus, featuresdf = NULL, keywords = NULL)
 }
 \arguments{
-\item{sentocorpus}{a \code{sentocorpus} object.}
+\item{sentocorpus}{a \code{sentocorpus} object created with \code{\link{sento_corpus}}.}
 
-\item{featuresdf}{a named \code{data.frame} with as columns the new features of type \code{numeric} to add to the
-\code{sentocorpus} inputted. If the number of rows in \code{featuresdf} is not equal to the number of documents
+\item{featuresdf}{a named \code{data.frame} of type \code{numeric} where each columns is a new feature to be added to the inputted
+\code{sentocorpus} object. If the number of rows in \code{featuresdf} is not equal to the number of documents
 in \code{sentocorpus}, recycling will occur.}
 
 \item{keywords}{a named \code{list}. For every element, a new feature column is added with a value of 1 for the texts
-in which the keyword(s) appear(s), and 0 if not. If no texts match a keyword, no column is added. The names are used
+in which the keyword(s) appear(s), and 0 if not. If no texts match a keyword, no column is added. The \code{list} named elements are used
 as the names of the new features.}
 }
 \value{
 An updated \code{sentocorpus} object.
 }
 \description{
-Adds new feature columns, either user-supplied or based on a simple keyword(s) search, to provided
+Adds new feature columns, either user-supplied or based on a simple keyword(s) search, to provided a
 \code{sentocorpus} object.
 }
 \details{

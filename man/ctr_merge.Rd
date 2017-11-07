@@ -11,15 +11,15 @@ ctr_merge(sentomeasures, features = NA, lexicons = NA, time = NA,
 \item{sentomeasures}{a \code{sentomeasures} object created using \code{\link{sento_measures}}. This is necessary to check whether the other input arguments
 make sense.}
 
-\item{features}{a \code{list} with unique features to merge at given name, e.g. \cr
+\item{features}{a \code{list} with unique features to merge at given name, e.g., \cr
 \code{list(feat12 = c("feat1", "feat2"))}. See \code{sentomeasures$features} for the exact names to use. Use \code{NA} to
 apply no merging across this dimension.}
 
-\item{lexicons}{a \code{list} with unique lexicons to merge at given name, e.g. \cr
+\item{lexicons}{a \code{list} with unique lexicons to merge at given name, e.g., \cr
 \code{list(lex12 = c("lex1", "lex2"))}. See \code{sentomeasures$lexicons} for the exact names to use. Use \code{NA} to
 apply no merging across this dimension.}
 
-\item{time}{a \code{list} with unique time weighting schemes to merge at given name, e.g. \cr
+\item{time}{a \code{list} with unique time weighting schemes to merge at given name, e.g., \cr
 \code{list(tw12 = c("tw1", "tw2"))}. See \code{sentomeasures$time} for the exact names to use. Use \code{NA} to
 apply no merging across this dimension.}
 
