@@ -18,7 +18,7 @@ devtools::install_github("ArdiaD/Sentometrics")
 
 ## References
 
-Please cite `sentometrics` in publications using ```R citation("sentometrics")```.
+Please cite `sentometrics` in publications. Use `citation("sentometrics")`.
 
 ## Acknowledgements
 
