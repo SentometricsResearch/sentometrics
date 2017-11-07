@@ -30,7 +30,7 @@ columns.}
 \item{howWithin}{a \code{character} vector to remind how sentiment within documents was aggregated.}
 }
 \description{
-Given a corpus of texts, computes sentiment per document using the bag-of-words approach,
+Given a corpus of texts, computes sentiment per document using the bag-of-words approach
 based on the lexicons provided and a choice of aggregation across words per document. Relies partly on the
 \pkg{quanteda} package. The scores computed are net sentiment (sum of positive minus sum of negative scores).
 }
