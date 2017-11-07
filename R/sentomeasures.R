@@ -11,20 +11,20 @@
 #'
 #' @param howWithin a single \code{character} vector defining how aggregation within documents will be performed. Should
 #' \code{length(howWithin) > 1}, the first element is used. For currently available options on how aggregation can occur, see
-#' \code{get_hows()$words}.
+#' \code{\link{get_hows}()$words}.
 #' @param howDocs a single \code{character} vector defining how aggregation across documents per date will be performed.
 #' Should \code{length(howDocs) > 1}, the first element is used. For currently available options on how aggregation can occur,
-#' see \code{get_hows()$docs}.
+#' see \code{\link{get_hows}()$docs}.
 #' @param howTime a \code{character} vector defining how aggregation across dates will be performed. More than one choice
-#' is possible. For currently available options on how aggregation can occur, see \code{get_hows()$time}.
+#' is possible. For currently available options on how aggregation can occur, see \code{\link{get_hows}()$time}.
 #' @param do.ignoreZeros a \code{logical} indicating whether zero sentiment values have to be ignored in the determination of
-#' the document weights while aggregating across documents. By default \code{TRUE}, such that documents with an exact score of
+#' the document weights while aggregating across documents. By default \code{do.ignoreZeros = TRUE}, such that documents with an exact score of
 #' zero are considered irrelevant.
 #' @param by a single \code{character} vector, either \code{"day", "week", "month"} or \code{"year"}, to indicate at what
 #' level the dates should be aggregated. Dates are displayed as the first day of the period, if applicable (e.g.
 #' \code{"2017-03-01"} for March 2017).
 #' @param lag a single \code{integer} vector, being the time lag to be specified for aggregation across time. By default
-#' equal to 1, meaning no aggregation across time.
+#' equal to \code{1L}, meaning no aggregation across time.
 #' @param fill a single \code{character} vector, one of \code{c("zero", "latest", "none")}, to control how missing
 #' sentiment values across the continuum of dates considered are added. This impacts the aggregation across time,
 #' applying the \code{\link{fill_measures}} function before aggregating, except if \code{fill = "none"}. By default equal to
@@ -151,7 +151,7 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #' includes the input \code{sentocorpus} and computed sentiment scores in its output. Serves as the most direct way towards a
 #' panel of textual sentiment measures as a \code{sentomeasures} object.
 #'
-#' @param sentocorpus a \code{sentocorpus} object.
+#' @param sentocorpus a \code{sentocorpus} object created with \code{\link{sento_corpus}}.
 #' @param lexicons output from a \code{\link{setup_lexicons}} call.
 #' @param ctr output from a \code{\link{ctr_agg}} call.
 #'
@@ -243,12 +243,12 @@ print.sentomeasures <- function(x, ...) {
 #' a words column and a polarity score column. The lexicons should be appropriately named for clarity in terms of subsequently
 #' obtained sentiment measures. Alternatively, a subset of the already formatted built-in lexicons accessible via
 #' \code{lexicons} can be declared too, as part of the same list input. If only (some of) the package built-in lexicons want
-#' to be used (and \emph{no} valence shifters), ony can simply supply \code{lexicons[c(...)]} as an argument to either
+#' to be used (with \emph{no} valence shifters), one can simply supply \code{lexicons[c(...)]} as an argument to either
 #' \code{\link{sento_measures}} or \code{\link{compute_sentiment}}. However, it is strongly recommended to pass all lexicons
 #' (and a valence word list) to this function first, in any case.
 #' @param valenceIn a single valence word list as a \code{data.table} or a \code{data.frame} with respectively a words column,
-#' a type column (1 for negators, 2 for amplifiers/intensifiers, and 3 for deamplifiers/downtoners) and a score column.
-#' Suggested scores are -1, 2 and 0.5 respectively, and should be the same within each type. This argument can also
+#' a type column (\code{1} for negators, \code{2} for amplifiers/intensifiers, and \code{3} for deamplifiers/downtoners) and a score column.
+#' Suggested scores are -1, 2, and 0.5 respectively, and should be the same within each type. This argument can also
 #' be one of the already formatted built-in valence word lists accessible via \code{valence}. If \code{NULL}, no valence word
 #' list is part of this function's output, nor will it applied in the sentiment analysis.
 #' @param do.split a \code{logical} that if \code{TRUE} splits every lexicon into a separate positive polarity and negative
@@ -388,7 +388,7 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 #'
 #' @author Samuel Borms
 #'
-#' @description Given a corpus of texts, computes sentiment per document using the bag-of-words approach,
+#' @description Given a corpus of texts, computes sentiment per document using the bag-of-words approach
 #' based on the lexicons provided and a choice of aggregation across words per document. Relies partly on the
 #' \pkg{quanteda} package. The scores computed are net sentiment (sum of positive minus sum of negative scores).
 #'
@@ -398,10 +398,10 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 #' the lexicons into a positive and a negative polarity counterpart. \code{NA}s are converted to 0, under the assumption that
 #' this is equivalent to no sentiment.
 #'
-#' @param sentocorpus a \code{sentocorpus} object.
+#' @param sentocorpus a \code{sentocorpus} object created with \code{\link{sento_corpus}}.
 #' @param lexicons output from a \code{\link{setup_lexicons}} call.
 #' @param how a single \code{character} vector defining how aggregation within documents should be performed. For currently
-#' available options on how aggregation can occur, see \code{get_hows()$words}.
+#' available options on how aggregation can occur, see \code{\link{get_hows}()$words}.
 #' @param dfm optional; an output from a \pkg{quanteda} \code{\link[quanteda]{dfm}} call, such that users can specify their
 #' own tokenization scheme (via \code{\link[quanteda]{tokenize}}) as well as other parameters related to the construction of
 #' a document-feature matrix (dfm). By default, a dfm is created based on a tokenization that removes punctuation, numbers,
@@ -607,19 +607,19 @@ agg_time <- function(sentomeasures, lag, fill, how = get_hows()$time, ...) {
 #' @description Sets up control object for the optional merging (additional aggregation) of sentiment measures as
 #' done by \code{\link{merge_measures}}.
 #'
-#' @param sentomeasures a \code{sentomeasures} object. This is necessary to check whether the other input arguments
+#' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}. This is necessary to check whether the other input arguments
 #' make sense.
-#' @param lexicons a \code{list} with unique lexicons to merge at given name, e.g. \cr
+#' @param lexicons a \code{list} with unique lexicons to merge at given name, e.g., \cr
 #' \code{list(lex12 = c("lex1", "lex2"))}. See \code{sentomeasures$lexicons} for the exact names to use. Use \code{NA} to
 #' apply no merging across this dimension.
-#' @param features a \code{list} with unique features to merge at given name, e.g. \cr
+#' @param features a \code{list} with unique features to merge at given name, e.g., \cr
 #' \code{list(feat12 = c("feat1", "feat2"))}. See \code{sentomeasures$features} for the exact names to use. Use \code{NA} to
 #' apply no merging across this dimension.
-#' @param time a \code{list} with unique time weighting schemes to merge at given name, e.g. \cr
+#' @param time a \code{list} with unique time weighting schemes to merge at given name, e.g., \cr
 #' \code{list(tw12 = c("tw1", "tw2"))}. See \code{sentomeasures$time} for the exact names to use. Use \code{NA} to
 #' apply no merging across this dimension.
-#' @param do.keep a \code{logical} indicating if the original sentiment measures should be kept (i.e. the merged
-#' sentiment measures will be added to the current sentiment measures as additional indices if \code{TRUE}).
+#' @param do.keep a \code{logical} indicating if the original sentiment measures should be kept (i.e., the merged
+#' sentiment measures will be added to the current sentiment measures as additional indices if \code{do.keep = TRUE}).
 #'
 #' @return A \code{list} encapsulating the control parameters.
 #'
@@ -708,7 +708,7 @@ ctr_merge <- function(sentomeasures, features = NA, lexicons = NA, time = NA, do
 #'
 #' @author Samuel Borms
 #'
-#' @description Merge (further aggregate) measures by combining across provided lexicons, features and time weighting schemes
+#' @description Merge (further aggregate) measures by combining across provided lexicons, features, and time weighting schemes
 #' dimensions. The combination occurs by taking the mean of the relevant measures.
 #'
 #' @param ctr output from a \code{\link{ctr_merge}} call.
@@ -791,7 +791,7 @@ merge_measures <- function(ctr) {
 #' @author Samuel Borms
 #'
 #' @description Merges all sentiment measures into one global textual sentiment measure based on a set of weights to
-#' indicate the importance of each component in the \code{lexicons}, \code{features} and \code{time} vectors as specified
+#' indicate the importance of each component in the \code{lexicons}, \code{features}, and \code{time} vectors as specified
 #' in the input \code{sentomeasures} object. Every measure receives a weight in the global measure equal to the multiplication
 #' of the supplied weights of the components it is contained of. The global sentiment measure then corresponds to a
 #' weighted average of these weights times the sentiment scores, per date.
@@ -799,7 +799,7 @@ merge_measures <- function(ctr) {
 #' @details This function returns no \code{sentomeasures} object, however the global sentiment measure as outputted can
 #' be added to regressions as an additional variable using the \code{x} argument in the \code{\link{sento_model}} function.
 #'
-#' @param sentomeasures a \code{sentomeasures} object.
+#' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
 #' @param lexicons a \code{numeric} vector of weights, of size \code{length(sentomeasures$lexicons)}, in the same order
 #' and summing to one. By default set to 1, which means equally weighted.
 #' @param features a \code{numeric} vector of weights, of size \code{length(sentomeasures$features)}, in the same order
@@ -869,13 +869,13 @@ to_global <- function(sentomeasures, lexicons = 1, features = 1, time = 1) {
 #' or those who's name consist of at least one of the selection components. One can also extract measures within a subset
 #' of dates.
 #'
-#' @param sentomeasures a \code{sentomeasures} object.
+#' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
 #' @param toSelect a \code{"character"} vector of the lexicon, feature and time weighting scheme names, to indicate which
 #' measures need to be selected. By default equal to \code{"all"}, which means no selection of the sentiment measures is made;
 #' this may be used if one only wants to extract a subset of dates via the \code{dates} argument.
-#' @param do.combine a \code{logical} indicating if only measures for wich all (\code{TRUE}) or at least one (\code{FALSE}) of
+#' @param do.combine a \code{logical} indicating if only measures for which all (\code{do.combine = TRUE}) or at least one (\code{do.combine =FALSE}) of
 #' the selection components should occur in each sentiment measure's name in the subset. If \code{do.combine = TRUE}, the
-#' \code{toSelect} argument can only consist of one lexicon, one feature and one time weighting scheme at maximum.
+#' \code{toSelect} argument can only consist of one lexicon, one feature, and one time weighting scheme at maximum.
 #' @param dates any expression, in the form of a \code{character} vector, that would correctly evaluate to a \code{logical}
 #' vector, features the variable \code{date} and has dates specified as \code{"yyyy-mm-dd"}, e.g.
 #' \code{dates = "date >= '2000-01-15'"}. This argument may also be a vector of class \code{Date} which extracts all dates
@@ -949,7 +949,7 @@ select_measures <- function(sentomeasures, toSelect = "all", do.combine = TRUE, 
 #' object in one plot, or the average along one of the lexicons, features and time weighting dimensions. We suggest to make
 #' use of the \code{\link{select_measures}} function when you desire to plot only a subset of the sentiment measures.
 #'
-#' @param x a \code{sentomeasures} object.
+#' @param x a \code{sentomeasures} object created using \code{\link{sento_measures}}.
 #' @param group a value from \code{c("lexicons", "features", "time", "all")}. The first three choices display the average of
 #' all measures from the same group, in a different color. The choice \code{"all"} displays every single sentiment measure
 #' in a separate color, but this may look visually overwhelming very fast, and can be quite slow.
@@ -1018,7 +1018,7 @@ plot.sentomeasures <- function(x, group = "all", ...) {
 #' @description Adds missing dates between earliest and latest date of a \code{sentomeasures} object, such that time series
 #' is continuous date-wise. Fills in these dates with either 0, the respective latest non-missing value or \code{NA}.
 #'
-#' @param sentomeasures a \code{sentomeasures} object.
+#' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
 #' @param fill an element of \code{c("zero", "latest", NA)}; the first and last assume missing dates represent zero sentiment,
 #' the second assumes missing dates represent constant sentiment.
 #'
@@ -1074,7 +1074,7 @@ fill_measures <- function(sentomeasures, fill = "zero") {
 #' @description Scales and centers the sentiment measures from a \code{sentomeasures} object, column-per-column. By default,
 #' the measures are normalized. \code{NA}s are removed first.
 #'
-#' @param x a \code{sentomeasures} object.
+#' @param x a \code{sentomeasures} object created using \code{\link{sento_measures}}.
 #' @param center a \code{logical}, see documentation for the generic \code{\link{scale}}.
 #' @param scale a \code{logical}, see documentation for the generic \code{\link{scale}}.
 #'

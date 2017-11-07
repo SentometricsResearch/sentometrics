@@ -7,17 +7,17 @@
 setup_lexicons(lexiconsIn, valenceIn = NULL, do.split = FALSE)
 }
 \arguments{
-\item{lexiconsIn}{a list of (raw) lexicons, each element being a \code{data.table} or a \code{data.frame} with respectively a
-words column and a polarity score column. The lexicons should be appropriately named for clarity in terms of subsequently
+\item{lexiconsIn}{a list of (raw) lexicons, each element being a \code{data.table} or a \code{data.frame} with respectively
+a words column and a polarity score column. The lexicons should be appropriately named for clarity in terms of subsequently
 obtained sentiment measures. Alternatively, a subset of the already formatted built-in lexicons accessible via
 \code{lexicons} can be declared too, as part of the same list input. If only (some of) the package built-in lexicons want
-to be used (and \emph{no} valence shifters), ony can simply supply \code{lexicons[c(...)]} as an argument to either
+to be used (with \emph{no} valence shifters), one can simply supply \code{lexicons[c(...)]} as an argument to either
 \code{\link{sento_measures}} or \code{\link{compute_sentiment}}. However, it is strongly recommended to pass all lexicons
 (and a valence word list) to this function first, in any case.}
 
-\item{valenceIn}{a single valence word list as a \code{data.table} or a \code{data.frame} with respectively a words column, a
-type column (1 for negators, 2 for amplifiers/intensifiers, and 3 for deamplifiers/downtoners) and a score column.
-Suggested scores are -1, 2 and 0.5 respectively, and should be the same within each type. This argument can also
+\item{valenceIn}{a single valence word list as a \code{data.table} or a \code{data.frame} with respectively a words column,
+a type column (\code{1} for negators, \code{2} for amplifiers/intensifiers, and \code{3} for deamplifiers/downtoners) and a score column.
+Suggested scores are -1, 2, and 0.5 respectively, and should be the same within each type. This argument can also
 be one of the already formatted built-in valence word lists accessible via \code{valence}. If \code{NULL}, no valence word
 list is part of this function's output, nor will it applied in the sentiment analysis.}
 
@@ -28,10 +28,10 @@ polarity lexicon.}
 A \code{list} with each lexicon as a separate element according to its name, as a \code{data.table}, and optionally
 an element named \code{valence} that comprises the valence words. Every \code{x} column contains the words, every \code{y}
 column contains the polarity score, and for the valence word list, \code{t} contains the word type. If a valence word list
-is provided, all lexicons are expanded by copying the respective lexicon, and changing the words and scores according to the
-valence word type: "NOT_" is added for negators, "VERY_" is added for amplifiers and "HARDLY_" is added for deamplifiers.
-Lexicon scores are multiplied by -1, 2 and 0.5 by default, respectively, or the first value of the scores column of the
-valence word list.
+is provided, all lexicons are expanded by copying the respective lexicon, and changing the words and scores according to
+the valence word type: "NOT_" is added for negators, "VERY_" is added for amplifiers and "HARDLY_" is added for
+deamplifiers. Lexicon scores are multiplied by -1, 2 and 0.5 by default, respectively, or the first value of the scores
+column of the valence word list.
 }
 \description{
 Structures provided lexicons and potentially integrates valence words. One can also provide (part of) the

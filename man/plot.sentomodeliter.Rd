@@ -12,8 +12,8 @@
 \item{...}{not used.}
 }
 \value{
-Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using the
-\code{+} operator (see examples).
+Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using
+the \code{+} operator (see examples).
 }
 \description{
 Displays a plot of all predictions made through the iterative model computation as incorporated in the

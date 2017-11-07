@@ -10,7 +10,7 @@
 #' @param model a \code{character} vector with one of the following: "\code{gaussian}" (linear regression), "\code{binomial}"
 #' (binomial logistic regression), or "\code{multinomial}" (multinomial logistic regression).
 #' @param type a \code{character} vector indicating which model calibration approach to use. Supports "\code{BIC}",
-#' "\code{AIC}" and "\code{Cp}" (Mallows's Cp) as sparse regression adapted information criteria (cf. ``On the `degrees of
+#' "\code{AIC}" and "\code{Cp}" (Mallows's Cp) as sparse regression adapted information criteria (cf., ``On the `degrees of
 #' freedom' of the LASSO''; Zou, Hastie, Tibshirani et al., 2007), and "\code{cv}" (cross-validation based on the
 #' \code{\link[caret]{train}} function from the \pkg{caret} package). The adapted information criteria are currently
 #' only available for a linear regression.

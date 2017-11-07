@@ -7,7 +7,7 @@
 sento_measures(sentocorpus, lexicons, ctr)
 }
 \arguments{
-\item{sentocorpus}{a \code{sentocorpus} object.}
+\item{sentocorpus}{a \code{sentocorpus} object created with \code{\link{sento_corpus}}.}
 
 \item{lexicons}{output from a \code{\link{setup_lexicons}} call.}
 

@@ -1,7 +1,3 @@
-
-#' @name sentometrics
-#' @docType package
-#'
 #' @title An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction
 #'
 #' @description The \pkg{sentometrics} package is designed to do time series analysis based on textual sentiment. It accounts
@@ -25,10 +21,8 @@
 #' @section Update:
 #' The development version of the package is available at \url{https://github.com/ArdiaD/Sentometrics}.
 #'
-#' @author Samuel Borms, Keven Bluteau, David Ardia and Kris Boudt.
-#'
 #' @note The ideas behind the sentiment aggregation framework can be consulted in the working paper titled ``Questioning the
-#' news about economic growth: Sparse forecasting using thousands of news-based sentiment values'' (Ardia, Bluteau and Boudt,
+#' news about economic growth: Sparse forecasting using thousands of news-based sentiment values'' (Ardia, Bluteau, and Boudt,
 #' 2017) at \url{https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2976084}.
 #'
 #' @note Please cite the package in publications. Use \code{citation("sentometrics")}.

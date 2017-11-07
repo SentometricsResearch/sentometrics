@@ -8,20 +8,20 @@ select_measures(sentomeasures, toSelect = "all", do.combine = TRUE,
   dates = NA)
 }
 \arguments{
-\item{sentomeasures}{a \code{sentomeasures} object.}
+\item{sentomeasures}{a \code{sentomeasures} object created using \code{\link{sento_measures}}.}
 
 \item{toSelect}{a \code{"character"} vector of the lexicon, feature and time weighting scheme names, to indicate which
 measures need to be selected. By default equal to \code{"all"}, which means no selection of the sentiment measures is made;
 this may be used if one only wants to extract a subset of dates via the \code{dates} argument.}
 
-\item{do.combine}{a \code{logical} indicating if only measures for wich all (\code{TRUE}) or at least one (\code{FALSE}) of
+\item{do.combine}{a \code{logical} indicating if only measures for which all (\code{do.combine = TRUE}) or at least one (\code{do.combine =FALSE}) of
 the selection components should occur in each sentiment measure's name in the subset. If \code{do.combine = TRUE}, the
-\code{toSelect} argument can only consist of one lexicon, one feature and one time weighting scheme at maximum.}
+\code{toSelect} argument can only consist of one lexicon, one feature, and one time weighting scheme at maximum.}
 
 \item{dates}{any expression, in the form of a \code{character} vector, that would correctly evaluate to a \code{logical}
 vector, features the variable \code{date} and has dates specified as \code{"yyyy-mm-dd"}, e.g.
-\code{dates = "date >= '2000-01-15'"}. This argument may also be a vector of class \code{Date} which extracts all dates that
-show up in that vector. See the examples. By default equal to \code{NA}, meaning no subsetting based on dates is done.}
+\code{dates = "date >= '2000-01-15'"}. This argument may also be a vector of class \code{Date} which extracts all dates
+that show up in that vector. See the examples. By default equal to \code{NA}, meaning no subsetting based on dates is done.}
 }
 \value{
 A modified \code{sentomeasures} object, with only the sentiment measures required, including updated information

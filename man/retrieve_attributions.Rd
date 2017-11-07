@@ -4,10 +4,11 @@
 \alias{retrieve_attributions}
 \title{Retrieve top-down sentiment attributions given model object}
 \usage{
-retrieve_attributions(model, sentomeasures, do.normalize, refDates, factor)
+retrieve_attributions(model, sentomeasures, do.normalize = FALSE,
+  refDates = NULL, factor = NULL)
 }
 \arguments{
-\item{model}{a \code{sentomodel} or \code{sentomodeliter} object.}
+\item{model}{a \code{sentomodel} or \code{sentomodeliter} object created with \code{\link{sento_model}}.}
 
 \item{sentomeasures}{the \code{sentomeasures} object used to estimate the model from the first argument.}
 
@@ -16,8 +17,8 @@ L2-norm at that date, normalizing the values between -1 and 1. The document attr
 
 \item{refDates}{the dates at which attribution is to be performed. These should be between the latest date available in the
 input \code{sentomeasures} object and the first estimation sample date, i.e. \code{model$dates[1]} if \code{model} is
-a \code{sentomodel} object. All dates should also be present in \code{sentomeasures$measures$date}. If \code{NULL} (default),
-attribution is calculated for all in-sample dates. Ignored if \code{model} is a
+a \code{sentomodel} object. All dates should also be present in \code{sentomeasures$measures$date}. If \code{NULL}
+(default), attribution is calculated for all in-sample dates. Ignored if \code{model} is a
 \code{sentomodeliter} object, for which attribution is calculated for all out-of-sample prediction dates.}
 
 \item{factor}{the factor level as a single \code{character} vector for which attribution has to be calculated in

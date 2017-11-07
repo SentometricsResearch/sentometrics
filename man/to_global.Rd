@@ -7,7 +7,7 @@
 to_global(sentomeasures, lexicons = 1, features = 1, time = 1)
 }
 \arguments{
-\item{sentomeasures}{a \code{sentomeasures} object.}
+\item{sentomeasures}{a \code{sentomeasures} object created using \code{\link{sento_measures}}.}
 
 \item{lexicons}{a \code{numeric} vector of weights, of size \code{length(sentomeasures$lexicons)}, in the same order
 and summing to one. By default set to 1, which means equally weighted.}
@@ -24,7 +24,7 @@ row names.
 }
 \description{
 Merges all sentiment measures into one global textual sentiment measure based on a set of weights to
-indicate the importance of each component in the \code{lexicons}, \code{features} and \code{time} vectors as specified
+indicate the importance of each component in the \code{lexicons}, \code{features}, and \code{time} vectors as specified
 in the input \code{sentomeasures} object. Every measure receives a weight in the global measure equal to the multiplication
 of the supplied weights of the components it is contained of. The global sentiment measure then corresponds to a
 weighted average of these weights times the sentiment scores, per date.

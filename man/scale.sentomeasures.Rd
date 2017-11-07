@@ -7,7 +7,7 @@
 \method{scale}{sentomeasures}(x, center = TRUE, scale = TRUE)
 }
 \arguments{
-\item{x}{a \code{sentomeasures} object.}
+\item{x}{a \code{sentomeasures} object created using \code{\link{sento_measures}}.}
 
 \item{center}{a \code{logical}, see documentation for the generic \code{\link{scale}}.}
 
