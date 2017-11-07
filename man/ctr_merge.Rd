@@ -8,8 +8,8 @@ ctr_merge(sentomeasures, features = NA, lexicons = NA, time = NA,
   do.keep = FALSE)
 }
 \arguments{
-\item{sentomeasures}{a \code{sentomeasures} object created using \code{\link{sento_measures}}. This is necessary to check whether the other input arguments
-make sense.}
+\item{sentomeasures}{a \code{sentomeasures} object created using \code{\link{sento_measures}}. This is necessary to check
+whether the other input arguments make sense.}
 
 \item{features}{a \code{list} with unique features to merge at given name, e.g., \cr
 \code{list(feat12 = c("feat1", "feat2"))}. See \code{sentomeasures$features} for the exact names to use. Use \code{NA} to

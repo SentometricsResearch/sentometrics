@@ -10,13 +10,13 @@ sento_corpus(corpusdf, do.clean = FALSE)
 \item{corpusdf}{a \code{data.frame} with as named columns and \emph{in this order}: a document \code{"id"} column, a
 \code{"date"} column, a \code{"text"} column (i.e. the columns where all texts to analyze reside), and a series of feature
 columns of type \code{numeric}, with values pointing to the applicability of a particular feature to a particular text. The
-latter columns are often binary (\code{1} means the feature is applicable to the document in the same row) or as a percentage to
-specify the degree of connectedness of a feature to a document. Features could be topics (e.g., legal, political, or economic),
-but also article sources (e.g., online or printed press), amongst many more options. If you have no knowledge about features
-or no particular features are of interest to your analysis, provide no feature columns. In that case, the corpus
-constructor automatically adds an additional feature column named \code{"dummy"}. Provide the \code{date} column as
-\code{"yyyy-mm-dd"}. The \code{id} column should be in \code{character} mode. All spaces in the names of the features are
-replaced by underscores.}
+latter columns are often binary (\code{1} means the feature is applicable to the document in the same row) or as a
+percentage to specify the degree of connectedness of a feature to a document. Features could be topics (e.g., legal,
+political, or economic), but also article sources (e.g., online or printed press), amongst many more options. If you have no
+knowledge about features or no particular features are of interest to your analysis, provide no feature columns. In that
+case, the corpus constructor automatically adds an additional feature column named \code{"dummy"}. Provide the \code{date}
+column as \code{"yyyy-mm-dd"}. The \code{id} column should be in \code{character} mode. All spaces in the names of the
+features are replaced by underscores.}
 
 \item{do.clean}{a \code{logical}, if \code{TRUE} all texts undergo a cleaning routine to eliminate common textual garbage.
 This includes a brute force replacement of HTML tags and non-alphanumeric characters by an empty string.}

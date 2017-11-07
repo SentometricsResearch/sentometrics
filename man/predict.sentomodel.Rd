@@ -7,7 +7,7 @@
 \method{predict}{sentomodel}(object, newx, type, offset = NULL, ...)
 }
 \arguments{
-\item{object}{a \code{sentomodel} object.}
+\item{object}{a \code{sentomodel} object created with \code{\link{sento_model}}.}
 
 \item{newx}{a \code{matrix} of \code{numeric} values with all explanatory variables to be used for the prediction(s),
 structured row-by-row; see documentation for \code{\link{predict.glmnet}}. The number of variables should be equal to
