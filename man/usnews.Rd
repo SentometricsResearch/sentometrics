@@ -12,7 +12,7 @@
 data("usnews")
 }
 \description{
-A collection of texts annotated by humans in terms of relevance to the U.S. economoy or not. The texts come from two major
+A collection of texts annotated by humans in terms of relevance to the U.S. economy or not. The texts come from two major
 journals in the U.S. (The Wall Street Journal and The Washington Post) and cover 4145 documents between 1995 and 2014. It
 contains following information:
 
