@@ -8,7 +8,7 @@ ctr_merge(sentomeasures, features = NA, lexicons = NA, time = NA,
   do.keep = FALSE)
 }
 \arguments{
-\item{sentomeasures}{a \code{sentomeasures} object. This is necessary to check whether the other input arguments
+\item{sentomeasures}{a \code{sentomeasures} object created using \code{\link{sento_measures}}. This is necessary to check whether the other input arguments
 make sense.}
 
 \item{features}{a \code{list} with unique features to merge at given name, e.g. \cr
@@ -23,8 +23,8 @@ apply no merging across this dimension.}
 \code{list(tw12 = c("tw1", "tw2"))}. See \code{sentomeasures$time} for the exact names to use. Use \code{NA} to
 apply no merging across this dimension.}
 
-\item{do.keep}{a \code{logical} indicating if the original sentiment measures should be kept (i.e. the merged
-sentiment measures will be added to the current sentiment measures as additional indices if \code{TRUE}).}
+\item{do.keep}{a \code{logical} indicating if the original sentiment measures should be kept (i.e., the merged
+sentiment measures will be added to the current sentiment measures as additional indices if \code{do.keep = TRUE}).}
 }
 \value{
 A \code{list} encapsulating the control parameters.

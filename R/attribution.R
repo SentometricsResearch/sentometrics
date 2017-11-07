@@ -160,7 +160,7 @@ retrieve_attributions.sentomodeliter <- compiler::cmpfun(.retrieve_attributions.
 #' attributions. The attribution for logistic models is represented in terms of log odds. For binomial models, it is
 #' calculated with respect to the last factor level or factor column.
 #'
-#' @param model a \code{sentomodel} or \code{sentomodeliter} object.
+#' @param model a \code{sentomodel} or \code{sentomodeliter} object created with \code{\link{sento_model}}.
 #' @param sentomeasures the \code{sentomeasures} object used to estimate the model from the first argument.
 #' @param do.normalize a \code{logical}, \code{TRUE} divides each element of every attribution vector at a given date by its
 #' L2-norm at that date, normalizing the values between -1 and 1. The document attributions are not normalized.

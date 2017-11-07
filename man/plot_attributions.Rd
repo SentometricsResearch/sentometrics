@@ -12,9 +12,9 @@ plot_attributions(attributions, group = "features")
 \item{group}{a value from \code{c("lexicons", "features", "time")}.}
 }
 \value{
-Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using the
-\code{+} operator (see examples). By default, a legend is positioned at the top if the number of components of the dimension
-(thus, individual line graphs) is at maximum twelve.
+Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using
+the \code{+} operator (see examples). By default, a legend is positioned at the top if the number of components of the
+dimension (thus, individual line graphs) is at maximum twelve.
 }
 \description{
 Shows a plot of the attributions along the dimension provided, stacked per date.

@@ -47,10 +47,10 @@ include_valence <- function(texts, val, valIdentifier = c(" NOT_", " VERY_", " H
 #' for input in \code{\link{ctr_agg}}.
 #'
 #' @details The Almon polynomial formula implemented is:
-#' \eqn{(1 - (i/n)^{b})(i/n)^{B - b}}{(1 - (i/n)^b) * (i/n)^(B - b)}.
+#' \eqn{(1 - (i/n)^{b})(i/n)^{B - b}}{(1 - (i/n)^b) * (i/n)^(B - b)}, where \eqn{i} is the lag index from 1,...,n.
 #'
-#' @param n a single \code{numeric} to indicate the length of the curve (the number of lags, cf. \emph{n}).
-#' @param orders a \code{numeric} vector as the sequence of the Almon orders (cf. \emph{b}). The maximum value
+#' @param n a single \code{numeric} to indicate the length of the curve (the number of lags, cf., \emph{n}).
+#' @param orders a \code{numeric} vector as the sequence of the Almon orders (cf., \emph{b}). The maximum value
 #' corresponds to \emph{B}.
 #' @param do.inverse \code{TRUE} if the inverse Almon polynomials should be calculated as well.
 #' @param do.normalize \code{TRUE} if polynomials should be normalized to unity.

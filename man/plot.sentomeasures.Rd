@@ -7,7 +7,7 @@
 \method{plot}{sentomeasures}(x, group = "all", ...)
 }
 \arguments{
-\item{x}{a \code{sentomeasures} object.}
+\item{x}{a \code{sentomeasures} object created using \code{\link{sento_measures}}.}
 
 \item{group}{a value from \code{c("lexicons", "features", "time", "all")}. The first three choices display the average of
 all measures from the same group, in a different color. The choice \code{"all"} displays every single sentiment measure
@@ -16,9 +16,9 @@ in a separate color, but this may look visually overwhelming very fast, and can 
 \item{...}{not used.}
 }
 \value{
-Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using the
-\code{+} operator (see examples). By default, a legend is positioned at the top if there are at maximum twelve line graphs
-plotted.
+Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using
+the \code{+} operator (see examples). By default, a legend is positioned at the top if there are at maximum twelve line
+graphs plotted.
 }
 \description{
 Straightforward plotting method that shows all sentiment measures from the provided \code{sentomeasures}
