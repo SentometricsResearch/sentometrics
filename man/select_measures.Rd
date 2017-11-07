@@ -14,9 +14,10 @@ select_measures(sentomeasures, toSelect = "all", do.combine = TRUE,
 measures need to be selected. By default equal to \code{"all"}, which means no selection of the sentiment measures is made;
 this may be used if one only wants to extract a subset of dates via the \code{dates} argument.}
 
-\item{do.combine}{a \code{logical} indicating if only measures for which all (\code{do.combine = TRUE}) or at least one (\code{do.combine =FALSE}) of
-the selection components should occur in each sentiment measure's name in the subset. If \code{do.combine = TRUE}, the
-\code{toSelect} argument can only consist of one lexicon, one feature, and one time weighting scheme at maximum.}
+\item{do.combine}{a \code{logical} indicating if only measures for which all (\code{do.combine = TRUE}) or at least one
+(\code{do.combine = FALSE}) of the selection components should occur in each sentiment measure's name in the subset. If
+\code{do.combine = TRUE}, the \code{toSelect} argument can only consist of one lexicon, one feature, and one time weighting
+scheme at maximum.}
 
 \item{dates}{any expression, in the form of a \code{character} vector, that would correctly evaluate to a \code{logical}
 vector, features the variable \code{date} and has dates specified as \code{"yyyy-mm-dd"}, e.g.

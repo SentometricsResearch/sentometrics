@@ -161,7 +161,8 @@ retrieve_attributions.sentomodeliter <- compiler::cmpfun(.retrieve_attributions.
 #' calculated with respect to the last factor level or factor column.
 #'
 #' @param model a \code{sentomodel} or \code{sentomodeliter} object created with \code{\link{sento_model}}.
-#' @param sentomeasures the \code{sentomeasures} object used to estimate the model from the first argument.
+#' @param sentomeasures the \code{sentomeasures} object, as created with \code{\link{sento_measures}}, used to estimate
+#' the model from the first argument.
 #' @param do.normalize a \code{logical}, \code{TRUE} divides each element of every attribution vector at a given date by its
 #' L2-norm at that date, normalizing the values between -1 and 1. The document attributions are not normalized.
 #' @param refDates the dates at which attribution is to be performed. These should be between the latest date available in the

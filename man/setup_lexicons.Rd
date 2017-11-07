@@ -16,10 +16,10 @@ to be used (with \emph{no} valence shifters), one can simply supply \code{lexico
 (and a valence word list) to this function first, in any case.}
 
 \item{valenceIn}{a single valence word list as a \code{data.table} or a \code{data.frame} with respectively a words column,
-a type column (\code{1} for negators, \code{2} for amplifiers/intensifiers, and \code{3} for deamplifiers/downtoners) and a score column.
-Suggested scores are -1, 2, and 0.5 respectively, and should be the same within each type. This argument can also
-be one of the already formatted built-in valence word lists accessible via \code{valence}. If \code{NULL}, no valence word
-list is part of this function's output, nor will it applied in the sentiment analysis.}
+a type column (\code{1} for negators, \code{2} for amplifiers/intensifiers, and \code{3} for deamplifiers/downtoners) and a
+score column. Suggested scores are -1, 2, and 0.5 respectively, and should be the same within each type. This argument can
+also be one of the already formatted built-in valence word lists accessible via \code{valence}. If \code{NULL}, no valence
+word list is part of this function's output, nor will it applied in the sentiment analysis.}
 
 \item{do.split}{a \code{logical} that if \code{TRUE} splits every lexicon into a separate positive polarity and negative
 polarity lexicon.}

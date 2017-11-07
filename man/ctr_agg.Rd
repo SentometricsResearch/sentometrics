@@ -5,7 +5,7 @@
 \title{Set up control for aggregation into sentiment measures}
 \usage{
 ctr_agg(howWithin = "proportional", howDocs = "equal_weight",
-  howTime = "equal_weight", do.ignoreZeros = TRUE, by = "day", lag = 1,
+  howTime = "equal_weight", do.ignoreZeros = TRUE, by = "day", lag = 1L,
   fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1), ordersAlm = 1:3,
   do.inverseAlm = TRUE, do.normalizeAlm = TRUE, weights = NULL,
   dfm = NULL)
@@ -23,8 +23,8 @@ see \code{\link{get_hows}()$docs}.}
 is possible. For currently available options on how aggregation can occur, see \code{\link{get_hows}()$time}.}
 
 \item{do.ignoreZeros}{a \code{logical} indicating whether zero sentiment values have to be ignored in the determination of
-the document weights while aggregating across documents. By default \code{do.ignoreZeros = TRUE}, such that documents with an exact score of
-zero are considered irrelevant.}
+the document weights while aggregating across documents. By default \code{do.ignoreZeros = TRUE}, such that documents with
+an exact score of zero are considered irrelevant.}
 
 \item{by}{a single \code{character} vector, either \code{"day", "week", "month"} or \code{"year"}, to indicate at what
 level the dates should be aggregated. Dates are displayed as the first day of the period, if applicable (e.g.

@@ -20,13 +20,13 @@
 #' @param corpusdf a \code{data.frame} with as named columns and \emph{in this order}: a document \code{"id"} column, a
 #' \code{"date"} column, a \code{"text"} column (i.e. the columns where all texts to analyze reside), and a series of feature
 #' columns of type \code{numeric}, with values pointing to the applicability of a particular feature to a particular text. The
-#' latter columns are often binary (\code{1} means the feature is applicable to the document in the same row) or as a percentage to
-#' specify the degree of connectedness of a feature to a document. Features could be topics (e.g., legal, political, or economic),
-#' but also article sources (e.g., online or printed press), amongst many more options. If you have no knowledge about features
-#' or no particular features are of interest to your analysis, provide no feature columns. In that case, the corpus
-#' constructor automatically adds an additional feature column named \code{"dummy"}. Provide the \code{date} column as
-#' \code{"yyyy-mm-dd"}. The \code{id} column should be in \code{character} mode. All spaces in the names of the features are
-#' replaced by underscores.
+#' latter columns are often binary (\code{1} means the feature is applicable to the document in the same row) or as a
+#' percentage to specify the degree of connectedness of a feature to a document. Features could be topics (e.g., legal,
+#' political, or economic), but also article sources (e.g., online or printed press), amongst many more options. If you have no
+#' knowledge about features or no particular features are of interest to your analysis, provide no feature columns. In that
+#' case, the corpus constructor automatically adds an additional feature column named \code{"dummy"}. Provide the \code{date}
+#' column as \code{"yyyy-mm-dd"}. The \code{id} column should be in \code{character} mode. All spaces in the names of the
+#' features are replaced by underscores.
 #' @param do.clean a \code{logical}, if \code{TRUE} all texts undergo a cleaning routine to eliminate common textual garbage.
 #' This includes a brute force replacement of HTML tags and non-alphanumeric characters by an empty string.
 #'
@@ -110,19 +110,19 @@ clean <- function(corpusdf) {
 #'
 #' @author Samuel Borms
 #'
-#' @description Adds new feature columns, either user-supplied or based on a simple keyword(s) search, to provided a
+#' @description Adds new feature columns, either user-supplied or based on a simple keyword(s) search, to a provided
 #' \code{sentocorpus} object.
 #'
 #' @details If a provided feature name is already part of the corpus, it will be replaced. The \code{featuresdf} and
 #' \code{keywords} arguments can be provided at the same time, or only one of them, leaving the other at \code{NULL}.
 #'
 #' @param sentocorpus a \code{sentocorpus} object created with \code{\link{sento_corpus}}.
-#' @param featuresdf a named \code{data.frame} of type \code{numeric} where each columns is a new feature to be added to the inputted
-#' \code{sentocorpus} object. If the number of rows in \code{featuresdf} is not equal to the number of documents
+#' @param featuresdf a named \code{data.frame} of type \code{numeric} where each columns is a new feature to be added to the
+#' inputted \code{sentocorpus} object. If the number of rows in \code{featuresdf} is not equal to the number of documents
 #' in \code{sentocorpus}, recycling will occur.
 #' @param keywords a named \code{list}. For every element, a new feature column is added with a value of 1 for the texts
-#' in which the keyword(s) appear(s), and 0 if not. If no texts match a keyword, no column is added. The \code{list} named elements are used
-#' as the names of the new features.
+#' in which the keyword(s) appear(s), and 0 if not. If no texts match a keyword, no column is added. The \code{list} named
+#' elements are used as the names of the new features.
 #'
 #' @return An updated \code{sentocorpus} object.
 #'

@@ -7,7 +7,7 @@
 \method{plot}{sentomodeliter}(x, ...)
 }
 \arguments{
-\item{x}{a \code{sentomodeliter} object.}
+\item{x}{a \code{sentomodeliter} object created using \code{\link{sento_model}}.}
 
 \item{...}{not used.}
 }

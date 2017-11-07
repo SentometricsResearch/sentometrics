@@ -148,8 +148,8 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' a linear model and to \code{"Accuracy"} for a logistic model. We suppress many of the details that can be supplied to the
 #' \code{\link[glmnet]{glmnet}} and \code{\link[caret]{train}} functions we rely on, for the sake of user-friendliness.
 #'
-#' @param sentomeasures a \code{sentomeasures} object. There should be at least two explanatory variables including the ones
-#' provided through the \code{x} argument.
+#' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}. There should be at least
+#' two explanatory variables including the ones provided through the \code{x} argument.
 #' @param y a one-column \code{data.frame} or a \code{numeric} vector capturing the dependent (response) variable. In case of
 #' a logistic regression, the response variable is either a \code{factor} or a \code{matrix} with the factors represented by
 #' the columns as binary indicators, with the second factor level or column as the reference class in case of a binomial
@@ -664,7 +664,7 @@ print.sentomodeliter <- function(x, ...) {
 #' @description Displays a plot of all predictions made through the iterative model computation as incorporated in the
 #' input \code{sentomodeliter} object, as well as the corresponding true values.
 #'
-#' @param x a \code{sentomodeliter} object.
+#' @param x a \code{sentomodeliter} object created using \code{\link{sento_model}}.
 #' @param ... not used.
 #'
 #' @return Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using
@@ -735,7 +735,7 @@ plot.sentomodeliter <- function(x, ...) {
 #' @description Prediction method for \code{sentomodel} class, with usage along the lines of
 #' \code{predict.glmnet}, but simplified in terms of allowed parameters.
 #'
-#' @param object a \code{sentomodel} object.
+#' @param object a \code{sentomodel} object created with \code{\link{sento_model}}.
 #' @param newx a \code{matrix} of \code{numeric} values with all explanatory variables to be used for the prediction(s),
 #' structured row-by-row; see documentation for \code{\link{predict.glmnet}}. The number of variables should be equal to
 #' \code{sentomodel$nVar}, being the sum of the number of original sentiment measures and the number of additional explanatory

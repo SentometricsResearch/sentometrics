@@ -7,8 +7,8 @@
 sento_model(sentomeasures, y, x = NULL, ctr)
 }
 \arguments{
-\item{sentomeasures}{a \code{sentomeasures} object. There should be at least two explanatory variables including the ones
-provided through the \code{x} argument.}
+\item{sentomeasures}{a \code{sentomeasures} object created using \code{\link{sento_measures}}. There should be at least
+two explanatory variables including the ones provided through the \code{x} argument.}
 
 \item{y}{a one-column \code{data.frame} or a \code{numeric} vector capturing the dependent (response) variable. In case of
 a logistic regression, the response variable is either a \code{factor} or a \code{matrix} with the factors represented by

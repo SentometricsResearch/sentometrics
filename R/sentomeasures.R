@@ -18,8 +18,8 @@
 #' @param howTime a \code{character} vector defining how aggregation across dates will be performed. More than one choice
 #' is possible. For currently available options on how aggregation can occur, see \code{\link{get_hows}()$time}.
 #' @param do.ignoreZeros a \code{logical} indicating whether zero sentiment values have to be ignored in the determination of
-#' the document weights while aggregating across documents. By default \code{do.ignoreZeros = TRUE}, such that documents with an exact score of
-#' zero are considered irrelevant.
+#' the document weights while aggregating across documents. By default \code{do.ignoreZeros = TRUE}, such that documents with
+#' an exact score of zero are considered irrelevant.
 #' @param by a single \code{character} vector, either \code{"day", "week", "month"} or \code{"year"}, to indicate at what
 #' level the dates should be aggregated. Dates are displayed as the first day of the period, if applicable (e.g.
 #' \code{"2017-03-01"} for March 2017).
@@ -71,7 +71,7 @@
 #'
 #' @export
 ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTime = "equal_weight",
-                    do.ignoreZeros = TRUE, by = "day", lag = 1, fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1),
+                    do.ignoreZeros = TRUE, by = "day", lag = 1L, fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1),
                     ordersAlm = 1:3, do.inverseAlm = TRUE, do.normalizeAlm = TRUE, weights = NULL, dfm = NULL) {
 
   if (length(howWithin) > 1) howWithin <- howWithin[1]
@@ -247,10 +247,10 @@ print.sentomeasures <- function(x, ...) {
 #' \code{\link{sento_measures}} or \code{\link{compute_sentiment}}. However, it is strongly recommended to pass all lexicons
 #' (and a valence word list) to this function first, in any case.
 #' @param valenceIn a single valence word list as a \code{data.table} or a \code{data.frame} with respectively a words column,
-#' a type column (\code{1} for negators, \code{2} for amplifiers/intensifiers, and \code{3} for deamplifiers/downtoners) and a score column.
-#' Suggested scores are -1, 2, and 0.5 respectively, and should be the same within each type. This argument can also
-#' be one of the already formatted built-in valence word lists accessible via \code{valence}. If \code{NULL}, no valence word
-#' list is part of this function's output, nor will it applied in the sentiment analysis.
+#' a type column (\code{1} for negators, \code{2} for amplifiers/intensifiers, and \code{3} for deamplifiers/downtoners) and a
+#' score column. Suggested scores are -1, 2, and 0.5 respectively, and should be the same within each type. This argument can
+#' also be one of the already formatted built-in valence word lists accessible via \code{valence}. If \code{NULL}, no valence
+#' word list is part of this function's output, nor will it applied in the sentiment analysis.
 #' @param do.split a \code{logical} that if \code{TRUE} splits every lexicon into a separate positive polarity and negative
 #' polarity lexicon.
 #'
@@ -607,8 +607,8 @@ agg_time <- function(sentomeasures, lag, fill, how = get_hows()$time, ...) {
 #' @description Sets up control object for the optional merging (additional aggregation) of sentiment measures as
 #' done by \code{\link{merge_measures}}.
 #'
-#' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}. This is necessary to check whether the other input arguments
-#' make sense.
+#' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}. This is necessary to check
+#' whether the other input arguments make sense.
 #' @param lexicons a \code{list} with unique lexicons to merge at given name, e.g., \cr
 #' \code{list(lex12 = c("lex1", "lex2"))}. See \code{sentomeasures$lexicons} for the exact names to use. Use \code{NA} to
 #' apply no merging across this dimension.
@@ -873,9 +873,10 @@ to_global <- function(sentomeasures, lexicons = 1, features = 1, time = 1) {
 #' @param toSelect a \code{"character"} vector of the lexicon, feature and time weighting scheme names, to indicate which
 #' measures need to be selected. By default equal to \code{"all"}, which means no selection of the sentiment measures is made;
 #' this may be used if one only wants to extract a subset of dates via the \code{dates} argument.
-#' @param do.combine a \code{logical} indicating if only measures for which all (\code{do.combine = TRUE}) or at least one (\code{do.combine =FALSE}) of
-#' the selection components should occur in each sentiment measure's name in the subset. If \code{do.combine = TRUE}, the
-#' \code{toSelect} argument can only consist of one lexicon, one feature, and one time weighting scheme at maximum.
+#' @param do.combine a \code{logical} indicating if only measures for which all (\code{do.combine = TRUE}) or at least one
+#' (\code{do.combine = FALSE}) of the selection components should occur in each sentiment measure's name in the subset. If
+#' \code{do.combine = TRUE}, the \code{toSelect} argument can only consist of one lexicon, one feature, and one time weighting
+#' scheme at maximum.
 #' @param dates any expression, in the form of a \code{character} vector, that would correctly evaluate to a \code{logical}
 #' vector, features the variable \code{date} and has dates specified as \code{"yyyy-mm-dd"}, e.g.
 #' \code{dates = "date >= '2000-01-15'"}. This argument may also be a vector of class \code{Date} which extracts all dates
