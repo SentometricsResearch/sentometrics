@@ -286,7 +286,7 @@ To install the package from CRAN (soon!), simply do:
 install.packages("sentometrics")
 ```
 
-The latest development version of `sentometrics` resides at [https://github.com/ArdiaD/Sentometrics](https://github.com/sborms/sentometrics). To install this version (which may still contain bugs!), execute:
+The latest development version of `sentometrics` resides at [https://github.com/sborms/sentometrics](https://github.com/sborms/sentometrics). To install this version (which may still contain bugs!), execute:
 
 ```R
 devtools::install_github("sborms/sentometrics")
