@@ -14,8 +14,8 @@ Maintainer: Samuel Borms <samuel.borms@unine.ch>
 Description: Time series analysis based on textual sentiment, accounting for the intrinsic challenge that sentiment can be computed and pooled across texts and time in many ways. Provides a means to model the impact of sentiment in texts on a target variable, by first computing a wide range of textual sentiment measures and then selecting those that are most informative.
 Depends: R (>= 3.4.2), data.table, ggplot2, foreach
 License: GPL (>= 2)
-BugReports: https://github.com/ArdiaD/Sentometrics/issues
-URL: https://github.com/ArdiaD/Sentometrics
+BugReports: https://github.com/sborms/sentometrics/issues
+URL: https://github.com/sborms/sentometrics
 Encoding: UTF-8
 LazyData: true
 Suggests: testthat, e1071, randomForest
