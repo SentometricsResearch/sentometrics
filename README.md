@@ -10,10 +10,10 @@ The package implements the main methodology developed in the paper "[Questioning
 
 ## Installation
 
-The latest development version of `sentometrics` is available at [https://github.com/ArdiaD/Sentometrics](https://github.com/ArdiaD/Sentometrics). To install this version (which may contain bugs!), execute:
+The latest development version of `sentometrics` is available at [https://github.com/ArdiaD/Sentometrics](https://github.com/sborms/sentometrics). To install this version (which may contain bugs!), execute:
 
 ```R
-devtools::install_github("ArdiaD/Sentometrics")
+devtools::install_github("sborms/sentometrics")
 ```
 
 ## References
