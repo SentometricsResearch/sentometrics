@@ -11,9 +11,9 @@ for the intrinsic challenge that, for a given text, sentiment can be computed in
 number of possibilities to pool sentiment across text and time. This additional layer of manipulation does not exist
 in standard time series analysis and text mining packages. As a final outcome, this package provides an automated means
 to econometrically model the impact of sentiment in texts on a given variable, by first computing a wide range of textual
-sentiment time series and then selecting the sentiment times series that are most informative. The package created
-therefore integrates the \emph{qualification} of sentiment from texts, the \emph{aggregation} into different sentiment
-measures and the optimized \emph{prediction} based on these measures.
+sentiment time series and then selecting those that are most informative. The package created therefore integrates the
+\emph{qualification} of sentiment from texts, the \emph{aggregation} into different sentiment measures and the optimized
+\emph{prediction} based on these measures.
 }
 \note{
 The ideas behind the sentiment aggregation framework can be consulted in the working paper titled ``Questioning the
@@ -35,14 +35,14 @@ Please cite the package in publications. Use \code{citation("sentometrics")}.
 
 \section{Update}{
 
-The development version of the package is available at \url{https://github.com/ArdiaD/Sentometrics}.
+The development version of the package is available at \url{https://github.com/sborms/sentometrics}.
 }
 
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/ArdiaD/Sentometrics}
-  \item Report bugs at \url{https://github.com/ArdiaD/Sentometrics/issues}
+  \item \url{https://github.com/sborms/sentometrics}
+  \item Report bugs at \url{https://github.com/sborms/sentometrics/issues}
 }
 
 }

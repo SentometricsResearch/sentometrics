@@ -586,8 +586,8 @@ summary.sentomodel <- function(object, ...) {
   cat("Model type:", sentomodel$model, "\n")
   cat("Calibration:", printCalib, "\n")
   cat("Number of observations:", reg$nobs, "\n")
-  cat("Optimal elastic net alpha parameter:", sentomodel$alpha, "\n")
-  cat("Optimal elastic net lambda parameter:", reg$lambda, "\n \n")
+  cat("Optimal elastic net alpha parameter:", round(sentomodel$alpha, 2), "\n")
+  cat("Optimal elastic net lambda parameter:", round(reg$lambda, 2), "\n \n")
   if (sentomodel$model != "multinomial") {
     cat("Non-zero coefficients \n")
     cat(rep("-", 20), "\n")
@@ -603,7 +603,7 @@ summary.sentomodel <- function(object, ...) {
   }
   cat("In-sample performance \n")
   cat(rep("-", 20), "\n \n")
-  cat("Fraction of deviance explained: ", reg$dev.ratio * 100, "% \n \n")
+  cat("Fraction of deviance explained: ", round(reg$dev.ratio * 100, 2), "% \n \n")
 }
 
 #' @export
@@ -632,14 +632,14 @@ summary.sentomodeliter <- function(object, ...) {
   cat("Calibration:", printCalib, "\n")
   cat("Sample size:", reg$nobs, "\n")
   cat("Total number of iterations/predictions:", length(sentomodeliter$models), "\n")
-  cat("Optimal average elastic net alpha parameter:", mean(sentomodeliter$alphas, na.rm = TRUE), "\n")
-  cat("Optimal average elastic net lambda parameter:", mean(sentomodeliter$lambdas, na.rm = TRUE), "\n \n")
+  cat("Optimal average elastic net alpha parameter:", round(mean(sentomodeliter$alphas, na.rm = TRUE), 2), "\n")
+  cat("Optimal average elastic net lambda parameter:", round(mean(sentomodeliter$lambdas, na.rm = TRUE), 2), "\n \n")
   cat("Out-of-sample performance \n")
   cat(rep("-", 20), "\n \n")
   if (model == "gaussian") {
-    cat("Mean directional accuracy:", sentomodeliter$performance$MDA, "% \n")
-    cat("Root mean squared prediction error:", sentomodeliter$performance$RMSFE, "\n")
-    cat("Mean absolute deviation:", sentomodeliter$performance$MAD, "\n \n")
+    cat("Mean directional accuracy:", round(sentomodeliter$performance$MDA, 2), "% \n")
+    cat("Root mean squared prediction error:", round(sentomodeliter$performance$RMSFE, 2), "\n")
+    cat("Mean absolute deviation:", round(sentomodeliter$performance$MAD, 2), "\n \n")
 
   } else {
     cat("Accuracy:", sentomodeliter$performance$accuracy, "% \n \n")
@@ -647,7 +647,7 @@ summary.sentomodeliter <- function(object, ...) {
   cat("In-sample performance \n")
   cat(rep("-", 20), "\n \n")
   cat("Average fraction of deviance explained:",
-      mean(sapply(sentomodeliter$models, function(m) return(m$reg$dev.ratio)), na.rm = TRUE) * 100, "% \n \n")
+      round(mean(sapply(sentomodeliter$models, function(m) return(m$reg$dev.ratio)), na.rm = TRUE) * 100, 2), "% \n \n")
 }
 
 #' @export

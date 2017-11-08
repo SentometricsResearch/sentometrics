@@ -1,3 +1,4 @@
+
 #' @title An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction
 #'
 #' @description The \pkg{sentometrics} package is designed to do time series analysis based on textual sentiment. It accounts
@@ -5,9 +6,9 @@
 #' number of possibilities to pool sentiment across text and time. This additional layer of manipulation does not exist
 #' in standard time series analysis and text mining packages. As a final outcome, this package provides an automated means
 #' to econometrically model the impact of sentiment in texts on a given variable, by first computing a wide range of textual
-#' sentiment time series and then selecting the sentiment times series that are most informative. The package created
-#' therefore integrates the \emph{qualification} of sentiment from texts, the \emph{aggregation} into different sentiment
-#' measures and the optimized \emph{prediction} based on these measures.
+#' sentiment time series and then selecting those that are most informative. The package created therefore integrates the
+#' \emph{qualification} of sentiment from texts, the \emph{aggregation} into different sentiment measures and the optimized
+#' \emph{prediction} based on these measures.
 #'
 #' @section Main functions:
 #' \itemize{
@@ -19,7 +20,7 @@
 #' }
 #'
 #' @section Update:
-#' The development version of the package is available at \url{https://github.com/ArdiaD/Sentometrics}.
+#' The development version of the package is available at \url{https://github.com/sborms/sentometrics}.
 #'
 #' @note The ideas behind the sentiment aggregation framework can be consulted in the working paper titled ``Questioning the
 #' news about economic growth: Sparse forecasting using thousands of news-based sentiment values'' (Ardia, Bluteau, and Boudt,
