@@ -1,5 +1,5 @@
 
-.onLoad <- function(libname = find.package("sentometrics"), pkgname = "sentometrics"){
+.onLoad <- function(libname = find.package("sentometrics"), pkgname = "sentometrics") {
   # CRAN note avoidance
   if (getRversion() >= "2.15.1")
     utils::globalVariables(

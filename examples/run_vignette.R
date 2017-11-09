@@ -3,7 +3,7 @@
 ############## VIGNETTE CODE ##############
 ###########################################
 
-require(sentometrics)
+require("sentometrics")
 
 data("usnews")
 class(usnews)
