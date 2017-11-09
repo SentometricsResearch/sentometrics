@@ -22,9 +22,12 @@
 #' @section Update:
 #' The development version of the package is available at \url{https://github.com/sborms/sentometrics}.
 #'
-#' @note The ideas behind the sentiment aggregation framework can be consulted in the working paper titled ``Questioning the
-#' news about economic growth: Sparse forecasting using thousands of news-based sentiment values'' (Ardia, Bluteau, and Boudt,
-#' 2017) at \url{https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2976084}.
+#' @note The methodology behind the sentiment aggregation framework can be consulted in the working paper ``Questioning
+#' the news about economic growth: Sparse forecasting using thousands of news-based sentiment values'' (Ardia, Bluteau, and
+#' Boudt, 2017) at \url{http://ssrn.com/abstract=2976084}. The vignette  ``The R package sentometrics
+#' to compute, aggregate and predict with textual sentiment'' (Ardia, Bluteau, Borms and Boudt, 2017) at
+#' \url{http://ssrn.com/abstract=3067734} provides a hands-on introduction to the methodology and
+#' the package's functionalities.
 #'
 #' @note Please cite the package in publications. Use \code{citation("sentometrics")}.
 "_PACKAGE"

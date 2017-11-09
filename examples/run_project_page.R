@@ -5,9 +5,9 @@
 
 ####
 
-require(sentometrics)
-require(ggplot2)
-require(gridExtra)
+require("sentometrics")
+require("ggplot2")
+require("gridExtra")
 
 ####
 
