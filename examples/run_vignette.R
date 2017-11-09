@@ -58,7 +58,7 @@ ctrIter <- ctr_model(model = "gaussian",
                      nSample = 36,
                      do.parallel = TRUE)
 
-require(doParallel)
+require("doParallel")
 cl <- makeCluster(detectCores() - 1)
 registerDoParallel(cl)
 out <- sento_model(sentMeas, y, ctr = ctrIter)
@@ -78,7 +78,7 @@ a
 ctrMerge <- ctr_merge(sentMeas,
                       time = list(W = c("equal_weight", "linear")),
                       lexicons = list(LEX = c("LM_eng", "HENRY_eng")),
-                      features = list(journals = c("wsj", "wapo")),
+                      features = list(JOUR = c("wsj", "wapo")),
                       do.keep = FALSE)
 sentMeasMerged <- merge_measures(ctrMerge)
 sentMeasMerged[c("features", "lexicons", "time")]
@@ -95,4 +95,11 @@ g <- ggplot(data = glob, aes(x = as.Date(row.names(glob)), y = global)) +
   ggthemes::theme_tufte(base_size = 12) +
   theme(legend.title = element_blank())
 g
+
+###
+
+ggsave("C:/Users/gebruiker/Dropbox/SENTOMETRICS-R-PACKAGE/vignette/plots/sentmeas.pdf", p)
+ggsave("C:/Users/gebruiker/Dropbox/SENTOMETRICS-R-PACKAGE/vignette/plots/for.pdf", r)
+ggsave("C:/Users/gebruiker/Dropbox/SENTOMETRICS-R-PACKAGE/vignette/plots/attr.pdf", a)
+ggsave("C:/Users/gebruiker/Dropbox/SENTOMETRICS-R-PACKAGE/vignette/plots/glob.pdf", g)
 
