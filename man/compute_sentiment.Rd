@@ -15,7 +15,7 @@ compute_sentiment(sentocorpus, lexicons, how = get_hows()$words, dfm = NULL)
 available options on how aggregation can occur, see \code{\link{get_hows}()$words}.}
 
 \item{dfm}{optional; an output from a \pkg{quanteda} \code{\link[quanteda]{dfm}} call, such that users can specify their
-own tokenization scheme (via \code{\link[quanteda]{tokenize}}) as well as other parameters related to the construction of
+own tokenization scheme (via \code{\link[quanteda]{tokens}}) as well as other parameters related to the construction of
 a document-feature matrix (dfm). By default, a dfm is created based on a tokenization that removes punctuation, numbers,
 symbols and separators. We suggest to stick to unigrams, as the remainder of the sentiment computation and built-in
 lexicons assume the same.}
@@ -53,12 +53,12 @@ sent <- compute_sentiment(corpusSample, l, how = "counts")
 
 \dontrun{
 # same sentiment computation based on a user-supplied dfm with default settings
-dfm <- quanteda::dfm(quanteda::tokenize(corpus), verbose = FALSE)
+dfm <- quanteda::dfm(quanteda::tokens(corpus), verbose = FALSE)
 sent <- compute_sentiment(corpusSample, l, how = "counts", dfm = dfm)}
 
 }
 \seealso{
-\code{\link[quanteda]{dfm}}, \code{\link[quanteda]{tokenize}}
+\code{\link[quanteda]{dfm}}, \code{\link[quanteda]{tokens}}
 }
 \author{
 Samuel Borms
