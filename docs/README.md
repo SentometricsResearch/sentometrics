@@ -5,16 +5,16 @@
 
 The **`sentometrics`** package is designed to do time series analysis based on textual sentiment. Put differently, it is **an integrated framework for textual sentiment time series aggregation and prediction**. It accounts for the intrinsic challenge that, for a given text, sentiment can be computed in many different ways, as well as the large number of possibilities to pool sentiment across texts and time. This additional layer of manipulation does not exist in standard text mining and time series analysis packages. As a final outcome, the package provides an automated means to econometrically model the impact of sentiment in texts on a given variable, by first computing a wide range of textual sentiment time series and then selecting those that are most informative. The package created therefore integrates the _qualification_ of sentiment from texts, the _aggregation_ into different sentiment measures and the optimized _prediction_ based on these measures.
 
-The R package `sentometrics` was created during [Google Summer of Code 2017](https://github.com/rstats-gsoc/gsoc2017/wiki/Sentometrics:-An-integrated-framework-for-text-based-multivariate-time-series-modeling-and-forecasting). So far, the package implements the main methodology developed in the paper "[Questioning the news about economic growth: Sparse forecasting using thousands of news-based sentiment values](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2976084)" (Ardia, Bluteau and Boudt, 2017). We do believe the package in its current state may already be of strong interest to many people. Below, we present an overview of the different functionalities of the package, largely by means of a step-by-step example. The associated code can be found in the `run_project_page.R` script under the _/examples_ folder on the dedicated GitHub repository. A hands-on methodological introduction is given in our [vignette](http://ssrn.com/abstract=3067734).
+The R package `sentometrics` was created during [Google Summer of Code 2017](https://github.com/rstats-gsoc/gsoc2017/wiki/Sentometrics:-An-integrated-framework-for-text-based-multivariate-time-series-modeling-and-forecasting). So far, the package implements the main methodology developed in the paper "[Questioning the news about economic growth: Sparse forecasting using thousands of news-based sentiment values](https://ssrn.com/abstract=2976084)" (Ardia, Bluteau and Boudt, 2017). We do believe the package in its current state may already be of strong interest to many people. Below, we present an overview of the different functionalities of the package, largely by means of a step-by-step example. The associated code can be found in the `run_project_page.R` script under the _/examples_ folder on the dedicated GitHub repository. A hands-on methodological introduction is given in our [vignette](https://ssrn.com/abstract=3067734). 
 
 ## The functionalities of sentometrics
 
 Assume you have a collection of texts available and you have mapped the relevance of each text to a given number of metadata features. You think it might be a good idea to summarize the texts into several sentiment time series across these features, which you ponder could help predicting some variable you are interested in. However, you do not really know how to proceed next... Fortunately, you come across the `sentometrics` package, which does exactly what you need! Great! Go on and load the package to begin with, together with some plotting devices.
 
 ```R
-require(sentometrics)
-require(ggplot2)
-require(gridExtra)
+require("sentometrics")
+require("ggplot2")
+require("gridExtra")
 ```
 
 ### Textual sentiment aggregation
