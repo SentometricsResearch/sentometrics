@@ -96,10 +96,3 @@ g <- ggplot(data = glob, aes(x = as.Date(row.names(glob)), y = global)) +
   theme(legend.title = element_blank())
 g
 
-###
-
-ggsave("C:/Users/gebruiker/Dropbox/SENTOMETRICS-R-PACKAGE/vignette/plots/sentmeas.pdf", p)
-ggsave("C:/Users/gebruiker/Dropbox/SENTOMETRICS-R-PACKAGE/vignette/plots/for.pdf", r)
-ggsave("C:/Users/gebruiker/Dropbox/SENTOMETRICS-R-PACKAGE/vignette/plots/attr.pdf", a)
-ggsave("C:/Users/gebruiker/Dropbox/SENTOMETRICS-R-PACKAGE/vignette/plots/glob.pdf", g)
-
