@@ -336,8 +336,8 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
   cat("Compute sentiment... ")
   # frequency-based document-feature matrix (rows are corpus ids, columns are words)
   if (is.null(dfm)) {
-      dfm <- quanteda::dfm(quanteda::tokenize(sentocorpus, remove_punct = TRUE, remove_numbers = TRUE,
-                                              remove_symbols = TRUE, remove_separators = TRUE), verbose = FALSE)
+      dfm <- quanteda::dfm(quanteda::tokens(sentocorpus, remove_punct = TRUE, remove_numbers = TRUE,
+                                            remove_symbols = TRUE, remove_separators = TRUE), verbose = FALSE)
   } else if (!quanteda::is.dfm(dfm))
     stop("The 'dfm' argument should pass quanteda::is.dfm(dfm).")
 
@@ -403,7 +403,7 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 #' @param how a single \code{character} vector defining how aggregation within documents should be performed. For currently
 #' available options on how aggregation can occur, see \code{\link{get_hows}()$words}.
 #' @param dfm optional; an output from a \pkg{quanteda} \code{\link[quanteda]{dfm}} call, such that users can specify their
-#' own tokenization scheme (via \code{\link[quanteda]{tokenize}}) as well as other parameters related to the construction of
+#' own tokenization scheme (via \code{\link[quanteda]{tokens}}) as well as other parameters related to the construction of
 #' a document-feature matrix (dfm). By default, a dfm is created based on a tokenization that removes punctuation, numbers,
 #' symbols and separators. We suggest to stick to unigrams, as the remainder of the sentiment computation and built-in
 #' lexicons assume the same.
@@ -416,7 +416,7 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 #' \item{lexicons}{a \code{character} vector of the different lexicons used.}
 #' \item{howWithin}{a \code{character} vector to remind how sentiment within documents was aggregated.}
 #'
-#' @seealso \code{\link[quanteda]{dfm}}, \code{\link[quanteda]{tokenize}}
+#' @seealso \code{\link[quanteda]{dfm}}, \code{\link[quanteda]{tokens}}
 #'
 #' @examples
 #' data("usnews")
@@ -431,7 +431,7 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 #'
 #' \dontrun{
 #' # same sentiment computation based on a user-supplied dfm with default settings
-#' dfm <- quanteda::dfm(quanteda::tokenize(corpus), verbose = FALSE)
+#' dfm <- quanteda::dfm(quanteda::tokens(corpus), verbose = FALSE)
 #' sent <- compute_sentiment(corpusSample, l, how = "counts", dfm = dfm)}
 #'
 #' @export
