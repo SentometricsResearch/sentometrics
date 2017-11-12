@@ -7,3 +7,4 @@
 ^sentometrics-manual\.pdf$
 ^sentometrics-vignette\.pdf$
 ^\.travis\.yml$
+^cran-comments\.md$
