@@ -282,7 +282,7 @@ We already highlighted a few advances we have in mind. These mainly comprise bet
 
 ## Installation
 
-To install the package from CRAN (soon!), simply do:
+To install the package from CRAN, simply do:
 
 ```R
 install.packages("sentometrics")
