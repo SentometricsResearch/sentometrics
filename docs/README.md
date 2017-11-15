@@ -200,7 +200,7 @@ outIC <- sento_model(sentMeas, y, ctr = ctrIC)
 summary(outIC)
 ```
 
-Binomial and multinomial logistic regressions are estimated equally easily. Have a look at below example for a binomial EPU variable, coded as being either above or below the historical average. The logic for a multinomial response variable is exactly the same, and can be tested using the series in `epu$aboveMulti`. _Currently, logistic regressions can only be calibrated through cross-validation. We will add in a future release information criteria for logistic regressions appropriate to the elastic net context, similar to what we did for the linear regression._ Doing parameter calibration by cross-validation requires only a few changes in the control function, in particular the inclusion of a training window and test window size. The cross-validation setup is as such that the model is estimated at a sample of size `trainWindow` for all possible _alpha_ and _lambda_ combinations, and prediction performance is measured for the subsequent `testWindow` out-of-sample values. The procedure is repeated in a rolling-forward way until the total input sample is exhausted, which is called _training the model_. The optimal _alpha_ and _lambda_ values are then those that minimize prediction errors across all the subsamples. The cross-validation is performed with the **`caret`** package. It may take a while to run, due to the nature of the calibration approach (however, it can be speed up using parallel computation, as explained in the package's manual).
+Binomial and multinomial logistic regressions are estimated equally easily. Have a look at below example for a binomial EPU variable, coded as being either above or below the historical average. The logic for a multinomial response variable is exactly the same, and can be tested using the series in `epu$aboveMulti`. _Currently, logistic regressions can only be calibrated through cross-validation. We will add in a future release information criteria for logistic regressions appropriate to the elastic net context, similar to what we did for the linear regression._ Doing parameter calibration by cross-validation requires only a few changes in the control function, in particular the inclusion of a training window and test window size. The cross-validation setup is as such that the model is estimated at a sample of size `trainWindow` for all possible _alpha_ and _lambda_ combinations, and prediction performance is measured for the subsequent `testWindow` out-of-sample values. The procedure is repeated in a rolling-forward way until the total input sample is exhausted, which is called _training the model_. The optimal _alpha_ and _lambda_ values are then those that minimize prediction errors across all the subsamples. The cross-validation is performed with the **`caret`** package. It may take a while to run, due to the nature of the calibration approach (however, it can be speed up using parallel computation, see `help("sento_model")`).
 
 ```R
 yb <- epu[epu$date >= sentMeas$measures$date[1], ]$above
@@ -293,8 +293,6 @@ The latest development version of `sentometrics` resides at [https://github.com/
 ```R
 devtools::install_github("sborms/sentometrics")
 ```
-
-The most up-to-date manual can be found on the package's GitHub repository.
 
 ## Contact
 
