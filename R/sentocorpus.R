@@ -121,8 +121,8 @@ clean <- function(corpusdf) {
 #' inputted \code{sentocorpus} object. If the number of rows in \code{featuresdf} is not equal to the number of documents
 #' in \code{sentocorpus}, recycling will occur.
 #' @param keywords a named \code{list}. For every element, a new feature column is added with a value of 1 for the texts
-#' in which the keyword(s) appear(s), and 0 if not. If no texts match a keyword, no column is added. The \code{list} named
-#' elements are used as the names of the new features.
+#' in which (at least one of) the keyword(s) appear(s), and 0 if not. If no texts match a keyword, no column is added. 
+#' The \code{list} names are used as the names of the new features.
 #'
 #' @return An updated \code{sentocorpus} object.
 #'
