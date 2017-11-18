@@ -542,7 +542,7 @@ agg_documents <- function(toAgg, by, how = get_hows()$docs, do.ignoreZeros = TRU
                         lexicons = lexNames,
                         time = NA,
                         by = by,
-                        stats = NA,
+                        stats = NA, # zeros replaced by NAs if do.ignoreZeros = TRUE
                         sentiment = sent,
                         howWithin = toAgg$howWithin,
                         howDocs = how,
@@ -870,7 +870,7 @@ to_global <- function(sentomeasures, lexicons = 1, features = 1, time = 1) {
 #' of dates.
 #'
 #' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
-#' @param toSelect a \code{"character"} vector of the lexicon, feature and time weighting scheme names, to indicate which
+#' @param toSelect a \code{character} vector of the lexicon, feature and time weighting scheme names, to indicate which
 #' measures need to be selected. By default equal to \code{"all"}, which means no selection of the sentiment measures is made;
 #' this may be used if one only wants to extract a subset of dates via the \code{dates} argument.
 #' @param do.combine a \code{logical} indicating if only measures for which all (\code{do.combine = TRUE}) or at least one
