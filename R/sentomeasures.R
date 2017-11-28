@@ -21,7 +21,7 @@
 #' the document weights while aggregating across documents. By default \code{do.ignoreZeros = TRUE}, such that documents with
 #' an exact score of zero are considered irrelevant.
 #' @param by a single \code{character} vector, either \code{"day", "week", "month"} or \code{"year"}, to indicate at what
-#' level the dates should be aggregated. Dates are displayed as the first day of the period, if applicable (e.g.
+#' level the dates should be aggregated. Dates are displayed as the first day of the period, if applicable (e.g.,
 #' \code{"2017-03-01"} for March 2017).
 #' @param lag a single \code{integer} vector, being the time lag to be specified for aggregation across time. By default
 #' equal to \code{1L}, meaning no aggregation across time.
@@ -236,17 +236,16 @@ print.sentomeasures <- function(x, ...) {
 #'
 #' @description Structures provided lexicons and potentially integrates valence words. One can also provide (part of) the
 #' built-in lexicons from \code{data("lexicons")} or a valence word list from \code{data("valence")} as an argument.
-#' Makes use of \code{\link[sentimentr]{as_key}} from the \pkg{sentimentr} package to make the output coherent and
-#' check for duplicates.
+#' Makes use of the \code{\link[sentimentr]{as_key}} function from the \pkg{sentimentr} package to make the output coherent
+#' and check for duplicates.
 #'
-#' @param lexiconsIn a list of (raw) lexicons, each element being a \code{data.table} or a \code{data.frame} with respectively
-#' a words column and a polarity score column. The lexicons should be appropriately named for clarity in terms of subsequently
-#' obtained sentiment measures. Alternatively, a subset of the already formatted built-in lexicons accessible via
-#' \code{lexicons} can be declared too, as part of the same list input. If only (some of) the package built-in lexicons want
-#' to be used (with \emph{no} valence shifters), one can simply supply \code{lexicons[c(...)]} as an argument to either
-#' \code{\link{sento_measures}} or \code{\link{compute_sentiment}}. However, it is strongly recommended to pass all lexicons
-#' (and a valence word list) to this function first, in any case.
-#' @param valenceIn a single valence word list as a \code{data.table} or a \code{data.frame} with respectively a words column,
+#' @param lexiconsIn a named \code{list} of (raw) lexicons, each element being a \code{data.frame} or a \code{data.table} with
+#' respectively a words column and a polarity score column. Alternatively, a subset of the already formatted built-in lexicons
+#' accessible via \code{lexicons} can be declared too, as part of the same list input. If only (some of) the package built-in 
+#' lexicons want to be used (with \emph{no} valence shifters), one can simply supply \code{lexicons[c(...)]} as an argument to
+#' either \code{\link{sento_measures}} or \code{\link{compute_sentiment}}. However, it is strongly recommended to pass all 
+#' lexicons (and a valence word list) to this function first, in any case.
+#' @param valenceIn a single valence word list as a \code{data.frame} or a \code{data.table} with respectively a words column,
 #' a type column (\code{1} for negators, \code{2} for amplifiers/intensifiers, and \code{3} for deamplifiers/downtoners) and a
 #' score column. Suggested scores are -1, 2, and 0.5 respectively, and should be the same within each type. This argument can
 #' also be one of the already formatted built-in valence word lists accessible via \code{valence}. If \code{NULL}, no valence
@@ -365,7 +364,7 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
     } else if (how == "proportional") {
       scores <- quanteda::rowSums(quanteda::t(fdm * allScores)) / wCounts
     } else scores <- quanteda::rowSums(quanteda::t(fdmWeighted * allScores))
-    scores[is.na(scores)] <- 0 # set NA/NaN sentiment to 0 (e.g. if document contains no words)
+    scores[is.na(scores)] <- 0 # set NA/NaN sentiment to 0 (e.g., if document contains no words)
     s[, (lexicon) := scores]
   }
   # structure: date - feature1 - ... - word_count - lexicon1 (sentiment) - ...
@@ -751,7 +750,7 @@ merge_measures <- function(ctr) {
   }
   # loop over lex(icon), feat(ure) and time lists
   for (across in toMerge[!is.na(toMerge)]) {
-    # loop over set of aggregation levels to merge (combine) into given name (e.g. lex12 = c("lex1", "lex2"))
+    # loop over set of aggregation levels to merge (combine) into given name (e.g., lex12 = c("lex1", "lex2"))
     for (i in seq_along(across)) {
       name <- names(across)[i] # e.g. "lex12"
       cols <- across[[i]] # e.g. c("lex1", "lex2")
@@ -1106,5 +1105,61 @@ scale.sentomeasures <- function(x, center = TRUE, scale = TRUE) {
   sentomeasures$measures <- data.table(dates, measuresNorm)
   sentomeasures$stats <- compute_stats(sentomeasures)
   return(sentomeasures)
+}
+
+#' Extract documents related to sentiment peaks
+#'
+#' @author Samuel Borms
+#'
+#' @description This function will give you the dates and documents for which aggregated sentiment was most extreme (highest,
+#' lowest or highest in absolute terms).
+#'
+#' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
+#' @param sentocorpus the \code{sentocorpus} object created with \code{\link{sento_corpus}}, used for the construction
+#' of the input \code{sentomeasures}.
+#' @param n a \code{numeric} value to indicate the number of dates to extract. This doesn't necessarily occurs to the
+#' \code{n} most extreme sentiment values, given that those may occur on only one date for example.
+#' @param type a \code{character} value, either \code{"pos"}, \code{"neg"} or \code{"both"}.
+#' @param average xxx.
+#'
+#' @return A \code{list} with as elements \code{"dates"}, \code{"ids"} and \code{"documents"}.
+#'
+#' @examples
+#' data("usnews")
+#' data("lexicons")
+#' data("valence")
+#'
+#' # construct a sentomeasures object to start with
+#' corpus <- sento_corpus(corpusdf = usnews)
+#' corpusSample <- quanteda::corpus_sample(corpus, sample = 500)
+#' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+#' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "month", lag = 3)
+#' sentomeasures <- sento_measures(corpusSample, l, ctr)
+#'
+#' # extract the peaks
+#' peaksAbs <- extract_peakdocs(sentomeasures, corpus, n = 5)
+#' peaksPos <- extract_peakdocs(sentomeasures, corpus, n = 5, type = "pos")
+#' peaksNeg <- extract_peakdocs(sentomeasures, corpus, n = 5, type = "neg")
+#' 
+#' @export
+extract_peakdocs <- function(sentomeasures, corpus, n = 10, type = "both", average = FALSE) {
+  check_class(sentomeasures, "sentomeasures")
+
+  measures <- sentomeasures$measures[, -1]
+  m <- dim(measures)[2]
+  if (n >= (dim(measures)[1] * m)) stop("The parameter 'n' exceeds the total number of sentiment values.")
+  if (average == TRUE) {
+    measures <- rowMeans(measures, na.rm = TRUE)
+    dates <- sentomeasures$measures$date
+  } else dates <- rep(sentomeasures$measures$date, m)
+  if (type == "both") measures <- abs(measures)
+  indx <- order(measures, decreasing = ifelse(type == "neg", FALSE, TRUE))[1:(m * n)]
+  peakDates <- unique(dates[indx])[1:n]
+  ids <- sentomeasures$sentiment[date %in% peakDates, ]$id # get document IDs
+  peakDocs <- quanteda::texts(corpus)[row.names(corpus$documents) %in% ids]
+
+  peaks <- list(dates = peakDates, ids = ids, docs = peakDocs)
+
+  return(peaks)
 }
 

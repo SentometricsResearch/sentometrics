@@ -7,11 +7,11 @@
 sento_corpus(corpusdf, do.clean = FALSE)
 }
 \arguments{
-\item{corpusdf}{a \code{data.frame} with as named columns and \emph{in this order}: a document \code{"id"} column, a
-\code{"date"} column, a \code{"text"} column (i.e. the columns where all texts to analyze reside), and a series of feature
-columns of type \code{numeric}, with values pointing to the applicability of a particular feature to a particular text. The
-latter columns are often binary (\code{1} means the feature is applicable to the document in the same row) or as a
-percentage to specify the degree of connectedness of a feature to a document. Features could be topics (e.g., legal,
+\item{corpusdf}{a \code{data.frame} (or a \code{data.table}, or a \code{tbl}) with as named columns: a document \code{"id"}
+column, a \code{"date"} column, a \code{"text"} column (i.e. the columns where all texts to analyze reside), and a
+series of feature columns of type \code{numeric}, with values pointing to the applicability of a particular feature to a 
+particular text. The latter columns are often binary (\code{1} means the feature is applicable to the document in the same row)
+or as a percentage to specify the degree of connectedness of a feature to a document. Features could be topics (e.g., legal,
 political, or economic), but also article sources (e.g., online or printed press), amongst many more options. If you have no
 knowledge about features or no particular features are of interest to your analysis, provide no feature columns. In that
 case, the corpus constructor automatically adds an additional feature column named \code{"dummy"}. Provide the \code{date}
@@ -27,11 +27,11 @@ A \code{sentocorpus} object, derived from a \pkg{quanteda} corpus classed \code{
 a \code{data.frame}.
 }
 \description{
-Formalizes a collection of texts into a well-defined corpus object, by calling, amongst others, the
-\code{\link[quanteda]{corpus}} function from the \pkg{quanteda} package. This package is a (very) fast text mining package;
-for more info, see \href{http://quanteda.io/index.html}{quanteda}. Their formal corpus structure is required for better
-memory management, corpus manipulation, and sentiment calculation. This function mainly performs a set of checks on the
-input data and prepares the corpus for further sentiment analysis.
+Formalizes a collection of texts into a well-defined corpus object, by mainly calling the
+\code{\link[quanteda]{corpus}} function from the \pkg{quanteda} package. This package provides a fast text mining
+infrastructure; for more info, see \href{http://quanteda.io/index.html}{quanteda}. Their formal corpus structure is 
+required for better memory management, corpus manipulation, and sentiment calculation. This function mainly performs
+a set of checks on the input data and prepares the corpus for further sentiment analysis.
 }
 \details{
 A \code{sentocorpus} object can be regarded as a specialized instance of a \pkg{quanteda} corpus. In theory, all
@@ -40,7 +40,7 @@ changing a given \code{sentocorpus} object too drastically using some of \pkg{qu
 structure the corpus is meant to have (as defined in the \code{corpusdf} argument) to be able to be used as an input
 in other functions of the \pkg{sentometrics} package. There are functions, including \code{\link[quanteda]{corpus_sample}}
 or \code{\link[quanteda]{corpus_subset}}, that do not change the actual corpus structure and may come in handy. To add
-additional features, we recommend to use \code{\link{add_features}}.
+additional features, use \code{\link{add_features}}.
 }
 \examples{
 data("usnews")
