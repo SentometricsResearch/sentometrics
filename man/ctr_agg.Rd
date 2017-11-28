@@ -27,7 +27,7 @@ the document weights while aggregating across documents. By default \code{do.ign
 an exact score of zero are considered irrelevant.}
 
 \item{by}{a single \code{character} vector, either \code{"day", "week", "month"} or \code{"year"}, to indicate at what
-level the dates should be aggregated. Dates are displayed as the first day of the period, if applicable (e.g.
+level the dates should be aggregated. Dates are displayed as the first day of the period, if applicable (e.g.,
 \code{"2017-03-01"} for March 2017).}
 
 \item{lag}{a single \code{integer} vector, being the time lag to be specified for aggregation across time. By default

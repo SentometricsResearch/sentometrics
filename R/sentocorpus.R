@@ -3,11 +3,11 @@
 #'
 #' @author Samuel Borms
 #'
-#' @description Formalizes a collection of texts into a well-defined corpus object, by calling, amongst others, the
-#' \code{\link[quanteda]{corpus}} function from the \pkg{quanteda} package. This package is a (very) fast text mining package;
-#' for more info, see \href{http://quanteda.io/index.html}{quanteda}. Their formal corpus structure is required for better
-#' memory management, corpus manipulation, and sentiment calculation. This function mainly performs a set of checks on the
-#' input data and prepares the corpus for further sentiment analysis.
+#' @description Formalizes a collection of texts into a well-defined corpus object, by mainly calling the
+#' \code{\link[quanteda]{corpus}} function from the \pkg{quanteda} package. This package provides a fast text mining
+#' infrastructure; for more info, see \href{http://quanteda.io/index.html}{quanteda}. Their formal corpus structure is 
+#' required for better memory management, corpus manipulation, and sentiment calculation. This function mainly performs
+#' a set of checks on the input data and prepares the corpus for further sentiment analysis.
 #'
 #' @details A \code{sentocorpus} object can be regarded as a specialized instance of a \pkg{quanteda} corpus. In theory, all
 #' \pkg{quanteda} functions applicable to its corpus object can also be applied to a \code{sentocorpus} object. However,
@@ -15,13 +15,13 @@
 #' structure the corpus is meant to have (as defined in the \code{corpusdf} argument) to be able to be used as an input
 #' in other functions of the \pkg{sentometrics} package. There are functions, including \code{\link[quanteda]{corpus_sample}}
 #' or \code{\link[quanteda]{corpus_subset}}, that do not change the actual corpus structure and may come in handy. To add
-#' additional features, we recommend to use \code{\link{add_features}}.
+#' additional features, use \code{\link{add_features}}.
 #'
-#' @param corpusdf a \code{data.frame} with as named columns and \emph{in this order}: a document \code{"id"} column, a
-#' \code{"date"} column, a \code{"text"} column (i.e. the columns where all texts to analyze reside), and a series of feature
-#' columns of type \code{numeric}, with values pointing to the applicability of a particular feature to a particular text. The
-#' latter columns are often binary (\code{1} means the feature is applicable to the document in the same row) or as a
-#' percentage to specify the degree of connectedness of a feature to a document. Features could be topics (e.g., legal,
+#' @param corpusdf a \code{data.frame} (or a \code{data.table}, or a \code{tbl}) with as named columns: a document \code{"id"}
+#' column, a \code{"date"} column, a \code{"text"} column (i.e. the columns where all texts to analyze reside), and a
+#' series of feature columns of type \code{numeric}, with values pointing to the applicability of a particular feature to a 
+#' particular text. The latter columns are often binary (\code{1} means the feature is applicable to the document in the same row)
+#' or as a percentage to specify the degree of connectedness of a feature to a document. Features could be topics (e.g., legal,
 #' political, or economic), but also article sources (e.g., online or printed press), amongst many more options. If you have no
 #' knowledge about features or no particular features are of interest to your analysis, provide no feature columns. In that
 #' case, the corpus constructor automatically adds an additional feature column named \code{"dummy"}. Provide the \code{date}
@@ -59,16 +59,17 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
   nonfeatures <- c("id", "date", "text")
   cols <- stringi::stri_replace_all(colnames(corpusdf), "_", regex = " ")
   colnames(corpusdf) <- cols
-  if (!all(nonfeatures %in% cols) | (cols[1] != "id" | cols[2] != "date" | cols[3] != "text"))
-    stop("The input data.frame should have its first columns named 'id', 'date' and 'text', in this order.")
+  if (!all(nonfeatures %in% cols))
+    stop("The input data.frame should have at least three columns named 'id', 'date' and 'text'.")
   # check for type of text column
   if (!is.character(corpusdf[["text"]])) stop("The 'text' column should be of type character.")
   # check for date format
   dates <- as.Date(corpusdf$date, format = "%Y-%m-%d")
   if (any(is.na(dates))) stop("Some dates are not in appropriate format. Should be 'yyyy-mm-dd'.")
   else corpusdf$date <- dates
-  # check for duplicated feature names, if no issues add to output list
+  # check for duplicated feature names
   features <- cols[!(cols %in% nonfeatures)]
+  corpusdf <- corpusdf[, c("id", "date", "text", features)]
   if (length(features) == 0) {
     corpusdf[["dummy"]] <- 1
     warning("No features detected. A 'dummy' feature valued at 1 throughout is added.")

@@ -24,19 +24,22 @@ A list containing all built-in lexicons as a \code{data.table} with two columns:
 The built-in lexicons are the following:
 
 \itemize{
-  \item FEEL_eng_tr (FEEL: French Expanded Emotion Lexicon)
+  \item FEEL_eng_tr (French Expanded Emotion Lexicon)
   \item FEEL_fr
   \item FEEL_nl_tr
-  \item GI_eng (GI: General Inquirer, i.e. Harvard IV-4 combined with Laswell)
+  \item GI_eng (General Inquirer, i.e. Harvard IV-4 combined with Laswell)
   \item GI_fr_tr
   \item GI_nl_tr
-  \item HENRY_eng (HENRY: Henry)
+  \item HENRY_eng (Henry)
   \item HENRY_fr_tr
   \item HENRY_nl_tr
-  \item LM_eng (LM: Loughran and McDonald)
+  \item LM_eng (Loughran and McDonald)
   \item LM_fr_tr
   \item LM_nl_tr
 }
+
+Other immediate lexicon options can be found in the \pkg{lexicon} package, more specifically the datasets preceded by
+\code{hash_sentiment_}.
 }
 \examples{
 lexicons[c("FEEL_eng_tr", "LM_eng")]

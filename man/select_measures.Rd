@@ -10,7 +10,7 @@ select_measures(sentomeasures, toSelect = "all", do.combine = TRUE,
 \arguments{
 \item{sentomeasures}{a \code{sentomeasures} object created using \code{\link{sento_measures}}.}
 
-\item{toSelect}{a \code{"character"} vector of the lexicon, feature and time weighting scheme names, to indicate which
+\item{toSelect}{a \code{character} vector of the lexicon, feature and time weighting scheme names, to indicate which
 measures need to be selected. By default equal to \code{"all"}, which means no selection of the sentiment measures is made;
 this may be used if one only wants to extract a subset of dates via the \code{dates} argument.}
 
