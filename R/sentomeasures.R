@@ -165,7 +165,7 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #' average correlation with all other measures) for each individual sentiment measure.}
 #' \item{sentiment}{the sentiment scores \code{data.table} with \code{"date"}, \code{"word_count"} and lexicon--feature sentiment
 #' scores columns.
-#' If \code{ctr$do.ignoreZeros = TRUE}, all zeros are replaces by \code{NA}.}
+#' If \code{ctr$do.ignoreZeros = TRUE}, all zeros are replaced by \code{NA}.}
 #' \item{howWithin}{a single \code{character} vector to remind how sentiment within documents was aggregated.}
 #' \item{howDocs}{a single \code{character} vector to remind how sentiment across documents was aggregated.}
 #' \item{fill}{a single \code{character} vector that specifies if and how missing dates have been added before
@@ -279,9 +279,11 @@ print.sentomeasures <- function(x, ...) {
 #' l3 <- setup_lexicons(lexIn, valIn)
 #' l4 <- setup_lexicons(lexIn, valIn, do.split = TRUE)
 #'
+#' \dontrun{
 #' # include lexicons from lexicon package
+#' library("lexicon")
 #' lexIn2 <- list(hul = lexicon::hash_sentiment_huliu, joc = lexicon::hash_sentiment_jockers)
-#' l5 <- setup_lexicons(c(lexIn, lexIn2), valIn)
+#' l5 <- setup_lexicons(c(lexIn, lexIn2), valIn)}
 #'
 #' @export
 setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
@@ -1123,7 +1125,8 @@ scale.sentomeasures <- function(x, center = TRUE, scale = TRUE) {
 #' @param sentocorpus the \code{sentocorpus} object created with \code{\link{sento_corpus}}, used for the construction
 #' of the input \code{sentomeasures} object.
 #' @param n a \code{numeric} value to indicate the number of documents to extract. The associated dates are not
-#' necessarily unique, given that, for example, extreme sentiment may occur on only one date but for different sentiment measures.
+#' necessarily unique, given that, for example, extreme sentiment may occur on only one date but for different sentiment
+#' measures.
 #' @param type a \code{character} value, either \code{"pos"}, \code{"neg"} or \code{"both"}; respectively to look
 #' for the \code{n} most positive, most negative or most extreme (in absolute terms) sentiment occurrences.
 #' @param do.average a \code{logical} to indicate whether peaks should be selected based on the average sentiment
@@ -1163,8 +1166,48 @@ extract_peakdocs <- function(sentomeasures, sentocorpus, n = 10, type = "both", 
   indx <- order(measures, decreasing = ifelse(type == "neg", FALSE, TRUE))[1:(m * n)]
   peakDates <- unique(dates[indx])[1:n]
   ids <- sentomeasures$sentiment[date %in% peakDates, ]$id # get document IDs
-  peakDocs <- quanteda::texts(corpus)[row.names(corpus$documents) %in% ids]
+  peakDocs <- quanteda::texts(sentocorpus)[row.names(sentocorpus$documents) %in% ids]
   peaks <- list(dates = peakDates, ids = ids, docs = peakDocs)
   return(peaks)
+}
+
+#' Differencing of sentiment measures
+#'
+#' @author Samuel Borms
+#'
+#' @description Differences the sentiment measures from a \code{sentomeasures} object.
+#'
+#' @param x a \code{sentomeasures} object created using \code{\link{sento_measures}}.
+#' @param lag a \code{numeric}, see documentation for the generic \code{\link{diff}}.
+#' @param differences a \code{numeric}, see documentation for the generic \code{\link{diff}}.
+#' @param ... not used.
+#'
+#' @return A modified \code{sentomeasures} object, with the measures replaced by the differenced measures as well as updated
+#' statistics.
+#'
+#' @examples
+#' data("usnews")
+#' data("lexicons")
+#' data("valence")
+#'
+#' # construct a sentomeasures object to start with
+#' corpus <- sento_corpus(corpusdf = usnews)
+#' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
+#' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+#' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
+#' sentomeasures <- sento_measures(corpusSample, l, ctr)
+#'
+#' # first-order difference sentiment measures with a lag of two
+#' diffed <- diff(sentomeasures, lag = 2, differences = 1)
+#'
+#' @export
+diff.sentomeasures <- function(x, lag = 1, differences = 1, ...) {
+  sentomeasures <- x
+  dates <- sentomeasures$measures[, 1][-1:-(lag * differences)]
+  measures <- sentomeasures$measures[, -1] # drop date column
+  measuresDiff <- diff(as.matrix(measures), lag = lag, differences = differences)
+  sentomeasures$measures <- data.table(dates, measuresDiff)
+  sentomeasures$stats <- compute_stats(sentomeasures)
+  return(sentomeasures)
 }
 
