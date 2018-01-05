@@ -53,9 +53,11 @@ l2 <- setup_lexicons(lexIn)
 l3 <- setup_lexicons(lexIn, valIn)
 l4 <- setup_lexicons(lexIn, valIn, do.split = TRUE)
 
+\dontrun{
 # include lexicons from lexicon package
+library("lexicon")
 lexIn2 <- list(hul = lexicon::hash_sentiment_huliu, joc = lexicon::hash_sentiment_jockers)
-l5 <- setup_lexicons(c(lexIn, lexIn2), valIn)
+l5 <- setup_lexicons(c(lexIn, lexIn2), valIn)}
 
 }
 \seealso{

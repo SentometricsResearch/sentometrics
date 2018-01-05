@@ -14,7 +14,8 @@ extract_peakdocs(sentomeasures, sentocorpus, n = 10, type = "both",
 of the input \code{sentomeasures} object.}
 
 \item{n}{a \code{numeric} value to indicate the number of documents to extract. The associated dates are not
-necessarily unique, given that, for example, extreme sentiment may occur on only one date but for different sentiment measures.}
+necessarily unique, given that, for example, extreme sentiment may occur on only one date but for different sentiment
+measures.}
 
 \item{type}{a \code{character} value, either \code{"pos"}, \code{"neg"} or \code{"both"}; respectively to look
 for the \code{n} most positive, most negative or most extreme (in absolute terms) sentiment occurrences.}

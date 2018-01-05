@@ -12,9 +12,9 @@ The R package `sentometrics` was created during [Google Summer of Code 2017](htt
 Assume you have a collection of texts available and you have mapped the relevance of each text to a given number of metadata features. You think it might be a good idea to summarize the texts into several sentiment time series across these features, which you ponder could help predicting some variable you are interested in. However, you do not really know how to proceed next... Fortunately, you come across the `sentometrics` package, which does exactly what you need! Great! Go on and load the package to begin with, together with some plotting devices.
 
 ```R
-require("sentometrics")
-require("ggplot2")
-require("gridExtra")
+library("sentometrics")
+library("ggplot2")
+library("gridExtra")
 ```
 
 ### Textual sentiment aggregation
