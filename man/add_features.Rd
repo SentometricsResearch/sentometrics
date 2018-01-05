@@ -4,7 +4,8 @@
 \alias{add_features}
 \title{Add feature columns to a sentocorpus}
 \usage{
-add_features(sentocorpus, featuresdf = NULL, keywords = NULL)
+add_features(sentocorpus, featuresdf = NULL, keywords = NULL,
+  do.binary = TRUE)
 }
 \arguments{
 \item{sentocorpus}{a \code{sentocorpus} object created with \code{\link{sento_corpus}}.}
@@ -14,8 +15,11 @@ inputted \code{sentocorpus} object. If the number of rows in \code{featuresdf} i
 in \code{sentocorpus}, recycling will occur.}
 
 \item{keywords}{a named \code{list}. For every element, a new feature column is added with a value of 1 for the texts
-in which (at least one of) the keyword(s) appear(s), and 0 if not. If no texts match a keyword, no column is added. 
-The \code{list} names are used as the names of the new features.}
+in which (at least one of) the keyword(s) appear(s), and 0 if not (if \code{do.binary = TRUE}), or with as value the
+number of times the keyword(s) occur(s) in the text (if if \code{do.binary = FALSE}). If no texts match a keyword, no
+column is added. The \code{list} names are used as the names of the new features.}
+
+\item{do.binary}{a \code{logical}, cf. argument \code{keywords}.}
 }
 \value{
 An updated \code{sentocorpus} object.
@@ -31,12 +35,15 @@ If a provided feature name is already part of the corpus, it will be replaced. T
 \examples{
 data("usnews")
 
-# construct a corpus and add random features to it
+# construct a corpus and add a random feature to it
 corpus <- sento_corpus(corpusdf = usnews)
 corpus1 <- add_features(corpus,
                         featuresdf = data.frame(random = runif(quanteda::ndoc(corpus))))
 corpus2 <- add_features(corpus,
                         keywords = list(pres = "president", war = "war"))
+corpus3 <- add_features(corpus,
+                        keywords = list(pres = "president", war = "war"),
+                        do.binary = FALSE)
 
 }
 \author{

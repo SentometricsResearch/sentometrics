@@ -32,7 +32,7 @@ sentomeasures <- sento_measures(corpusSample, l, ctr)
 # set up control function and perform the merging
 ctrMerge <- ctr_merge(sentomeasures,
                       time = list(W = c("equal_weight", "linear")),
-                      feat = list(journals = c("wsj", "wapo")),
+                      features = list(journals = c("wsj", "wapo")),
                       do.keep = TRUE)
 sentomeasuresMerged <- merge_measures(ctrMerge)
 

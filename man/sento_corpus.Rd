@@ -9,7 +9,7 @@ sento_corpus(corpusdf, do.clean = FALSE)
 \arguments{
 \item{corpusdf}{a \code{data.frame} (or a \code{data.table}, or a \code{tbl}) with as named columns: a document \code{"id"}
 column, a \code{"date"} column, a \code{"text"} column (i.e. the columns where all texts to analyze reside), and a
-series of feature columns of type \code{numeric}, with values pointing to the applicability of a particular feature to a 
+series of feature columns of type \code{numeric}, with values pointing to the applicability of a particular feature to a
 particular text. The latter columns are often binary (\code{1} means the feature is applicable to the document in the same row)
 or as a percentage to specify the degree of connectedness of a feature to a document. Features could be topics (e.g., legal,
 political, or economic), but also article sources (e.g., online or printed press), amongst many more options. If you have no
@@ -29,7 +29,7 @@ a \code{data.frame}.
 \description{
 Formalizes a collection of texts into a well-defined corpus object, by mainly calling the
 \code{\link[quanteda]{corpus}} function from the \pkg{quanteda} package. This package provides a fast text mining
-infrastructure; for more info, see \href{http://quanteda.io/index.html}{quanteda}. Their formal corpus structure is 
+infrastructure; for more info, see \href{http://quanteda.io/index.html}{quanteda}. Their formal corpus structure is
 required for better memory management, corpus manipulation, and sentiment calculation. This function mainly performs
 a set of checks on the input data and prepares the corpus for further sentiment analysis.
 }

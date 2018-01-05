@@ -4,28 +4,31 @@
 \alias{extract_peakdocs}
 \title{Extract documents related to sentiment peaks}
 \usage{
-extract_peakdocs(sentomeasures, corpus, n = 10, type = "both",
-  average = FALSE)
+extract_peakdocs(sentomeasures, sentocorpus, n = 10, type = "both",
+  do.average = FALSE)
 }
 \arguments{
 \item{sentomeasures}{a \code{sentomeasures} object created using \code{\link{sento_measures}}.}
 
-\item{n}{a \code{numeric} value to indicate the number of dates to extract. This doesn't necessarily occurs to the
-\code{n} most extreme sentiment values, given that those may occur on only one date for example.}
-
-\item{type}{a \code{character} value, either \code{"pos"}, \code{"neg"} or \code{"both"}.}
-
-\item{average}{xxx.}
-
 \item{sentocorpus}{the \code{sentocorpus} object created with \code{\link{sento_corpus}}, used for the construction
-of the input \code{sentomeasures}.}
+of the input \code{sentomeasures} object.}
+
+\item{n}{a \code{numeric} value to indicate the number of documents to extract. The associated dates are not
+necessarily unique, given that, for example, extreme sentiment may occur on only one date but for different sentiment measures.}
+
+\item{type}{a \code{character} value, either \code{"pos"}, \code{"neg"} or \code{"both"}; respectively to look
+for the \code{n} most positive, most negative or most extreme (in absolute terms) sentiment occurrences.}
+
+\item{do.average}{a \code{logical} to indicate whether peaks should be selected based on the average sentiment
+value per date. If \code{do.average = TRUE}, \code{n} unique dates are guaranteed (cf. argument \code{n}).}
 }
 \value{
-A \code{list} with as elements \code{"dates"}, \code{"ids"} and \code{"documents"}.
+A \code{list} with as elements \code{"dates"}, \code{"ids"} and \code{"documents"}, corresponding to
+the \code{n} sentiment peaks.
 }
 \description{
-This function will give you the dates and documents for which aggregated sentiment was most extreme (highest,
-lowest or highest in absolute terms).
+This function gives the dates and documents for which aggregated sentiment was
+most extreme (lowest, highest or both in absolute terms).
 }
 \examples{
 data("usnews")

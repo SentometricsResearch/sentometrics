@@ -5,7 +5,7 @@
 #'
 #' @description Formalizes a collection of texts into a well-defined corpus object, by mainly calling the
 #' \code{\link[quanteda]{corpus}} function from the \pkg{quanteda} package. This package provides a fast text mining
-#' infrastructure; for more info, see \href{http://quanteda.io/index.html}{quanteda}. Their formal corpus structure is 
+#' infrastructure; for more info, see \href{http://quanteda.io/index.html}{quanteda}. Their formal corpus structure is
 #' required for better memory management, corpus manipulation, and sentiment calculation. This function mainly performs
 #' a set of checks on the input data and prepares the corpus for further sentiment analysis.
 #'
@@ -19,7 +19,7 @@
 #'
 #' @param corpusdf a \code{data.frame} (or a \code{data.table}, or a \code{tbl}) with as named columns: a document \code{"id"}
 #' column, a \code{"date"} column, a \code{"text"} column (i.e. the columns where all texts to analyze reside), and a
-#' series of feature columns of type \code{numeric}, with values pointing to the applicability of a particular feature to a 
+#' series of feature columns of type \code{numeric}, with values pointing to the applicability of a particular feature to a
 #' particular text. The latter columns are often binary (\code{1} means the feature is applicable to the document in the same row)
 #' or as a percentage to specify the degree of connectedness of a feature to a document. Features could be topics (e.g., legal,
 #' political, or economic), but also article sources (e.g., online or printed press), amongst many more options. If you have no
@@ -60,7 +60,8 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
   cols <- stringi::stri_replace_all(colnames(corpusdf), "_", regex = " ")
   colnames(corpusdf) <- cols
   if (!all(nonfeatures %in% cols))
-    stop("The input data.frame should have at least three columns named 'id', 'date' and 'text'.")
+    stop("The input data.frame should have at least three columns, named 'id', 'date' and 'text'.")
+
   # check for type of text column
   if (!is.character(corpusdf[["text"]])) stop("The 'text' column should be of type character.")
   # check for date format
@@ -122,23 +123,28 @@ clean <- function(corpusdf) {
 #' inputted \code{sentocorpus} object. If the number of rows in \code{featuresdf} is not equal to the number of documents
 #' in \code{sentocorpus}, recycling will occur.
 #' @param keywords a named \code{list}. For every element, a new feature column is added with a value of 1 for the texts
-#' in which (at least one of) the keyword(s) appear(s), and 0 if not. If no texts match a keyword, no column is added. 
-#' The \code{list} names are used as the names of the new features.
+#' in which (at least one of) the keyword(s) appear(s), and 0 if not (if \code{do.binary = TRUE}), or with as value the
+#' number of times the keyword(s) occur(s) in the text (if if \code{do.binary = FALSE}). If no texts match a keyword, no
+#' column is added. The \code{list} names are used as the names of the new features.
+#' @param do.binary a \code{logical}, cf. argument \code{keywords}.
 #'
 #' @return An updated \code{sentocorpus} object.
 #'
 #' @examples
 #' data("usnews")
 #'
-#' # construct a corpus and add random features to it
+#' # construct a corpus and add a random feature to it
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpus1 <- add_features(corpus,
 #'                         featuresdf = data.frame(random = runif(quanteda::ndoc(corpus))))
 #' corpus2 <- add_features(corpus,
 #'                         keywords = list(pres = "president", war = "war"))
+#' corpus3 <- add_features(corpus,
+#'                         keywords = list(pres = "president", war = "war"),
+#'                         do.binary = FALSE)
 #'
 #' @export
-add_features <- function(sentocorpus, featuresdf = NULL, keywords = NULL) {
+add_features <- function(sentocorpus, featuresdf = NULL, keywords = NULL, do.binary = TRUE) {
   check_class(sentocorpus, "sentocorpus")
   if (!is.null(featuresdf)) {
     features <- stringi::stri_replace_all(colnames(featuresdf), "_", regex = " ")
@@ -154,6 +160,8 @@ add_features <- function(sentocorpus, featuresdf = NULL, keywords = NULL) {
     if ("" %in% names(keywords) || is.null(names(keywords)))
       stop("Please provide proper names as part of the 'keywords' argument.")
     textsAll <- quanteda::texts(sentocorpus)
+    if (do.binary == TRUE) fct <- stringi::stri_detect
+    else fct <- stringi::stri_count
     for (j in seq_along(keywords)) {
       kwName <- stringi::stri_replace_all(names(keywords)[j], "_", regex = " ")
       if (length(keywords[[j]]) == 1) {
@@ -161,7 +169,7 @@ add_features <- function(sentocorpus, featuresdf = NULL, keywords = NULL) {
       } else {
         regex <- paste0("\\b", paste0(keywords[[j]], collapse = "\\b|\\b"), "\\b")
       }
-      occurrences <- as.numeric(stringi::stri_detect(textsAll, regex = regex))
+      occurrences <- as.numeric(fct(textsAll, regex = regex))
       if (sum(occurrences) == 0) warning(paste0("Feature ", kwName, " is not added as it occurs in none of the documents."))
       else quanteda::docvars(sentocorpus, field = kwName) <- occurrences
     }
