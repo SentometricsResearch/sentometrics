@@ -4,9 +4,9 @@
 #' @description The \pkg{sentometrics} package is designed to do time series analysis based on textual sentiment. It accounts
 #' for the intrinsic challenge that, for a given text, sentiment can be computed in many ways, as well as the large
 #' number of possibilities to pool sentiment across text and time. This additional layer of manipulation does not exist
-#' in standard time series analysis and text mining packages. As a final outcome, this package provides an automated means
-#' to econometrically model the impact of sentiment in texts on a given variable, by first computing a wide range of textual
-#' sentiment time series and then selecting those that are most informative. The package created therefore integrates the
+#' in standard time series analysis and text mining packages. The package also provides an automated means to
+#' econometrically model the impact of sentiment in texts on a given variable, by first computing a wide range of textual
+#' sentiment time series and then selecting those that are most informative. Altogether, \pkg{sentometrics} integrates the
 #' \emph{qualification} of sentiment from texts, the \emph{aggregation} into different sentiment measures and the optimized
 #' \emph{prediction} based on these measures.
 #'
@@ -58,8 +58,8 @@
 #' }
 #'
 #' Other immediate lexicon options can be found in the \pkg{lexicon} package, more specifically the datasets preceded by
-#' \code{hash_sentiment_}. 
-#'  
+#' \code{hash_sentiment_}.
+#'
 #' @usage data("lexicons")
 #'
 #' @format A list with all built-in lexicons, appropriately named as \code{"NAME_language(_tr)"} .

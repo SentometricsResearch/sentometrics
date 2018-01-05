@@ -9,9 +9,9 @@ setup_lexicons(lexiconsIn, valenceIn = NULL, do.split = FALSE)
 \arguments{
 \item{lexiconsIn}{a named \code{list} of (raw) lexicons, each element being a \code{data.frame} or a \code{data.table} with
 respectively a words column and a polarity score column. Alternatively, a subset of the already formatted built-in lexicons
-accessible via \code{lexicons} can be declared too, as part of the same list input. If only (some of) the package built-in 
+accessible via \code{lexicons} can be declared too, as part of the same list input. If only (some of) the package built-in
 lexicons want to be used (with \emph{no} valence shifters), one can simply supply \code{lexicons[c(...)]} as an argument to
-either \code{\link{sento_measures}} or \code{\link{compute_sentiment}}. However, it is strongly recommended to pass all 
+either \code{\link{sento_measures}} or \code{\link{compute_sentiment}}. However, it is strongly recommended to pass all
 lexicons (and a valence word list) to this function first, in any case.}
 
 \item{valenceIn}{a single valence word list as a \code{data.frame} or a \code{data.table} with respectively a words column,
@@ -52,6 +52,10 @@ valIn <- valence[["valence_eng"]]
 l2 <- setup_lexicons(lexIn)
 l3 <- setup_lexicons(lexIn, valIn)
 l4 <- setup_lexicons(lexIn, valIn, do.split = TRUE)
+
+# include lexicons from lexicon package
+lexIn2 <- list(hul = lexicon::hash_sentiment_huliu, joc = lexicon::hash_sentiment_jockers)
+l5 <- setup_lexicons(c(lexIn, lexIn2), valIn)
 
 }
 \seealso{

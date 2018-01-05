@@ -23,8 +23,8 @@ lexicons assume the same.}
 \value{
 A \code{list} containing:
 \item{corpus}{the supplied \code{sentocorpus} object; the texts are altered if valence shifters are part of the lexicons.}
-\item{sentiment}{the sentiment scores \code{data.table} with a \code{"date"} and all lexicon--feature sentiment scores
-columns.}
+\item{sentiment}{the sentiment scores \code{data.table} with a \code{"date"} and a \code{"word_count"} column and all
+lexicon--feature sentiment scores columns.}
 \item{features}{a \code{character} vector of the different features.}
 \item{lexicons}{a \code{character} vector of the different lexicons used.}
 \item{howWithin}{a \code{character} vector to remind how sentiment within documents was aggregated.}
