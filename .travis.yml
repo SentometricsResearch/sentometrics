@@ -1,7 +1,7 @@
 language: r
 sudo: required
 cache: packages
- 
+
 os:
   - linux
 
@@ -9,7 +9,7 @@ script:
   - |
     R CMD build .
     travis_wait 180 R CMD check --no-build-vignettes --no-manual --as-cran sentometrics*tar.gz
-  
+
 r:
-  - devel
+  # - devel
   - release
