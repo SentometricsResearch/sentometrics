@@ -29,14 +29,13 @@ expand_lexicons <- function(lexicons, types = c(1, 2, 3), scores = c(-1, 2, 0.5)
 }
 
 # replaces valence words in texts and combines into bigrams
-include_valence <- function(texts, val, valIdentifier = c(" NOT_", " VERY_", " HARDLY_")) {
-  negators <- paste0(" ", paste0(val[val$t == 1, ]$x, collapse = " | "), " ")
-  amplif <- paste0(paste0(val[val$t == 2, ]$x, collapse = " |"), " ")
-  deamplif <- paste0(paste0(val[val$t == 3, ]$x, collapse = " |"), " ")
+include_valence <- function(texts, val, valIdentifier = c("NOT_", "VERY_", "HARDLY_")) {
+  negators <- paste0("\\b", paste0(val[val$t == 1, ]$x, collapse = " \\b|\\b"), " \\b")
+  amplif <- paste0("\\b", paste0(val[val$t == 2, ]$x, collapse = " \\b|\\b"), " \\b")
+  deamplif <- paste0("\\b", paste0(val[val$t == 3, ]$x, collapse = " \\b|\\b"), " \\b")
   all <- c(negators, amplif, deamplif)
   for (i in seq_along(all)) {
-    if (all[i] != " ")
-      texts <- stringi::stri_replace_all(texts, valIdentifier[i], regex = all[i])
+    if (all[i] != "\\b \\b") texts <- stringi::stri_replace_all(texts, valIdentifier[i], regex = all[i])
   }
   return(texts)
 }
@@ -114,12 +113,9 @@ exponentials <- function(n, alphas = seq(0.1, 0.5, by = 0.1)) {
 }
 
 setup_time_weights <- function(lag, how, ...) {
-
   dots <- tryCatch(list(...)[[1]], # extract list from list of list (... a list to match with functions in sentomeasures.R)
                    error = function(x) list(...)) # if ... is empty
-
   if (!all(how %in% get_hows()$time)) stop("Please select an appropriate aggregation 'how'.")
-
   weights <- data.frame(row.names = 1:lag)
   if ("equal_weight" %in% how) {
     weights <- cbind(weights, data.frame(equal_weight = matrix(1/lag, nrow = lag, ncol = 1)))
@@ -136,7 +132,6 @@ setup_time_weights <- function(lag, how, ...) {
   if ("own" %in% how) {
     weights <- cbind(weights, dots$weights)
   }
-
   return(weights)
 }
 
@@ -144,6 +139,9 @@ setup_time_weights <- function(lag, how, ...) {
 #'
 #' @description Call for information purposes only. Used within \code{\link{ctr_agg}} to check if supplied
 #' aggregation hows are supported.
+#'
+#' @details See the package's \href{https://ssrn.com/abstract=3067734}{vignette} for an explanation of the
+#' different aggregation options.
 #'
 #' @return A list with the supported aggregation hows for arguments \code{howWithin} (\code{"words"}), \code{howDows}
 #' (\code{"docs"}) and \code{howTime} (\code{"time"}), to be supplied to \code{\link{ctr_agg}}.
@@ -159,9 +157,7 @@ get_hows <- function() {
 }
 
 create_cv_slices <- function (y, trainWindow, testWindow = 1, skip = 0, do.reverse = FALSE) {
-
   if ((trainWindow + skip + testWindow) >= length(y)) stop("(trainWindow + skip + testWindow) >= length(y).")
-
   if (do.reverse) {
     stops <- seq(along = y)[(length(y)):(trainWindow + skip + testWindow)]
     test <- mapply(seq, stops - skip - trainWindow, stops - skip - trainWindow - testWindow + 1, SIMPLIFY = FALSE)
@@ -173,7 +169,6 @@ create_cv_slices <- function (y, trainWindow, testWindow = 1, skip = 0, do.rever
   starts <- stops - trainWindow + 1
   train <- mapply(seq, starts, stops, SIMPLIFY = FALSE)
   names(train) <- paste("Training", gsub(" ", "0", format(seq(along = train))), sep = "")
-
   return(list(train = train, test = test))
 }
 
