@@ -59,9 +59,11 @@ ctrIter <- ctr_model(model = "gaussian",
                      do.parallel = TRUE)
 
 require("doParallel")
-cl <- makeCluster(detectCores() - 1)
+cl <- makeCluster(4)
 registerDoParallel(cl)
+start <- proc.time()
 out <- sento_model(sentMeas, y, ctr = ctrIter)
+stop <- proc.time() - start
 stopCluster(cl)
 summary(out)
 

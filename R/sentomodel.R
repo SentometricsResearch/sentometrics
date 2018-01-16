@@ -756,7 +756,7 @@ predict.sentomodel <- function(object, newx, type, offset = NULL, ...) {
   discarded <- sentomodel$discarded
   idx <- c(!discarded, rep(TRUE, (sentomodel$nVar - length(discarded)))) # TRUE means variable to be kept for prediction
   newx <- newx[, idx, drop = FALSE]
-  pred <- glmnet::predict.glmnet(reg, newx = newx, type = type, offset = offset)
+  pred <- stats::predict(reg, newx = newx, type = type, offset = offset)
   return(pred)
 }
 

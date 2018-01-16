@@ -14,6 +14,10 @@ A list with the supported aggregation hows for arguments \code{howWithin} (\code
 Call for information purposes only. Used within \code{\link{ctr_agg}} to check if supplied
 aggregation hows are supported.
 }
+\details{
+See the package's \href{https://ssrn.com/abstract=3067734}{vignette} for an explanation of the
+different aggregation options.
+}
 \seealso{
 \code{\link{ctr_agg}}
 }
