@@ -15,8 +15,10 @@ Call for information purposes only. Used within \code{\link{ctr_agg}} to check i
 aggregation hows are supported.
 }
 \details{
-See the package's \href{https://ssrn.com/abstract=3067734}{vignette} for an explanation of the
-different aggregation options.
+See the package's \href{https://ssrn.com/abstract=3067734}{vignette} for a thoughtful explanation of
+the different aggregation options. The \code{howWithin = "proportionalPol"} option divides each document's
+initial sentiment score by the number of polarized words found in the document (counting each word only once
+would it appear multiple times), instead of the total number of words which the \code{"proportional"} option gives.
 }
 \seealso{
 \code{\link{ctr_agg}}

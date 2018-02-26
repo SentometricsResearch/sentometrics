@@ -17,8 +17,7 @@ available options on how aggregation can occur, see \code{\link{get_hows}()$word
 \item{dfm}{optional; an output from a \pkg{quanteda} \code{\link[quanteda]{dfm}} call, such that users can specify their
 own tokenization scheme (via \code{\link[quanteda]{tokens}}) as well as other parameters related to the construction of
 a document-feature matrix (dfm). By default, a dfm is created based on a tokenization that removes punctuation, numbers,
-symbols and separators. We suggest to stick to unigrams, as the remainder of the sentiment computation and built-in
-lexicons assume the same.}
+symbols and separators.}
 }
 \value{
 A \code{list} containing:
