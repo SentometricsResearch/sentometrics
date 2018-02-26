@@ -52,7 +52,7 @@
 #' ctr1 <- ctr_agg(howTime = "linear", by = "year", lag = 3)
 #'
 #' # more elaborate control function (particular attention to time weighting schemes)
-#' ctr2 <- ctr_agg(howWithin = "tf-idf",
+#' ctr2 <- ctr_agg(howWithin = "proportionalPol",
 #'                 howDocs = "proportional",
 #'                 howTime = c("equal_weight", "linear", "almon", "exponential", "own"),
 #'                 do.ignoreZeros = TRUE,
@@ -288,12 +288,14 @@ print.sentomeasures <- function(x, ...) {
 #' @export
 setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 
-  if (!is.list(lexiconsIn))
-    stop("The 'lexiconsIn' input should be a list.")
-  if (!is.data.frame(valenceIn) & !is.null(valenceIn))
-    stop("The 'valenceIn' argument should be a data.table or data.frame if not NULL.")
+  if (!("list" %in% class(lexiconsIn)))
+    stop("The 'lexiconsIn' input should be a named list.")
+  if (is.null(names(lexiconsIn)))
+    stop("The list elements (the lexicons) are not named.")
   if (any(is.na(names(lexiconsIn))))
     stop("At least one lexicon's name is NA. Please provide proper list names.")
+  if (!is.data.frame(valenceIn) && !is.null(valenceIn))
+    stop("The 'valenceIn' argument should be a data.table or data.frame if not NULL.")
 
   # check for duplicated lexicon names
   if (sum(duplicated(names(lexiconsIn))) > 0) {
@@ -347,7 +349,7 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
   } else if (!quanteda::is.dfm(dfm))
     stop("The 'dfm' argument should pass quanteda::is.dfm(dfm).")
 
-  if (how == "counts" || how == "proportional") {
+  if (how == "counts" || how == "proportional" || how == "proportionalPol") {
     fdm <- quanteda::t(dfm) # feature-document matrix
   } else if (how == "tf-idf") {
       weights <- quanteda::tfidf(dfm, scheme_tf = "prop")
@@ -370,6 +372,9 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
       scores <- quanteda::rowSums(quanteda::t(fdm * allScores))
     } else if (how == "proportional") {
       scores <- quanteda::rowSums(quanteda::t(fdm * allScores)) / wCounts
+    } else if (how == "proportionalPol") {
+      wordScores <- quanteda::t(fdm * allScores) # every row is a document
+      scores <- quanteda::rowSums(wordScores) / quanteda::rowSums(wordScores != 0)
     } else scores <- quanteda::rowSums(quanteda::t(fdmWeighted * allScores))
     scores[is.na(scores)] <- 0 # set NA/NaN sentiment to 0 (e.g., if document contains no words)
     s[, (lexicon) := scores]
@@ -411,8 +416,7 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 #' @param dfm optional; an output from a \pkg{quanteda} \code{\link[quanteda]{dfm}} call, such that users can specify their
 #' own tokenization scheme (via \code{\link[quanteda]{tokens}}) as well as other parameters related to the construction of
 #' a document-feature matrix (dfm). By default, a dfm is created based on a tokenization that removes punctuation, numbers,
-#' symbols and separators. We suggest to stick to unigrams, as the remainder of the sentiment computation and built-in
-#' lexicons assume the same.
+#' symbols and separators.
 #'
 #' @return A \code{list} containing:
 #' \item{corpus}{the supplied \code{sentocorpus} object; the texts are altered if valence shifters are part of the lexicons.}

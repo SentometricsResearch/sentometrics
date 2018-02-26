@@ -73,7 +73,7 @@ For currently available options on how aggregation can occur (via the \code{howW
 ctr1 <- ctr_agg(howTime = "linear", by = "year", lag = 3)
 
 # more elaborate control function (particular attention to time weighting schemes)
-ctr2 <- ctr_agg(howWithin = "tf-idf",
+ctr2 <- ctr_agg(howWithin = "proportionalPol",
                 howDocs = "proportional",
                 howTime = c("equal_weight", "linear", "almon", "exponential", "own"),
                 do.ignoreZeros = TRUE,
