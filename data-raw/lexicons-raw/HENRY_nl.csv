@@ -1,191 +1,191 @@
-Word;Polarity
-negatieve;-1
-negatieven;-1
-Fail;-1
-mislukt;-1
-falende;-1
-storing;-1
-zwak;-1
-zwakte;-1
-zwakke punten;-1
-moeilijk;-1
-moeilijkheidsgraad;-1
-hindernis;-1
-horden;-1
-obstakel;-1
-obstakels;-1
-malaise;-1
-laagconjunctuur;-1
-slumping;-1
-zakte;-1
-onzeker;-1
-onzekerheid;-1
-onrustig;-1
-ongunstige;-1
-neergang;-1
-depressief;-1
-teleurstellen;-1
-stelt teleur;-1
-teleurstellend;-1
-teleurgesteld;-1
-teleurstelling;-1
-risico;-1
-risico 's;-1
-riskant;-1
-bedreiging;-1
-bedreigingen;-1
-straf;-1
-sancties;-1
-naar beneden;-1
-daling;-1
-vermindert;-1
-minderen;-1
-daalde;-1
-daling;-1
-dalingen;-1
-dalende;-1
-daalde;-1
-Val;-1
-Falls;-1
-die vallen;-1
-viel;-1
-gedaald;-1
-drop;-1
-DROPS;-1
-dropping;-1
-gedaald;-1
-verslechteren;-1
-verslechtert;-1
-verslechterende;-1
-verslechterd;-1
-verergeren;-1
-verergert;-1
-verslechtering;-1
-verzwakken;-1
-verzwakt;-1
-verzwakking;-1
-verzwakt;-1
-erger;-1
-slechtste;-1
-lage;-1
-lagere;-1
-laagste;-1
-minder;-1
-minste;-1
-kleinere;-1
-kleinste;-1
-krimpen;-1
-krimpt;-1
-krimpen;-1
-gekrompen;-1
-Hieronder;-1
-onder;-1
-uitdaging;-1
-uitdagingen;-1
-uitdagende;-1
-uitgedaagd;-1
-positieve;1
-positieven;1
-succes;1
-successen;1
-succesvolle;1
-slagen;1
-slaagt;1
-slagen;1
-geslaagd;1
-bereiken;1
-volbrengt;1
-volbrengen;1
-bereikt;1
-prestatie;1
-prestaties;1
-sterke;1
-sterkte;1
-sterke punten;1
-bepaalde;1
-zekerheid;1
-duidelijke;1
-solide;1
-Uitstekend;1
-goede;1
-leiden;1
-bereiken;1
-bereikt;1
-bereikt;1
-verwezenlijking van;1
-prestatie;1
-resultaten;1
-vooruitgang;1
-vordert;1
-leveren;1
-levert;1
-afgeleverd;1
-leveren van;1
-leider;1
-leiden;1
-blij;1
-beloning;1
-beloningen;1
-belonen;1
-beloond;1
-kans;1
-kansen;1
-Geniet van;1
-Geniet van;1
-genieten van;1
-genoten;1
-aangemoedigd;1
-stimuleren;1
-omhoog;1
-verhoging van de;1
-verhoogt;1
-verhogen;1
-verhoogd;1
-opkomst;1
-stijgt;1
-stijgen;1
-steeg;1
-gestegen;1
-verbeteren;1
-verbetert;1
-verbetering van de;1
-verbeterd;1
-verbetering;1
-verbeteringen;1
-versterken;1
-versterkt;1
-versterking van de;1
-versterkt;1
-sterker;1
-sterkste;1
-beter;1
-beste;1
-meer;1
-de meeste;1
-boven;1
-record;1
-hoge;1
-hogere;1
-hoogste;1
-meer;1
-grootste;1
-grotere;1
-grootste;1
-groeien;1
-groeit;1
-groeiende;1
-groeide;1
-gegroeid;1
-groei;1
-Vouw;1
-breidt uit;1
-uit te breiden;1
-uitgebreid;1
-uitbreiding;1
-hoger zijn dan;1
-overschrijdt;1
-overschreden;1
-meer dan;1
-Beat;1
-beats;1
-pak slaag;1
+Word;Polarity;Retranslation
+negatieve;-1;negative
+negatieven;-1;negatives
+Fail;-1;Fail
+mislukt;-1;failed
+falende;-1;failing
+storing;-1;failure
+zwak;-1;weak
+zwakte;-1;weakness
+zwakke punten;-1;weak points
+moeilijk;-1;difficult
+moeilijkheidsgraad;-1;level of difficulty
+hindernis;-1;obstacle
+horden;-1;hurdles
+obstakel;-1;obstacle
+obstakels;-1;obstacles
+malaise;-1;malaise
+laagconjunctuur;-1;slumps
+slumping;-1;slumping
+zakte;-1;slumped
+onzeker;-1;uncertain
+onzekerheid;-1;uncertainty
+onrustig;-1;restless
+ongunstige;-1;unfavorable
+neergang;-1;downturn
+depressief;-1;depressed
+teleurstellen;-1;disappoint
+stelt teleur;-1;disappoints
+teleurstellend;-1;disappointing
+teleurgesteld;-1;disappointed
+teleurstelling;-1;disappointment
+risico;-1;risk
+risico 's;-1;risks
+riskant;-1;risky
+bedreiging;-1;threat
+bedreigingen;-1;threats
+straf;-1;Criminal
+sancties;-1;sanctions
+naar beneden;-1;down
+daling;-1;fall
+vermindert;-1;reduces
+minderen;-1;Juniors
+daalde;-1;sank
+daling;-1;fall
+dalingen;-1;falls
+dalende;-1;falling
+daalde;-1;sank
+Val;-1;Val
+Falls;-1;Falls
+die vallen;-1;that fall
+viel;-1;fell
+gedaald;-1;dropped
+drop;-1;drop
+DROPS;-1;DROPS
+dropping;-1;dropping
+gedaald;-1;dropped
+verslechteren;-1;deteriorate
+verslechtert;-1;deteriorates
+verslechterende;-1;deteriorating
+verslechterd;-1;deteriorated
+verergeren;-1;worsen
+verergert;-1;worsens
+verslechtering;-1;deterioration
+verzwakken;-1;weaken
+verzwakt;-1;weakened
+verzwakking;-1;weakening
+verzwakt;-1;weakened
+erger;-1;worse
+slechtste;-1;worst
+lage;-1;low
+lagere;-1;lower
+laagste;-1;lowest
+minder;-1;less
+minste;-1;least
+kleinere;-1;smaller
+kleinste;-1;smallest
+krimpen;-1;shrink
+krimpt;-1;shrinks
+krimpen;-1;shrink
+gekrompen;-1;shrunk
+Hieronder;-1;Below
+onder;-1;under
+uitdaging;-1;challenge
+uitdagingen;-1;challenges
+uitdagende;-1;challenging
+uitgedaagd;-1;challenged
+positieve;1;positive
+positieven;1;positives
+succes;1;Good luck
+successen;1;successes
+succesvolle;1;successful
+slagen;1;succeed
+slaagt;1;succeeds
+slagen;1;succeed
+geslaagd;1;managed
+bereiken;1;reach
+volbrengt;1;accomplishes
+volbrengen;1;accomplish
+bereikt;1;achieved
+prestatie;1;performance
+prestaties;1;performance
+sterke;1;strong
+sterkte;1;strength
+sterke punten;1;strong points
+bepaalde;1;certain
+zekerheid;1;Security
+duidelijke;1;clear
+solide;1;solid
+Uitstekend;1;Excellent
+goede;1;good
+leiden;1;lead
+bereiken;1;reach
+bereikt;1;achieved
+bereikt;1;achieved
+verwezenlijking van;1;creation of
+prestatie;1;performance
+resultaten;1;results
+vooruitgang;1;progress
+vordert;1;progresses
+leveren;1;deliver
+levert;1;delivers
+afgeleverd;1;delivered
+leveren van;1;delivering
+leider;1;leader
+leiden;1;lead
+blij;1;happy
+beloning;1;reward
+beloningen;1;Rewards
+belonen;1;reward
+beloond;1;rewarded
+kans;1;chance
+kansen;1;opportunities
+Geniet van;1;Enjoy
+Geniet van;1;Enjoy
+genieten van;1;enjoy
+genoten;1;enjoyed
+aangemoedigd;1;encouraged
+stimuleren;1;boost
+omhoog;1;up
+verhoging van de;1;increase of the
+verhoogt;1;increases
+verhogen;1;increase
+verhoogd;1;increased
+opkomst;1;attendance
+stijgt;1;increases
+stijgen;1;ascent
+steeg;1;rose
+gestegen;1;increased
+verbeteren;1;improve
+verbetert;1;improves
+verbetering van de;1;improvement of the
+verbeterd;1;improved
+verbetering;1;improvement
+verbeteringen;1;improvements
+versterken;1;strengthening
+versterkt;1;strengthened
+versterking van de;1;strengthening of the
+versterkt;1;strengthened
+sterker;1;stronger
+sterkste;1;strongest
+beter;1;better
+beste;1;best
+meer;1;more
+de meeste;1;most
+boven;1;above
+record;1;record
+hoge;1;high
+hogere;1;higher
+hoogste;1;highest
+meer;1;more
+grootste;1;largest
+grotere;1;larger
+grootste;1;largest
+groeien;1;grow
+groeit;1;grows
+groeiende;1;growing
+groeide;1;grew
+gegroeid;1;grown
+groei;1;growth
+Vouw;1;Fold
+breidt uit;1;expands
+uit te breiden;1;expand
+uitgebreid;1;extended
+uitbreiding;1;extension
+hoger zijn dan;1;higher than
+overschrijdt;1;exceeds
+overschreden;1;exceeded
+meer dan;1;more than
+Beat;1;Beat
+beats;1;beats
+pak slaag;1;spanking
