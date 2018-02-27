@@ -2,36 +2,29 @@
 % Please edit documentation in R/sentomeasures.R
 \name{select_measures}
 \alias{select_measures}
-\title{Select a subset of sentiment measures}
+\title{Select sentiment measures}
 \usage{
-select_measures(sentomeasures, toSelect = "all", do.combine = TRUE,
-  dates = NA)
+select_measures(sentomeasures, toSelect, do.combine = TRUE)
 }
 \arguments{
 \item{sentomeasures}{a \code{sentomeasures} object created using \code{\link{sento_measures}}.}
 
 \item{toSelect}{a \code{character} vector of the lexicon, feature and time weighting scheme names, to indicate which
-measures need to be selected. By default equal to \code{"all"}, which means no selection of the sentiment measures is made;
-this may be used if one only wants to extract a subset of dates via the \code{dates} argument.}
+measures need to be selected. One can also supply a \code{list} of such \code{character} vectors, in which case
+\code{do.combine = TRUE} is set automatically, such that the separately specified combinations are selected.}
 
 \item{do.combine}{a \code{logical} indicating if only measures for which all (\code{do.combine = TRUE}) or at least one
 (\code{do.combine = FALSE}) of the selection components should occur in each sentiment measure's name in the subset. If
 \code{do.combine = TRUE}, the \code{toSelect} argument can only consist of one lexicon, one feature, and one time weighting
 scheme at maximum.}
-
-\item{dates}{any expression, in the form of a \code{character} vector, that would correctly evaluate to a \code{logical}
-vector, features the variable \code{date} and has dates specified as \code{"yyyy-mm-dd"}, e.g.
-\code{dates = "date >= '2000-01-15'"}. This argument may also be a vector of class \code{Date} which extracts all dates
-that show up in that vector. See the examples. By default equal to \code{NA}, meaning no subsetting based on dates is done.}
 }
 \value{
 A modified \code{sentomeasures} object, with only the sentiment measures required, including updated information
 and statistics, but the original sentiment scores \code{data.table} untouched.
 }
 \description{
-Selects the subset of sentiment measures which include either all of the given selection components combined,
-or those who's name consist of at least one of the selection components. One can also extract measures within a subset
-of dates.
+Selects all sentiment measures which include either all of the given selection components combined,
+or those who's name consist of at least one of the selection components.
 }
 \examples{
 data("usnews")
@@ -49,12 +42,7 @@ sentomeasures <- sento_measures(corpusSample, l, ctr)
 sel1 <- select_measures(sentomeasures, c("equal_weight"))
 sel2 <- select_measures(sentomeasures, c("equal_weight", "linear"), do.combine = FALSE)
 sel3 <- select_measures(sentomeasures, c("linear", "LM_eng"))
-sel4 <- select_measures(sentomeasures, c("linear", "LM_eng", "wsj", "economy"),
-                        do.combine = FALSE)
-sel5 <- select_measures(sentomeasures, c("linear", "LM_eng"),
-                        dates = "date >= '1996-12-31' & date <= '2000-12-31'")
-d <- seq(as.Date("2000-01-01"), as.Date("2013-12-01"), by = "month")
-sel6 <- select_measures(sentomeasures, c("linear", "LM_eng"), dates = d)
+sel4 <- select_measures(sentomeasures, list(c("linear", "wsj"), c("linear", "economy")))
 
 }
 \author{

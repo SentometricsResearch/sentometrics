@@ -163,8 +163,8 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #' \item{by}{a single \code{character} vector specifying the time interval of aggregation used.}
 #' \item{stats}{a \code{data.frame} with a series of elementary statistics (mean, standard deviation, maximum, minimum, and
 #' average correlation with all other measures) for each individual sentiment measure.}
-#' \item{sentiment}{the sentiment scores \code{data.table} with \code{"date"}, \code{"word_count"} and lexicon--feature sentiment
-#' scores columns.
+#' \item{sentiment}{the sentiment scores \code{data.table} with \code{"date"}, \code{"word_count"} and lexicon--feature
+#' sentiment scores columns.
 #' If \code{ctr$do.ignoreZeros = TRUE}, all zeros are replaced by \code{NA}.}
 #' \item{howWithin}{a single \code{character} vector to remind how sentiment within documents was aggregated.}
 #' \item{howDocs}{a single \code{character} vector to remind how sentiment across documents was aggregated.}
@@ -416,7 +416,7 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 #' @param dfm optional; an output from a \pkg{quanteda} \code{\link[quanteda]{dfm}} call, such that users can specify their
 #' own tokenization scheme (via \code{\link[quanteda]{tokens}}) as well as other parameters related to the construction of
 #' a document-feature matrix (dfm). By default, a dfm is created based on a tokenization that removes punctuation, numbers,
-#' symbols and separators.
+#' symbols and separators, but does not remove stopwords.
 #'
 #' @return A \code{list} containing:
 #' \item{corpus}{the supplied \code{sentocorpus} object; the texts are altered if valence shifters are part of the lexicons.}
@@ -871,26 +871,21 @@ to_global <- function(sentomeasures, lexicons = 1, features = 1, time = 1) {
   return(global)
 }
 
-#' Select a subset of sentiment measures
+#' Select sentiment measures
 #'
 #' @author Samuel Borms
 #'
-#' @description Selects the subset of sentiment measures which include either all of the given selection components combined,
-#' or those who's name consist of at least one of the selection components. One can also extract measures within a subset
-#' of dates.
+#' @description Selects all sentiment measures which include either all of the given selection components combined,
+#' or those who's name consist of at least one of the selection components.
 #'
 #' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
 #' @param toSelect a \code{character} vector of the lexicon, feature and time weighting scheme names, to indicate which
-#' measures need to be selected. By default equal to \code{"all"}, which means no selection of the sentiment measures is made;
-#' this may be used if one only wants to extract a subset of dates via the \code{dates} argument.
+#' measures need to be selected. One can also supply a \code{list} of such \code{character} vectors, in which case
+#' \code{do.combine = TRUE} is set automatically, such that the separately specified combinations are selected.
 #' @param do.combine a \code{logical} indicating if only measures for which all (\code{do.combine = TRUE}) or at least one
 #' (\code{do.combine = FALSE}) of the selection components should occur in each sentiment measure's name in the subset. If
 #' \code{do.combine = TRUE}, the \code{toSelect} argument can only consist of one lexicon, one feature, and one time weighting
 #' scheme at maximum.
-#' @param dates any expression, in the form of a \code{character} vector, that would correctly evaluate to a \code{logical}
-#' vector, features the variable \code{date} and has dates specified as \code{"yyyy-mm-dd"}, e.g.
-#' \code{dates = "date >= '2000-01-15'"}. This argument may also be a vector of class \code{Date} which extracts all dates
-#' that show up in that vector. See the examples. By default equal to \code{NA}, meaning no subsetting based on dates is done.
 #'
 #' @return A modified \code{sentomeasures} object, with only the sentiment measures required, including updated information
 #' and statistics, but the original sentiment scores \code{data.table} untouched.
@@ -911,34 +906,30 @@ to_global <- function(sentomeasures, lexicons = 1, features = 1, time = 1) {
 #' sel1 <- select_measures(sentomeasures, c("equal_weight"))
 #' sel2 <- select_measures(sentomeasures, c("equal_weight", "linear"), do.combine = FALSE)
 #' sel3 <- select_measures(sentomeasures, c("linear", "LM_eng"))
-#' sel4 <- select_measures(sentomeasures, c("linear", "LM_eng", "wsj", "economy"),
-#'                         do.combine = FALSE)
-#' sel5 <- select_measures(sentomeasures, c("linear", "LM_eng"),
-#'                         dates = "date >= '1996-12-31' & date <= '2000-12-31'")
-#' d <- seq(as.Date("2000-01-01"), as.Date("2013-12-01"), by = "month")
-#' sel6 <- select_measures(sentomeasures, c("linear", "LM_eng"), dates = d)
+#' sel4 <- select_measures(sentomeasures, list(c("linear", "wsj"), c("linear", "economy")))
 #'
 #' @export
-select_measures <- function(sentomeasures, toSelect = "all", do.combine = TRUE, dates = NA) {
+select_measures <- function(sentomeasures, toSelect, do.combine = TRUE) {
   check_class(sentomeasures, "sentomeasures")
 
   allOpts <- c(sentomeasures$features, sentomeasures$lexicons, sentomeasures$time)
-  if ("all" %in% toSelect) {
-    toSelect <- allOpts
-    do.combine = FALSE
-  }
-  valid <- toSelect %in% allOpts
+  valid <- unlist(toSelect) %in% allOpts
   if (any(!valid)) {
-    stop("Following components make up none of the sentiment measures: ", paste0(toSelect[!valid], collapse = ', '))
+    stop("Following components make up none of the sentiment measures: ", paste0(unique(toSelect[!valid]), collapse = ', '))
   }
 
-  if (all(is.na(dates))) measures <- sentomeasures$measures
-  else if (inherits(dates, "Date")) measures <- sentomeasures$measures[date %in% dates, ]
-  else measures <- sentomeasures$measures[eval(parse(text = dates)), ]
+  measures <- sentomeasures$measures
   namesList <- stringi::stri_split(colnames(measures), regex = "--")
+  if (is.list(toSelect)) do.combine <- TRUE
   if (do.combine == TRUE) fun <- all
   else fun <- any
-  ind <- sapply(namesList, function(x) return(fun(toSelect %in% x)))
+  if (is.list(toSelect)) {
+    ind <- rep(FALSE, length(namesList))
+    for (com in toSelect) {
+      inds <- sapply(namesList, function(x) return(fun(com %in% x)))
+      ind[inds == TRUE] <- TRUE
+    }
+  } else ind <- sapply(namesList, function(x) return(fun(toSelect %in% x)))
   if (!any(ind)) {
     warning("No appropriate combination is found. Input sentomeasures object is returned.")
     return(sentomeasures)
@@ -946,6 +937,60 @@ select_measures <- function(sentomeasures, toSelect = "all", do.combine = TRUE, 
   measuresNew <- measures[, ind, with = FALSE]
 
   sentomeasures <- update_info(sentomeasures, measuresNew) # update information in sentomeasures object
+
+  return(sentomeasures)
+}
+
+#' Subset sentiment measures
+#'
+#' @author Samuel Borms
+#'
+#' @description Subsets rows of the sentiment measures based on its columns.
+#'
+#' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
+#' @param subset a logical expression indicating the rows to keep.
+#'
+#' @return A modified \code{sentomeasures} object, with only the kept rows, including updated information
+#' and statistics, but the original sentiment scores \code{data.table} untouched.
+#'
+#' @examples
+#' data("usnews")
+#' data("lexicons")
+#' data("valence")
+#'
+#' # construct a sentomeasures object to start with
+#' corpus <- sento_corpus(corpusdf = usnews)
+#' corpusSample <- quanteda::corpus_sample(corpus, size = 1000)
+#' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+#' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
+#' sentomeasures <- sento_measures(corpusSample, l, ctr)
+#'
+#' # different subsets
+#' sub1 <- subset_measures(sentomeasures, HENRY_eng--economy--equal_weight >= 0.01)
+#' sub2 <- subset_measures(sentomeasures,
+#'    date %in% seq(as.Date("2000-01-01"), as.Date("2013-12-01"), by = "month"))
+#'
+#' @export
+subset_measures <- function(sentomeasures, subset) {
+  check_class(sentomeasures, "sentomeasures")
+
+  sub <- as.character(substitute(list(subset))[-1L])
+  if (length(sub) > 0) {
+    sub <- stringi::stri_replace_all(sub, "", regex = " ")
+    sub <- stringi::stri_replace_all(sub, "____", regex = "--")
+    measures <- sentomeasures$measures
+    colnames(measures) <- stringi::stri_replace_all(colnames(measures), "____", regex = "--") # -- are problematic here
+    measures <- tryCatch(measures[eval(parse(text = sub))], error = function(e) return(NULL))
+    if (is.null(measures)) stop("The 'subset' argument must evaluate to logical.")
+    colnames(measures) <- stringi::stri_replace_all(colnames(measures), "--", regex = "____")
+  }
+
+  if (dim(measures)[1] == 0) {
+    warning("No rows selected in subset. Input sentomeasures object is returned.")
+    return(sentomeasures)
+  } else {
+    sentomeasures <- update_info(sentomeasures, measures) # update information in sentomeasures object
+  }
 
   return(sentomeasures)
 }
