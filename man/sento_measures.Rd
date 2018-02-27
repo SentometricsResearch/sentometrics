@@ -22,8 +22,8 @@ A \code{sentomeasures} object, which is a \code{list} containing:
 \item{by}{a single \code{character} vector specifying the time interval of aggregation used.}
 \item{stats}{a \code{data.frame} with a series of elementary statistics (mean, standard deviation, maximum, minimum, and
 average correlation with all other measures) for each individual sentiment measure.}
-\item{sentiment}{the sentiment scores \code{data.table} with \code{"date"}, \code{"word_count"} and lexicon--feature sentiment
-scores columns.
+\item{sentiment}{the sentiment scores \code{data.table} with \code{"date"}, \code{"word_count"} and lexicon--feature
+sentiment scores columns.
 If \code{ctr$do.ignoreZeros = TRUE}, all zeros are replaced by \code{NA}.}
 \item{howWithin}{a single \code{character} vector to remind how sentiment within documents was aggregated.}
 \item{howDocs}{a single \code{character} vector to remind how sentiment across documents was aggregated.}
