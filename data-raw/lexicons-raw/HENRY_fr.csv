@@ -1,191 +1,191 @@
-Word;Polarity
-négatif;-1
-négatifs;-1
-en cas d’échec;-1
-échoue;-1
-faute de;-1
-échec;-1
-faible;-1
-faiblesse;-1
-faiblesses;-1
-difficile;-1
-Difficulté;-1
-Hurdle;-1
-haies;-1
-obstacle;-1
-obstacles;-1
-marasme;-1
-glissements de terrain;-1
-s’effondrant;-1
-affalé;-1
-incertaine;-1
-incertitude;-1
-non réglées;-1
-défavorable;-1
-ralentissement de l’activité;-1
-déprimé;-1
-décevoir;-1
-déçoit;-1
-décevante;-1
-déçu;-1
-déception;-1
-risque;-1
-risques;-1
-risqué;-1
-menace;-1
-menaces;-1
-peine de;-1
-pénalités;-1
-vers le bas;-1
-diminution de la;-1
-diminue;-1
-décroissant;-1
-a diminué;-1
-déclin;-1
-déclins;-1
-en déclin;-1
-a diminué;-1
-l’automne;-1
-Falls;-1
-tomber;-1
-est tombé;-1
-tombé;-1
-laisser tomber;-1
-DROPS numéro;-1
-chute;-1
-a chuté;-1
-se détériorer;-1
-se détériore;-1
-détérioration de la;-1
-s’est détériorée;-1
-s’aggraver;-1
-s’aggrave;-1
-une aggravation;-1
-affaiblir;-1
-affaiblit;-1
-affaiblissement;-1
-affaibli;-1
-pire;-1
-pires;-1
-faible;-1
-plus bas;-1
-le plus bas;-1
-moins;-1
-moins;-1
-plus petit;-1
-plus petit;-1
-mise sous film;-1
-rétrécit;-1
-rétrécissement;-1
-rétréci;-1
-ci-dessous;-1
-en vertu de;-1
-défi;-1
-défis;-1
-difficile;-1
-mis au défi;-1
-positif;1
-points positifs;1
-succès;1
-réussites;1
-réussie;1
-réussir;1
-succède à;1
-succédant à;1
-a réussi;1
-accomplir;1
-accomplit;1
-accomplir;1
-accomplie;1
-accomplissement;1
-réalisations;1
-forte;1
-Force;1
-points forts;1
-certains;1
-certitude;1
-définitive;1
-solide;1
-Excellente;1
-bon;1
-menant;1
-réaliser;1
-permet d’obtenir;1
-atteint;1
-réalisation de;1
-réalisation;1
-réalisations;1
-progrès;1
-progresse;1
-livrer;1
-offre;1
-livré;1
-livraison;1
-chef de file;1
-menant;1
-heureux;1
-récompense;1
-récompenses;1
-gratifiant;1
-récompensé;1
-occasion;1
-occasions;1
-Profitez de;1
-bénéficie d';1
-bénéficiant;1
-apprécié;1
-encouragé;1
-encourager;1
-vers le haut;1
-augmentation;1
-augmente;1
-augmenter;1
-a augmenté;1
-montée;1
-se lève;1
-en hausse;1
-Rose;1
-ressuscité;1
-améliorer;1
-améliore la;1
-amélioration de la;1
-améliorée;1
-amélioration;1
-améliorations;1
-renforcer;1
-renforce;1
-renforcement;1
-renforcé;1
-plus fort;1
-plus fort;1
-mieux;1
-les meilleures;1
-plus;1
-plupart;1
-au-dessus de;1
-compte rendu;1
-haute;1
-plus élevé;1
-plus haut;1
-une plus grande;1
-plus grand;1
-plus grande;1
-plus grand;1
-se développer;1
-pousse;1
-de plus en plus;1
-a grandi;1
-cultivé;1
-croissance;1
-Développez;1
-s’agrandit;1
-en expansion;1
-élargi;1
-expansion;1
-dépasser;1
-est supérieure à;1
-a dépassé;1
-excédant;1
-Beat;1
-bat;1
-passage à tabac;1
+Word;Polarity;Retranslation
+négatif;-1;negative
+négatifs;-1;negatives
+en cas d’échec;-1;in case of failure
+échoue;-1;fails
+faute de;-1;fault
+échec;-1;failure
+faible;-1;low
+faiblesse;-1;weakness
+faiblesses;-1;weaknesses
+difficile;-1;difficult
+Difficulté;-1;Difficulty
+Hurdle;-1;Hurdle
+haies;-1;hedges
+obstacle;-1;obstacle
+obstacles;-1;obstacles
+marasme;-1;slump
+glissements de terrain;-1;landslides
+s’effondrant;-1;collapsing
+affalé;-1;slouching
+incertaine;-1;uncertain
+incertitude;-1;uncertainty
+non réglées;-1;not resolved
+défavorable;-1;unfavourable
+ralentissement de l’activité;-1;downturn
+déprimé;-1;depressed
+décevoir;-1;disappoint
+déçoit;-1;disappoints
+décevante;-1;disappointing
+déçu;-1;disappointed
+déception;-1;disappointment
+risque;-1;risk
+risques;-1;risk
+risqué;-1;risky
+menace;-1;threat
+menaces;-1;threats
+peine de;-1;penalty
+pénalités;-1;penalties
+vers le bas;-1;down
+diminution de la;-1;reduction of the
+diminue;-1;decreases
+décroissant;-1;descending
+a diminué;-1;has decreased
+déclin;-1;decline
+déclins;-1;declines
+en déclin;-1;in decline
+a diminué;-1;has decreased
+l’automne;-1;autumn
+Falls;-1;Falls
+tomber;-1;fall
+est tombé;-1;fell
+tombé;-1;fallen
+laisser tomber;-1;drop
+DROPS numéro;-1;DROPS number
+chute;-1;fall
+a chuté;-1;has dropped
+se détériorer;-1;deteriorate
+se détériore;-1;deteriorates
+détérioration de la;-1;deterioration of the
+s’est détériorée;-1;deteriorated
+s’aggraver;-1;get worse
+s’aggrave;-1;worsens
+une aggravation;-1;a worsening
+affaiblir;-1;weaken
+affaiblit;-1;weakens
+affaiblissement;-1;weakening
+affaibli;-1;weakened
+pire;-1;worse
+pires;-1;worst
+faible;-1;low
+plus bas;-1;Lower
+le plus bas;-1;the lowest
+moins;-1;less
+moins;-1;less
+plus petit;-1;smaller
+plus petit;-1;smaller
+mise sous film;-1;Turning the film
+rétrécit;-1;shrinks
+rétrécissement;-1;shrinkage
+rétréci;-1;shrunk
+ci-dessous;-1;below
+en vertu de;-1;under
+défi;-1;challenge
+défis;-1;challenges
+difficile;-1;difficult
+mis au défi;-1;challenged
+positif;1;positive
+points positifs;1;positives
+succès;1;success
+réussites;1;success stories
+réussie;1;successful
+réussir;1;succeed
+succède à;1;succeeds
+succédant à;1;succeeding
+a réussi;1;has managed
+accomplir;1;accomplish
+accomplit;1;does
+accomplir;1;accomplish
+accomplie;1;accomplished
+accomplissement;1;fulfillment
+réalisations;1;achievements
+forte;1;strong
+Force;1;Force
+points forts;1;strong points
+certains;1;some
+certitude;1;certainty
+définitive;1;final
+solide;1;solid
+Excellente;1;Excellent
+bon;1;good
+menant;1;leading
+réaliser;1;achieve
+permet d’obtenir;1;lets get
+atteint;1;reached
+réalisation de;1;realization of
+réalisation;1;realization
+réalisations;1;achievements
+progrès;1;progress
+progresse;1;progresses
+livrer;1;deliver
+offre;1;offers
+livré;1;delivered
+livraison;1;delivery
+chef de file;1;leader
+menant;1;leading
+heureux;1;happy
+récompense;1;reward
+récompenses;1;Rewards
+gratifiant;1;rewarding
+récompensé;1;rewarded
+occasion;1;opportunity
+occasions;1;opportunities
+Profitez de;1;Enjoy
+bénéficie d';1;benefits from
+bénéficiant;1;benefiting
+apprécié;1;appreciated
+encouragé;1;encouraged
+encourager;1;encourage
+vers le haut;1;upward
+augmentation;1;increase
+augmente;1;increases
+augmenter;1;increase
+a augmenté;1;has increased
+montée;1;ascent
+se lève;1;rises
+en hausse;1;on the rise
+Rose;1;Rose
+ressuscité;1;resurrected
+améliorer;1;improve
+améliore la;1;improves the
+amélioration de la;1;improvement of the
+améliorée;1;improved
+amélioration;1;improvement
+améliorations;1;improvements
+renforcer;1;strengthen
+renforce;1;strengthens
+renforcement;1;strengthening
+renforcé;1;strengthened
+plus fort;1;Louder
+plus fort;1;Louder
+mieux;1;best
+les meilleures;1;The best
+plus;1;more
+plupart;1;most
+au-dessus de;1;above
+compte rendu;1;record
+haute;1;high
+plus élevé;1;higher
+plus haut;1;Higher
+une plus grande;1;a larger
+plus grand;1;largest
+plus grande;1;greater
+plus grand;1;largest
+se développer;1;develop
+pousse;1;push
+de plus en plus;1;more and more
+a grandi;1;has grown
+cultivé;1;cultivated
+croissance;1;growth
+Développez;1;Expand
+s’agrandit;1;expands
+en expansion;1;expanding
+élargi;1;expanded
+expansion;1;expansion
+dépasser;1;exceed
+est supérieure à;1;is greater than
+a dépassé;1;has exceeded
+excédant;1;exceeding
+Beat;1;Beat
+bat;1;bat
+passage à tabac;1;beating

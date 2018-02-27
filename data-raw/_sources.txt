@@ -15,3 +15,6 @@ Negators: lexicon R package
 USECONOMYNEWS: https://www.crowdflower.com/data-for-everyone/ ("Economic News Article Tone and Relevance")
 
 SP500: https://finance.yahoo.com
+
+EPU: http://www.policyuncertainty.com/us_historical.html
+

@@ -14,7 +14,7 @@ measures need to be selected. One can also supply a \code{list} of such \code{ch
 \code{do.combine = TRUE} is set automatically, such that the separately specified combinations are selected.}
 
 \item{do.combine}{a \code{logical} indicating if only measures for which all (\code{do.combine = TRUE}) or at least one
-(\code{do.combine = FALSE}) of the selection components should occur in each sentiment measure's name in the subset. If
+(\code{do.combine = FALSE}) of the selection components should occur in each sentiment measure's name in the selection. If
 \code{do.combine = TRUE}, the \code{toSelect} argument can only consist of one lexicon, one feature, and one time weighting
 scheme at maximum.}
 }

@@ -133,7 +133,18 @@ write.csv2(gi, file = "data-raw/lexicons-raw/GI.csv", row.names = FALSE)
 
 prepare_word_list <- function(fileName, type, name) {
 
-  w <- read.csv(paste0("data-raw/", type, "-raw/", fileName), sep = ";")
+  loc <- paste0("data-raw/", type, "-raw/", fileName)
+  w <- read.csv(loc, sep = ";")
+
+  # confirm retranslation
+  stripped <- unlist(stringi::stri_split(fileName, regex = "_"))
+  if (length(stripped) > 1 && type != "valence") {
+    original <- paste0(stripped[1], ".csv")
+    ww <- read.csv(paste0("data-raw/", type, "-raw/", original), sep = ";")
+    keep <- (as.character(w$Retranslation) == as.character(ww[, 1])) # words are in first column of original
+    print(paste0("kept: ", sum(keep)/length(keep)))
+    w <- w[keep, -NCOL(w)]
+  }
   if (type == "lexicons") colnames(w) <- c("x", "y")
   else colnames(w) <- c("x", "t", "y")
 
@@ -189,12 +200,9 @@ save(HENRY_nl_tr, file = l$file)
 
 # creates and places LEXICON data in data folder
 form_word_list <- function(type) {
-
   if (type == "lexicon") pattern <- paste0(c("FEEL", "GI", "HENRY", "LM"), collapse = "|")
   else if (type == "valence") pattern <- c("valence_") # change if additional valence shifter categories are added
-
   objects <- list.files("data-raw/", pattern = pattern)
-
   listed <- vector(mode = "list")
   for (o in 1:length(objects)) {
     obj <- load(paste0("data-raw/", objects[o])) # name
@@ -220,7 +228,9 @@ form_word_list(type = "lexicon")
 # get negators from lexicon package
 negators <- lexicon::hash_valence_shifters[y == 1]
 negators$y <- as.numeric(negators$y)
-negators$y <- -1
+negators$t <- -1
+colnames(negators) <- c("x", "t", "y") # flip last two columns
+negators <- negators[seq(1, NROW(negators), by = 2), ]
 write.csv2(negators, file = "data-raw/valence-raw/NEGATORS.csv", row.names = FALSE)
 
 typeV <- "valence"
