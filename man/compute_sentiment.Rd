@@ -15,9 +15,8 @@ compute_sentiment(sentocorpus, lexicons, how = get_hows()$words, dfm = NULL)
 available options on how aggregation can occur, see \code{\link{get_hows}()$words}.}
 
 \item{dfm}{optional; an output from a \pkg{quanteda} \code{\link[quanteda]{dfm}} call, such that users can specify their
-own tokenization scheme (via \code{\link[quanteda]{tokens}}) as well as other parameters related to the construction of
-a document-feature matrix (dfm). By default, a dfm is created based on a tokenization that removes punctuation, numbers,
-symbols and separators, but does not remove stopwords.}
+own tokenisation scheme (via \code{\link[quanteda]{tokens}}) as well as other parameters related to the construction of
+a document-feature matrix (dfm).}
 }
 \value{
 A \code{list} containing:
@@ -37,7 +36,9 @@ based on the lexicons provided and a choice of aggregation across words per docu
 For a separate calculation of positive (resp. negative) sentiment, one has to provide distinct positive (resp. negative)
 lexicons. This can be done using the \code{do.split} option in the \code{\link{setup_lexicons}} function, which splits out
 the lexicons into a positive and a negative polarity counterpart. \code{NA}s are converted to 0, under the assumption that
-this is equivalent to no sentiment.
+this is equivalent to no sentiment. By default, if the \code{dfm} argument is left unspecified, a document-feature
+matrix (dfm) is created based on a tokenisation that removes punctuation, numbers, symbols and separators, but does not
+remove stopwords. The number of words for each document is computed based on that some tokenisation.
 }
 \examples{
 data("usnews")

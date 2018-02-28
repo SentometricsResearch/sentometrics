@@ -5,7 +5,7 @@
 \title{Add feature columns to a sentocorpus}
 \usage{
 add_features(sentocorpus, featuresdf = NULL, keywords = NULL,
-  do.binary = TRUE)
+  do.binary = TRUE, do.regex = FALSE)
 }
 \arguments{
 \item{sentocorpus}{a \code{sentocorpus} object created with \code{\link{sento_corpus}}.}
@@ -17,9 +17,14 @@ in \code{sentocorpus}, recycling will occur.}
 \item{keywords}{a named \code{list}. For every element, a new feature column is added with a value of 1 for the texts
 in which (at least one of) the keyword(s) appear(s), and 0 if not (if \code{do.binary = TRUE}), or with as value the
 number of times the keyword(s) occur(s) in the text (if if \code{do.binary = FALSE}). If no texts match a keyword, no
-column is added. The \code{list} names are used as the names of the new features.}
+column is added. The \code{list} names are used as the names of the new features. For more complex searching, instead
+of keywords, one can also directly use a single regex expression to define a new feature (cf. the details section).}
 
 \item{do.binary}{a \code{logical}, cf. argument \code{keywords}.}
+
+\item{do.regex}{a \code{logical} vector equal in length to the number of elements in the \code{keywords} argument
+\code{list}, or a single value if it applies to all. It should be set to \code{TRUE} at those positions where a single
+regex expression is used to identify the particular feature.}
 }
 \value{
 An updated \code{sentocorpus} object.
@@ -31,6 +36,10 @@ Adds new feature columns, either user-supplied or based on a simple keyword(s) s
 \details{
 If a provided feature name is already part of the corpus, it will be replaced. The \code{featuresdf} and
 \code{keywords} arguments can be provided at the same time, or only one of them, leaving the other at \code{NULL}.
+The \code{do.regex} argument points to the corresponding elements in \code{keywords}. For \code{FALSE}, we transform
+the keywords into a simple regex expression, involving \code{"\\b"} for exact word boundary matching and (if multiple
+keywords) \code{|} as OR operator. The elements associated to \code{TRUE} do not undergo the transformation, and are
+evaluated as given, if the corresponding keywords vector consists of only one expression.
 }
 \examples{
 data("usnews")
@@ -42,8 +51,15 @@ corpus1 <- add_features(corpus,
 corpus2 <- add_features(corpus,
                         keywords = list(pres = "president", war = "war"))
 corpus3 <- add_features(corpus,
-                        keywords = list(pres = "president", war = "war"),
+                        keywords = list(pres = c("Obama", "US president")),
                         do.binary = FALSE)
+corpus4 <- add_features(corpus,
+                        keywords = list(pres1 = c("Obama|US [p|P]resident"),
+                                        pres2 = c("\\\\bObama\\\\b|\\\\bUS president\\\\b"),
+                                        war = c("war")),
+                        do.regex = c(TRUE, TRUE, FALSE))
+
+sum(corpus3$documents$pres) == sum(corpus4$documents$pres2) # TRUE
 
 }
 \author{

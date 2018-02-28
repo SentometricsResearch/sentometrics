@@ -117,6 +117,10 @@ clean <- function(corpusdf) {
 #'
 #' @details If a provided feature name is already part of the corpus, it will be replaced. The \code{featuresdf} and
 #' \code{keywords} arguments can be provided at the same time, or only one of them, leaving the other at \code{NULL}.
+#' The \code{do.regex} argument points to the corresponding elements in \code{keywords}. For \code{FALSE}, we transform
+#' the keywords into a simple regex expression, involving \code{"\\b"} for exact word boundary matching and (if multiple
+#' keywords) \code{|} as OR operator. The elements associated to \code{TRUE} do not undergo the transformation, and are
+#' evaluated as given, if the corresponding keywords vector consists of only one expression.
 #'
 #' @param sentocorpus a \code{sentocorpus} object created with \code{\link{sento_corpus}}.
 #' @param featuresdf a named \code{data.frame} of type \code{numeric} where each columns is a new feature to be added to the
@@ -125,8 +129,12 @@ clean <- function(corpusdf) {
 #' @param keywords a named \code{list}. For every element, a new feature column is added with a value of 1 for the texts
 #' in which (at least one of) the keyword(s) appear(s), and 0 if not (if \code{do.binary = TRUE}), or with as value the
 #' number of times the keyword(s) occur(s) in the text (if if \code{do.binary = FALSE}). If no texts match a keyword, no
-#' column is added. The \code{list} names are used as the names of the new features.
+#' column is added. The \code{list} names are used as the names of the new features. For more complex searching, instead
+#' of keywords, one can also directly use a single regex expression to define a new feature (cf. the details section).
 #' @param do.binary a \code{logical}, cf. argument \code{keywords}.
+#' @param do.regex a \code{logical} vector equal in length to the number of elements in the \code{keywords} argument
+#' \code{list}, or a single value if it applies to all. It should be set to \code{TRUE} at those positions where a single
+#' regex expression is used to identify the particular feature.
 #'
 #' @return An updated \code{sentocorpus} object.
 #'
@@ -140,11 +148,18 @@ clean <- function(corpusdf) {
 #' corpus2 <- add_features(corpus,
 #'                         keywords = list(pres = "president", war = "war"))
 #' corpus3 <- add_features(corpus,
-#'                         keywords = list(pres = "president", war = "war"),
+#'                         keywords = list(pres = c("Obama", "US president")),
 #'                         do.binary = FALSE)
+#' corpus4 <- add_features(corpus,
+#'                         keywords = list(pres1 = c("Obama|US [p|P]resident"),
+#'                                         pres2 = c("\\bObama\\b|\\bUS president\\b"),
+#'                                         war = c("war")),
+#'                         do.regex = c(TRUE, TRUE, FALSE))
+#'
+#' sum(corpus3$documents$pres) == sum(corpus4$documents$pres2) # TRUE
 #'
 #' @export
-add_features <- function(sentocorpus, featuresdf = NULL, keywords = NULL, do.binary = TRUE) {
+add_features <- function(sentocorpus, featuresdf = NULL, keywords = NULL, do.binary = TRUE, do.regex = FALSE) {
   check_class(sentocorpus, "sentocorpus")
   if (!is.null(featuresdf)) {
     features <- stringi::stri_replace_all(colnames(featuresdf), "_", regex = " ")
@@ -162,12 +177,20 @@ add_features <- function(sentocorpus, featuresdf = NULL, keywords = NULL, do.bin
     textsAll <- quanteda::texts(sentocorpus)
     if (do.binary == TRUE) fct <- stringi::stri_detect
     else fct <- stringi::stri_count
-    for (j in seq_along(keywords)) {
+    N <- length(keywords)
+    if (length(do.regex) == 1 && N > 1) do.regex <- rep(do.regex, N)
+    for (j in 1:N) {
       kwName <- stringi::stri_replace_all(names(keywords)[j], "_", regex = " ")
-      if (length(keywords[[j]]) == 1) {
-        regex <- paste0("\\b", keywords[[j]], "\\b")
+      if (do.regex[j] == TRUE) {
+        if (length(keywords[[j]]) != 1)
+          stop("Every corresponding element in 'keywords' for which 'do.regex' is TRUE should be of length 1.")
+        else regex <- keywords[[j]]
       } else {
-        regex <- paste0("\\b", paste0(keywords[[j]], collapse = "\\b|\\b"), "\\b")
+        if (length(keywords[[j]]) == 1) {
+          regex <- paste0("\\b", keywords[[j]], "\\b")
+        } else {
+          regex <- paste0("\\b", paste0(keywords[[j]], collapse = "\\b|\\b"), "\\b")
+        }
       }
       occurrences <- as.numeric(fct(textsAll, regex = regex))
       if (sum(occurrences) == 0) warning(paste0("Feature ", kwName, " is not added as it occurs in none of the documents."))

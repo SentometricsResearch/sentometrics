@@ -322,6 +322,7 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
     names(lexiconsNeg) <- paste0(names(lexicons), "_NEG")
     lexicons <- c(lexiconsPos, lexiconsNeg)
   }
+  lexicons <- lapply(lexicons, function(l) {l$x <- stringi::stri_replace_all(l$x, "_", regex = "\\s+"); return(l)})
   if (!is.null(valenceIn)) {
     lexicons[["valence"]] <- valenceIn[!duplicated(valenceIn$x), ]
   }
@@ -342,12 +343,16 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
   features <- names(quanteda::docvars(sentocorpus))[-1] # drop date column
 
   cat("Compute sentiment... ")
-  # frequency-based document-feature matrix (rows are corpus ids, columns are words)
+
+  tok <- quanteda::tokens(sentocorpus,
+                          what = "word",
+                          ngrams = 1,
+                          remove_numbers = TRUE, remove_punct = TRUE, remove_symbols = TRUE, remove_separators = TRUE)
+  wCounts <- quanteda::ntoken(tok)
+
   if (is.null(dfm)) {
-      dfm <- quanteda::dfm(quanteda::tokens(sentocorpus, remove_punct = TRUE, remove_numbers = TRUE,
-                                            remove_symbols = TRUE, remove_separators = TRUE), verbose = FALSE)
-  } else if (!quanteda::is.dfm(dfm))
-    stop("The 'dfm' argument should pass quanteda::is.dfm(dfm).")
+      dfm <- quanteda::dfm(tok, verbose = FALSE) # rows are corpus ids, columns are words, values are frequencies
+  } else if (!quanteda::is.dfm(dfm)) stop("The 'dfm' argument should pass quanteda::is.dfm(dfm).")
 
   if (how == "counts" || how == "proportional" || how == "proportionalPol") {
     fdm <- quanteda::t(dfm) # feature-document matrix
@@ -359,7 +364,6 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
   s <- as.data.table(matrix(0, nrow = quanteda::ndoc(sentocorpus), ncol = length(lexNames)))
   names(s) <- lexNames
   allWords <- quanteda::featnames(dfm)
-  wCounts <- quanteda::rowSums(dfm, na.rm = TRUE)
   for (lexicon in lexNames) { # locate polarized words and set weights to their polarity or keep at zero
     lexWords <- lexicons[[lexicon]]$x
     lexScores <- lexicons[[lexicon]]$y
@@ -384,6 +388,7 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
   # compute feature-sentiment per document for all lexicons and order by date
   sent <- get_features_sentiment(s, features, lexNames)
   sent <- sent[order(date)]
+
   cat("Done.", "\n")
 
   sentOut <- list(corpus = sentocorpus, # not the same as input corpus if accounted for valence shifters
@@ -407,16 +412,17 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 #' For a separate calculation of positive (resp. negative) sentiment, one has to provide distinct positive (resp. negative)
 #' lexicons. This can be done using the \code{do.split} option in the \code{\link{setup_lexicons}} function, which splits out
 #' the lexicons into a positive and a negative polarity counterpart. \code{NA}s are converted to 0, under the assumption that
-#' this is equivalent to no sentiment.
+#' this is equivalent to no sentiment. By default, if the \code{dfm} argument is left unspecified, a document-feature
+#' matrix (dfm) is created based on a tokenisation that removes punctuation, numbers, symbols and separators, but does not
+#' remove stopwords. The number of words for each document is computed based on that some tokenisation.
 #'
 #' @param sentocorpus a \code{sentocorpus} object created with \code{\link{sento_corpus}}.
 #' @param lexicons output from a \code{\link{setup_lexicons}} call.
 #' @param how a single \code{character} vector defining how aggregation within documents should be performed. For currently
 #' available options on how aggregation can occur, see \code{\link{get_hows}()$words}.
 #' @param dfm optional; an output from a \pkg{quanteda} \code{\link[quanteda]{dfm}} call, such that users can specify their
-#' own tokenization scheme (via \code{\link[quanteda]{tokens}}) as well as other parameters related to the construction of
-#' a document-feature matrix (dfm). By default, a dfm is created based on a tokenization that removes punctuation, numbers,
-#' symbols and separators, but does not remove stopwords.
+#' own tokenisation scheme (via \code{\link[quanteda]{tokens}}) as well as other parameters related to the construction of
+#' a document-feature matrix (dfm).
 #'
 #' @return A \code{list} containing:
 #' \item{corpus}{the supplied \code{sentocorpus} object; the texts are altered if valence shifters are part of the lexicons.}
@@ -466,7 +472,8 @@ get_features_sentiment <- compiler::cmpfun(.get_features_sentiment)
 #' applied on the output of \code{\link{compute_sentiment}}.
 #'
 #' @param toAgg output from a \code{\link{compute_sentiment}} call.
-#' @param ctr output from a \code{\link{ctr_agg}} call. The \code{"howWithin"} argument plays no more role.
+#' @param ctr output from a \code{\link{ctr_agg}} call. The \code{howWithin} argument plays no further role from
+#' this point on.
 #'
 #' @return A \code{sentomeasures} object.
 #'

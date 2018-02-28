@@ -9,7 +9,8 @@ perform_agg(toAgg, ctr)
 \arguments{
 \item{toAgg}{output from a \code{\link{compute_sentiment}} call.}
 
-\item{ctr}{output from a \code{\link{ctr_agg}} call. The \code{"howWithin"} argument plays no more role.}
+\item{ctr}{output from a \code{\link{ctr_agg}} call. The \code{howWithin} argument plays no further role from
+this point on.}
 }
 \value{
 A \code{sentomeasures} object.
