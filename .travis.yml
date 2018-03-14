@@ -6,7 +6,7 @@ os:
   - linux
 
 r_packages:
-  - devtools
+  - devtools # needed (temporarily) for 'release'
 
 script:
   - |
