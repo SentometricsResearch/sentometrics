@@ -143,9 +143,11 @@
   return(attribsAll)
 }
 
+#' @importFrom compiler cmpfun
 #' @export
 retrieve_attributions.sentomodel <- compiler::cmpfun(.retrieve_attributions.sentomodel)
 
+#' @importFrom compiler cmpfun
 #' @export
 retrieve_attributions.sentomodeliter <- compiler::cmpfun(.retrieve_attributions.sentomodeliter)
 
