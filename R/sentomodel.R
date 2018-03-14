@@ -373,6 +373,8 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
 
   return(out)
 }
+
+#' @importFrom compiler cmpfun
 model_IC <- compiler::cmpfun(.model_IC)
 
 .model_CV <- function(sentomeasures, y, x, h, family, intercept, alphas,
@@ -436,6 +438,8 @@ model_IC <- compiler::cmpfun(.model_IC)
 
   return(out)
 }
+
+#' @importFrom compiler cmpfun
 model_CV <- compiler::cmpfun(.model_CV)
 
 .sento_model_iter <- function(sentomeasures, y, x, h, family, intercept, alphas, type,
@@ -509,6 +513,8 @@ model_CV <- compiler::cmpfun(.model_CV)
 
   return(out)
 }
+
+#' @importFrom compiler cmpfun
 sento_model_iter <- compiler::cmpfun(.sento_model_iter)
 
 compute_IC <- function(reg, y, x, alpha, ic, family) {

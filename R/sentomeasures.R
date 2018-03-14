@@ -450,6 +450,7 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 #' dfm <- quanteda::dfm(quanteda::tokens(corpus), verbose = FALSE)
 #' sent <- compute_sentiment(corpusSample, l, how = "counts", dfm = dfm)}
 #'
+#' @importFrom compiler cmpfun
 #' @export
 compute_sentiment <- compiler::cmpfun(.compute_sentiment)
 
@@ -461,6 +462,8 @@ compute_sentiment <- compiler::cmpfun(.compute_sentiment)
   sent[, eval(c(lexNames, features)) := NULL][] # remove since replaced by lexicon--feature columns
   return(sent)
 }
+
+#' @importFrom compiler cmpfun
 get_features_sentiment <- compiler::cmpfun(.get_features_sentiment)
 
 #' Aggregate textual sentiment across documents and time

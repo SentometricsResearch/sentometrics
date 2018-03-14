@@ -22,7 +22,7 @@ expand_lexicons <- function(lexicons, types = c(1, 2, 3), scores = c(-1, 2, 0.5)
     out <- lapply(c(0, types), function(x) {
       if (x == 0) return(l)
       else {f = funcs[[x]]; return(f(l, scores[[x]]))}
-      })
+    })
     return(rbindlist(out))
   })
   return(lexiconsExp) # expanded lexicons (original + copied and negated/amplified/deamplified words and scores)
