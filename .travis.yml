@@ -5,6 +5,9 @@ cache: packages
 os:
   - linux
 
+r_packages:
+  - devtools
+
 script:
   - |
     R CMD build .
