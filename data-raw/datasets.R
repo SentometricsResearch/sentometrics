@@ -136,15 +136,25 @@ prepare_word_list <- function(fileName, type, name) {
   loc <- paste0("data-raw/", type, "-raw/", fileName)
   w <- read.csv(loc, sep = ";")
 
-  # confirm retranslation
+  # confirm if translation occured and retranslation
   stripped <- unlist(stringi::stri_split(fileName, regex = "_"))
-  if (length(stripped) > 1 && type != "valence") {
+  if (length(stripped) > 1) {
     original <- paste0(stripped[1], ".csv")
     ww <- read.csv(paste0("data-raw/", type, "-raw/", original), sep = ";")
-    keep <- (as.character(w$Retranslation) == as.character(ww[, 1])) # words are in first column of original
-    print(paste0("kept: ", sum(keep)/length(keep)))
-    w <- w[keep, -NCOL(w)]
+    if (type == "lexicons") {
+      keep <- list(
+        (as.character(w$Retranslation) == as.character(ww[, 1])), # words are in first column of original
+        (as.character(w[, 1]) != as.character(ww[, 1])) # high likelihood of actual translation
+      )
+      toKeep <- keep[[1]] == keep[[2]]
+      w <- w[toKeep, -NCOL(w)]
+    } else if (type == "valence") {
+      toKeep <- (as.character(w[, 1]) != as.character(ww[, 1]))
+      w <- w[toKeep, ]
+    }
+    print(paste0("kept: ", sum(toKeep)/length(toKeep)))
   }
+
   if (type == "lexicons") colnames(w) <- c("x", "y")
   else colnames(w) <- c("x", "t", "y")
 
@@ -161,7 +171,7 @@ prepare_word_list <- function(fileName, type, name) {
 
   # change to as_key() format
   w <- w[!duplicated(w$x), ]
-  if (type != "valence") {
+  if (type == "lexicons") {
     w <- sentimentr::as_key(w, comparison = NULL) # makes absolutely sure duplicated words are removed
   }
   w <- w[w$x != "" & w$x != " " & w$x != "#naam", ]
