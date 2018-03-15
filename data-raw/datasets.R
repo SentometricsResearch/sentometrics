@@ -160,8 +160,8 @@ prepare_word_list <- function(fileName, type, name) {
 
   # cleaning
   w$x <- as.character(w$x)
-  w$x <- stringr::str_to_lower(w$x)
-  w$x <- stringr::str_trim(w$x)
+  w$x <- stringi::stri_trans_tolower(w$x)
+  w$x <- stringi::str_trim(w$x)
   w$x <- stringi::stri_replace_all(w$x, "", regex = '\\?') # remove question markets
   w$x <- stringi::stri_replace_all(w$x, "", regex = '[\\"]') # remove double quotes
   w$x <- stringi::stri_replace_all(w$x, "", regex = '[()]') # remove single brackets
@@ -210,7 +210,7 @@ save(HENRY_nl_tr, file = l$file)
 
 # creates and places LEXICON data in data folder
 form_word_list <- function(type) {
-  if (type == "lexicon") pattern <- paste0(c("FEEL", "GI", "HENRY", "LM"), collapse = "|")
+  if (type == "lexicons") pattern <- paste0(c("FEEL", "GI", "HENRY", "LM"), collapse = "|")
   else if (type == "valence") pattern <- c("valence_") # change if additional valence shifter categories are added
   objects <- list.files("data-raw/", pattern = pattern)
   listed <- vector(mode = "list")
@@ -220,7 +220,7 @@ form_word_list <- function(type) {
     listed[[obj]] <- toAdd
     cat("added:", obj, "\n")
   }
-  if (type == "lexicon") {
+  if (type == "lexicons") {
     assign("lexicons", value = listed, pos = 1)
     save(lexicons, file = "data/lexicons.rda", compress = 'xz')
   }
@@ -230,7 +230,7 @@ form_word_list <- function(type) {
   }
 }
 
-form_word_list(type = "lexicon")
+form_word_list(type = "lexicons")
 # load("data/lexicons.rda")
 
 ######################### VALENCE WORD LISTS

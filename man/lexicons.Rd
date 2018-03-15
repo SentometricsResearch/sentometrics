@@ -23,7 +23,8 @@ A list containing all built-in lexicons as a \code{data.table} with two columns:
 \code{"_tr"} as suffix if the lexicon is translated. The translation was done via Microsoft Translator through Microsoft
 Word. Only the entries that conform to the original language entry after retranslation, and those that have actually been
 translated, are kept. The last condition is assumed to be fulfilled when the translation differs from the original entry.
-The lexicons are in the format required for further sentiment analysis. The built-in lexicons are the following:
+All words are in lowercase. The lexicons are in the format required for further sentiment analysis. The built-in lexicons
+are the following:
 
 \itemize{
   \item FEEL_eng_tr (French Expanded Emotion Lexicon)

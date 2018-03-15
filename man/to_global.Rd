@@ -2,7 +2,7 @@
 % Please edit documentation in R/sentomeasures.R
 \name{to_global}
 \alias{to_global}
-\title{Merge sentiment measures into one global sentiment measure}
+\title{Merge sentiment measures into multiple weighted global sentiment indices}
 \usage{
 to_global(sentomeasures, lexicons = 1, features = 1, time = 1)
 }
@@ -10,28 +10,31 @@ to_global(sentomeasures, lexicons = 1, features = 1, time = 1)
 \item{sentomeasures}{a \code{sentomeasures} object created using \code{\link{sento_measures}}.}
 
 \item{lexicons}{a \code{numeric} vector of weights, of size \code{length(sentomeasures$lexicons)}, in the same order
-and summing to one. By default set to 1, which means equally weighted.}
+By default set to 1, which means equally weighted.}
 
 \item{features}{a \code{numeric} vector of weights, of size \code{length(sentomeasures$features)}, in the same order
-and summing to one. By default set to 1, which means equally weighted.}
+By default set to 1, which means equally weighted.}
 
-\item{time}{a \code{numeric} vector of weights, of size \code{length(sentomeasures$time)}, in the same order and summing
-to one. By default set to 1, which means equally weighted.}
+\item{time}{a \code{numeric} vector of weights, of size \code{length(sentomeasures$time)}, in the same order by default
+set to 1, which means equally weighted.}
 }
 \value{
-A \code{data.frame} with the values for the global sentiment measure under the \code{global} column and dates as
-row names.
+A \code{data.frame} with the different types of weighted global sentiment measures, named \code{"globLex"},
+\code{"globFeat"}, \code{"globTime"} and \code{"global"}, with dates as row names. The last measure is an average
+of the the three other measures.
 }
 \description{
-Merges all sentiment measures into one global textual sentiment measure based on a set of weights to
-indicate the importance of each component in the \code{lexicons}, \code{features}, and \code{time} vectors as specified
-in the input \code{sentomeasures} object. Every measure receives a weight in the global measure equal to the multiplication
-of the supplied weights of the components it is contained of. The global sentiment measure then corresponds to a
-weighted average of these weights times the sentiment scores, per date.
+Merges all sentiment measures into a weighted global textual sentiment measure for each of the
+\code{lexicons}, \code{features}, and \code{time} dimensions specified in the input \code{sentomeasures} object.
 }
 \details{
-This function returns no \code{sentomeasures} object, however the global sentiment measure as outputted can
-be added to regressions as an additional variable using the \code{x} argument in the \code{\link{sento_model}} function.
+Contrary to most other functions, this function returns no new \code{sentomeasures} object, but the global
+sentiment measures as outputted can be added to regressions as an additional variable using the \code{x} argument
+in the \code{\link{sento_model}} function. The measures are constructed from weights that indicate the importance along
+each component in the lexicons, features and time dimensions. There is no condition in terms of allowed weights. For
+example, the global index based on the supplied lexicon weights (\code{"globLex"}) is obtained first by multiplying
+every sentiment measure with its corresponding weight (meaning, the weight given to the lexicon the sentiment is
+computed from), then by taking the average per date.
 }
 \examples{
 data("usnews")

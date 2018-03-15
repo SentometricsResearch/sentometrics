@@ -1,5 +1,6 @@
 
 .retrieve_attributions.sentomodel <- function(model, sentomeasures, do.normalize = FALSE, refDates = NULL, factor = NULL) {
+  check_class(sentomeasures, "sentomeasures")
 
   sentomodel <- model
 

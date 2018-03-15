@@ -16,8 +16,8 @@ A list containing all built-in valence word lists, a \code{data.table} with thre
 words, a \code{t} column with the type of valence words, and a \code{y} column with the values associated to each word and
 type of valence shifter. The list element names incorporate the language of the valence word list. All non-English word
 lists are translated via Microsoft Translator through Microsoft Word. Only the entries whose translation differs from
-the original entry are kept. The valence word lists are in the form required for further sentiment analysis. The built-in
-valence word lists are the following:
+the original entry are kept. The valence word lists are in the form required for further sentiment analysis. All words
+are in lowercase. The built-in valence word lists are the following:
 
 \itemize{
   \item valence_eng

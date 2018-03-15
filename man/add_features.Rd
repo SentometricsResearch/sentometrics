@@ -12,15 +12,16 @@ add_features(sentocorpus, featuresdf = NULL, keywords = NULL,
 
 \item{featuresdf}{a named \code{data.frame} of type \code{numeric} where each columns is a new feature to be added to the
 inputted \code{sentocorpus} object. If the number of rows in \code{featuresdf} is not equal to the number of documents
-in \code{sentocorpus}, recycling will occur.}
+in \code{sentocorpus}, recycling will occur. The numeric values should be between 0 and 1 (included).}
 
 \item{keywords}{a named \code{list}. For every element, a new feature column is added with a value of 1 for the texts
 in which (at least one of) the keyword(s) appear(s), and 0 if not (if \code{do.binary = TRUE}), or with as value the
-number of times the keyword(s) occur(s) in the text (if if \code{do.binary = FALSE}). If no texts match a keyword, no
-column is added. The \code{list} names are used as the names of the new features. For more complex searching, instead
-of keywords, one can also directly use a single regex expression to define a new feature (cf. the details section).}
+normalized number of times the keyword(s) occur(s) in the text (if \code{do.binary = FALSE}). If no texts match a
+keyword, no column is added. The \code{list} names are used as the names of the new features. For more complex searching,
+instead of keywords, one can also directly use a single regex expression to define a new feature (cf. the details section).}
 
-\item{do.binary}{a \code{logical}, cf. argument \code{keywords}.}
+\item{do.binary}{a \code{logical}, cf. argument \code{keywords}. If \code{do.binary = FALSE}, the counts are normalized
+between 0 and 1,}
 
 \item{do.regex}{a \code{logical} vector equal in length to the number of elements in the \code{keywords} argument
 \code{list}, or a single value if it applies to all. It should be set to \code{TRUE} at those positions where a single
