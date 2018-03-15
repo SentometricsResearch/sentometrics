@@ -125,13 +125,14 @@ clean <- function(corpusdf) {
 #' @param sentocorpus a \code{sentocorpus} object created with \code{\link{sento_corpus}}.
 #' @param featuresdf a named \code{data.frame} of type \code{numeric} where each columns is a new feature to be added to the
 #' inputted \code{sentocorpus} object. If the number of rows in \code{featuresdf} is not equal to the number of documents
-#' in \code{sentocorpus}, recycling will occur.
+#' in \code{sentocorpus}, recycling will occur. The numeric values should be between 0 and 1 (included).
 #' @param keywords a named \code{list}. For every element, a new feature column is added with a value of 1 for the texts
 #' in which (at least one of) the keyword(s) appear(s), and 0 if not (if \code{do.binary = TRUE}), or with as value the
-#' number of times the keyword(s) occur(s) in the text (if if \code{do.binary = FALSE}). If no texts match a keyword, no
-#' column is added. The \code{list} names are used as the names of the new features. For more complex searching, instead
-#' of keywords, one can also directly use a single regex expression to define a new feature (cf. the details section).
-#' @param do.binary a \code{logical}, cf. argument \code{keywords}.
+#' normalized number of times the keyword(s) occur(s) in the text (if \code{do.binary = FALSE}). If no texts match a
+#' keyword, no column is added. The \code{list} names are used as the names of the new features. For more complex searching,
+#' instead of keywords, one can also directly use a single regex expression to define a new feature (cf. the details section).
+#' @param do.binary a \code{logical}, cf. argument \code{keywords}. If \code{do.binary = FALSE}, the counts are normalized
+#' between 0 and 1,
 #' @param do.regex a \code{logical} vector equal in length to the number of elements in the \code{keywords} argument
 #' \code{list}, or a single value if it applies to all. It should be set to \code{TRUE} at those positions where a single
 #' regex expression is used to identify the particular feature.
@@ -163,13 +164,17 @@ add_features <- function(sentocorpus, featuresdf = NULL, keywords = NULL, do.bin
   check_class(sentocorpus, "sentocorpus")
   if (!is.null(featuresdf)) {
     features <- stringi::stri_replace_all(colnames(featuresdf), "_", regex = " ")
-    isNumeric <- sapply(features, function(x) return(is.numeric(featuresdf[[x]])))
-    toAdd <- which(isNumeric)
+    isNumeric <- sapply(featuresdf, is.numeric)
+    mins <- sapply(featuresdf, max, na.rm = TRUE) >= 0
+    maxs <- sapply(featuresdf, min, na.rm = TRUE) <= 1
+    check <- sapply(1:length(features), function(j) return(all(c(isNumeric[j], mins[j], maxs[j]))))
+    toAdd <- which(check)
     for (i in toAdd) {
       quanteda::docvars(sentocorpus, field = features[i]) <- featuresdf[[i]]
     }
-    if (length(toAdd) != length(isNumeric))
-      warning(paste0("Following columns were not added as they are not of type numeric: ", names(which(!isNumeric))))
+    if (length(toAdd) != length(check))
+      warning(paste0("Following columns were not added as they are not of type numeric or have values not in [0, 1]: ",
+                     colnames(featuresdf)[which(!toAdd)]))
   }
   if (!is.null(keywords)) {
     if ("" %in% names(keywords) || is.null(names(keywords)))
@@ -193,8 +198,12 @@ add_features <- function(sentocorpus, featuresdf = NULL, keywords = NULL, do.bin
         }
       }
       occurrences <- as.numeric(fct(textsAll, regex = regex))
-      if (sum(occurrences) == 0) warning(paste0("Feature ", kwName, " is not added as it occurs in none of the documents."))
-      else quanteda::docvars(sentocorpus, field = kwName) <- occurrences
+      if (sum(occurrences) == 0)
+        warning(paste0("Feature ", kwName, " is not added as it occurs in none of the documents."))
+      else {
+        occurrences <- (occurrences - min(occurrences)) / (max(occurrences) - min(occurrences)) # normalize to [0, 1]
+        quanteda::docvars(sentocorpus, field = kwName) <- occurrences
+      }
     }
   }
   return(sentocorpus)

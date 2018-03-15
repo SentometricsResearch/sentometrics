@@ -16,7 +16,8 @@ available options on how aggregation can occur, see \code{\link{get_hows}()$word
 
 \item{dfm}{optional; an output from a \pkg{quanteda} \code{\link[quanteda]{dfm}} call, such that users can specify their
 own tokenisation scheme (via \code{\link[quanteda]{tokens}}) as well as other parameters related to the construction of
-a document-feature matrix (dfm).}
+a document-feature matrix (dfm). Make sure the document-feature matrix is constructed from the texts in the
+\code{sentocorpus} object, otherwise, results will be spurious or errors may occur.}
 }
 \value{
 A \code{list} containing:
@@ -38,7 +39,9 @@ lexicons. This can be done using the \code{do.split} option in the \code{\link{s
 the lexicons into a positive and a negative polarity counterpart. \code{NA}s are converted to 0, under the assumption that
 this is equivalent to no sentiment. By default, if the \code{dfm} argument is left unspecified, a document-feature
 matrix (dfm) is created based on a tokenisation that removes punctuation, numbers, symbols and separators, but does not
-remove stopwords. The number of words for each document is computed based on that some tokenisation.
+remove stopwords. The number of words for each document is computed based on that some tokenisation. All tokens are
+converted to lowercase, in line with what the \code{\link{setup_lexicons}} function does for the lexicons and valence
+words.
 }
 \examples{
 data("usnews")
@@ -53,8 +56,9 @@ sent <- compute_sentiment(corpusSample, l, how = "counts")
 
 \dontrun{
 # same sentiment computation based on a user-supplied dfm with default settings
-dfm <- quanteda::dfm(quanteda::tokens(corpus), verbose = FALSE)
-sent <- compute_sentiment(corpusSample, l, how = "counts", dfm = dfm)}
+tok <- quanteda::tokens_tolower(quanteda::tokens(corpus))
+dfm <- quanteda::dfm(tok, verbose = FALSE)
+sent <- compute_sentiment(corpus, l, how = "counts", dfm = dfm)}
 
 }
 \seealso{

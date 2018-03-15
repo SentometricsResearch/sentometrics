@@ -35,8 +35,8 @@ column of the valence word list.
 \description{
 Structures provided lexicons and potentially integrates valence words. One can also provide (part of) the
 built-in lexicons from \code{data("lexicons")} or a valence word list from \code{data("valence")} as an argument.
-Makes use of the \code{\link[sentimentr]{as_key}} function from the \pkg{sentimentr} package to make the output coherent
-and check for duplicates.
+Makes use of the \code{\link[sentimentr]{as_key}} function from the \pkg{sentimentr} package to make the output coherent,
+convert all words to lowercase and check for duplicates.
 }
 \examples{
 data("lexicons")

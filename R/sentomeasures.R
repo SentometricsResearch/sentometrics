@@ -138,6 +138,7 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
               by = by,
               lag = lag,
               fill = fill,
+              dfm = dfm,
               other = other)
 
   return(ctr)
@@ -201,7 +202,7 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #' @export
 sento_measures<- function(sentocorpus, lexicons, ctr) {
   check_class(sentocorpus, "sentocorpus")
-  toAgg <- compute_sentiment(sentocorpus, lexicons, how = ctr$howWithin)
+  toAgg <- compute_sentiment(sentocorpus, lexicons, how = ctr$howWithin, dfm = ctr$dfm)
   sentomeasures <- perform_agg(toAgg, ctr)
   return(sentomeasures)
 }
@@ -237,8 +238,8 @@ print.sentomeasures <- function(x, ...) {
 #'
 #' @description Structures provided lexicons and potentially integrates valence words. One can also provide (part of) the
 #' built-in lexicons from \code{data("lexicons")} or a valence word list from \code{data("valence")} as an argument.
-#' Makes use of the \code{\link[sentimentr]{as_key}} function from the \pkg{sentimentr} package to make the output coherent
-#' and check for duplicates.
+#' Makes use of the \code{\link[sentimentr]{as_key}} function from the \pkg{sentimentr} package to make the output coherent,
+#' convert all words to lowercase and check for duplicates.
 #'
 #' @param lexiconsIn a named \code{list} of (raw) lexicons, each element being a \code{data.frame} or a \code{data.table} with
 #' respectively a words column and a polarity score column. Alternatively, a subset of the already formatted built-in lexicons
@@ -324,6 +325,7 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
   }
   lexicons <- lapply(lexicons, function(l) {l$x <- stringi::stri_replace_all(l$x, "_", regex = "\\s+"); return(l)})
   if (!is.null(valenceIn)) {
+    valenceIn$x <- stringi::stri_trans_tolower(valenceIn$x)
     lexicons[["valence"]] <- valenceIn[!duplicated(valenceIn$x), ]
   }
 
@@ -332,8 +334,10 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 
 .compute_sentiment <- function(sentocorpus, lexicons, how = get_hows()$words, dfm = NULL) {
   check_class(sentocorpus, "sentocorpus")
-
   if (length(how) > 1) how <- how[1]
+
+  quanteda::texts(sentocorpus) <- stringi::stri_trans_tolower(quanteda::texts(sentocorpus)) # to lowercase
+
   if ("valence" %in% names(lexicons)) {
     cat("Modify corpus to account for valence words... ")
     quanteda::texts(sentocorpus) <- include_valence(quanteda::texts(sentocorpus), lexicons[["valence"]])
@@ -344,10 +348,12 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 
   cat("Compute sentiment... ")
 
-  tok <- quanteda::tokens(sentocorpus,
-                          what = "word",
-                          ngrams = 1,
-                          remove_numbers = TRUE, remove_punct = TRUE, remove_symbols = TRUE, remove_separators = TRUE)
+  tok <- quanteda::tokens(
+    sentocorpus,
+    what = "word",
+    ngrams = 1,
+    remove_numbers = TRUE, remove_punct = TRUE, remove_symbols = TRUE, remove_separators = TRUE
+  )
   wCounts <- quanteda::ntoken(tok)
 
   if (is.null(dfm)) {
@@ -357,7 +363,7 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
   if (how == "counts" || how == "proportional" || how == "proportionalPol") {
     fdm <- quanteda::t(dfm) # feature-document matrix
   } else if (how == "tf-idf") {
-      weights <- quanteda::tfidf(dfm, scheme_tf = "prop")
+      weights <- quanteda::dfm_tfidf(dfm, scheme_tf = "prop")
       fdmWeighted <- quanteda::t(weights)
   } else stop("Please select an appropriate aggregation 'how'.")
 
@@ -414,7 +420,9 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 #' the lexicons into a positive and a negative polarity counterpart. \code{NA}s are converted to 0, under the assumption that
 #' this is equivalent to no sentiment. By default, if the \code{dfm} argument is left unspecified, a document-feature
 #' matrix (dfm) is created based on a tokenisation that removes punctuation, numbers, symbols and separators, but does not
-#' remove stopwords. The number of words for each document is computed based on that some tokenisation.
+#' remove stopwords. The number of words for each document is computed based on that some tokenisation. All tokens are
+#' converted to lowercase, in line with what the \code{\link{setup_lexicons}} function does for the lexicons and valence
+#' words.
 #'
 #' @param sentocorpus a \code{sentocorpus} object created with \code{\link{sento_corpus}}.
 #' @param lexicons output from a \code{\link{setup_lexicons}} call.
@@ -422,7 +430,8 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 #' available options on how aggregation can occur, see \code{\link{get_hows}()$words}.
 #' @param dfm optional; an output from a \pkg{quanteda} \code{\link[quanteda]{dfm}} call, such that users can specify their
 #' own tokenisation scheme (via \code{\link[quanteda]{tokens}}) as well as other parameters related to the construction of
-#' a document-feature matrix (dfm).
+#' a document-feature matrix (dfm). Make sure the document-feature matrix is constructed from the texts in the
+#' \code{sentocorpus} object, otherwise, results will be spurious or errors may occur.
 #'
 #' @return A \code{list} containing:
 #' \item{corpus}{the supplied \code{sentocorpus} object; the texts are altered if valence shifters are part of the lexicons.}
@@ -447,8 +456,9 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 #'
 #' \dontrun{
 #' # same sentiment computation based on a user-supplied dfm with default settings
-#' dfm <- quanteda::dfm(quanteda::tokens(corpus), verbose = FALSE)
-#' sent <- compute_sentiment(corpusSample, l, how = "counts", dfm = dfm)}
+#' tok <- quanteda::tokens_tolower(quanteda::tokens(corpus))
+#' dfm <- quanteda::dfm(tok, verbose = FALSE)
+#' sent <- compute_sentiment(corpus, l, how = "counts", dfm = dfm)}
 #'
 #' @importFrom compiler cmpfun
 #' @export
@@ -806,29 +816,32 @@ merge_measures <- function(ctr) {
   return(sentomeasures)
 }
 
-#' Merge sentiment measures into one global sentiment measure
+#' Merge sentiment measures into multiple weighted global sentiment indices
 #'
 #' @author Samuel Borms
 #'
-#' @description Merges all sentiment measures into one global textual sentiment measure based on a set of weights to
-#' indicate the importance of each component in the \code{lexicons}, \code{features}, and \code{time} vectors as specified
-#' in the input \code{sentomeasures} object. Every measure receives a weight in the global measure equal to the multiplication
-#' of the supplied weights of the components it is contained of. The global sentiment measure then corresponds to a
-#' weighted average of these weights times the sentiment scores, per date.
+#' @description Merges all sentiment measures into a weighted global textual sentiment measure for each of the
+#' \code{lexicons}, \code{features}, and \code{time} dimensions specified in the input \code{sentomeasures} object.
 #'
-#' @details This function returns no \code{sentomeasures} object, however the global sentiment measure as outputted can
-#' be added to regressions as an additional variable using the \code{x} argument in the \code{\link{sento_model}} function.
+#' @details Contrary to most other functions, this function returns no new \code{sentomeasures} object, but the global
+#' sentiment measures as outputted can be added to regressions as an additional variable using the \code{x} argument
+#' in the \code{\link{sento_model}} function. The measures are constructed from weights that indicate the importance along
+#' each component in the lexicons, features and time dimensions. There is no condition in terms of allowed weights. For
+#' example, the global index based on the supplied lexicon weights (\code{"globLex"}) is obtained first by multiplying
+#' every sentiment measure with its corresponding weight (meaning, the weight given to the lexicon the sentiment is
+#' computed from), then by taking the average per date.
 #'
 #' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
 #' @param lexicons a \code{numeric} vector of weights, of size \code{length(sentomeasures$lexicons)}, in the same order
-#' and summing to one. By default set to 1, which means equally weighted.
+#' By default set to 1, which means equally weighted.
 #' @param features a \code{numeric} vector of weights, of size \code{length(sentomeasures$features)}, in the same order
-#' and summing to one. By default set to 1, which means equally weighted.
-#' @param time a \code{numeric} vector of weights, of size \code{length(sentomeasures$time)}, in the same order and summing
-#' to one. By default set to 1, which means equally weighted.
+#' By default set to 1, which means equally weighted.
+#' @param time a \code{numeric} vector of weights, of size \code{length(sentomeasures$time)}, in the same order by default
+#' set to 1, which means equally weighted.
 #'
-#' @return A \code{data.frame} with the values for the global sentiment measure under the \code{global} column and dates as
-#' row names.
+#' @return A \code{data.frame} with the different types of weighted global sentiment measures, named \code{"globLex"},
+#' \code{"globFeat"}, \code{"globTime"} and \code{"global"}, with dates as row names. The last measure is an average
+#' of the the three other measures.
 #'
 #' @seealso \code{\link{sento_model}}
 #'
@@ -857,24 +870,32 @@ to_global <- function(sentomeasures, lexicons = 1, features = 1, time = 1) {
   n <- sapply(dims, length)
   weightsInp <- list(lexicons, features, time)
   weights <- sapply(1:3, function(i) {
-    if (length(weightsInp[[i]]) == 1) w <- as.list(rep(1/n[i], n[i])) # modify weights if equal to default value of 1
+    if (length(weightsInp[[i]]) == 1)
+      w <- as.list(rep(1/n[i], n[i])) # modify weights if equal to default value of 1
     else {
       w <- as.list(weightsInp[[i]])
-      if (length(w) != n[i] || sum(unlist(w)) != 1)
-        stop("All weights must be equal in length to the respective number of components and sum to one.")
+      if (length(w) != n[i])
+        stop("All weights must be equal in length to the respective number of components.")
     }
     names(w) <- dims[[i]] # named weight lists
     return(w)
   })
   measures <- sentomeasures$measures
   measuresLong <- to_long(measures) # long format
-  # extract different weights based on how measuresLong is ordered and add a global weights (w) column
+
   wLex <- unlist(weights[[1]][measuresLong[["lexicons"]]])
   wFeat <- unlist(weights[[2]][measuresLong[["features"]]])
   wTime <- unlist(weights[[3]][measuresLong[["time"]]])
-  # add a global weights column as the multiplication of the individual weights across the three dimensions per row
-  measuresLong[, "w" := wLex * wFeat * wTime]
-  global <- as.data.frame(measuresLong[, list(global = sum(value * w)), by = date])
+
+  globs <- data.table(
+    measuresLong[, list(global = mean(value * wLex)), by = date],
+    measuresLong[, list(global = mean(value * wFeat)), by = date][["global"]],
+    measuresLong[, list(global = mean(value * wTime)), by = date][["global"]]
+  )
+  setnames(globs, c("date", "globLex", "globFeat", "globTime"))
+
+  globs[["global"]] <- rowMeans(globs[, -1])
+  global <- as.data.frame(globs)
   row.names(global) <- global$date
   global$date <- NULL
 
@@ -1214,6 +1235,7 @@ scale.sentomeasures <- function(x, center = TRUE, scale = TRUE) {
 #' @export
 extract_peakdocs <- function(sentomeasures, sentocorpus, n = 10, type = "both", do.average = FALSE) {
   check_class(sentomeasures, "sentomeasures")
+
   measures <- sentomeasures$measures[, -1]
   m <- dim(measures)[2]
   if (n >= (dim(measures)[1] * m)) stop("The parameter 'n' exceeds the total number of sentiment values.")
