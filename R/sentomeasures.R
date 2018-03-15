@@ -823,13 +823,13 @@ merge_measures <- function(ctr) {
 #' @description Merges all sentiment measures into a weighted global textual sentiment measure for each of the
 #' \code{lexicons}, \code{features}, and \code{time} dimensions specified in the input \code{sentomeasures} object.
 #'
-#' @details Contrary to most other functions, this function returns no new \code{sentomeasures} object, but the global
-#' sentiment measures as outputted can be added to regressions as an additional variable using the \code{x} argument
-#' in the \code{\link{sento_model}} function. The measures are constructed from weights that indicate the importance along
-#' each component in the lexicons, features and time dimensions. There is no condition in terms of allowed weights. For
-#' example, the global index based on the supplied lexicon weights (\code{"globLex"}) is obtained first by multiplying
-#' every sentiment measure with its corresponding weight (meaning, the weight given to the lexicon the sentiment is
-#' computed from), then by taking the average per date.
+#' @details This function returns no new \code{sentomeasures} object. The global sentiment measures as outputted can still
+#' be easily be added to regressions as an additional variable using the \code{x} argument in the \code{\link{sento_model}}
+#' function. The measures are constructed from weights that indicate the importance (and sign) along each component in the
+#' lexicons, features and time dimensions. There is no condition in terms of allowed weights. For example, the global index
+#' based on the supplied lexicon weights (\code{"globLex"}) is obtained first by multiplying every sentiment measure with its
+#' corresponding weight (meaning, the weight given to the lexicon the sentiment is computed with), then by taking the
+#' average per date.
 #'
 #' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
 #' @param lexicons a \code{numeric} vector of weights, of size \code{length(sentomeasures$lexicons)}, in the same order
@@ -852,14 +852,14 @@ merge_measures <- function(ctr) {
 #'
 #' # construct a sentomeasures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
-#' corpusSample <- quanteda::corpus_sample(corpus, size = 1250)
+#' corpusSample <- quanteda::corpus_sample(corpus, size = 1000)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sentomeasures <- sento_measures(corpusSample, l, ctr)
 #'
 #' # merge into one global sentiment measure, with specified weighting for lexicons and features
 #' global <- to_global(sentomeasures, lexicons = c(0.40, 0.60),
-#'                                    features = c(0.10, 0.20, 0.30, 0.40),
+#'                                    features = c(0.10, -0.20, 0.30, -1),
 #'                                    time = 1)
 #'
 #' @export
