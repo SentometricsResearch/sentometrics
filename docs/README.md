@@ -1,23 +1,25 @@
 
-# Welcome to the **`sentometrics`** project page!
+# Welcome to the **sentometrics** project page!
 
-You collected a large number of texts and think it might be a good idea to summarize the texts into several sentiment time series, which you ponder could help predicting some variable you are interested in. However, you do not really know how to proceed next... Fortunately, you come across the ****`sentometrics`**** package, which does exactly what you need! Great!
+You collected a large number of texts and think it might be a good idea to summarize the texts into several sentiment time series, which you ponder could help predicting some variable you are interested in. However, you do not really know how to proceed next... Fortunately, you come across the **`sentometrics`** package, which does exactly what you need! Great!
 
-## The **`sentometrics`** package: What?
+## The R package **sentometrics**: What?
 
 The **`sentometrics`** package is designed to do time series analysis based on textual sentiment. Put differently, it is **an integrated framework for textual sentiment time series aggregation and prediction**. It accounts for the intrinsic challenge that, for a given text, sentiment can be computed in many different ways, as well as the large number of possibilities to pool sentiment across texts and time. This additional layer of manipulation does not exist in standard text mining and time series analysis packages. As a final outcome, the package provides an automated means to econometrically model the impact of sentiment in texts on a given variable, by first computing a wide range of textual sentiment time series and then selecting those that are most informative. The package therefore integrates the _qualification_ of sentiment from texts, the _aggregation_ into different sentiment measures and the optimized _prediction_ based on these measures.
 
-The R package **`sentometrics`** was first created during [Google Summer of Code 2017](https://github.com/rstats-gsoc/gsoc2017/wiki/Sentometrics:-An-integrated-framework-for-text-based-multivariate-time-series-modeling-and-forecasting). So far, the package implements the main methodology developed in the paper "[Questioning the news about economic growth: Sparse forecasting using thousands of news-based sentiment values](https://ssrn.com/abstract=2976084)" (Ardia, Bluteau and Boudt, 2017). We do believe the package in its current state may already be of strong interest to many people. Below, we present an overview of the different functionalities of the package. A hands-on methodological introduction is given in our [vignette](https://ssrn.com/abstract=3067734), as well as a code example (see the `run_vignette.R` script under the _/examples_ folder on our GitHub repository). 
+The package was first created during [Google Summer of Code 2017](https://github.com/rstats-gsoc/gsoc2017/wiki/Sentometrics:-An-integrated-framework-for-text-based-multivariate-time-series-modeling-and-forecasting). So far, the package implements the main methodology developed in the paper "[Questioning the news about economic growth: Sparse forecasting using thousands of news-based sentiment values](https://ssrn.com/abstract=2976084)" (Ardia, Bluteau and Boudt, 2017). We do believe the package in its current state may already be of strong interest to many people. Below, we present an overview of the different functionalities of the package. A hands-on methodological introduction is given in our [vignette](https://ssrn.com/abstract=3067734), as well as a code example (see the `run_vignette.R` script under the _/examples_ folder on our GitHub repository). 
 
 ## The functionalities of sentometrics
 
 ### Typical workflow
 
-Below series of steps represent a typical workflow and the associated **`sentometrics`** package functions. They are generally carried out one after the other, but not necessarily so. For example, the model information from steps 4 and 5 can be used to further merge the sentiment measures in step 3.
+Below series of steps represent a typical workflow and the associated **`sentometrics`** package output objects and functions. The steps are generally carried out one after the other, but not necessarily so. For example, the model information from steps 4 and 5 can be used to further merge the sentiment measures in step 3. This serves as a broad taxonomy of what can be done and which functions can be used. The functions are ordered roughly in terms of importance.
 
 **Step 1**: Acquire and pre--process a selection of texts and generate relevant features
     
 - `sento_corpus()`, `add_features()`
+
+`sentocorpus`
 
 **Step 2**: Choose lexicons and compute document--level textual sentiment
     
@@ -25,15 +27,19 @@ Below series of steps represent a typical workflow and the associated **`sentome
 
 **Step 3**: Aggregate the sentiment into multiple textual sentiment time series
     
-- `ctr_agg()`, `sento_measures()`, `merge_measures()`,  `to_global()`
+- `ctr_agg()`, `sento_measures()`, `ctr_merge()`, `merge_measures()`, `plot()`, `to_global()`, `subset_measures()`, `select_measures()`, `fill_measures()`, `diff()`, `scale()`, `summary()`
+
+`sentomeasures`
 
 **Step 4**: Calibrate (sparse) regression model and perform (out--of--sample) predictions
     
 - `ctr_model`, `sento_model()`
 
+`sentomodel`, `sentomodeliter`
+
 **Step 5**: Evaluate prediction performance and retrieve sentiment attributions
     
-- `predict()`, `perform_MCS()`, `retrieve_attributions()`, `plot_attributions()`
+- `retrieve_attributions()`, `plot_attributions()`, `extract_peakdocs()`, `predict()`, `perform_MCS()`, `plot()`, `summary()`
 
 ### Textual sentiment aggregation
 
@@ -47,7 +53,7 @@ Word lists should be passed on to the `setup_lexicons()` function to specify whi
 
 We allow for many ways to aggregate sentiment within documents, across documents and across time, to arrive at fully fledged textual sentiment time series. Combining all the input features, lexicons and aggregation options gives effectively multiple time series of textual sentiment. The sentiment aggregation specifications is chosen through the `ctr_agg()` control function. For example, if you know the variable you ultimately want to predict with sentiment is available at a monthly frequency, set `by = "month"`. Else, you can also aggregate at a daily, weekly or yearly frequency; we'll take care of it. The reference paper, vignette and documentation manual explain more in detail what is meant by each main aggregation argument.
 
-All the hard work in setting up a corpus, deciding on the right lexicons (and valence word list) to include and thinking about how to aggregate sentiment bears fruit when the ``sento_measures()` function is called. This function outputs a `sentomeasures` object, a list composed of several elements, including all the sentiment measures as a `data.table`, and the original sentiment scores. To manipulate a `sentomeasures` object, you can use for example the `select_measures()` or `subset_measures()` functions. To plot the sentiment measures, simply use `plot()` and specify the dimension. The series are then shown as the average of all sentiment measures pertaining to each dimension's component (e.g. by each feature).
+All the hard work in setting up a corpus, deciding on the right lexicons (and valence word list) to include and thinking about how to aggregate sentiment bears fruit when the `sento_measures()` function is called. This function outputs a `sentomeasures` object, a list composed of several elements, including all the sentiment measures as a `data.table`, and the original sentiment scores. To manipulate a `sentomeasures` object, you can use for example the `select_measures()` or `subset_measures()` functions. To plot the sentiment measures, simply use `plot()` and specify the dimension. The series are then shown as the average of all sentiment measures pertaining to each dimension's component (e.g. by each feature).
 
 ### Further sentiment merging
 
@@ -93,11 +99,13 @@ The latest development version of **`sentometrics`** resides at [https://github.
 devtools::install_github("sborms/sentometrics")
 ```
 
-You are ready to load the package and have some fun:
+When installed, you are ready to load the package...
 
 ```R
 library("sentometrics")
 ```
+
+and have some fun!
 
 ## Contact
 
