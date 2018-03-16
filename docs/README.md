@@ -19,7 +19,7 @@ Below series of steps represent a typical workflow and the associated **`sentome
     
 - `sento_corpus()`, `add_features()`
 
-`sentocorpus`
+**_Output_**: a `sentocorpus` object.
 
 **Step 2**: Choose lexicons and compute document--level textual sentiment
     
@@ -29,13 +29,13 @@ Below series of steps represent a typical workflow and the associated **`sentome
     
 - `ctr_agg()`, `sento_measures()`, `ctr_merge()`, `merge_measures()`, `plot()`, `to_global()`, `subset_measures()`, `select_measures()`, `fill_measures()`, `diff()`, `scale()`, `summary()`
 
-`sentomeasures`
+**_Output_**: a `sentomeasures` object.
 
 **Step 4**: Calibrate (sparse) regression model and perform (out--of--sample) predictions
     
 - `ctr_model`, `sento_model()`
 
-`sentomodel`, `sentomodeliter`
+**_Output_**: a `sentomodel` or a `sentomodeliter` object.
 
 **Step 5**: Evaluate prediction performance and retrieve sentiment attributions
     
@@ -47,11 +47,11 @@ We impose texts and the features metadata to be structured as a `data.frame`. Th
 
 This data structure of texts needs to be plugged into the `sento_corpus()` function, to achieve a more formal corpus data structure. We rely on the **`quanteda`** package which has a fast and well supported corpus mechanism, on which the **`sentometrics`** corpus constructor is based.
 
-The computation of the textual sentiment per document is based on the **bag-of-words** model. This approach looks for words in a text that are included in a predefined word list, called a lexicon, and then assigns a score to these words as also given by the lexicon. We also account for valence shifters, such as negators or amplifiers, one word away from a polarized word. Applying valence word lists in combination with lexicons gives already an accurate picture of the sentiment embedded texts, especially when aggregated. The **`sentometrics`** package includes four well-known default lexicons and a negators valence word list, available in English, French and Dutch, the latter two often as a result of a translation from English. _Textual sentiment analysis gets increasingly complex if one wants to account for ambiguous word sequences, let alone entire sentences or paragraphs. We currently refrain from this complexity due to its cost in efficiency with respect to the large dimensionality of the task we face, being computing sentiment and aggregating scores in one go for a lot of texts. Future versions of the package will integrate more complex sentiment analysis computation algorithms._
+The computation of the textual sentiment per document is based on the **bag-of-words** model. This approach looks for words in a text that are included in a predefined word list, called a lexicon, and then assigns a score to these words as also given by the lexicon. We also account for valence shifters, such as negators or amplifiers, one word away from a polarized word. Applying valence word lists in combination with lexicons gives already an accurate picture of the sentiment embedded texts, especially when aggregated. The **`sentometrics`** package includes four well-known default lexicons and a negators valence word list, available in English, French and Dutch, the latter two often as a result of a translation from English. Textual sentiment analysis gets increasingly complex if one wants to account for ambiguous word sequences, let alone entire sentences or paragraphs. We currently refrain from this complexity due to its cost in efficiency with respect to the large dimensionality of the task we face, being computing sentiment and aggregating scores in one go for a lot of texts. _Future versions of the package will integrate more complex sentiment analysis computation algorithms._
 
 Word lists should be passed on to the `setup_lexicons()` function to specify which lexicons and valence shifters to use in the sentiment computation. The overall structure and validation procedure of the word lists is inspired by the **`sentimentr`** package.
 
-We allow for many ways to aggregate sentiment within documents, across documents and across time, to arrive at fully fledged textual sentiment time series. Combining all the input features, lexicons and aggregation options gives effectively multiple time series of textual sentiment. The sentiment aggregation specifications is chosen through the `ctr_agg()` control function. For example, if you know the variable you ultimately want to predict with sentiment is available at a monthly frequency, set `by = "month"`. Else, you can also aggregate at a daily, weekly or yearly frequency; we'll take care of it. The reference paper, vignette and documentation manual explain more in detail what is meant by each main aggregation argument.
+We allow for many ways to aggregate sentiment within documents, across documents and across time, to arrive at fully fledged textual sentiment time series. Combining all the input features, lexicons and aggregation options gives effectively multiple time series of textual sentiment. The sentiment aggregation specifications is chosen through the `ctr_agg()` control function. The reference paper, vignette and documentation manual explain more in detail what is meant by each main aggregation argument.
 
 All the hard work in setting up a corpus, deciding on the right lexicons (and valence word list) to include and thinking about how to aggregate sentiment bears fruit when the `sento_measures()` function is called. This function outputs a `sentomeasures` object, a list composed of several elements, including all the sentiment measures as a `data.table`, and the original sentiment scores. To manipulate a `sentomeasures` object, you can use for example the `select_measures()` or `subset_measures()` functions. To plot the sentiment measures, simply use `plot()` and specify the dimension. The series are then shown as the average of all sentiment measures pertaining to each dimension's component (e.g. by each feature).
 
@@ -65,15 +65,11 @@ One can also merge all sentiment measures into single, global, domain-specific s
 
 The next step is to use the previously obtained sentiment measures as explanatory variables to predict any other variable. The underlying question is: "Does sentiment from texts achieve good (or improve) prediction performance?". 
 
-We provide the possibility of three types of regressions: linear, binomial and multinomial. To select the most important sentiment variables, the models are all in the form of an elastic net regularized regression. There is salient correlation between the different sentiment variables, inherently due to similarities in aggregation schemes. We heavily rely on the **`glmnet`** package to carry out this part of the analysis. Model calibration (meaning selection of the optimal elastic net _alpha_ and _lambda_ parameters), can be done through cross-validation or on the basis of one of three information criteria (AIC, BIC and Mallows's Cp). The latter is, _to date_, only available for linear models.
+We provide the possibility of three types of regressions: linear, binomial and multinomial. To select the most important sentiment variables, the models are all in the form of an elastic net regularized regression. There is salient correlation between the different sentiment variables, inherently due to similarities in aggregation schemes. We heavily rely on the **`glmnet`** package to carry out this part of the analysis. Model calibration (meaning selection of the optimal elastic net _alpha_ and _lambda_ parameters), can be done through cross-validation or on the basis of one of three information criteria (AIC, BIC and Mallows's Cp). The latter is, _to date_, only available for linear models. The cross-validation is performed with the **`caret`** package. Model calibration and estimation can be speed up using parallel computation, see `help("sento_model")`.
 
 The following example displays the workflow. The `ctr_model()` function establishes the model type and the estimation strategy. An examle of a target independent variable is loaded via `data("epu")`.
 
-If the target variable, the sentiment measures and potentially other explanatory variables are aligned, the `h` parameter can be adjusted to reflect the forecasting horizon. The output of a single model run is a `sentomodel` object, and the model results are most easily displayed through the generic `summary()` function. Other than that, the object contains the input values, the calibrated _alpha_ and _lambda_, other information, as well as the fitted `glmnet` object.
-
-Doing parameter calibration by cross-validation requires only a few changes in the control function, in particular the inclusion of a training window and test window size. The cross-validation setup is as such that the model is estimated at a sample of size `trainWindow` for all possible _alpha_ and _lambda_ combinations, and prediction performance is measured for the subsequent `testWindow` out-of-sample values. The procedure is repeated in a rolling-forward way until the total input sample is exhausted, which is called _training the model_. The optimal _alpha_ and _lambda_ values are then those that minimize prediction errors across all the subsamples. The cross-validation is performed with the **`caret`** package. Model calibration and estimation can be speed up using parallel computation, see `help("sento_model")`.
-
-Instead of estimating the model once for the entire sample, it might be more interesting to perform the analysis several times with time rolling forward for a smaller sample size. This is enacted by setting `do.iter = TRUE`. At the same time, this will perform one-step ahead forecasts and provide an assessment of out-of-sample model performance across all iterations, both numerically and visually. Trying this out for a sample size of 5 years and only taking interest in the last 50 out-of-sample predictions, you run the code below. We also add the lag of the target variable as an explanatory variable. The output is an object of class `sentomodeliter`, in which you can find the repeated model estimations, but most importantly an overview of performance measures with respect to prediction errors. The performance measures obviously depend on whether you run a linear or a logistic regression.
+The output of a single model run is a `sentomodel` object, and the model results are most easily displayed through the generic `summary()` function. The object contains, amongst other useful information, the fitted `glmnet` object. Instead of estimating the model once for the entire sample, the same analysis can be performed several times with time rolling forward for a smaller sample size. This is enacted by setting `do.iter = TRUE` in the model control function. The output is then an object of class `sentomodeliter`, in which you can find the repeated model estimations, and an performance measures with respect to one--step ahead out--of--sample prediction errors. The performance measures depend on whether you run a linear or a logistic regression.
 
 ### Post-analysis
 
@@ -105,7 +101,7 @@ When installed, you are ready to load the package...
 library("sentometrics")
 ```
 
-and have some fun!
+... and have some fun!
 
 ## Contact
 
