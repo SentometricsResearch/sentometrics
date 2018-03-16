@@ -12,11 +12,12 @@
 #'
 #' @section Main functions:
 #' \itemize{
+#' \item Feature generation: \code{\link{add_features}}
 #' \item Sentiment computation and aggregation into sentiment measures: \code{\link{sento_corpus}}, \code{\link{ctr_agg}},
-#' \code{\link{compute_sentiment}}, \code{\link{sento_measures}}, \code{\link{to_global}}
+#' \code{\link{compute_sentiment}}, \code{\link{sento_measures}}, \code{\link{merge_measures}}, \code{\link{to_global}}
 #' \item Sparse modelling: \code{\link{ctr_model}}, \code{\link{sento_model}}
 #' \item Prediction and post-modelling analysis: \code{\link{predict.sentomodel}}, \code{\link{retrieve_attributions}},
-#' \code{\link{perform_MCS}}
+#' \code{\link{plot_attributions}}, \code{\link{perform_MCS}}
 #' }
 #'
 #' @section Update:
