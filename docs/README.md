@@ -9,7 +9,7 @@ The **`sentometrics`** package is designed to do time series analysis based on t
 
 The package was first created during [Google Summer of Code 2017](https://github.com/rstats-gsoc/gsoc2017/wiki/Sentometrics:-An-integrated-framework-for-text-based-multivariate-time-series-modeling-and-forecasting). So far, the package implements the main methodology developed in the paper "[Questioning the news about economic growth: Sparse forecasting using thousands of news-based sentiment values](https://ssrn.com/abstract=2976084)" (Ardia, Bluteau and Boudt, 2017). We do believe the package in its current state may already be of strong interest to many people. Below, we present an overview of the different functionalities of the package. A hands-on methodological introduction is given in our [vignette](https://ssrn.com/abstract=3067734), as well as a code example (see the `run_vignette.R` script under the _/examples_ folder on our GitHub repository). 
 
-## The functionalities of sentometrics
+## The functionalities of **sentometrics**
 
 ### Typical workflow
 
@@ -17,29 +17,29 @@ Below series of steps represent a typical workflow and the associated **`sentome
 
 **Step 1**: Acquire and pre--process a selection of texts and generate relevant features
     
-- `sento_corpus()`, `add_features()`
+**_Functions_:** `sento_corpus()`, and `add_features()`.
 
-**_Output_**: a `sentocorpus` object.
+**_Output_:** a `sentocorpus` object.
 
 **Step 2**: Choose lexicons and compute document--level textual sentiment
     
-- `setup_lexicons()`, `compute_sentiment()`
+**_Functions_:** `setup_lexicons()`, and `compute_sentiment()`.
 
 **Step 3**: Aggregate the sentiment into multiple textual sentiment time series
     
-- `ctr_agg()`, `sento_measures()`, `ctr_merge()`, `merge_measures()`, `plot()`, `to_global()`, `subset_measures()`, `select_measures()`, `fill_measures()`, `diff()`, `scale()`, `summary()`
+**_Functions_:** `ctr_agg()`, `sento_measures()`, `ctr_merge()`, `merge_measures()`, `plot()`, `to_global()`, `subset_measures()`, `select_measures()`, `fill_measures()`, `diff()`, `scale()`, and `summary()`.
 
-**_Output_**: a `sentomeasures` object.
+**_Output_:** a `sentomeasures` object.
 
 **Step 4**: Calibrate (sparse) regression model and perform (out--of--sample) predictions
     
-- `ctr_model`, `sento_model()`
+**_Functions_:** `ctr_model()`, and `sento_model()`.
 
-**_Output_**: a `sentomodel` or a `sentomodeliter` object.
+**_Output_:** a `sentomodel` or a `sentomodeliter` object.
 
 **Step 5**: Evaluate prediction performance and retrieve sentiment attributions
     
-- `retrieve_attributions()`, `plot_attributions()`, `extract_peakdocs()`, `predict()`, `perform_MCS()`, `plot()`, `summary()`
+**_Functions_:** `predict()`, `retrieve_attributions()`, `plot_attributions()`, `extract_peakdocs()`, `perform_MCS()`, `plot()`, and `summary()`.
 
 ### Textual sentiment aggregation
 
@@ -47,7 +47,7 @@ We impose texts and the features metadata to be structured as a `data.frame`. Th
 
 This data structure of texts needs to be plugged into the `sento_corpus()` function, to achieve a more formal corpus data structure. We rely on the **`quanteda`** package which has a fast and well supported corpus mechanism, on which the **`sentometrics`** corpus constructor is based.
 
-The computation of the textual sentiment per document is based on the **bag-of-words** model. This approach looks for words in a text that are included in a predefined word list, called a lexicon, and then assigns a score to these words as also given by the lexicon. We also account for valence shifters, such as negators or amplifiers, one word away from a polarized word. Applying valence word lists in combination with lexicons gives already an accurate picture of the sentiment embedded texts, especially when aggregated. The **`sentometrics`** package includes four well-known default lexicons and a negators valence word list, available in English, French and Dutch, the latter two often as a result of a translation from English. Textual sentiment analysis gets increasingly complex if one wants to account for ambiguous word sequences, let alone entire sentences or paragraphs. We currently refrain from this complexity due to its cost in efficiency with respect to the large dimensionality of the task we face, being computing sentiment and aggregating scores in one go for a lot of texts. _Future versions of the package will integrate more complex sentiment analysis computation algorithms._
+The computation of the textual sentiment per document is based on the **bag-of-words** model. This approach looks for words in a text that are included in a predefined word list, called a lexicon, and then assigns a score to these words as also given by the lexicon. We also account for valence shifters, such as negators or amplifiers, one word away from a polarized word. Applying valence word lists in combination with lexicons gives already an accurate picture of the sentiment embedded texts, especially when aggregated. The **`sentometrics`** package includes four well-known default lexicons and a negators valence word list, available in English, French and Dutch, the latter two often as a result of a translation from English. Textual sentiment analysis gets increasingly complex if one wants to account for ambiguous word sequences, let alone entire sentences or paragraphs. We currently refrain from this complexity due to its cost in efficiency with respect to the large dimensionality of the task we face, being computing sentiment and aggregating scores in one go for a lot of texts. _A future version of the package will integrate more complex sentiment analysis computation algorithms._
 
 Word lists should be passed on to the `setup_lexicons()` function to specify which lexicons and valence shifters to use in the sentiment computation. The overall structure and validation procedure of the word lists is inspired by the **`sentimentr`** package.
 
@@ -57,9 +57,9 @@ All the hard work in setting up a corpus, deciding on the right lexicons (and va
 
 ### Further sentiment merging
 
-There are two more ways to alter the sentiment measures. A first one is to merge selected time series with each other as an average through the `ctr_merge()` and `merge_measures()` functions. In the example, two time weighting schemes, two lexicons and two features are collapsed into one by taking the average across the relevant sentiment measures. 
+There are two means to further merge the sentiment measures. This can be done either before the modelling step, or after, based on the information obtained from the model(s) estimated (for example, on the importance of each dimension and their components). A first one is to merge selected time series with each other as an average through the `ctr_merge()` and `merge_measures()` functions.
 
-One can also merge all sentiment measures into single, global, domain-specific sentiment measures. This requires to set weights to the components in the lexicons, features and time weighting dimensions; higher weights for some components will make the global sentiment measure tilt more towards the measures composed of these components. see `to_global()`.
+One can also merge all sentiment measures into single (global) domain-specific sentiment measures. This requires to set weights to the components in the lexicons, features and time weighting dimensions; higher weights for some components will make the global sentiment measure tilt more towards the measures composed of these components. See `to_global()`.
 
 ### Modelling and prediction
 
