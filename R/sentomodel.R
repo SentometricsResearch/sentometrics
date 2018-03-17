@@ -523,9 +523,9 @@ compute_IC <- function(reg, y, x, alpha, ic, family) {
   if (family == "gaussian") type <- "link"
   else stop("Calibration via information criteria to implement for 'binomial' and 'multinomial'.")
   yEst <- stats::predict(reg, newx = x, type = type)
+  # dfA <- compute_df_old(alpha, beta, lambda, x)
   xScaled <- scale(x)
   xA <- lapply(1:length(lambda), function(i) return(as.matrix(xScaled[, which(beta[, i] != 0)])))
-  # dfA <- compute_df_old(alpha, beta, lambda, x)
   dfA <- compute_df(alpha, lambda, xA)
   RSS <- apply(yEst, 2, function(est) return(sum((y - est)^2)))
   # sigma2 <- RSS[length(RSS)] / (nrow(y) - dfA[length(RSS)])
