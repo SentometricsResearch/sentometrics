@@ -21,7 +21,7 @@
 #' }
 #'
 #' @section Update:
-#' The development version of the package is available at \url{https://github.com/sborms/sentometrics}.
+#' The development version of the package resides at \url{https://github.com/sborms/sentometrics}.
 #'
 #' @note The methodology behind the sentiment aggregation framework can be consulted in the working paper ``Questioning
 #' the news about economic growth: Sparse forecasting using thousands of news-based sentiment values'' (Ardia, Bluteau, and
