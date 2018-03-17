@@ -185,7 +185,7 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #'
 #' # construct a sentomeasures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
-#' corpusSample <- quanteda::corpus_sample(corpus, size = 750)
+#' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howWithin = "tf-idf",
 #'                howDocs = "proportional",
@@ -450,7 +450,7 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 #'
 #' # sentiment computation based on raw frequency counts
 #' corpus <- sento_corpus(corpusdf = usnews)
-#' corpusSample <- quanteda::corpus_sample(corpus, size = 1000)
+#' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' sent <- compute_sentiment(corpusSample, l, how = "counts")
 #'
@@ -499,7 +499,7 @@ get_features_sentiment <- compiler::cmpfun(.get_features_sentiment)
 #'
 #' # computation of sentiment and aggregation into sentiment measures
 #' corpus <- sento_corpus(corpusdf = usnews)
-#' corpusSample <- quanteda::corpus_sample(corpus, size = 1000)
+#' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' sent <- compute_sentiment(corpusSample, l, how = "counts")
 #' ctr <- ctr_agg(howTime = c("linear"), by = "year", lag = 3)
@@ -662,7 +662,7 @@ agg_time <- function(sentomeasures, lag, fill, how = get_hows()$time, ...) {
 #'
 #' # construct a sentomeasures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
-#' corpusSample <- quanteda::corpus_sample(corpus, size = 750)
+#' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sentomeasures <- sento_measures(corpusSample, l, ctr)
@@ -821,22 +821,22 @@ merge_measures <- function(ctr) {
 #' @author Samuel Borms
 #'
 #' @description Merges all sentiment measures into a weighted global textual sentiment measure for each of the
-#' \code{lexicons}, \code{features}, and \code{time} dimensions specified in the input \code{sentomeasures} object.
+#' \code{lexicons}, \code{features}, and \code{time} dimensions.
 #'
 #' @details This function returns no new \code{sentomeasures} object. The global sentiment measures as outputted can still
-#' be easily be added to regressions as an additional variable using the \code{x} argument in the \code{\link{sento_model}}
-#' function. The measures are constructed from weights that indicate the importance (and sign) along each component in the
-#' lexicons, features and time dimensions. There is no condition in terms of allowed weights. For example, the global index
-#' based on the supplied lexicon weights (\code{"globLex"}) is obtained first by multiplying every sentiment measure with its
-#' corresponding weight (meaning, the weight given to the lexicon the sentiment is computed with), then by taking the
-#' average per date.
+#' easily be added to regressions as an additional variable using the \code{x} argument in the \code{\link{sento_model}}
+#' function. The measures are constructed from weights that indicate the importance (and sign) along each component from
+#' the \code{lexicons}, \code{features}, and \code{time} dimensions. There is no condition in terms of allowed weights. For
+#' example, the global index based on the supplied lexicon weights (\code{"globLex"}) is obtained first by multiplying
+#' every sentiment measure with its corresponding weight (meaning, the weight given to the lexicon the sentiment is
+#' computed with), then by taking the average per date.
 #'
 #' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
-#' @param lexicons a \code{numeric} vector of weights, of size \code{length(sentomeasures$lexicons)}, in the same order
+#' @param lexicons a \code{numeric} vector of weights, of size \code{length(sentomeasures$lexicons)}, in the same order.
 #' By default set to 1, which means equally weighted.
-#' @param features a \code{numeric} vector of weights, of size \code{length(sentomeasures$features)}, in the same order
+#' @param features a \code{numeric} vector of weights, of size \code{length(sentomeasures$features)}, in the same order.
 #' By default set to 1, which means equally weighted.
-#' @param time a \code{numeric} vector of weights, of size \code{length(sentomeasures$time)}, in the same order by default
+#' @param time a \code{numeric} vector of weights, of size \code{length(sentomeasures$time)}, in the same order. By default
 #' set to 1, which means equally weighted.
 #'
 #' @return A \code{data.frame} with the different types of weighted global sentiment measures, named \code{"globLex"},
@@ -852,7 +852,7 @@ merge_measures <- function(ctr) {
 #'
 #' # construct a sentomeasures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
-#' corpusSample <- quanteda::corpus_sample(corpus, size = 1000)
+#' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sentomeasures <- sento_measures(corpusSample, l, ctr)
@@ -928,7 +928,7 @@ to_global <- function(sentomeasures, lexicons = 1, features = 1, time = 1) {
 #'
 #' # construct a sentomeasures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
-#' corpusSample <- quanteda::corpus_sample(corpus, size = 1000)
+#' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sentomeasures <- sento_measures(corpusSample, l, ctr)
@@ -991,7 +991,7 @@ select_measures <- function(sentomeasures, toSelect, do.combine = TRUE) {
 #'
 #' # construct a sentomeasures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
-#' corpusSample <- quanteda::corpus_sample(corpus, size = 1000)
+#' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sentomeasures <- sento_measures(corpusSample, l, ctr)
@@ -1010,7 +1010,7 @@ subset_measures <- function(sentomeasures, subset) {
     sub <- stringi::stri_replace_all(sub, "", regex = " ")
     sub <- stringi::stri_replace_all(sub, "____", regex = "--")
     measures <- sentomeasures$measures
-    colnames(measures) <- stringi::stri_replace_all(colnames(measures), "____", regex = "--") # -- are problematic here
+    colnames(measures) <- stringi::stri_replace_all(colnames(measures), "____", regex = "--") # -- is problematic here
     measures <- tryCatch(measures[eval(parse(text = sub))], error = function(e) return(NULL))
     if (is.null(measures)) stop("The 'subset' argument must evaluate to logical.")
     colnames(measures) <- stringi::stri_replace_all(colnames(measures), "--", regex = "____")
@@ -1118,7 +1118,7 @@ plot.sentomeasures <- function(x, group = "all", ...) {
 #'
 #' # construct a sentomeasures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
-#' corpusSample <- quanteda::corpus_sample(corpus, sample = 500)
+#' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sentomeasures <- sento_measures(corpusSample, l, ctr)
@@ -1194,26 +1194,27 @@ scale.sentomeasures <- function(x, center = TRUE, scale = TRUE) {
   return(sentomeasures)
 }
 
-#' Extract documents related to sentiment peaks
+#' Extract dates and documents related to sentiment peaks
 #'
 #' @author Samuel Borms
 #'
-#' @description This function gives the dates and documents for which aggregated sentiment was
-#' most extreme (lowest, highest or both in absolute terms).
+#' @description This function gives the dates and documents for which aggregated sentiment is most
+#' extreme (lowest, highest or both in absolute terms). The extracted dates are unique, even when,
+#' for example, all most extreme sentiment values (for different sentiment measures) occur on only
+#' one date.
 #'
 #' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
 #' @param sentocorpus the \code{sentocorpus} object created with \code{\link{sento_corpus}}, used for the construction
 #' of the input \code{sentomeasures} object.
-#' @param n a \code{numeric} value to indicate the number of documents to extract. The associated dates are not
-#' necessarily unique, given that, for example, extreme sentiment may occur on only one date but for different sentiment
-#' measures.
-#' @param type a \code{character} value, either \code{"pos"}, \code{"neg"} or \code{"both"}; respectively to look
-#' for the \code{n} most positive, most negative or most extreme (in absolute terms) sentiment occurrences.
+#' @param n a \code{numeric} value to indicate the number of dates associated to sentiment peaks to extract.
+#' @param type a \code{character} value, either \code{"pos"}, \code{"neg"} or \code{"both"}, respectively to look
+#' for the \code{n} dates related to the most positive, most negative or most extreme (in absolute terms) sentiment
+#' occurrences.
 #' @param do.average a \code{logical} to indicate whether peaks should be selected based on the average sentiment
-#' value per date. If \code{do.average = TRUE}, \code{n} unique dates are guaranteed (cf. argument \code{n}).
+#' value per date.
 #'
 #' @return A \code{list} with as elements \code{"dates"}, \code{"ids"} and \code{"documents"}, corresponding to
-#' the \code{n} sentiment peaks.
+#' the \code{n} extracted sentiment peak dates and associated document ids and texts.
 #'
 #' @examples
 #' data("usnews")
@@ -1222,7 +1223,7 @@ scale.sentomeasures <- function(x, center = TRUE, scale = TRUE) {
 #'
 #' # construct a sentomeasures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
-#' corpusSample <- quanteda::corpus_sample(corpus, sample = 500)
+#' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 #' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "month", lag = 3)
 #' sentomeasures <- sento_measures(corpusSample, l, ctr)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/sentomeasures.R
 \name{extract_peakdocs}
 \alias{extract_peakdocs}
-\title{Extract documents related to sentiment peaks}
+\title{Extract dates and documents related to sentiment peaks}
 \usage{
 extract_peakdocs(sentomeasures, sentocorpus, n = 10, type = "both",
   do.average = FALSE)
@@ -13,23 +13,24 @@ extract_peakdocs(sentomeasures, sentocorpus, n = 10, type = "both",
 \item{sentocorpus}{the \code{sentocorpus} object created with \code{\link{sento_corpus}}, used for the construction
 of the input \code{sentomeasures} object.}
 
-\item{n}{a \code{numeric} value to indicate the number of documents to extract. The associated dates are not
-necessarily unique, given that, for example, extreme sentiment may occur on only one date but for different sentiment
-measures.}
+\item{n}{a \code{numeric} value to indicate the number of dates associated to sentiment peaks to extract.}
 
-\item{type}{a \code{character} value, either \code{"pos"}, \code{"neg"} or \code{"both"}; respectively to look
-for the \code{n} most positive, most negative or most extreme (in absolute terms) sentiment occurrences.}
+\item{type}{a \code{character} value, either \code{"pos"}, \code{"neg"} or \code{"both"}, respectively to look
+for the \code{n} dates related to the most positive, most negative or most extreme (in absolute terms) sentiment
+occurrences.}
 
 \item{do.average}{a \code{logical} to indicate whether peaks should be selected based on the average sentiment
-value per date. If \code{do.average = TRUE}, \code{n} unique dates are guaranteed (cf. argument \code{n}).}
+value per date.}
 }
 \value{
 A \code{list} with as elements \code{"dates"}, \code{"ids"} and \code{"documents"}, corresponding to
-the \code{n} sentiment peaks.
+the \code{n} extracted sentiment peak dates and associated document ids and texts.
 }
 \description{
-This function gives the dates and documents for which aggregated sentiment was
-most extreme (lowest, highest or both in absolute terms).
+This function gives the dates and documents for which aggregated sentiment is most
+extreme (lowest, highest or both in absolute terms). The extracted dates are unique, even when,
+for example, all most extreme sentiment values (for different sentiment measures) occur on only
+one date.
 }
 \examples{
 data("usnews")
@@ -38,7 +39,7 @@ data("valence")
 
 # construct a sentomeasures object to start with
 corpus <- sento_corpus(corpusdf = usnews)
-corpusSample <- quanteda::corpus_sample(corpus, sample = 500)
+corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "month", lag = 3)
 sentomeasures <- sento_measures(corpusSample, l, ctr)

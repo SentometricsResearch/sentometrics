@@ -50,7 +50,7 @@ data("valence")
 
 # sentiment computation based on raw frequency counts
 corpus <- sento_corpus(corpusdf = usnews)
-corpusSample <- quanteda::corpus_sample(corpus, size = 1000)
+corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 sent <- compute_sentiment(corpusSample, l, how = "counts")
 

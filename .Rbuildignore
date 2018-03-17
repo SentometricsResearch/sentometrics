@@ -4,7 +4,6 @@
 ^docs$
 ^examples$
 ^THANKS$
-^sentometrics-manual\.pdf$
-^sentometrics-vignette\.pdf$
+^sentometrics-manual-*\.pdf$
 ^\.travis\.yml$
 ^cran-comments\.md$
