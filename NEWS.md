@@ -1,7 +1,7 @@
 
 ## sentometrics 0.3.0
 
-- new functions: `subset_measures()`, `extract_peakdocs()`, `diff()`
+- new functions: `diff()`, `extract_peakdocs()`, and `subset_measures()` 
 - modified R depends from 3.4.2 to 3.4.0
 - word count per document now determined based on a separate tokenisation
 - improved valence shifters search (modified `incluce_valence()` helper function)
