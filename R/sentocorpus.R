@@ -30,9 +30,9 @@
 #' @param do.clean a \code{logical}, if \code{TRUE} all texts undergo a cleaning routine to eliminate common textual garbage.
 #' This includes a brute force replacement of HTML tags and non-alphanumeric characters by an empty string.
 #'
-#' @return A \code{sentocorpus} object, derived from a \pkg{quanteda} corpus classed \code{list} keeping the elements
-#' \code{"documents"}, \code{"metadata"}, and \code{"settings"}. The first element incorporates the corpus represented as
-#' a \code{data.frame}.
+#' @return A \code{sentocorpus} object, derived from a \pkg{quanteda} corpus classed \code{list} with the elements
+#' \code{"documents"}, \code{"metadata"}, and \code{"settings"} kept. The first element incorporates the corpus
+#' represented as a \code{data.frame}.
 #'
 #' @seealso \code{\link[quanteda]{corpus}}
 #'

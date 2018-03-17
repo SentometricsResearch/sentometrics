@@ -7,7 +7,7 @@
 setup_lexicons(lexiconsIn, valenceIn = NULL, do.split = FALSE)
 }
 \arguments{
-\item{lexiconsIn}{a named \code{list} of (raw) lexicons, each element being a \code{data.frame} or a \code{data.table} with
+\item{lexiconsIn}{a named \code{list} of (raw) lexicons, each element as a \code{data.frame} or a \code{data.table} with
 respectively a words column and a polarity score column. Alternatively, a subset of the already formatted built-in lexicons
 accessible via \code{lexicons} can be declared too, as part of the same list input. If only (some of) the package built-in
 lexicons want to be used (with \emph{no} valence shifters), one can simply supply \code{lexicons[c(...)]} as an argument to

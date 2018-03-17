@@ -22,9 +22,9 @@ spaces in the names of the features are replaced by underscores.}
 This includes a brute force replacement of HTML tags and non-alphanumeric characters by an empty string.}
 }
 \value{
-A \code{sentocorpus} object, derived from a \pkg{quanteda} corpus classed \code{list} keeping the elements
-\code{"documents"}, \code{"metadata"}, and \code{"settings"}. The first element incorporates the corpus represented as
-a \code{data.frame}.
+A \code{sentocorpus} object, derived from a \pkg{quanteda} corpus classed \code{list} with the elements
+\code{"documents"}, \code{"metadata"}, and \code{"settings"} kept. The first element incorporates the corpus
+represented as a \code{data.frame}.
 }
 \description{
 Formalizes a collection of texts into a well-defined corpus object, by mainly calling the
