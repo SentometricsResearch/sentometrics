@@ -26,7 +26,7 @@ data("valence")
 
 # construct a sentomeasures object to start with
 corpus <- sento_corpus(corpusdf = usnews)
-corpusSample <- quanteda::corpus_sample(corpus, sample = 500)
+corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 sentomeasures <- sento_measures(corpusSample, l, ctr)

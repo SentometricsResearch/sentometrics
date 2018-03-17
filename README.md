@@ -1,6 +1,6 @@
 
 # sentometrics
-#### An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction
+### An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction
 
 <!--- temporary commenting out until CRAN/pandoc issues (e.g. handshake) solved --->
 <!--- [![Build Status](https://travis-ci.org/sborms/sentometrics.svg?branch=master)](https://travis-ci.org/sborms/sentometrics) --->

@@ -112,8 +112,8 @@ clean <- function(corpusdf) {
 #'
 #' @author Samuel Borms
 #'
-#' @description Adds new feature columns, either user-supplied or based on a simple keyword(s) search, to a provided
-#' \code{sentocorpus} object.
+#' @description Adds new feature columns, either user-supplied or based on keyword(s)/regex pattern search, to
+#' a provided \code{sentocorpus} object.
 #'
 #' @details If a provided feature name is already part of the corpus, it will be replaced. The \code{featuresdf} and
 #' \code{keywords} arguments can be provided at the same time, or only one of them, leaving the other at \code{NULL}.
@@ -152,6 +152,7 @@ clean <- function(corpusdf) {
 #'                         keywords = list(pres = c("Obama", "US president")),
 #'                         do.binary = FALSE)
 #' corpus4 <- add_features(corpus,
+#'                         featuresdf = data.frame(all = 1),
 #'                         keywords = list(pres1 = c("Obama|US [p|P]resident"),
 #'                                         pres2 = c("\\bObama\\b|\\bUS president\\b"),
 #'                                         war = c("war")),

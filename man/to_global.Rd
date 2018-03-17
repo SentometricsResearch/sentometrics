@@ -9,13 +9,13 @@ to_global(sentomeasures, lexicons = 1, features = 1, time = 1)
 \arguments{
 \item{sentomeasures}{a \code{sentomeasures} object created using \code{\link{sento_measures}}.}
 
-\item{lexicons}{a \code{numeric} vector of weights, of size \code{length(sentomeasures$lexicons)}, in the same order
+\item{lexicons}{a \code{numeric} vector of weights, of size \code{length(sentomeasures$lexicons)}, in the same order.
 By default set to 1, which means equally weighted.}
 
-\item{features}{a \code{numeric} vector of weights, of size \code{length(sentomeasures$features)}, in the same order
+\item{features}{a \code{numeric} vector of weights, of size \code{length(sentomeasures$features)}, in the same order.
 By default set to 1, which means equally weighted.}
 
-\item{time}{a \code{numeric} vector of weights, of size \code{length(sentomeasures$time)}, in the same order by default
+\item{time}{a \code{numeric} vector of weights, of size \code{length(sentomeasures$time)}, in the same order. By default
 set to 1, which means equally weighted.}
 }
 \value{
@@ -25,16 +25,16 @@ of the the three other measures.
 }
 \description{
 Merges all sentiment measures into a weighted global textual sentiment measure for each of the
-\code{lexicons}, \code{features}, and \code{time} dimensions specified in the input \code{sentomeasures} object.
+\code{lexicons}, \code{features}, and \code{time} dimensions.
 }
 \details{
 This function returns no new \code{sentomeasures} object. The global sentiment measures as outputted can still
-be easily be added to regressions as an additional variable using the \code{x} argument in the \code{\link{sento_model}}
-function. The measures are constructed from weights that indicate the importance (and sign) along each component in the
-lexicons, features and time dimensions. There is no condition in terms of allowed weights. For example, the global index
-based on the supplied lexicon weights (\code{"globLex"}) is obtained first by multiplying every sentiment measure with its
-corresponding weight (meaning, the weight given to the lexicon the sentiment is computed with), then by taking the
-average per date.
+easily be added to regressions as an additional variable using the \code{x} argument in the \code{\link{sento_model}}
+function. The measures are constructed from weights that indicate the importance (and sign) along each component from
+the \code{lexicons}, \code{features}, and \code{time} dimensions. There is no condition in terms of allowed weights. For
+example, the global index based on the supplied lexicon weights (\code{"globLex"}) is obtained first by multiplying
+every sentiment measure with its corresponding weight (meaning, the weight given to the lexicon the sentiment is
+computed with), then by taking the average per date.
 }
 \examples{
 data("usnews")
@@ -43,7 +43,7 @@ data("valence")
 
 # construct a sentomeasures object to start with
 corpus <- sento_corpus(corpusdf = usnews)
-corpusSample <- quanteda::corpus_sample(corpus, size = 1000)
+corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 sentomeasures <- sento_measures(corpusSample, l, ctr)
