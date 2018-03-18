@@ -238,8 +238,8 @@ print.sentomeasures <- function(x, ...) {
 #'
 #' @description Structures provided lexicons and potentially integrates valence words. One can also provide (part of) the
 #' built-in lexicons from \code{data("lexicons")} or a valence word list from \code{data("valence")} as an argument.
-#' Makes use of the \code{\link[sentimentr]{as_key}} function from the \pkg{sentimentr} package to make the output coherent,
-#' convert all words to lowercase and check for duplicates.
+#' Part of this function mimicks the \code{\link[sentimentr]{as_key}} function from the \pkg{sentimentr} package to make
+#' the output coherent, convert all words to lowercase and check for duplicates.
 #'
 #' @param lexiconsIn a named \code{list} of (raw) lexicons, each element as a \code{data.frame} or a \code{data.table} with
 #' respectively a words column and a polarity score column. Alternatively, a subset of the already formatted built-in lexicons
@@ -262,8 +262,6 @@ print.sentomeasures <- function(x, ...) {
 #' the valence word type: "NOT_" is added for negators, "VERY_" is added for amplifiers and "HARDLY_" is added for
 #' deamplifiers. Lexicon scores are multiplied by -1, 2 and 0.5 by default, respectively, or the first value of the scores
 #' column of the valence word list.
-#'
-#' @seealso \code{\link[sentimentr]{as_key}}
 #'
 #' @examples
 #' data("lexicons")
