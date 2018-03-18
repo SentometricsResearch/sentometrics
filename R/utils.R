@@ -339,3 +339,42 @@ pdf_manual <- function(wd) {
   setwd(paste0(wd, "/sentometrics"))
 }
 
+# this function is directly taken from the sentimentr package
+# (the as_key() function) but copied to bring R version
+# depends down and decrease number of dependencies by one
+# the function is slightly simplified (only 1 argument)
+sento_as_key <- function (x, ...) {
+  stopifnot(is.data.frame(x))
+  culprits <- NULL
+  if (length(x[[1]]) != length(unique(x[[1]]))) {
+    tab <- table(x[[1]])
+    culprits <- paste(paste0("   * ", sort(names(tab[tab > 1]))), collapse = "\n")
+    warning("One or more terms in the first column are repeated. Terms must be unique.\n  ",
+            "I found the following likely culprits:\n\n", culprits,
+            "\n\nThese terms have been dropped.\n")
+  }
+  if (any(grepl("[A-Z]", x[[1]]))) {
+    culprits2 <- grep("[A-Z]", x[[1]], value = TRUE)
+    culprits2 <- paste(paste0("   * ", culprits2), collapse = "\n")
+    warning("One or more terms in the first column contain capital letters. Capitals are ignored.\n  ",
+            "I found the following suspects:\n\n", culprits2,
+            "\n\nThese terms have been lower cased.\n")
+    x[[1]] <- tolower(x[[1]])
+  }
+  if (is.factor(x[[1]])) {
+    warning("Column 1 was a factor...\nConverting to character.")
+    x[[1]] <- as.character(x[[1]])
+  }
+  if (!is.character(x[[1]]))
+    stop("Column 1 must be character.")
+  if (!is.numeric(x[[2]]))
+    stop("Column 2 must be numeric.")
+  colnames(x) <- c("x", "y")
+  data.table::setDT(x)
+  x <- x[order(x), ]
+  if (!is.null(culprits))
+    x <- x[!x %in% sort(names(tab[tab > 1])), ]
+  data.table::setkey(x, "x")
+  x
+}
+

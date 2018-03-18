@@ -20,6 +20,7 @@ Displays a plot of all predictions made through the iterative model computation 
 input \code{sentomodeliter} object, as well as the corresponding true values.
 }
 \examples{
+\dontrun{
 data("usnews")
 data("lexicons")
 data("valence")
@@ -48,7 +49,7 @@ summary(out)
 p <- plot(out)
 p <- p +
   ggthemes::theme_few()
-p
+p}
 
 }
 \author{

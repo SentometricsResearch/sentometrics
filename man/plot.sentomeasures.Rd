@@ -38,16 +38,16 @@ ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 sentomeasures <- sento_measures(corpusSample, l, ctr)
 
 # plot sentiment measures
-plot(sentomeasures)
 plot(sentomeasures, group = "features")
 
+\dontrun{
 # adjust appearance of plot
 p <- plot(sentomeasures)
 p <- p +
   ggthemes::theme_base() +
   scale_x_date(name = "month-year") +
   scale_y_continuous(name = "newName")
-p
+p}
 
 }
 \author{
