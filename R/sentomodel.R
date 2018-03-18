@@ -141,12 +141,13 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' @details Models are computed using the elastic net regularization as implemented in the \pkg{glmnet} package, to account for
 #' the multidimensionality of the sentiment measures. Additional explanatory variables are not subject to shrinkage. Independent
 #' variables are normalized in the regression process, but coefficients are returned in their original space. For a helpful
-#' introduction to \pkg{glmnet}, we refer to their \href{https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html#lin}{vignette}.
-#' The optimal elastic net parameters \code{lambda} and \code{alpha} are calibrated either through a to specify information
-#' criterion or through cross-validation (based on the "rolling forecasting origin" principle, using the
-#' \code{\link[caret]{train}} function). In the latter case, the training metric is automatically set to \code{"RMSE"} for
-#' a linear model and to \code{"Accuracy"} for a logistic model. We suppress many of the details that can be supplied to the
-#' \code{\link[glmnet]{glmnet}} and \code{\link[caret]{train}} functions we rely on, for the sake of user-friendliness.
+#' introduction to \pkg{glmnet}, we refer to their
+#' \href{https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html#lin}{vignette}. The optimal elastic net parameters
+#' \code{lambda} and \code{alpha} are calibrated either through a to specify information criterion or through
+#' cross-validation (based on the "rolling forecasting origin" principle, using the \code{\link[caret]{train}} function).
+#' In the latter case, the training metric is automatically set to \code{"RMSE"} for a linear model and to \code{"Accuracy"}
+#' for a logistic model. We suppress many of the details that can be supplied to the \code{\link[glmnet]{glmnet}} and
+#' \code{\link[caret]{train}} functions we rely on, for the sake of user-friendliness.
 #'
 #' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}. There should be at least
 #' two explanatory variables including the ones provided through the \code{x} argument.
