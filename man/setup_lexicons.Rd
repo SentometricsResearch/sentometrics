@@ -35,8 +35,8 @@ column of the valence word list.
 \description{
 Structures provided lexicons and potentially integrates valence words. One can also provide (part of) the
 built-in lexicons from \code{data("lexicons")} or a valence word list from \code{data("valence")} as an argument.
-Makes use of the \code{\link[sentimentr]{as_key}} function from the \pkg{sentimentr} package to make the output coherent,
-convert all words to lowercase and check for duplicates.
+Part of this function mimicks the \code{\link[sentimentr]{as_key}} function from the \pkg{sentimentr} package to make
+the output coherent, convert all words to lowercase and check for duplicates.
 }
 \examples{
 data("lexicons")
@@ -59,9 +59,6 @@ library("lexicon")
 lexIn2 <- list(hul = lexicon::hash_sentiment_huliu, joc = lexicon::hash_sentiment_jockers)
 l5 <- setup_lexicons(c(lexIn, lexIn2), valIn)}
 
-}
-\seealso{
-\code{\link[sentimentr]{as_key}}
 }
 \author{
 Samuel Borms
