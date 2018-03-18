@@ -16,3 +16,4 @@ script:
 r:
   - devel
   - release
+  - oldrel
