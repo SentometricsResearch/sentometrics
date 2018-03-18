@@ -675,6 +675,7 @@ print.sentomodeliter <- function(x, ...) {
 #' the \code{+} operator (see examples).
 #'
 #' @examples
+#' \dontrun{
 #' data("usnews")
 #' data("lexicons")
 #' data("valence")
@@ -703,7 +704,7 @@ print.sentomodeliter <- function(x, ...) {
 #' p <- plot(out)
 #' p <- p +
 #'   ggthemes::theme_few()
-#' p
+#' p}
 #'
 #' @import ggplot2
 #' @export

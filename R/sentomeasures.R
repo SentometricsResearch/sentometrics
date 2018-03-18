@@ -306,7 +306,7 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
   }
   lexNames <- names(lexiconsIn)
   # convert to sentimentr format while supressing warnings on removal of duplicated values
-  lexicons <- suppressWarnings(lapply(lexiconsIn, sentimentr::as_key, comparison = NULL))
+  lexicons <- suppressWarnings(lapply(lexiconsIn, sento_as_key))
   lexicons <- lapply(lexicons, function(x) {names(x) <- c("x", "y"); return(x)})
   names(lexicons) <- lexNames
   if (!is.null(valenceIn)) {
@@ -1059,16 +1059,16 @@ subset_measures <- function(sentomeasures, subset) {
 #' sentomeasures <- sento_measures(corpusSample, l, ctr)
 #'
 #' # plot sentiment measures
-#' plot(sentomeasures)
 #' plot(sentomeasures, group = "features")
 #'
+#' \dontrun{
 #' # adjust appearance of plot
 #' p <- plot(sentomeasures)
 #' p <- p +
 #'   ggthemes::theme_base() +
 #'   scale_x_date(name = "month-year") +
 #'   scale_y_continuous(name = "newName")
-#' p
+#' p}
 #'
 #' @import ggplot2
 #' @export

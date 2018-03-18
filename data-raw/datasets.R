@@ -172,7 +172,7 @@ prepare_word_list <- function(fileName, type, name) {
   # change to as_key() format
   w <- w[!duplicated(w$x), ]
   if (type == "lexicons") {
-    w <- sentimentr::as_key(w, comparison = NULL) # makes absolutely sure duplicated words are removed
+    w <- sentometrics:::sento_as_key(w) # makes absolutely sure duplicated words are removed
   }
   w <- w[w$x != "" & w$x != " " & w$x != "#naam", ]
 
