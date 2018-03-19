@@ -32,7 +32,7 @@ devtools::install_github("sborms/sentometrics")
 
 ## References
 
-Please cite `sentometrics` in publications. Use `citation("sentometrics")`.
+Please cite **`sentometrics`** in publications. Use `citation("sentometrics")`.
 
 ## Acknowledgements
 
