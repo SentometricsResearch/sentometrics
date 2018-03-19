@@ -73,8 +73,8 @@ ctrIC1 <- ctr_model(model = "gaussian", type = "BIC", do.iter = FALSE, h = 0,
 ctrIC2 <- ctr_model(model = "gaussian", type = "AIC", do.iter = TRUE, h = 0, nSample = 100)
 
 # cross-validation based model control functions
-ctrCV1 <- ctr_model(model = "gaussian", type = "cv", do.iter = FALSE, h = 0, trainWindow = 250,
-                    testWindow = 4, oos = 0, do.progress = TRUE)
+ctrCV1 <- ctr_model(model = "gaussian", type = "cv", do.iter = FALSE, h = 0,
+                    trainWindow = 250, testWindow = 4, oos = 0, do.progress = TRUE)
 ctrCV2 <- ctr_model(model = "binomial", type = "cv", h = 0, trainWindow = 250,
                     testWindow = 4, oos = 0, do.progress = TRUE)
 ctrCV3 <- ctr_model(model = "multinomial", type = "cv", h = 0, trainWindow = 250,

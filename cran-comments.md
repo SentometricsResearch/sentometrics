@@ -2,7 +2,7 @@
 ## resubmission (version 0.3) [18/03/2018]
 
 - some examples modified to diminish elapsed time (to pass pre-test)
-- R depends now >= 3.3.0, dependency on sentimentr omitted
+- R depends now >= 3.3.0, import of sentimentr omitted
 
 ## submission (version 0.3) [18/03/2018]
 
