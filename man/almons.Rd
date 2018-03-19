@@ -27,6 +27,7 @@ for input in \code{\link{ctr_agg}}.
 \details{
 The Almon polynomial formula implemented is:
 \eqn{(1 - (i/n)^{b})(i/n)^{B - b}}{(1 - (i/n)^b) * (i/n)^(B - b)}, where \eqn{i} is the lag index from 1 to \eqn{n}.
+The inverse is computed by changing \eqn{i/n} to \eqn{1 - i/n}.
 }
 \seealso{
 \code{\link{ctr_agg}}
