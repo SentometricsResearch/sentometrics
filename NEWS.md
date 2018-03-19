@@ -2,7 +2,7 @@
 ## sentometrics 0.3.0
 
 - new functions: `diff()`, `extract_peakdocs()`, and `subset_measures()` 
-- modified R depends from 3.4.2 to 3.3.0, and dependency on **`sentimentr`** omitted
+- modified R depends from 3.4.2 to 3.3.0, and import of **`sentimentr`** omitted
 - word count per document now determined based on a separate tokenisation
 - improved valence shifters search (modified `incluce_valence()` helper function)
 - new option added for within-document aggregation (`"proportionalPol"`)
