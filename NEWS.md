@@ -1,4 +1,9 @@
 
+## sentometrics 0.3.5 (in development)
+
+- faster `to_global()`
+- set `tolower = FALSE` of `dfm()` constructer in `compute_sentiment()`
+
 ## sentometrics 0.3.0
 
 - new functions: `diff()`, `extract_peakdocs()`, and `subset_measures()` 
