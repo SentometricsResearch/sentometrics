@@ -878,13 +878,12 @@ to_global <- function(sentomeasures, lexicons = 1, features = 1, time = 1) {
     names(w) <- dims[[i]] # named weight lists
     return(w)
   })
+
   measures <- sentomeasures$measures
   measuresLong <- to_long(measures) # long format
-
-  wLex <- unlist(weights[[1]][measuresLong[["lexicons"]]])
-  wFeat <- unlist(weights[[2]][measuresLong[["features"]]])
-  wTime <- unlist(weights[[3]][measuresLong[["time"]]])
-
+  measuresLong[, "wLex" := unlist(weights[[1]][measuresLong[["lexicons"]]])] # weights lexicon
+  measuresLong[, "wFeat" := unlist(weights[[2]][measuresLong[["features"]]])] # weights features
+  measuresLong[, "wTime" :=- unlist(weights[[3]][measuresLong[["time"]]])] # weights time
   globs <- measuresLong[, list(globLex = mean(value * wLex),
                                globFeat = mean(value * wFeat),
                                globTime = mean(value * wTime)), by = date]
