@@ -17,7 +17,8 @@ available options on how aggregation can occur, see \code{\link{get_hows}()$word
 \item{dfm}{optional; an output from a \pkg{quanteda} \code{\link[quanteda]{dfm}} call, such that users can specify their
 own tokenisation scheme (via \code{\link[quanteda]{tokens}}) as well as other parameters related to the construction of
 a document-feature matrix (dfm). Make sure the document-feature matrix is constructed from the texts in the
-\code{sentocorpus} object, otherwise, results will be spurious or errors may occur.}
+\code{sentocorpus} object, otherwise, results will be spurious or errors may occur. Note that valence shifters will
+not be integrated into the features of a user-provided dfm.}
 }
 \value{
 A \code{list} containing:

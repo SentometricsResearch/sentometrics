@@ -355,7 +355,7 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
   wCounts <- quanteda::ntoken(tok)
 
   if (is.null(dfm)) {
-      dfm <- quanteda::dfm(tok, verbose = FALSE) # rows are corpus ids, columns are words, values are frequencies
+      dfm <- quanteda::dfm(tok, tolower = FALSE, verbose = FALSE) # rows: corpus ids, columns: words, values: frequencies
   } else if (!quanteda::is.dfm(dfm)) stop("The 'dfm' argument should pass quanteda::is.dfm(dfm).")
 
   if (how == "counts" || how == "proportional" || how == "proportionalPol") {
@@ -429,7 +429,8 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 #' @param dfm optional; an output from a \pkg{quanteda} \code{\link[quanteda]{dfm}} call, such that users can specify their
 #' own tokenisation scheme (via \code{\link[quanteda]{tokens}}) as well as other parameters related to the construction of
 #' a document-feature matrix (dfm). Make sure the document-feature matrix is constructed from the texts in the
-#' \code{sentocorpus} object, otherwise, results will be spurious or errors may occur.
+#' \code{sentocorpus} object, otherwise, results will be spurious or errors may occur. Note that valence shifters will
+#' not be integrated into the features of a user-provided dfm.
 #'
 #' @return A \code{list} containing:
 #' \item{corpus}{the supplied \code{sentocorpus} object; the texts are altered if valence shifters are part of the lexicons.}
