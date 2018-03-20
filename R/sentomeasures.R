@@ -887,7 +887,6 @@ to_global <- function(sentomeasures, lexicons = 1, features = 1, time = 1) {
   globs <- measuresLong[, list(globLex = mean(value * wLex),
                                globFeat = mean(value * wFeat),
                                globTime = mean(value * wTime)), by = date]
-
   globs[["global"]] <- rowMeans(globs[, -1])
   global <- as.data.frame(globs)
   row.names(global) <- global$date
