@@ -37,7 +37,7 @@
 #' @seealso \code{\link[quanteda]{corpus}}
 #'
 #' @examples
-#' data("usnews")
+#' data("usnews", package = "sentometrics")
 #'
 #' # corpus construction
 #' corpus <- sento_corpus(corpusdf = usnews)
@@ -140,7 +140,7 @@ clean <- function(corpusdf) {
 #' @return An updated \code{sentocorpus} object.
 #'
 #' @examples
-#' data("usnews")
+#' data("usnews", package = "sentometrics")
 #'
 #' # construct a corpus and add a random feature to it
 #' corpus <- sento_corpus(corpusdf = usnews)

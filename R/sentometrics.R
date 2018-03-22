@@ -64,7 +64,7 @@
 #' Other immediate lexicon options can be found in the \pkg{lexicon} package, more specifically the datasets preceded by
 #' \code{hash_sentiment_}.
 #'
-#' @usage data("lexicons")
+#' @usage data("lexicons", package = "sentometrics")
 #'
 #' @format A list with all built-in lexicons, appropriately named as \code{"NAME_language(_tr)"} .
 #'
@@ -95,7 +95,7 @@
 #'   \item valence_nl
 #' }
 #'
-#' @usage data("valence")
+#' @usage data("valence", package = "sentometrics")
 #'
 #' @format A list with all built-in valence word lists, appropriately named.
 #'
@@ -121,10 +121,10 @@
 #'   \item noneconomy. Equals 1 if the article is not relevant to the U.S. economy.
 #' }
 #'
-#' @usage data("usnews")
+#' @usage data("usnews", package = "sentometrics")
 #'
 #' @examples
-#' data("usnews")
+#' data("usnews", package = "sentometrics")
 #' usnews[3192, "text"]
 #' usnews[1:5, c("id", "date", "text")]
 #'
@@ -152,7 +152,7 @@
 #'   respectively and in a mutually exclusive sense.
 #' }
 #'
-#' @usage data("epu")
+#' @usage data("epu", package = "sentometrics")
 #'
 #' @format A \code{data.frame} with 417 rows and 4 columns.
 #'
