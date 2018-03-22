@@ -22,9 +22,9 @@ Scales and centers the sentiment measures from a \code{sentomeasures} object, co
 the measures are normalized. \code{NA}s are removed first.
 }
 \examples{
-data("usnews")
-data("lexicons")
-data("valence")
+data("usnews", package = "sentometrics")
+data("lexicons", package = "sentometrics")
+data("valence", package = "sentometrics")
 
 # construct a sentomeasures object to start with
 corpus <- sento_corpus(corpusdf = usnews)

@@ -27,10 +27,10 @@ implemented in the \pkg{MCS} package, for a set of different \code{sentomodelite
 }
 \examples{
 \dontrun{
-data("usnews")
-data("lexicons")
-data("valence")
-data("epu")
+data("usnews", package = "sentometrics")
+data("lexicons", package = "sentometrics")
+data("valence", package = "sentometrics")
+data("epu", package = "sentometrics")
 
 # construct two sentomeasures objects
 corpusAll <- sento_corpus(corpusdf = usnews)

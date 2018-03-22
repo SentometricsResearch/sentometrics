@@ -18,9 +18,9 @@ Merge (further aggregate) measures by combining across provided lexicons, featur
 dimensions. The combination occurs by taking the mean of the relevant measures.
 }
 \examples{
-data("usnews")
-data("lexicons")
-data("valence")
+data("usnews", package = "sentometrics")
+data("lexicons", package = "sentometrics")
+data("valence", package = "sentometrics")
 
 # construct a sentomeasures object to start with
 corpus <- sento_corpus(corpusdf = usnews)

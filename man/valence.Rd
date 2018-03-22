@@ -9,7 +9,7 @@
 \code{\link[lexicon]{hash_valence_shifters}} (negators)
 }
 \usage{
-data("valence")
+data("valence", package = "sentometrics")
 }
 \description{
 A list containing all built-in valence word lists, a \code{data.table} with three columns: a \code{x} column with the

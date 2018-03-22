@@ -45,9 +45,9 @@ converted to lowercase, in line with what the \code{\link{setup_lexicons}} funct
 words.
 }
 \examples{
-data("usnews")
-data("lexicons")
-data("valence")
+data("usnews", package = "sentometrics")
+data("lexicons", package = "sentometrics")
+data("valence", package = "sentometrics")
 
 # sentiment computation based on raw frequency counts
 corpus <- sento_corpus(corpusdf = usnews)

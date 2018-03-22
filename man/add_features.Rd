@@ -43,7 +43,7 @@ keywords) \code{|} as OR operator. The elements associated to \code{TRUE} do not
 evaluated as given, if the corresponding keywords vector consists of only one expression.
 }
 \examples{
-data("usnews")
+data("usnews", package = "sentometrics")
 
 # construct a corpus and add a random feature to it
 corpus <- sento_corpus(corpusdf = usnews)

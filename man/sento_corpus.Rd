@@ -43,7 +43,7 @@ or \code{\link[quanteda]{corpus_subset}}, that do not change the actual corpus s
 additional features, use \code{\link{add_features}}.
 }
 \examples{
-data("usnews")
+data("usnews", package = "sentometrics")
 
 # corpus construction
 corpus <- sento_corpus(corpusdf = usnews)
