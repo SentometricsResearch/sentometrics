@@ -34,9 +34,9 @@ Sets up control object for the optional merging (additional aggregation) of sent
 done by \code{\link{merge_measures}}.
 }
 \examples{
-data("usnews")
-data("lexicons")
-data("valence")
+data("usnews", package = "sentometrics")
+data("lexicons", package = "sentometrics")
+data("valence", package = "sentometrics")
 
 # construct a sentomeasures object to start with
 corpus <- sento_corpus(corpusdf = usnews)

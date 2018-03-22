@@ -21,10 +21,10 @@ input \code{sentomodeliter} object, as well as the corresponding true values.
 }
 \examples{
 \dontrun{
-data("usnews")
-data("lexicons")
-data("valence")
-data("epu")
+data("usnews", package = "sentometrics")
+data("lexicons", package = "sentometrics")
+data("valence", package = "sentometrics")
+data("epu", package = "sentometrics")
 
 # construct a sentomeasures object to start with
 corpusAll <- sento_corpus(corpusdf = usnews)

@@ -71,10 +71,10 @@ for a logistic model. We suppress many of the details that can be supplied to th
 \code{\link[caret]{train}} functions we rely on, for the sake of user-friendliness.
 }
 \examples{
-data("usnews")
-data("lexicons")
-data("valence")
-data("epu")
+data("usnews", package = "sentometrics")
+data("lexicons", package = "sentometrics")
+data("valence", package = "sentometrics")
+data("epu", package = "sentometrics")
 
 # construct a sentomeasures object to start with
 corpusAll <- sento_corpus(corpusdf = usnews)

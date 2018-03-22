@@ -19,9 +19,9 @@ and statistics, but the original sentiment scores \code{data.table} untouched.
 Subsets rows of the sentiment measures based on its columns.
 }
 \examples{
-data("usnews")
-data("lexicons")
-data("valence")
+data("usnews", package = "sentometrics")
+data("lexicons", package = "sentometrics")
+data("valence", package = "sentometrics")
 
 # construct a sentomeasures object to start with
 corpus <- sento_corpus(corpusdf = usnews)

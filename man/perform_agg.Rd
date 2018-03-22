@@ -21,9 +21,9 @@ measures by aggregating across documents and time. This function is called withi
 applied on the output of \code{\link{compute_sentiment}}.
 }
 \examples{
-data("usnews")
-data("lexicons")
-data("valence")
+data("usnews", package = "sentometrics")
+data("lexicons", package = "sentometrics")
+data("valence", package = "sentometrics")
 
 # computation of sentiment and aggregation into sentiment measures
 corpus <- sento_corpus(corpusdf = usnews)

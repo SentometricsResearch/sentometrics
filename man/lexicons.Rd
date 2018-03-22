@@ -15,7 +15,7 @@
 \href{https://www3.nd.edu/~mcdonald/Word_Lists.html}{LM lexicon}
 }
 \usage{
-data("lexicons")
+data("lexicons", package = "sentometrics")
 }
 \description{
 A list containing all built-in lexicons as a \code{data.table} with two columns: a \code{x} column with the words, and a

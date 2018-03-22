@@ -37,9 +37,9 @@ every sentiment measure with its corresponding weight (meaning, the weight given
 computed with), then by taking the average per date.
 }
 \examples{
-data("usnews")
-data("lexicons")
-data("valence")
+data("usnews", package = "sentometrics")
+data("lexicons", package = "sentometrics")
+data("valence", package = "sentometrics")
 
 # construct a sentomeasures object to start with
 corpus <- sento_corpus(corpusdf = usnews)

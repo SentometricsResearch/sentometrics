@@ -26,9 +26,9 @@ object in one plot, or the average along one of the lexicons, features and time 
 use of the \code{\link{select_measures}} function when you desire to plot only a subset of the sentiment measures.
 }
 \examples{
-data("usnews")
-data("lexicons")
-data("valence")
+data("usnews", package = "sentometrics")
+data("lexicons", package = "sentometrics")
+data("valence", package = "sentometrics")
 
 # construct a sentomeasures object to start with
 corpus <- sento_corpus(corpusdf = usnews)

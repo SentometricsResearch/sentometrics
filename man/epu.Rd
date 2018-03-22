@@ -9,7 +9,7 @@
 \href{http://www.policyuncertainty.com/research.html}{Research on Economic Policy Uncertainty}
 }
 \usage{
-data("epu")
+data("epu", package = "sentometrics")
 }
 \description{
 Monthly values of a news-based index of U.S. Economic Policy Uncertainty (EPU) between January 1980 and September

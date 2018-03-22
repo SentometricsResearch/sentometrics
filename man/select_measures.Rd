@@ -27,9 +27,9 @@ Selects all sentiment measures which include either all of the given selection c
 or those who's name consist of at least one of the selection components.
 }
 \examples{
-data("usnews")
-data("lexicons")
-data("valence")
+data("usnews", package = "sentometrics")
+data("lexicons", package = "sentometrics")
+data("valence", package = "sentometrics")
 
 # construct a sentomeasures object to start with
 corpus <- sento_corpus(corpusdf = usnews)

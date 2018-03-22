@@ -39,8 +39,8 @@ Part of this function mimicks the \code{\link[sentimentr]{as_key}} function from
 the output coherent, convert all words to lowercase and check for duplicates.
 }
 \examples{
-data("lexicons")
-data("valence")
+data("lexicons", package = "sentometrics")
+data("valence", package = "sentometrics")
 
 # sets up output list straight from built-in word lists including valence words
 l1 <- c(lexicons[c("LM_eng", "HENRY_eng")], valence[["eng"]])
