@@ -5,7 +5,7 @@
 \title{Set up control for sentiment measures-based regression modelling}
 \usage{
 ctr_model(model = c("gaussian", "binomial", "multinomial"), type = c("BIC",
-  "AIC", "Cp", "cv"), intercept = TRUE, do.iter = FALSE, h = 0,
+  "AIC", "Cp", "cv"), do.intercept = TRUE, do.iter = FALSE, h = 0,
   alphas = seq(0, 1, by = 0.2), nSample = NULL, trainWindow = NULL,
   testWindow = NULL, oos = 0, start = 1, do.progress = TRUE,
   do.parallel = FALSE)
@@ -20,7 +20,7 @@ freedom' of the LASSO''; Zou, Hastie, Tibshirani et al., 2007), and "\code{cv}" 
 \code{\link[caret]{train}} function from the \pkg{caret} package). The adapted information criteria are currently
 only available for a linear regression.}
 
-\item{intercept}{a \code{logical}, \code{TRUE} by default fits an intercept.}
+\item{do.intercept}{a \code{logical}, \code{TRUE} by default fits an intercept.}
 
 \item{do.iter}{a \code{logical}, \code{TRUE} induces an iterative estimation of models at the given \code{nSample} size and
 performs the associated one-step ahead out-of-sample prediction exercise through time.}
