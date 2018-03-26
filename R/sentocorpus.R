@@ -20,13 +20,14 @@
 #' @param corpusdf a \code{data.frame} (or a \code{data.table}, or a \code{tbl}) with as named columns: a document \code{"id"}
 #' column, a \code{"date"} column, a \code{"text"} column (i.e. the columns where all texts to analyze reside), and a
 #' series of feature columns of type \code{numeric}, with values pointing to the applicability of a particular feature to a
-#' particular text. The latter columns are often binary (\code{1} means the feature is applicable to the document in the same
-#' row) or as a percentage to specify the degree of connectedness of a feature to a document. Features could be topics (e.g.,
-#' legal, political, or economic), but also article sources (e.g., online or printed press), amongst many more options. If
-#' you have no knowledge about features or no particular features are of interest to your analysis, provide no feature
-#' columns. In that case, the corpus constructor automatically adds an additional feature column named \code{"dummy"}.
-#' Provide the \code{date} column as \code{"yyyy-mm-dd"}. The \code{id} column should be in \code{character} mode. All
-#' spaces in the names of the features are replaced by underscores.
+#' particular text. The latter columns can be binary (\code{1} means the feature is applicable to the document in the same
+#' row) or a value between 0 and 1 to specify the degree of connectedness of a feature to a document. Features could be
+#' topics (e.g., legal, political, or economic), but also article sources (e.g., online or printed press), amongst many
+#' more options. If you have no knowledge about features or no particular features are of interest to your analysis,
+#' provide no feature columns. In that case, the corpus constructor automatically adds an additional feature column named
+#' \code{"dummy"}. Provide the \code{date} column as \code{"yyyy-mm-dd"}. The \code{id} column should be in \code{character}
+#' mode. All spaces in the names of the features are replaced by underscores. If the feature columns have values not
+#' between 0 and 1, they will be rescaled column-wise and a warning will be issued.
 #' @param do.clean a \code{logical}, if \code{TRUE} all texts undergo a cleaning routine to eliminate common textual garbage.
 #' This includes a brute force replacement of HTML tags and non-alphanumeric characters by an empty string.
 #'
@@ -82,11 +83,23 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
     }
     isNumeric <- sapply(features, function(x) return(is.numeric(corpusdf[[x]])))
     if (any(!isNumeric)) {
-      toDrop <- names(isNumeric)[isNumeric == FALSE]
+      toDrop <- names(which(!isNumeric))
       corpusdf[, toDrop] <- NULL
       warning(paste0("Following feature columns were dropped as they are not numeric: ", paste0(toDrop, collapse = ", "), "."))
       if (length(toDrop) == length(isNumeric))
         stop("No remaining feature columns. Please add uniquely named feature columns of type numeric.")
+    }
+    featuresKept <- names(which(isNumeric))
+    mins <- sapply(featuresKept, function(f) min(corpusdf[[f]], na.rm = TRUE)) >= 0
+    maxs <- sapply(featuresKept, function(f) max(corpusdf[[f]], na.rm = TRUE)) <= 1
+    isBounded <- sapply(1:length(featuresKept), function(j) return(!all(c(mins[j], maxs[j]))))
+    if (any(isBounded)) {
+      toScale <- featuresKept[isBounded]
+      for (col in toScale) {
+        vals <- corpusdf[, col]
+        corpusdf[, col] <- (vals - min(vals)) / (max(vals) - min(vals))
+      }
+      warning(paste0("Following feature columns have been rescaled: ", paste0(toScale, collapse = ", "), "."))
     }
   }
   if (do.clean) corpusdf <- clean(corpusdf)
@@ -120,15 +133,16 @@ clean <- function(corpusdf) {
 #' The \code{do.regex} argument points to the corresponding elements in \code{keywords}. For \code{FALSE}, we transform
 #' the keywords into a simple regex expression, involving \code{"\\b"} for exact word boundary matching and (if multiple
 #' keywords) \code{|} as OR operator. The elements associated to \code{TRUE} do not undergo the transformation, and are
-#' evaluated as given, if the corresponding keywords vector consists of only one expression.
+#' evaluated as given, if the corresponding keywords vector consists of only one expression. Scaling between 0 and 1
+#' is performed via the min-max normalization, per column.
 #'
 #' @param sentocorpus a \code{sentocorpus} object created with \code{\link{sento_corpus}}.
 #' @param featuresdf a named \code{data.frame} of type \code{numeric} where each columns is a new feature to be added to the
 #' inputted \code{sentocorpus} object. If the number of rows in \code{featuresdf} is not equal to the number of documents
 #' in \code{sentocorpus}, recycling will occur. The numeric values should be between 0 and 1 (included).
 #' @param keywords a named \code{list}. For every element, a new feature column is added with a value of 1 for the texts
-#' in which (at least one of) the keyword(s) appear(s), and 0 if not (if \code{do.binary = TRUE}), or with as value the
-#' normalized number of times the keyword(s) occur(s) in the text (if \code{do.binary = FALSE}). If no texts match a
+#' in which (at least one of) the keyword(s) appear(s), and 0 if not (for \code{do.binary = TRUE}), or with as value the
+#' normalized number of times the keyword(s) occur(s) in the text (for \code{do.binary = FALSE}). If no texts match a
 #' keyword, no column is added. The \code{list} names are used as the names of the new features. For more complex searching,
 #' instead of keywords, one can also directly use a single regex expression to define a new feature (cf. the details section).
 #' @param do.binary a \code{logical}, cf. argument \code{keywords}. If \code{do.binary = FALSE}, the counts are normalized
@@ -164,22 +178,24 @@ clean <- function(corpusdf) {
 add_features <- function(sentocorpus, featuresdf = NULL, keywords = NULL, do.binary = TRUE, do.regex = FALSE) {
   check_class(sentocorpus, "sentocorpus")
   if (!is.null(featuresdf)) {
+    stopifnot(is.data.frame(featuresdf))
     features <- stringi::stri_replace_all(colnames(featuresdf), "_", regex = " ")
     isNumeric <- sapply(featuresdf, is.numeric)
-    mins <- sapply(featuresdf, max, na.rm = TRUE) >= 0
-    maxs <- sapply(featuresdf, min, na.rm = TRUE) <= 1
+    mins <- sapply(featuresdf, min, na.rm = TRUE) >= 0
+    maxs <- sapply(featuresdf, max, na.rm = TRUE) <= 1
     check <- sapply(1:length(features), function(j) return(all(c(isNumeric[j], mins[j], maxs[j]))))
-    toAdd <- which(check)
+    toAdd <- features[which(check)]
     for (i in toAdd) {
       quanteda::docvars(sentocorpus, field = features[i]) <- featuresdf[[i]]
     }
     if (length(toAdd) != length(check))
-      warning(paste0("Following columns were not added as they are not of type numeric or have values not in [0, 1]: ",
+        warning(paste0("Following columns are not added as they are not of type numeric or have values outside [0, 1]: ",
                      colnames(featuresdf)[which(!toAdd)]))
   }
   if (!is.null(keywords)) {
-    if ("" %in% names(keywords) || is.null(names(keywords)))
-      stop("Please provide proper names as part of the 'keywords' argument.")
+    stopifnot(is.logical(do.binary) && is.logical(do.regex))
+    if ("" %in% names(keywords) || is.null(names(keywords)) || !inherits(keywords, "list"))
+      stop("Please provide a list with proper names as part of the 'keywords' argument.")
     textsAll <- quanteda::texts(sentocorpus)
     if (do.binary == TRUE) fct <- stringi::stri_detect
     else fct <- stringi::stri_count
