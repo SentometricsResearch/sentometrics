@@ -64,7 +64,11 @@
 #' Other immediate lexicon options can be found in the \pkg{lexicon} package, more specifically the datasets preceded by
 #' \code{hash_sentiment_}.
 #'
-#' @usage data("lexicons", package = "sentometrics")
+#' @usage data("lexicons")
+#'
+#' @examples
+#' data("lexicons", package = "sentometrics")
+#' lexicons[c("FEEL_eng_tr", "LM_eng")]
 #'
 #' @format A list with all built-in lexicons, appropriately named as \code{"NAME_language(_tr)"} .
 #'
@@ -72,9 +76,6 @@
 #' @source \href{http://www.wjh.harvard.edu/~inquirer/spreadsheet_guide.htm}{GI lexicon}
 #' @source \href{https://study.sagepub.com/sites/default/files/1\%20Henry\%202008_0.pdf}{HENRY lexicon}
 #' @source \href{https://www3.nd.edu/~mcdonald/Word_Lists.html}{LM lexicon}
-#'
-#' @examples
-#' lexicons[c("FEEL_eng_tr", "LM_eng")]
 "lexicons"
 
 #' Built-in valence word lists
@@ -95,7 +96,11 @@
 #'   \item valence_nl
 #' }
 #'
-#' @usage data("valence", package = "sentometrics")
+#' @usage data("valence")
+#'
+#' @examples
+#' data("valence", package = "sentometrics")
+#' valence["valence_eng"]
 #'
 #' @format A list with all built-in valence word lists, appropriately named.
 #'
@@ -121,7 +126,7 @@
 #'   \item noneconomy. Equals 1 if the article is not relevant to the U.S. economy.
 #' }
 #'
-#' @usage data("usnews", package = "sentometrics")
+#' @usage data("usnews")
 #'
 #' @examples
 #' data("usnews", package = "sentometrics")
@@ -152,7 +157,11 @@
 #'   respectively and in a mutually exclusive sense.
 #' }
 #'
-#' @usage data("epu", package = "sentometrics")
+#' @usage data("epu")
+#'
+#' @examples
+#' data("epu", package = "sentometrics")
+#' head(epu)
 #'
 #' @format A \code{data.frame} with 417 rows and 4 columns.
 #'

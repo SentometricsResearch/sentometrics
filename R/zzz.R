@@ -4,7 +4,8 @@
   if (getRversion() >= "2.15.1")
     utils::globalVariables(
       c("value", "variable", "word_count", "w",
-        "attrib", "feature", "id", "i")
+        "attrib", "feature", "id", "i", "wLex",
+        "wFeat", "wTime")
     )
   invisible()
 }

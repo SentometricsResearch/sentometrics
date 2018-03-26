@@ -9,7 +9,7 @@
 \href{https://www.crowdflower.com/data-for-everyone/}{Economic News Article Tone and Relevance}
 }
 \usage{
-data("usnews", package = "sentometrics")
+data("usnews")
 }
 \description{
 A collection of texts annotated by humans in terms of relevance to the U.S. economy or not. The texts come from two major

@@ -15,7 +15,7 @@
 \href{https://www3.nd.edu/~mcdonald/Word_Lists.html}{LM lexicon}
 }
 \usage{
-data("lexicons", package = "sentometrics")
+data("lexicons")
 }
 \description{
 A list containing all built-in lexicons as a \code{data.table} with two columns: a \code{x} column with the words, and a
@@ -45,6 +45,8 @@ Other immediate lexicon options can be found in the \pkg{lexicon} package, more 
 \code{hash_sentiment_}.
 }
 \examples{
+data("lexicons", package = "sentometrics")
 lexicons[c("FEEL_eng_tr", "LM_eng")]
+
 }
 \keyword{datasets}
