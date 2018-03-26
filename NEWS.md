@@ -1,8 +1,8 @@
 
-## sentometrics 0.3.5 (in development)
+## sentometrics 0.3.5
 
 - faster `to_global()`
-- set `tolower = FALSE` of `dfm()` constructer in `compute_sentiment()`
+- set `tolower = FALSE` of `dfm()` constructor in `compute_sentiment()`
 - changed `intercept` argument to `do.intercept` for consistency
 - proper checks on values of feature columns in `sento_corpus()` and `add_features()`
 
