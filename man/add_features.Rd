@@ -15,8 +15,8 @@ inputted \code{sentocorpus} object. If the number of rows in \code{featuresdf} i
 in \code{sentocorpus}, recycling will occur. The numeric values should be between 0 and 1 (included).}
 
 \item{keywords}{a named \code{list}. For every element, a new feature column is added with a value of 1 for the texts
-in which (at least one of) the keyword(s) appear(s), and 0 if not (if \code{do.binary = TRUE}), or with as value the
-normalized number of times the keyword(s) occur(s) in the text (if \code{do.binary = FALSE}). If no texts match a
+in which (at least one of) the keyword(s) appear(s), and 0 if not (for \code{do.binary = TRUE}), or with as value the
+normalized number of times the keyword(s) occur(s) in the text (for \code{do.binary = FALSE}). If no texts match a
 keyword, no column is added. The \code{list} names are used as the names of the new features. For more complex searching,
 instead of keywords, one can also directly use a single regex expression to define a new feature (cf. the details section).}
 
@@ -40,7 +40,8 @@ If a provided feature name is already part of the corpus, it will be replaced. T
 The \code{do.regex} argument points to the corresponding elements in \code{keywords}. For \code{FALSE}, we transform
 the keywords into a simple regex expression, involving \code{"\\b"} for exact word boundary matching and (if multiple
 keywords) \code{|} as OR operator. The elements associated to \code{TRUE} do not undergo the transformation, and are
-evaluated as given, if the corresponding keywords vector consists of only one expression.
+evaluated as given, if the corresponding keywords vector consists of only one expression. Scaling between 0 and 1
+is performed via the min-max normalization, per column.
 }
 \examples{
 data("usnews", package = "sentometrics")
