@@ -9,7 +9,7 @@
 \href{http://www.policyuncertainty.com/research.html}{Research on Economic Policy Uncertainty}
 }
 \usage{
-data("epu", package = "sentometrics")
+data("epu")
 }
 \description{
 Monthly values of a news-based index of U.S. Economic Policy Uncertainty (EPU) between January 1980 and September
@@ -25,5 +25,10 @@ Monthly values of a news-based index of U.S. Economic Policy Uncertainty (EPU) b
   index is greater than the 75\% quantile and the 50\% quantile, or smaller than the 50\% quantile and the 25\% quantile,
   respectively and in a mutually exclusive sense.
 }
+}
+\examples{
+data("epu", package = "sentometrics")
+head(epu)
+
 }
 \keyword{datasets}

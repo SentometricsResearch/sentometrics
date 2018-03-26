@@ -4,7 +4,7 @@
 - faster `to_global()`
 - set `tolower = FALSE` of `dfm()` constructer in `compute_sentiment()`
 - changed `intercept` argument to `do.intercept` for consistency
-- proper check if values are between 0 and 1 in `add_features()` function
+- proper checks on values of feature columns in `sento_corpus()` and `add_features()`
 
 ## sentometrics 0.3.0
 

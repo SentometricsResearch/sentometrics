@@ -9,7 +9,7 @@
 \code{\link[lexicon]{hash_valence_shifters}} (negators)
 }
 \usage{
-data("valence", package = "sentometrics")
+data("valence")
 }
 \description{
 A list containing all built-in valence word lists, a \code{data.table} with three columns: a \code{x} column with the
@@ -24,5 +24,10 @@ are in lowercase. The built-in valence word lists are the following:
   \item valence_fr
   \item valence_nl
 }
+}
+\examples{
+data("valence", package = "sentometrics")
+valence["valence_eng"]
+
 }
 \keyword{datasets}

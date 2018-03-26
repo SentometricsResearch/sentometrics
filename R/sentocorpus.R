@@ -184,7 +184,7 @@ add_features <- function(sentocorpus, featuresdf = NULL, keywords = NULL, do.bin
     mins <- sapply(featuresdf, min, na.rm = TRUE) >= 0
     maxs <- sapply(featuresdf, max, na.rm = TRUE) <= 1
     check <- sapply(1:length(features), function(j) return(all(c(isNumeric[j], mins[j], maxs[j]))))
-    toAdd <- features[which(check)]
+    toAdd <- which(check) # logical vector
     for (i in toAdd) {
       quanteda::docvars(sentocorpus, field = features[i]) <- featuresdf[[i]]
     }
