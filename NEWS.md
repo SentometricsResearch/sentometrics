@@ -3,7 +3,7 @@
 
 - faster `to_global()`
 - set `tolower = FALSE` of `dfm()` constructor in `compute_sentiment()`
-- changed `intercept` argument to `do.intercept` for consistency
+- changed `intercept` argument in `ctr_model()` to `do.intercept` for consistency
 - proper checks on values of feature columns in `sento_corpus()` and `add_features()`
 
 ## sentometrics 0.3.0
