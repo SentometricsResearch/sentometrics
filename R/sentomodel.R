@@ -554,7 +554,7 @@ model_performance <- function(yEst, yReal, family, dates, ...) {
     colnames(errors) <- c("DA", "error", "errorSq", "AD")
     meanErrors <- colMeans(errors[, -2], na.rm = TRUE)
 
-    raw <- data.frame(yReal, predicted = yEst, errors)
+    raw <- data.frame(response = yReal, predicted = yEst, errors)
     row.names(raw) <- dates
 
     errorsAll <- list(raw = raw,

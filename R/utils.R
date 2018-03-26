@@ -188,7 +188,7 @@ align_variables <- function(y, sentomeasures, x, h, i = 1, nSample = NULL) {
     colnames(y) <- levs
   } else {
     y <- as.matrix(y)
-    if (length(colnames(y)) == 1) colnames(y) <- "response"
+    if (NCOL(y) == 1) colnames(y) <- "response"
     row.names(y) <- NULL
   }
 
