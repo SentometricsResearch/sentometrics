@@ -1,5 +1,5 @@
 
-## submission (version 0.3.5) [xx/03/2018]
+## submission (version 0.3.5) [26/03/2018]
 
 **new**: minor but necessary patches in to_global() and compute_sentiment() functions 
 

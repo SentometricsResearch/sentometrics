@@ -92,9 +92,9 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
     featuresKept <- names(which(isNumeric))
     mins <- sapply(featuresKept, function(f) min(corpusdf[[f]], na.rm = TRUE)) >= 0
     maxs <- sapply(featuresKept, function(f) max(corpusdf[[f]], na.rm = TRUE)) <= 1
-    isBounded <- sapply(1:length(featuresKept), function(j) return(!all(c(mins[j], maxs[j]))))
-    if (any(isBounded)) {
-      toScale <- featuresKept[isBounded]
+    isBounded <- sapply(1:length(featuresKept), function(j) return(all(c(mins[j], maxs[j]))))
+    if (any(!isBounded)) {
+      toScale <- featuresKept[!isBounded]
       for (col in toScale) {
         vals <- corpusdf[, col]
         corpusdf[, col] <- (vals - min(vals)) / (max(vals) - min(vals))
