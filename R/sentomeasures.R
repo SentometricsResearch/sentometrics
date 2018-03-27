@@ -571,8 +571,8 @@ agg_documents <- function(toAgg, by, how = get_hows()$docs, do.ignoreZeros = TRU
                         lexicons = lexNames,
                         time = NA,
                         by = by,
-                        stats = NA, # zeros replaced by NAs if do.ignoreZeros = TRUE
-                        sentiment = sent,
+                        stats = NA,
+                        sentiment = sent, # zeros replaced by NAs if do.ignoreZeros = TRUE
                         howWithin = toAgg$howWithin,
                         howDocs = how,
                         fill = NA,
@@ -1143,7 +1143,9 @@ fill_measures <- function(sentomeasures, fill = "zero") {
     measuresFill <- zoo::na.locf(measuresFill)
   } else stop("Input variable 'fill' should be either 'zero', 'latest' or NA.")
   measuresFill <- data.table(date = ts, measuresFill[, lapply(.SD, as.numeric), .SDcols = colnames(measures)[-1]])
+
   sentomeasures$measures <- measuresFill
+  sentomeasures$stats <- compute_stats(sentomeasures) # will be overwritten at end of agg_time() call
 
   return(sentomeasures)
 }

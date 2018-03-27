@@ -1,4 +1,8 @@
 
+## sentometrics 0.4.0 (development)
+
+- update `stats` element of `sentomeasures` object in `fill_measures()`
+
 ## sentometrics 0.3.5
 
 - faster `to_global()`
