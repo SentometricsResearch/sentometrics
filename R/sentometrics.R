@@ -1,5 +1,5 @@
 
-#' @title An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction
+#' @title sentometrics: An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction
 #'
 #' @description The \pkg{sentometrics} package is designed to do time series analysis based on textual sentiment. It accounts
 #' for the intrinsic challenge that, for a given text, sentiment can be computed in many ways, as well as the large
@@ -38,8 +38,8 @@
 #' @docType data
 #'
 #' @description
-#' A list containing all built-in lexicons as a \code{data.table} with two columns: a \code{x} column with the words, and a
-#' \code{y} column with the polarities. The list element names incorporate consecutively the name and language, and
+#' A \code{list} containing all built-in lexicons as a \code{data.table} with two columns: a \code{x} column with the words,
+#' and a \code{y} column with the polarities. The \code{list} element names incorporate consecutively the name and language, and
 #' \code{"_tr"} as suffix if the lexicon is translated. The translation was done via Microsoft Translator through Microsoft
 #' Word. Only the entries that conform to the original language entry after retranslation, and those that have actually been
 #' translated, are kept. The last condition is assumed to be fulfilled when the translation differs from the original entry.
@@ -70,7 +70,7 @@
 #' data("lexicons", package = "sentometrics")
 #' lexicons[c("FEEL_eng_tr", "LM_eng")]
 #'
-#' @format A list with all built-in lexicons, appropriately named as \code{"NAME_language(_tr)"} .
+#' @format A \code{list} with all built-in lexicons, appropriately named as \code{"NAME_language(_tr)"} .
 #'
 #' @source \href{http://www.lirmm.fr/~abdaoui/FEEL}{FEEL lexicon}
 #' @source \href{http://www.wjh.harvard.edu/~inquirer/spreadsheet_guide.htm}{GI lexicon}
@@ -83,9 +83,9 @@
 #' @docType data
 #'
 #' @description
-#' A list containing all built-in valence word lists, a \code{data.table} with three columns: a \code{x} column with the
+#' A \code{list} containing all built-in valence word lists, a \code{data.table} with three columns: a \code{x} column with the
 #' words, a \code{t} column with the type of valence words, and a \code{y} column with the values associated to each word and
-#' type of valence shifter. The list element names incorporate the language of the valence word list. All non-English word
+#' type of valence shifter. The \code{list} element names incorporate the language of the valence word list. All non-English word
 #' lists are translated via Microsoft Translator through Microsoft Word. Only the entries whose translation differs from
 #' the original entry are kept. The valence word lists are in the form required for further sentiment analysis. All words
 #' are in lowercase. The built-in valence word lists are the following:
@@ -102,7 +102,7 @@
 #' data("valence", package = "sentometrics")
 #' valence["valence_eng"]
 #'
-#' @format A list with all built-in valence word lists, appropriately named.
+#' @format A \code{list} with all built-in valence word lists, appropriately named.
 #'
 #' @source \code{\link[lexicon]{hash_valence_shifters}} (negators)
 "valence"

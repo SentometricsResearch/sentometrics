@@ -280,7 +280,6 @@ print.sentomeasures <- function(x, ...) {
 #'
 #' \dontrun{
 #' # include lexicons from lexicon package
-#' library("lexicon")
 #' lexIn2 <- list(hul = lexicon::hash_sentiment_huliu, joc = lexicon::hash_sentiment_jockers)
 #' l5 <- setup_lexicons(c(lexIn, lexIn2), valIn)}
 #'
