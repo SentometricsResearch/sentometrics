@@ -4,7 +4,7 @@
 \name{sentometrics-package}
 \alias{sentometrics}
 \alias{sentometrics-package}
-\title{An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction}
+\title{sentometrics: An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction}
 \description{
 The \pkg{sentometrics} package is designed to do time series analysis based on textual sentiment. It accounts
 for the intrinsic challenge that, for a given text, sentiment can be computed in many ways, as well as the large

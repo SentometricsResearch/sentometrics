@@ -4,7 +4,7 @@
 \name{valence}
 \alias{valence}
 \title{Built-in valence word lists}
-\format{A list with all built-in valence word lists, appropriately named.}
+\format{A \code{list} with all built-in valence word lists, appropriately named.}
 \source{
 \code{\link[lexicon]{hash_valence_shifters}} (negators)
 }
@@ -12,9 +12,9 @@
 data("valence")
 }
 \description{
-A list containing all built-in valence word lists, a \code{data.table} with three columns: a \code{x} column with the
+A \code{list} containing all built-in valence word lists, a \code{data.table} with three columns: a \code{x} column with the
 words, a \code{t} column with the type of valence words, and a \code{y} column with the values associated to each word and
-type of valence shifter. The list element names incorporate the language of the valence word list. All non-English word
+type of valence shifter. The \code{list} element names incorporate the language of the valence word list. All non-English word
 lists are translated via Microsoft Translator through Microsoft Word. Only the entries whose translation differs from
 the original entry are kept. The valence word lists are in the form required for further sentiment analysis. All words
 are in lowercase. The built-in valence word lists are the following:
@@ -24,6 +24,12 @@ are in lowercase. The built-in valence word lists are the following:
   \item valence_fr
   \item valence_nl
 }
+}
+\details{
+The \code{t} column is coded as follows: \code{1} for negators, \code{2} for amplifiers/intensifiers, and
+\code{3} for deamplifiers/downtoners. Default scores are -1, 2, and 0.5 respectively. See
+\code{\link[lexicon]{setup_lexicons}} for details about the application of the valence shifters to the lexicons,
+and along the same vein, to the corpus.
 }
 \examples{
 data("valence", package = "sentometrics")
