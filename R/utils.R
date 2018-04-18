@@ -46,8 +46,8 @@ include_valence <- function(texts, val, valIdentifier = c("NOT_", "VERY_", "HARD
 #' for input in \code{\link{ctr_agg}}.
 #'
 #' @details The Almon polynomial formula implemented is:
-#' \eqn{(1 - (i/n)^{b})(i/n)^{B - b}}{(1 - (i/n)^b) * (i/n)^(B - b)}, where \eqn{i} is the lag index from 1 to \eqn{n}.
-#' The inverse is computed by changing \eqn{i/n} to \eqn{1 - i/n}.
+#' \eqn{(1 - (i/n)^{b})(i/n)^{B - b}}{(1 - (i/n)^b) * (i/n)^(B - b)}, where \eqn{i} is the lag index ordered from
+#' \eqn{n} to 1. The inverse is computed by changing \eqn{i/n} to \eqn{1 - i/n}.
 #'
 #' @param n a single \code{numeric} to indicate the length of the curve (the number of lags, cf., \emph{n}).
 #' @param orders a \code{numeric} vector as the sequence of the Almon orders (cf., \emph{b}). The maximum value
@@ -62,7 +62,7 @@ include_valence <- function(texts, val, valIdentifier = c("NOT_", "VERY_", "HARD
 #'
 #' @export
 almons <- function(n, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE) {
-  vals <- 1:n
+  vals <- n:1 # first row is most lagged value
   inv <- ifelse(do.inverse, 2, 1)
   almons <- data.frame(matrix(nrow = n, ncol = length(orders) * inv))
   colnames(almons) <- paste0("almon", rep(orders, rep(inv, length(orders))), c("", "_inv")[1:inv])
@@ -128,7 +128,7 @@ setup_time_weights <- function(lag, how, ...) {
     weights <- cbind(weights, exponentials(lag, dots$alphasExp))
   }
   if ("almon" %in% how) {
-    weights <- cbind(weights, almons(lag, dots$ordersAlm, dots$do.inverseAlm, dots$do.normalizeAlm))
+    weights <- cbind(weights, almons(lag, dots$ordersAlm, dots$do.inverseAlm, TRUE)) # always normalize
   }
   if ("own" %in% how) {
     weights <- cbind(weights, dots$weights)
