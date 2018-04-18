@@ -2,6 +2,8 @@
 ## sentometrics 0.4.0 (development)
 
 - update `stats` element of `sentomeasures` object in `fill_measures()`
+- dropped `do.normalizeAlm` argument in `ctr_agg()`, but kept in the `almons()` function
+- inverted order of rows in output of `almons()` function to be consistent with Ardia et al. (2017) paper
 
 ## sentometrics 0.3.5
 

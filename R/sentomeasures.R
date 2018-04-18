@@ -35,8 +35,6 @@
 #' \code{"almon" \%in\% howTime}.
 #' @param do.inverseAlm a \code{logical} indicating if for every Almon polynomial its inverse has to be added, used
 #' if \code{"almon" \%in\% howTime}.
-#' @param do.normalizeAlm a \code{logical} indicating if every Almon polynomial weights column should sum to one, used if
-#' \code{"almon" \%in\% howTime}.
 #' @param weights an optional own weighting scheme, always used if provided as a \code{data.frame} with the number of rows
 #' equal to the desired \code{lag}. The automatic Almon polynomials are created sequentially; if the user wants only specific
 #' of such time weighting series it can use \code{\link{almons}}, select the columns it requires, combine it into a
@@ -60,7 +58,6 @@
 #'                 lag = 20,
 #'                 ordersAlm = 1:3,
 #'                 do.inverseAlm = TRUE,
-#'                 do.normalizeAlm = TRUE,
 #'                 alphasExp = c(0.20, 0.50, 0.70, 0.95),
 #'                 weights = data.frame(myWeights = runif(20)))
 #'
@@ -72,7 +69,7 @@
 #' @export
 ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTime = "equal_weight",
                     do.ignoreZeros = TRUE, by = "day", lag = 1L, fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1),
-                    ordersAlm = 1:3, do.inverseAlm = TRUE, do.normalizeAlm = TRUE, weights = NULL, dfm = NULL) {
+                    ordersAlm = 1:3, do.inverseAlm = TRUE, weights = NULL, dfm = NULL) {
 
   if (length(howWithin) > 1) howWithin <- howWithin[1]
   if (length(howDocs) > 1) howDocs <- howDocs[1]
@@ -128,8 +125,7 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
   }
   if (warned > 0) stop("Wrong inputs. See warning messages for specifics.")
 
-  other <- list(alphasExp = alphasExp, ordersAlm = ordersAlm, do.inverseAlm = do.inverseAlm,
-                do.normalizeAlm = do.normalizeAlm, weights = weights)
+  other <- list(alphasExp = alphasExp, ordersAlm = ordersAlm, do.inverseAlm = do.inverseAlm, weights = weights)
 
   ctr <- list(howWithin = howWithin,
               howDocs = howDocs,
@@ -193,8 +189,7 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #'                by = "month",
 #'                lag = 3,
 #'                ordersAlm = 1:3,
-#'                do.inverseAlm = TRUE,
-#'                do.normalizeAlm = TRUE)
+#'                do.inverseAlm = TRUE)
 #' sentomeasures <- sento_measures(corpusSample, l, ctr)
 #' summary(sentomeasures)
 #'
