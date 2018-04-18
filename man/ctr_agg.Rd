@@ -7,7 +7,7 @@
 ctr_agg(howWithin = "proportional", howDocs = "equal_weight",
   howTime = "equal_weight", do.ignoreZeros = TRUE, by = "day", lag = 1L,
   fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1), ordersAlm = 1:3,
-  do.inverseAlm = TRUE, weights = NULL, dfm = NULL)
+  do.inverseAlm = TRUE, weights = NULL, dfm = NULL, ...)
 }
 \arguments{
 \item{howWithin}{a single \code{character} vector defining how aggregation within documents will be performed. Should
@@ -52,6 +52,8 @@ of such time weighting series it can use \code{\link{almons}}, select the column
 \code{data.frame} and supply it under this argument (see examples).}
 
 \item{dfm}{optional; see \code{\link{compute_sentiment}}.}
+
+\item{...}{not used.}
 }
 \value{
 A \code{list} encapsulating the control parameters.
