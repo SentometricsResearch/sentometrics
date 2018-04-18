@@ -11,7 +11,7 @@ corpus <- quanteda::corpus_subset(sento_corpus(corpusdf = usnews), date >= "1990
 data("lexicons")
 lex <- lexicons[c("GI_eng", "LM_eng")]
 ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional", howTime = "almon", by = "month",
-               lag = 3, ordersAlm = 1:3, do.inverseAlm = TRUE, do.normalizeAlm = TRUE, do.ignoreZeros = FALSE)
+               lag = 3, ordersAlm = 1:3, do.inverseAlm = TRUE, do.ignoreZeros = FALSE)
 sentomeasures <- sento_measures(corpus, lex, ctr)
 
 y <- epu[epu$date %in% sentomeasures$measures$date, ]$index

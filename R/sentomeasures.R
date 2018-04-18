@@ -40,6 +40,7 @@
 #' of such time weighting series it can use \code{\link{almons}}, select the columns it requires, combine it into a
 #' \code{data.frame} and supply it under this argument (see examples).
 #' @param dfm optional; see \code{\link{compute_sentiment}}.
+#' @param ... not used.
 #'
 #' @return A \code{list} encapsulating the control parameters.
 #'
@@ -69,7 +70,7 @@
 #' @export
 ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTime = "equal_weight",
                     do.ignoreZeros = TRUE, by = "day", lag = 1L, fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1),
-                    ordersAlm = 1:3, do.inverseAlm = TRUE, weights = NULL, dfm = NULL) {
+                    ordersAlm = 1:3, do.inverseAlm = TRUE, weights = NULL, dfm = NULL, ...) {
 
   if (length(howWithin) > 1) howWithin <- howWithin[1]
   if (length(howDocs) > 1) howDocs <- howDocs[1]
