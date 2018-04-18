@@ -54,8 +54,7 @@ ctr <- ctr_agg(howWithin = "tf-idf",
                by = "month",
                lag = 3,
                ordersAlm = 1:3,
-               do.inverseAlm = TRUE,
-               do.normalizeAlm = TRUE)
+               do.inverseAlm = TRUE)
 sentomeasures <- sento_measures(corpusSample, l, ctr)
 summary(sentomeasures)
 

@@ -4,7 +4,7 @@
 \name{lexicons}
 \alias{lexicons}
 \title{Built-in lexicons}
-\format{A list with all built-in lexicons, appropriately named as \code{"NAME_language(_tr)"} .}
+\format{A \code{list} with all built-in lexicons, appropriately named as \code{"NAME_language(_tr)"} .}
 \source{
 \href{http://www.lirmm.fr/~abdaoui/FEEL}{FEEL lexicon}
 
@@ -18,8 +18,8 @@
 data("lexicons")
 }
 \description{
-A list containing all built-in lexicons as a \code{data.table} with two columns: a \code{x} column with the words, and a
-\code{y} column with the polarities. The list element names incorporate consecutively the name and language, and
+A \code{list} containing all built-in lexicons as a \code{data.table} with two columns: a \code{x} column with the words,
+and a \code{y} column with the polarities. The \code{list} element names incorporate consecutively the name and language, and
 \code{"_tr"} as suffix if the lexicon is translated. The translation was done via Microsoft Translator through Microsoft
 Word. Only the entries that conform to the original language entry after retranslation, and those that have actually been
 translated, are kept. The last condition is assumed to be fulfilled when the translation differs from the original entry.

@@ -7,8 +7,7 @@
 ctr_agg(howWithin = "proportional", howDocs = "equal_weight",
   howTime = "equal_weight", do.ignoreZeros = TRUE, by = "day", lag = 1L,
   fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1), ordersAlm = 1:3,
-  do.inverseAlm = TRUE, do.normalizeAlm = TRUE, weights = NULL,
-  dfm = NULL)
+  do.inverseAlm = TRUE, weights = NULL, dfm = NULL)
 }
 \arguments{
 \item{howWithin}{a single \code{character} vector defining how aggregation within documents will be performed. Should
@@ -47,9 +46,6 @@ applying the \code{\link{fill_measures}} function before aggregating, except if 
 \item{do.inverseAlm}{a \code{logical} indicating if for every Almon polynomial its inverse has to be added, used
 if \code{"almon" \%in\% howTime}.}
 
-\item{do.normalizeAlm}{a \code{logical} indicating if every Almon polynomial weights column should sum to one, used if
-\code{"almon" \%in\% howTime}.}
-
 \item{weights}{an optional own weighting scheme, always used if provided as a \code{data.frame} with the number of rows
 equal to the desired \code{lag}. The automatic Almon polynomials are created sequentially; if the user wants only specific
 of such time weighting series it can use \code{\link{almons}}, select the columns it requires, combine it into a
@@ -81,7 +77,6 @@ ctr2 <- ctr_agg(howWithin = "proportionalPol",
                 lag = 20,
                 ordersAlm = 1:3,
                 do.inverseAlm = TRUE,
-                do.normalizeAlm = TRUE,
                 alphasExp = c(0.20, 0.50, 0.70, 0.95),
                 weights = data.frame(myWeights = runif(20)))
 

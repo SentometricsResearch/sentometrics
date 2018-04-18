@@ -96,6 +96,12 @@
 #'   \item valence_nl
 #' }
 #'
+#' @details
+#' The \code{t} column is coded as follows: \code{1} for negators, \code{2} for amplifiers/intensifiers, and
+#' \code{3} for deamplifiers/downtoners. Default scores are -1, 2, and 0.5 respectively. See
+#' \code{\link[lexicon]{setup_lexicons}} for details about the application of the valence shifters to the lexicons,
+#' and along the same vein, to the corpus.
+#'
 #' @usage data("valence")
 #'
 #' @examples
