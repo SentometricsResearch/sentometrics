@@ -5,7 +5,7 @@ context("Attribution")
 library(quanteda)
 library(data.table)
 
-# corpus, lexicon and ctr creation
+# corpus, lexicon and aggregation control creation
 data("usnews")
 corpus <- quanteda::corpus_subset(sento_corpus(corpusdf = usnews), date >= "1990-01-01" & date < "2000-10-01")
 data("lexicons")

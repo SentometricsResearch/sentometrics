@@ -1,6 +1,4 @@
 
-# Welcome to the **sentometrics** project page!
-
 You collected a large number of texts and think it is a good idea to summarize your corpus into several textual sentiment time series, which you ponder could help predicting some variable you are interested in. However, you do not really know how to proceed next... Fortunately, you come across the **`sentometrics`** package, which does exactly what you need! Great!
 
 ## The R package **sentometrics**: What?
