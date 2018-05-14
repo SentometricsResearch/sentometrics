@@ -23,13 +23,13 @@ the measures are normalized. \code{NA}s are removed first.
 }
 \examples{
 data("usnews", package = "sentometrics")
-data("lexicons", package = "sentometrics")
-data("valence", package = "sentometrics")
+data("list_lexicons", package = "sentometrics")
+data("list_valence_shifters", package = "sentometrics")
 
 # construct a sentomeasures object to start with
 corpus <- sento_corpus(corpusdf = usnews)
 corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 sentomeasures <- sento_measures(corpusSample, l, ctr)
 

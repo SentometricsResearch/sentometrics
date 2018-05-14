@@ -113,11 +113,11 @@ new <- data.frame(word = w, polarity = p)
 write.csv2(new, file = "data-raw/lexicons-raw/FEEL_nl.csv", row.names = FALSE)
 
 # FEEL ENG translation restructuring
-f <- read.csv("data-raw/lexicons-raw/FEEL_eng.csv", sep = ";")
+f <- read.csv("data-raw/lexicons-raw/FEEL_en.csv", sep = ";")
 w <- as.character(f$word[f$word != ""])
 p <- f$polarity[!is.na(f$polarity)]
 new <- data.frame(word = w, polarity = p)
-write.csv2(new, file = "data-raw/lexicons-raw/FEEL_eng.csv", row.names = FALSE)
+write.csv2(new, file = "data-raw/lexicons-raw/FEEL_en.csv", row.names = FALSE)
 
 # GI csv file reordering
 giRaw <- read.csv("data-raw/lexicons-raw/GI_raw.csv", sep = ";")
@@ -183,8 +183,8 @@ prepare_word_list <- function(fileName, type, name) {
 
 # save lexicons with appropriate names to data-raw/ folder
 typeL <- "lexicons"
-l <- prepare_word_list("LM.csv", typeL, "LM_eng"); "LM_eng" <- l$w
-save(LM_eng, file = l$file)
+l <- prepare_word_list("LM.csv", typeL, "LM_en"); "LM_en" <- l$w
+save(LM_en, file = l$file)
 l <- prepare_word_list("LM_fr.csv", typeL, "LM_fr_tr"); "LM_fr_tr" <- l$w
 save(LM_fr_tr, file = l$file)
 l <- prepare_word_list("LM_nl.csv", typeL, "LM_nl_tr"); "LM_nl_tr" <- l$w
@@ -193,16 +193,16 @@ l <- prepare_word_list("FEEL.csv", typeL, "FEEL_fr"); "FEEL_fr" <- l$w
 save(FEEL_fr, file = l$file)
 l <- prepare_word_list("FEEL_nl.csv", typeL, "FEEL_nl_tr"); "FEEL_nl_tr" <- l$w
 save(FEEL_nl_tr, file = l$file)
-l <- prepare_word_list("FEEL_eng.csv", typeL, "FEEL_eng_tr"); "FEEL_eng_tr" <- l$w
-save(FEEL_eng_tr, file = l$file)
-l <- prepare_word_list("GI.csv", typeL,"GI_eng"); "GI_eng" <- l$w
-save(GI_eng, file = l$file)
+l <- prepare_word_list("FEEL_en.csv", typeL, "FEEL_en_tr"); "FEEL_en_tr" <- l$w
+save(FEEL_en_tr, file = l$file)
+l <- prepare_word_list("GI.csv", typeL,"GI_en"); "GI_en" <- l$w
+save(GI_en, file = l$file)
 l <- prepare_word_list("GI_fr.csv", typeL, "GI_fr_tr"); "GI_fr_tr" <- l$w
 save(GI_fr_tr, file = l$file)
 l <- prepare_word_list("GI_nl.csv", typeL, "GI_nl_tr"); "GI_nl_tr" <- l$w
 save(GI_nl_tr, file = l$file)
-l <- prepare_word_list("HENRY.csv", typeL, "HENRY_eng"); "HENRY_eng" <- l$w
-save(HENRY_eng, file = l$file)
+l <- prepare_word_list("HENRY.csv", typeL, "HENRY_en"); "HENRY_en" <- l$w
+save(HENRY_en, file = l$file)
 l <- prepare_word_list("HENRY_fr.csv", typeL, "HENRY_fr_tr"); "HENRY_fr_tr" <- l$w
 save(HENRY_fr_tr, file = l$file)
 l <- prepare_word_list("HENRY_nl.csv", typeL, "HENRY_nl_tr"); "HENRY_nl_tr" <- l$w
@@ -233,7 +233,10 @@ form_word_list <- function(type) {
 form_word_list(type = "lexicons")
 # load("data/lexicons.rda")
 
-######################### VALENCE WORD LISTS
+# list_lexicons <- lexicons
+# save(list_lexicons, file = "data/list_lexicons.rda")
+
+######################### VALENCE WORD LISTS -- OLD
 
 # get negators from lexicon package
 negators <- lexicon::hash_valence_shifters[y == 1]
@@ -244,8 +247,8 @@ negators <- negators[seq(1, NROW(negators), by = 2), ]
 write.csv2(negators, file = "data-raw/valence-raw/NEGATORS.csv", row.names = FALSE)
 
 typeV <- "valence"
-v <- prepare_word_list("NEGATORS.csv", typeV, "valence_eng"); "valence_eng" <- v$w
-save(valence_eng, file = v$file)
+v <- prepare_word_list("NEGATORS.csv", typeV, "valence_en"); "valence_en" <- v$w
+save(valence_en, file = v$file)
 v <- prepare_word_list("NEGATORS_fr.csv", typeV, "valence_fr"); "valence_fr" <- v$w
 save(valence_fr, file = v$file)
 v <- prepare_word_list("NEGATORS_nl.csv", typeV, "valence_nl"); "valence_nl" <- v$w
@@ -253,4 +256,22 @@ save(valence_nl, file = v$file)
 
 form_word_list(type = "valence")
 # load("data/valence.rda")
+
+######################### VALENCE WORD LISTS -- NEW
+
+load("data-raw/valence-raw/valShifters.rda")
+names(valShifters) <- c("en", "fr", "nl")
+valShifters <- lapply(valShifters, function(v) {
+  v <- v[t != 4]
+  v$y <- -1
+  v$t <- as.numeric(v$t)
+  v[t == 2, "y"] <- 2
+  v[t == 3, "y"] <- 0.5
+  v$x <- as.character(v$x)
+  Encoding(v$x) <- "UTF-8"
+  return(v)
+})
+list_valence_shifters <- valShifters
+
+save(list_valence_shifters, file = "data/list_valence_shifters.rda")
 

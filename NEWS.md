@@ -1,9 +1,14 @@
 
 ## sentometrics 0.4.0 (development)
 
-- update `stats` element of `sentomeasures` object in `fill_measures()`
+- new functions: `measures_delete()`, `nmeasures()`, and `nobs()`
 - dropped `do.normalizeAlm` argument in `ctr_agg()`, but kept in the `almons()` function
 - inverted order of rows in output of `almons()` function to be consistent with Ardia et al. (2017) paper
+- naming of the functions `subset_measures()`, `select_measures()`, `merge_measures`, `fill_measures` changed to `measures_xyz()`
+- update `stats` element of `sentomeasures` object now also updated in `measures_fill()`
+- renamed `lexicons` to `list_lexicons`, and `valence` to `list_valence_shifters` 
+- changed `"_eng"` to `"_en"`' in `list_lexicons` and `list_valence_shifters` objects, to be in accordance with two-letter ISO language naming
+- changed `"valence_language"` naming to `"language"` in `list_valence_shifters` object
 
 ## sentometrics 0.3.5
 

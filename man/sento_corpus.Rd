@@ -8,7 +8,7 @@ sento_corpus(corpusdf, do.clean = FALSE)
 }
 \arguments{
 \item{corpusdf}{a \code{data.frame} (or a \code{data.table}, or a \code{tbl}) with as named columns: a document \code{"id"}
-column, a \code{"date"} column, a \code{"text"} column (i.e. the columns where all texts to analyze reside), and a
+column, a \code{"date"} column, a \code{"text"} column (i.e., the columns where all texts to analyze reside), and a
 series of feature columns of type \code{numeric}, with values pointing to the applicability of a particular feature to a
 particular text. The latter columns can be binary (\code{1} means the feature is applicable to the document in the same
 row) or a value between 0 and 1 to specify the degree of connectedness of a feature to a document. Features could be
@@ -20,7 +20,8 @@ mode. All spaces in the names of the features are replaced by underscores. If th
 between 0 and 1, they will be rescaled column-wise and a warning will be issued.}
 
 \item{do.clean}{a \code{logical}, if \code{TRUE} all texts undergo a cleaning routine to eliminate common textual garbage.
-This includes a brute force replacement of HTML tags and non-alphanumeric characters by an empty string.}
+This includes a brute force replacement of HTML tags and non-alphanumeric characters by an empty string. To use with care
+if the text is meant to have non-alphanumeric characters! Preferably, cleaning is done outside of this function call.}
 }
 \value{
 A \code{sentocorpus} object, derived from a \pkg{quanteda} corpus classed \code{list} with the elements
@@ -60,7 +61,7 @@ corpusDummy <- sento_corpus(corpusdf = usnews[, 1:3])
 
 }
 \seealso{
-\code{\link[quanteda]{corpus}}
+\code{\link[quanteda]{corpus}}, \code{\link{add_features}}
 }
 \author{
 Samuel Borms

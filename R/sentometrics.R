@@ -14,7 +14,7 @@
 #' \itemize{
 #' \item Feature generation: \code{\link{sento_corpus}}, \code{\link{add_features}}
 #' \item Sentiment computation and aggregation into sentiment measures: \code{\link{ctr_agg}},
-#' \code{\link{compute_sentiment}}, \code{\link{sento_measures}}, \code{\link{merge_measures}}, \code{\link{to_global}}
+#' \code{\link{compute_sentiment}}, \code{\link{sento_measures}}, \code{\link{measures_merge}}, \code{\link{to_global}}
 #' \item Sparse modelling: \code{\link{ctr_model}}, \code{\link{sento_model}}
 #' \item Prediction and post-modelling analysis: \code{\link{predict.sentomodel}}, \code{\link{retrieve_attributions}},
 #' \code{\link{plot_attributions}}, \code{\link{perform_MCS}}
@@ -39,24 +39,25 @@
 #'
 #' @description
 #' A \code{list} containing all built-in lexicons as a \code{data.table} with two columns: a \code{x} column with the words,
-#' and a \code{y} column with the polarities. The \code{list} element names incorporate consecutively the name and language, and
-#' \code{"_tr"} as suffix if the lexicon is translated. The translation was done via Microsoft Translator through Microsoft
+#' and a \code{y} column with the polarities. The \code{list} element names incorporate consecutively the name and language
+#' (based on the two-letter ISO code convention as in \code{\link[stopwords]{stopwords}}), and \code{"_tr"} as
+#' suffix if the lexicon is translated. The translation was done via Microsoft Translator through Microsoft
 #' Word. Only the entries that conform to the original language entry after retranslation, and those that have actually been
 #' translated, are kept. The last condition is assumed to be fulfilled when the translation differs from the original entry.
 #' All words are in lowercase. The lexicons are in the format required for further sentiment analysis. The built-in lexicons
 #' are the following:
 #'
 #' \itemize{
-#'   \item FEEL_eng_tr (French Expanded Emotion Lexicon)
+#'   \item FEEL_en_tr (French Expanded Emotion Lexicon)
 #'   \item FEEL_fr
 #'   \item FEEL_nl_tr
-#'   \item GI_eng (General Inquirer, i.e. Harvard IV-4 combined with Laswell)
+#'   \item GI_en (General Inquirer, i.e. Harvard IV-4 combined with Laswell)
 #'   \item GI_fr_tr
 #'   \item GI_nl_tr
-#'   \item HENRY_eng (Henry)
+#'   \item HENRY_en (Henry)
 #'   \item HENRY_fr_tr
 #'   \item HENRY_nl_tr
-#'   \item LM_eng (Loughran and McDonald)
+#'   \item LM_en (Loughran and McDonald)
 #'   \item LM_fr_tr
 #'   \item LM_nl_tr
 #' }
@@ -64,11 +65,11 @@
 #' Other immediate lexicon options can be found in the \pkg{lexicon} package, more specifically the datasets preceded by
 #' \code{hash_sentiment_}.
 #'
-#' @usage data("lexicons")
+#' @usage data("list_lexicons")
 #'
 #' @examples
-#' data("lexicons", package = "sentometrics")
-#' lexicons[c("FEEL_eng_tr", "LM_eng")]
+#' data("list_lexicons", package = "sentometrics")
+#' list_lexicons[c("FEEL_en_tr", "LM_en")]
 #'
 #' @format A \code{list} with all built-in lexicons, appropriately named as \code{"NAME_language(_tr)"} .
 #'
@@ -76,7 +77,7 @@
 #' @source \href{http://www.wjh.harvard.edu/~inquirer/spreadsheet_guide.htm}{GI lexicon}
 #' @source \href{https://study.sagepub.com/sites/default/files/1\%20Henry\%202008_0.pdf}{HENRY lexicon}
 #' @source \href{https://www3.nd.edu/~mcdonald/Word_Lists.html}{LM lexicon}
-"lexicons"
+"list_lexicons"
 
 #' Built-in valence word lists
 #'
@@ -85,33 +86,34 @@
 #' @description
 #' A \code{list} containing all built-in valence word lists, a \code{data.table} with three columns: a \code{x} column with the
 #' words, a \code{t} column with the type of valence words, and a \code{y} column with the values associated to each word and
-#' type of valence shifter. The \code{list} element names incorporate the language of the valence word list. All non-English word
-#' lists are translated via Microsoft Translator through Microsoft Word. Only the entries whose translation differs from
+#' type of valence shifter. The \code{list} element names indicate the language (based on the two-letter ISO code
+#' convention as in \code{\link[stopwords]{stopwords}}) of the valence word list. All non-English word lists
+#' are translated via Microsoft Translator through Microsoft Word. Only the entries whose translation differs from
 #' the original entry are kept. The valence word lists are in the form required for further sentiment analysis. All words
-#' are in lowercase. The built-in valence word lists are the following:
+#' are in lowercase. The built-in valence word lists are available in following languages:
 #'
 #' \itemize{
-#'   \item valence_eng
-#'   \item valence_fr
-#'   \item valence_nl
+#'   \item English (\code{"en"})
+#'   \item French (\code{"fr"})
+#'   \item Dutch (\code{"nl"})
 #' }
 #'
 #' @details
 #' The \code{t} column is coded as follows: \code{1} for negators, \code{2} for amplifiers/intensifiers, and
 #' \code{3} for deamplifiers/downtoners. Default scores are -1, 2, and 0.5 respectively. See
-#' \code{\link[lexicon]{setup_lexicons}} for details about the application of the valence shifters to the lexicons,
+#' \code{\link{setup_lexicons}} for details about the application of the valence shifters to the lexicons,
 #' and along the same vein, to the corpus.
 #'
-#' @usage data("valence")
+#' @usage data("list_valence_shifters")
 #'
 #' @examples
-#' data("valence", package = "sentometrics")
-#' valence["valence_eng"]
+#' data("list_valence_shifters", package = "sentometrics")
+#' list_valence_shifters["en"]
 #'
 #' @format A \code{list} with all built-in valence word lists, appropriately named.
 #'
-#' @source \code{\link[lexicon]{hash_valence_shifters}} (negators)
-"valence"
+#' @source \code{\link[lexicon]{hash_valence_shifters}} (English valence shifters)
+"list_valence_shifters"
 
 #' Texts (not) relevant to the U.S. economy
 #'
@@ -127,9 +129,9 @@
 #'   \item date. Date as \code{"yyyy-mm-dd"}.
 #'   \item text. Texts in \code{character} format.
 #'   \item wsj. Equals 1 if the article comes from The Wall Street Journal.
-#'   \item wapo. Equals 1 if the article comes from The Washington Post.
+#'   \item wapo. Equals 1 if the article comes from The Washington Post (complementary to 'wsj').
 #'   \item economy. Equals 1 if the article is relevant to the U.S. economy.
-#'   \item noneconomy. Equals 1 if the article is not relevant to the U.S. economy.
+#'   \item noneconomy. Equals 1 if the article is not relevant to the U.S. economy (complementary to 'economy').
 #' }
 #'
 #' @usage data("usnews")
