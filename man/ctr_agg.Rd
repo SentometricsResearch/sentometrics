@@ -34,7 +34,7 @@ equal to \code{1L}, meaning no aggregation across time.}
 
 \item{fill}{a single \code{character} vector, one of \code{c("zero", "latest", "none")}, to control how missing
 sentiment values across the continuum of dates considered are added. This impacts the aggregation across time,
-applying the \code{\link{fill_measures}} function before aggregating, except if \code{fill = "none"}. By default equal to
+applying the \code{\link{measures_fill}} function before aggregating, except if \code{fill = "none"}. By default equal to
 \code{"zero"}, which sets the scores (and thus also the weights) of the added dates to zero in the time aggregation.}
 
 \item{alphasExp}{a \code{numeric} vector of all exponential smoothing factors to calculate weights for, used if
@@ -89,7 +89,7 @@ ctr3 <- ctr_agg(howTime = c("linear", "own"), by = "year", lag = 70,
 
 }
 \seealso{
-\code{\link{fill_measures}}, \code{\link{almons}}, \code{\link{compute_sentiment}}
+\code{\link{measures_fill}}, \code{\link{almons}}, \code{\link{compute_sentiment}}
 }
 \author{
 Samuel Borms, Keven Bluteau

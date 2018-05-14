@@ -46,13 +46,13 @@ words.
 }
 \examples{
 data("usnews", package = "sentometrics")
-data("lexicons", package = "sentometrics")
-data("valence", package = "sentometrics")
+data("list_lexicons", package = "sentometrics")
+data("list_valence_shifters", package = "sentometrics")
 
 # sentiment computation based on raw frequency counts
 corpus <- sento_corpus(corpusdf = usnews)
 corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 sent <- compute_sentiment(corpusSample, l, how = "counts")
 
 \dontrun{

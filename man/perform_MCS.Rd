@@ -28,14 +28,14 @@ implemented in the \pkg{MCS} package, for a set of different \code{sentomodelite
 \examples{
 \dontrun{
 data("usnews", package = "sentometrics")
-data("lexicons", package = "sentometrics")
-data("valence", package = "sentometrics")
+data("list_lexicons", package = "sentometrics")
+data("list_valence_shifters", package = "sentometrics")
 data("epu", package = "sentometrics")
 
 # construct two sentomeasures objects
 corpusAll <- sento_corpus(corpusdf = usnews)
 corpus <- quanteda::corpus_subset(corpusAll, date >= "1997-01-01" & date < "2014-10-01")
-l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 
 ctr1 <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional",
                 howTime = c("equal_weight", "linear"), by = "month", lag = 3)
@@ -47,7 +47,7 @@ sentMeas2 <- sento_measures(corpus, l, ctr2)
 
 # prepare y and other x variables
 y <- epu[epu$date >= sentMeas1$measures$date[1], ]$index
-length(y) == nrow(sentMeas1$measures) # TRUE
+length(y) == nobs(sentMeas1) # TRUE
 x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
 colnames(x) <- c("x1", "x2")
 

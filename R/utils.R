@@ -334,11 +334,11 @@ nonzero_coeffs <- function(reg) {
   return(nz)
 }
 
-pdf_manual <- function(wd) {
-  setwd(wd)
-  shell('R CMD Rd2pdf --encoding=UTF-8 sentometrics')
-  setwd(paste0(wd, "/sentometrics"))
-}
+# pdf_manual <- function(wd) {
+#   setwd(wd)
+#   shell('R CMD Rd2pdf --encoding=UTF-8 sentometrics')
+#   setwd(paste0(wd, "/sentometrics"))
+# }
 
 # this function is directly taken from the sentimentr package
 # (the as_key() function) but copied to bring R version

@@ -22,14 +22,14 @@ input \code{sentomodeliter} object, as well as the corresponding true values.
 \examples{
 \dontrun{
 data("usnews", package = "sentometrics")
-data("lexicons", package = "sentometrics")
-data("valence", package = "sentometrics")
+data("list_lexicons", package = "sentometrics")
+data("list_valence_shifters", package = "sentometrics")
 data("epu", package = "sentometrics")
 
 # construct a sentomeasures object to start with
 corpusAll <- sento_corpus(corpusdf = usnews)
 corpus <- quanteda::corpus_subset(corpusAll, date >= "2007-01-01" & date < "2014-10-01")
-l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional",
                howTime = c("equal_weight", "linear"),
                by = "month", lag = 3)
@@ -37,7 +37,7 @@ sentomeasures <- sento_measures(corpus, l, ctr)
 
 # prepare y variable
 y <- epu[epu$date >= sentomeasures$measures$date[1], ]$index
-length(y) == nrow(sentomeasures$measures) # TRUE
+length(y) == nobs(sentomeasures) # TRUE
 
 # estimate regression iteratively based on a sample of 60, skipping first 25 iterations
 ctr <- ctr_model(model = "gaussian", type = "AIC", do.iter = TRUE,

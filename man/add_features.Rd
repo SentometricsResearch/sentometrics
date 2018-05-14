@@ -41,12 +41,16 @@ The \code{do.regex} argument points to the corresponding elements in \code{keywo
 the keywords into a simple regex expression, involving \code{"\\b"} for exact word boundary matching and (if multiple
 keywords) \code{|} as OR operator. The elements associated to \code{TRUE} do not undergo the transformation, and are
 evaluated as given, if the corresponding keywords vector consists of only one expression. Scaling between 0 and 1
-is performed via the min-max normalization, per column.
+is performed via the min-max normalization, per column. Binary features can be used as a mechanism to select the
+texts which have to be integrated in the respective feature-based sentiment measure(s), but the
+within-document aggregation still considers the entire corpus in case of \code{"tf-idf"}, and the option
+\code{do.ignoreZeros} should be set to \code{TRUE} (see \code{\link{ctr_agg}}). Because of this (implicit) selection
+that can be performed, having complementary features (e.g., \code{"economy"} and \code{"noneconomy"}) makes sense.
 }
 \examples{
 data("usnews", package = "sentometrics")
 
-# construct a corpus and add a random feature to it
+# construct a corpus and add (a) feature(s) to it
 corpus <- sento_corpus(corpusdf = usnews)
 corpus1 <- add_features(corpus,
                         featuresdf = data.frame(random = runif(quanteda::ndoc(corpus))))
@@ -63,6 +67,11 @@ corpus4 <- add_features(corpus,
                         do.regex = c(TRUE, TRUE, FALSE))
 
 sum(corpus3$documents$pres) == sum(corpus4$documents$pres2) # TRUE
+
+# adding a complementary feature
+nonpres <- data.frame(nonpres = as.numeric(!quanteda::docvars(corpus2)[["pres"]]))
+corpus2 <- add_features(corpus2,
+                        featuresdf = nonpres)
 
 }
 \author{

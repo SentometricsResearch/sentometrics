@@ -195,14 +195,14 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #'
 #' @examples
 #' data("usnews", package = "sentometrics")
-#' data("lexicons", package = "sentometrics")
-#' data("valence", package = "sentometrics")
+#' data("list_lexicons", package = "sentometrics")
+#' data("list_valence_shifters", package = "sentometrics")
 #' data("epu", package = "sentometrics")
 #'
 #' # construct a sentomeasures object to start with
 #' corpusAll <- sento_corpus(corpusdf = usnews)
 #' corpus <- quanteda::corpus_subset(corpusAll, date >= "2004-01-01" & date < "2014-10-01")
-#' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+#' l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 #' ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional",
 #'                howTime = c("equal_weight", "linear"),
 #'                by = "month", lag = 3)
@@ -210,7 +210,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #'
 #' # prepare y and other x variables
 #' y <- epu[epu$date >= sentomeasures$measures$date[1], ]$index
-#' length(y) == nrow(sentomeasures$measures) # TRUE
+#' length(y) == nobs(sentomeasures) # TRUE
 #' x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
 #' colnames(x) <- c("x1", "x2")
 #'
@@ -222,19 +222,19 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' attributions1 <- retrieve_attributions(out1, sentomeasures,
 #'                                        refDates = sentomeasures$measures$date[20:40])
 #'
-#' nx <- ncol(sentomeasures$measures) - 1 + ncol(x) # don't count date column
+#' nx <- nmeasures(sentomeasures) + ncol(x)
 #' newx <- runif(nx) * cbind(sentomeasures$measures[, -1], x)[30:40, ]
 #' preds <- predict(out1, newx = as.matrix(newx), type = "link")
 #'
 #' \dontrun{
 #' # a cross-validation based model
-#' cl <- makeCluster(detectCores() - 2)
-#' registerDoParallel(cl)
+#' cl <- parallel::makeCluster(detectCores() - 2)
+#' doParallel::registerDoParallel(cl)
 #' ctrCV <- ctr_model(model = "gaussian", type = "cv", do.iter = FALSE,
 #'                    h = 0, alphas = c(0.10, 0.50, 0.90), trainWindow = 70,
 #'                    testWindow = 10, oos = 0, do.progress = TRUE)
 #' out2 <- sento_model(sentomeasures, y, x = x, ctr = ctrCV)
-#' stopCluster(cl)
+#' parallel::stopCluster(cl)
 #' summary(out2)
 #'
 #' # a cross-validation based model but for a binomial target
@@ -256,12 +256,12 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' plot_attributions(attributions2, "features")
 #'
 #' # a similar iterative analysis, parallelized
-#' cl <- makeCluster(detectCores() - 2)
-#' registerDoParallel(cl)
+#' cl <- parallel::makeCluster(detectCores() - 2)
+#' doParallel::registerDoParallel(cl)
 #' ctrIter <- ctr_model(model = "gaussian", type = "Cp", do.iter = TRUE,
 #'                      h = 0, nSample = 100, do.parallel = TRUE)
 #' out5 <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
-#' stopCluster(cl)
+#' parallel::stopCluster(cl)
 #' summary(out5)}
 #'
 #' @importFrom glmnet predict.glmnet predict.elnet predict.lognet predict.multnet
@@ -271,10 +271,10 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
   check_class(sentomeasures, "sentomeasures")
 
   if (any(is.na(y))) stop("No NA values are allowed in y.")
-  nrows <- c(nrow(sentomeasures$measures), ifelse(is.null(nrow(y)), length(y), nrow(y)), nrow(x))
+  nrows <- c(nobs(sentomeasures), ifelse(is.null(nrow(y)), length(y), nrow(y)), nrow(x))
   if (length(unique(nrows)) != 1)
     stop("Number of rows or length for y, x and measures in sentomeasures must be equal.")
-  if (sum(ncol(sentomeasures$measures) + ifelse(is.null(x), 0, ncol(x))) < 2)
+  if (sum(nmeasures(sentomeasures) + ifelse(is.null(x), 0, ncol(x))) < 2)
     stop("There should be at least two explanatory variables out of sentomeasures and x combined.")
   if (ctr$model == "binomial" && ifelse(is.factor(y), nlevels(y), NCOL(y)) > 2)
     stop("At maximum two classes allowed in 'y' for a binomial model.")
@@ -682,14 +682,14 @@ print.sentomodeliter <- function(x, ...) {
 #' @examples
 #' \dontrun{
 #' data("usnews", package = "sentometrics")
-#' data("lexicons", package = "sentometrics")
-#' data("valence", package = "sentometrics")
+#' data("list_lexicons", package = "sentometrics")
+#' data("list_valence_shifters", package = "sentometrics")
 #' data("epu", package = "sentometrics")
 #'
 #' # construct a sentomeasures object to start with
 #' corpusAll <- sento_corpus(corpusdf = usnews)
 #' corpus <- quanteda::corpus_subset(corpusAll, date >= "2007-01-01" & date < "2014-10-01")
-#' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+#' l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 #' ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional",
 #'                howTime = c("equal_weight", "linear"),
 #'                by = "month", lag = 3)
@@ -697,7 +697,7 @@ print.sentomodeliter <- function(x, ...) {
 #'
 #' # prepare y variable
 #' y <- epu[epu$date >= sentomeasures$measures$date[1], ]$index
-#' length(y) == nrow(sentomeasures$measures) # TRUE
+#' length(y) == nobs(sentomeasures) # TRUE
 #'
 #' # estimate regression iteratively based on a sample of 60, skipping first 25 iterations
 #' ctr <- ctr_model(model = "gaussian", type = "AIC", do.iter = TRUE,
@@ -793,14 +793,14 @@ predict.sentomodel <- function(object, newx, type, offset = NULL, ...) {
 #' @examples
 #' \dontrun{
 #' data("usnews", package = "sentometrics")
-#' data("lexicons", package = "sentometrics")
-#' data("valence", package = "sentometrics")
+#' data("list_lexicons", package = "sentometrics")
+#' data("list_valence_shifters", package = "sentometrics")
 #' data("epu", package = "sentometrics")
 #'
 #' # construct two sentomeasures objects
 #' corpusAll <- sento_corpus(corpusdf = usnews)
 #' corpus <- quanteda::corpus_subset(corpusAll, date >= "1997-01-01" & date < "2014-10-01")
-#' l <- setup_lexicons(lexicons[c("LM_eng", "HENRY_eng")], valence[["valence_eng"]])
+#' l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 #'
 #' ctr1 <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional",
 #'                 howTime = c("equal_weight", "linear"), by = "month", lag = 3)
@@ -812,7 +812,7 @@ predict.sentomodel <- function(object, newx, type, offset = NULL, ...) {
 #'
 #' # prepare y and other x variables
 #' y <- epu[epu$date >= sentMeas1$measures$date[1], ]$index
-#' length(y) == nrow(sentMeas1$measures) # TRUE
+#' length(y) == nobs(sentMeas1) # TRUE
 #' x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
 #' colnames(x) <- c("x1", "x2")
 #'

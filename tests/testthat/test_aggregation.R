@@ -1,15 +1,13 @@
 
-library(sentometrics)
+library("sentometrics")
+library("quanteda")
 context("Aggregation")
-
-library(quanteda)
-library(data.table)
 
 # corpus, lexicon and ctr creation
 data("usnews")
-corpus <- corpus_sample(sento_corpus(corpusdf = usnews), size = 1000)
-data("lexicons")
-lex <- lexicons[c("GI_eng", "LM_eng")]
+corpus <- quanteda::corpus_sample(sento_corpus(corpusdf = usnews), size = 1000)
+data("list_lexicons")
+lex <- list_lexicons[c("GI_en", "LM_en")]
 ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional", howTime = "almon", by = "month",
                lag = 3, ordersAlm = 1:3, do.inverseAlm = TRUE, do.normalizeAlm = TRUE)
 sentMeas <- sento_measures(corpus, lex, ctr)

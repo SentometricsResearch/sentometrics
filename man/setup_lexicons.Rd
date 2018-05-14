@@ -9,15 +9,15 @@ setup_lexicons(lexiconsIn, valenceIn = NULL, do.split = FALSE)
 \arguments{
 \item{lexiconsIn}{a named \code{list} of (raw) lexicons, each element as a \code{data.frame} or a \code{data.table} with
 respectively a words column and a polarity score column. Alternatively, a subset of the already formatted built-in lexicons
-accessible via \code{lexicons} can be declared too, as part of the same list input. If only (some of) the package built-in
-lexicons want to be used (with \emph{no} valence shifters), one can simply supply \code{lexicons[c(...)]} as an argument to
+accessible via \code{list_lexicons} can be declared too, as part of the same list input. If only (some of) the package built-in
+lexicons want to be used (with \emph{no} valence shifters), one can simply supply \code{list_lexicons[c(...)]} as an argument to
 either \code{\link{sento_measures}} or \code{\link{compute_sentiment}}. However, it is strongly recommended to pass all
 lexicons (and a valence word list) to this function first, in any case.}
 
 \item{valenceIn}{a single valence word list as a \code{data.frame} or a \code{data.table} with respectively a words column,
 a type column (\code{1} for negators, \code{2} for amplifiers/intensifiers, and \code{3} for deamplifiers/downtoners) and a
 score column. The scores should be the same within each type. This argument can be one of the already formatted
-built-in valence word lists accessible via \code{valence}. If \code{NULL}, no valence word list is part of this
+built-in valence word lists accessible via \code{list_valence_shifters}. If \code{NULL}, no valence word list is part of this
 function's output, nor will it applied in the sentiment analysis.}
 
 \item{do.split}{a \code{logical} that if \code{TRUE} splits every lexicon into a separate positive polarity and negative
@@ -35,21 +35,21 @@ the types).
 }
 \description{
 Structures provided lexicons and potentially integrates valence words. One can also provide (part of) the
-built-in lexicons from \code{data("lexicons")} or a valence word list from \code{data("valence")} as an argument.
-Part of this function mimicks the \code{\link[sentimentr]{as_key}} function from the \pkg{sentimentr} package to make
-the output coherent, convert all words to lowercase and check for duplicates.
+built-in lexicons from \code{data("list_lexicons")} or a valence word list from \code{data("list_valence_shifters")} as an
+argument. Part of this function mimicks the \code{\link[sentimentr]{as_key}} function from the \pkg{sentimentr} package to
+make the output coherent, convert all words to lowercase and check for duplicates.
 }
 \examples{
-data("lexicons", package = "sentometrics")
-data("valence", package = "sentometrics")
+data("list_lexicons", package = "sentometrics")
+data("list_valence_shifters", package = "sentometrics")
 
 # sets up output list straight from built-in word lists including valence words
-l1 <- c(lexicons[c("LM_eng", "HENRY_eng")], valence[["eng"]])
+l1 <- c(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 
 # including a self-made lexicon, with and without valence shifters
 lexIn <- c(list(myLexicon = data.table(w = c("nice", "boring"), s = c(2, -1))),
-           lexicons[c("GI_eng")])
-valIn <- valence[["valence_eng"]]
+           list_lexicons[c("GI_en")])
+valIn <- list_valence_shifters[["en"]]
 l2 <- setup_lexicons(lexIn)
 l3 <- setup_lexicons(lexIn, valIn)
 l4 <- setup_lexicons(lexIn, valIn, do.split = TRUE)
