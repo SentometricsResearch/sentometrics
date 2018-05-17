@@ -997,7 +997,7 @@ measures_select <- function(sentomeasures, toSelect, do.combine = TRUE) {
 measures_subset <- function(sentomeasures, subset) {
   check_class(sentomeasures, "sentomeasures")
 
-  sub <- as.character(substitute(list(subset))[-1L]) ### TODO: make eval(parse(text = year)) work
+  sub <- as.character(substitute(list(subset))[-1L])
   if (length(sub) > 0) {
     sub <- stringi::stri_replace_all(sub, "", regex = " ")
     sub <- stringi::stri_replace_all(sub, "____", regex = "--")
