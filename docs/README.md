@@ -7,6 +7,10 @@ The **`sentometrics`** package is designed to do time series analysis based on t
 
 The package was first created during [Google Summer of Code 2017](https://github.com/rstats-gsoc/gsoc2017/wiki/Sentometrics:-An-integrated-framework-for-text-based-multivariate-time-series-modeling-and-forecasting). So far, the package implements the main methodology developed in the paper "[Questioning the news about economic growth: Sparse forecasting using thousands of news--based sentiment values](https://ssrn.com/abstract=2976084)" (Ardia, Bluteau and Boudt, 2017). We do believe the package in its current state may already be of strong interest to many people.
 
+### Media
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/KC8LSBNvZrQ" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
 ## The functionalities of **sentometrics**
 
 In what follows, we present an overview of the different functionalities of the package. A hands--on methodological introduction is given in our [vignette](https://ssrn.com/abstract=3067734), with an accompanying code example (see the `run_vignette.R` script under the _/examples_ folder on our GitHub repository). 
