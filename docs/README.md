@@ -107,5 +107,5 @@ library("sentometrics")
 
 ## Contact
 
-Reach out to the development team if you have questions, suggestions or anything else: [Samuel Borms](mailto:samuel.borms@unine.ch), [Keven Bluteau](mailto:keven.bluteau@unine.ch), [David Ardia](mailto:david.ardia@unine.ch) or [Kris Boudt](mailto:kris.boudt@vub.be).
+Reach out to the development team if you have questions or suggestions: [Samuel Borms](mailto:samuel.borms@unine.ch), [Keven Bluteau](mailto:keven.bluteau@unine.ch), [David Ardia](mailto:david.ardia@unine.ch) or [Kris Boudt](mailto:kris.boudt@vub.be).
 
