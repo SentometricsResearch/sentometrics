@@ -33,9 +33,9 @@
 #' performs the associated one-step ahead out-of-sample prediction exercise through time.
 #' @param do.progress a \code{logical}, if \code{TRUE} progress statements are displayed during model calibration.
 #' @param nSample a positive \code{integer} as the size of the sample for model estimation at every iteration (ignored if
-#' \code{iter = FALSE}).
+#' \code{do.iter = FALSE}).
 #' @param start a positive \code{integer} to indicate at which point the iteration has to start (ignored if
-#' \code{iter = FALSE}). For example, given 100 possible iterations, \code{start = 70} leads to model estimations
+#' \code{do.iter = FALSE}). For example, given 100 possible iterations, \code{start = 70} leads to model estimations
 #' only for the last 31 samples.
 #' @param do.parallel a \code{logical}, if \code{TRUE} the \code{\%dopar\%} construct from the \pkg{foreach} package is
 #' applied for iterative model estimation. A proper parallel backend needs to be set up to make it work. No progress statements
