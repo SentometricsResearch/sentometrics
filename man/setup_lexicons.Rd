@@ -43,8 +43,8 @@ make the output coherent, convert all words to lowercase and check for duplicate
 data("list_lexicons", package = "sentometrics")
 data("list_valence_shifters", package = "sentometrics")
 
-# sets up output list straight from built-in word lists including valence words
-l1 <- c(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+# lexicons straight from built-in word lists
+l1 <- list_lexicons[c("LM_en", "HENRY_en")]
 
 # including a self-made lexicon, with and without valence shifters
 lexIn <- c(list(myLexicon = data.table(w = c("nice", "boring"), s = c(2, -1))),

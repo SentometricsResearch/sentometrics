@@ -4,19 +4,18 @@
 \alias{perform_agg}
 \title{Aggregate textual sentiment across documents and time}
 \usage{
-perform_agg(toAgg, ctr)
+perform_agg(sentiment, ctr)
 }
 \arguments{
-\item{toAgg}{output from a \code{\link{compute_sentiment}} call.}
+\item{sentiment}{output from a \code{\link{compute_sentiment}} call, computed from a \code{sentocorpus} object.}
 
-\item{ctr}{output from a \code{\link{ctr_agg}} call. The \code{howWithin} argument plays no further role from
-this point on.}
+\item{ctr}{output from a \code{\link{ctr_agg}} call. The \code{howWithin} and \code{nCore} arguments are ignored.}
 }
 \value{
 A \code{sentomeasures} object.
 }
 \description{
-Condense document-level textual sentiment scores into a panel of textual sentiment
+Condenses document-level textual sentiment scores into a panel of textual sentiment
 measures by aggregating across documents and time. This function is called within \code{\link{sento_measures}},
 applied on the output of \code{\link{compute_sentiment}}.
 }

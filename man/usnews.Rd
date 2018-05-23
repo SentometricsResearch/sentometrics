@@ -19,7 +19,7 @@ contains following information:
 \itemize{
   \item id. A \code{character} ID identifier.
   \item date. Date as \code{"yyyy-mm-dd"}.
-  \item text. Texts in \code{character} format.
+  \item texts. Texts in \code{character} format.
   \item wsj. Equals 1 if the article comes from The Wall Street Journal.
   \item wapo. Equals 1 if the article comes from The Washington Post (complementary to 'wsj').
   \item economy. Equals 1 if the article is relevant to the U.S. economy.
@@ -28,8 +28,8 @@ contains following information:
 }
 \examples{
 data("usnews", package = "sentometrics")
-usnews[3192, "text"]
-usnews[1:5, c("id", "date", "text")]
+usnews[3192, "texts"]
+usnews[1:5, c("id", "date", "texts")]
 
 }
 \keyword{datasets}

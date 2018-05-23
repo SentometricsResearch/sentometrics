@@ -8,7 +8,7 @@ sento_corpus(corpusdf, do.clean = FALSE)
 }
 \arguments{
 \item{corpusdf}{a \code{data.frame} (or a \code{data.table}, or a \code{tbl}) with as named columns: a document \code{"id"}
-column, a \code{"date"} column, a \code{"text"} column (i.e., the columns where all texts to analyze reside), and a
+column, a \code{"date"} column, a \code{"texts"} column (i.e., the columns where all texts to analyze reside), and a
 series of feature columns of type \code{numeric}, with values pointing to the applicability of a particular feature to a
 particular text. The latter columns can be binary (\code{1} means the feature is applicable to the document in the same
 row) or a value between 0 and 1 to specify the degree of connectedness of a feature to a document. Features could be
@@ -36,7 +36,7 @@ required for better memory management, corpus manipulation, and sentiment calcul
 a set of checks on the input data and prepares the corpus for further sentiment analysis.
 }
 \details{
-A \code{sentocorpus} object can be regarded as a specialized instance of a \pkg{quanteda} corpus. In theory, all
+A \code{sentocorpus} object is a specialized instance of a \pkg{quanteda} corpus. In theory, all
 \pkg{quanteda} functions applicable to its corpus object can also be applied to a \code{sentocorpus} object. However,
 changing a given \code{sentocorpus} object too drastically using some of \pkg{quanteda}'s functions might alter the very
 structure the corpus is meant to have (as defined in the \code{corpusdf} argument) to be able to be used as an input

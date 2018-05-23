@@ -20,6 +20,7 @@ Encoding: UTF-8
 LazyData: true
 Suggests: testthat, e1071, randomForest
 Imports: utils, stats, quanteda, stringi, zoo, abind, glmnet, caret,
-    compiler, Rcpp (>= 0.12.13), RcppRoll, ggthemes, ISOweek, MCS
+    compiler, Rcpp (>= 0.12.13), RcppRoll, ggthemes, ISOweek, MCS,
+    parallel, doParallel
 LinkingTo: Rcpp, RcppArmadillo
 RoxygenNote: 6.0.1

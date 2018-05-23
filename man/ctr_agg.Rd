@@ -7,7 +7,7 @@
 ctr_agg(howWithin = "proportional", howDocs = "equal_weight",
   howTime = "equal_weight", do.ignoreZeros = TRUE, by = "day", lag = 1L,
   fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1), ordersAlm = 1:3,
-  do.inverseAlm = TRUE, weights = NULL, dfm = NULL, ...)
+  do.inverseAlm = TRUE, weights = NULL, nCore = 1, dfm = NULL, ...)
 }
 \arguments{
 \item{howWithin}{a single \code{character} vector defining how aggregation within documents will be performed. Should
@@ -23,7 +23,7 @@ is possible. For currently available options on how aggregation can occur, see \
 
 \item{do.ignoreZeros}{a \code{logical} indicating whether zero sentiment values have to be ignored in the determination of
 the document weights while aggregating across documents. By default \code{do.ignoreZeros = TRUE}, such that documents with
-an exact score of zero are considered irrelevant.}
+a raw sentiment score of zero or for which a given feature indicator is equal to zero are considered irrelevant.}
 
 \item{by}{a single \code{character} vector, either \code{"day", "week", "month"} or \code{"year"}, to indicate at what
 level the dates should be aggregated. Dates are displayed as the first day of the period, if applicable (e.g.,
@@ -51,7 +51,10 @@ equal to the desired \code{lag}. The automatic Almon polynomials are created seq
 of such time weighting series it can use \code{\link{almons}}, select the columns it requires, combine it into a
 \code{data.frame} and supply it under this argument (see examples).}
 
-\item{dfm}{optional; see \code{\link{compute_sentiment}}.}
+\item{nCore}{a single \code{numeric} at least equal to 1 to indicate the number of cores to use for a parallel sentiment
+computation. By default, \code{nCore = 1}, which implies no parallelization.}
+
+\item{dfm}{(optional) see \code{\link{compute_sentiment}}.}
 
 \item{...}{not used.}
 }

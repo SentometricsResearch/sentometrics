@@ -1,14 +1,18 @@
 
-## sentometrics 0.4.0 (development)
+## sentometrics 0.4.0
 
-- new functions: `measures_delete()`, `nmeasures()`, and `nobs()`
+- new functions: `measures_delete()`, `nmeasures()`, `nobs()`, and `to_sentocorpus()`
 - dropped `do.normalizeAlm` argument in `ctr_agg()`, but kept in the `almons()` function
 - inverted order of rows in output of `almons()` function to be consistent with Ardia et al. (2017) paper
-- naming of the functions `subset_measures()`, `select_measures()`, `merge_measures`, `fill_measures` changed to `measures_xyz()`
-- update `stats` element of `sentomeasures` object now also updated in `measures_fill()`
+- renamed the functions `subset_measures()`, `select_measures()`, `merge_measures`, and `fill_measures` to `measures_xyz()`
+- renamed the function `extract_peakdocs()` to `peakdocs()` for brevity
 - renamed `lexicons` to `list_lexicons`, and `valence` to `list_valence_shifters` 
+- the `stats` element of a `sentomeasures` object is now also updated in `measures_fill()`
 - changed `"_eng"` to `"_en"`' in `list_lexicons` and `list_valence_shifters` objects, to be in accordance with two-letter ISO language naming
 - changed `"valence_language"` naming to `"language"` in `list_valence_shifters` object
+- the `compute_sentiment()` function now also accepts a **`quanteda`** `corpus` object and a `character` vector
+- the `add_features()` function now also accepts a **`quanteda`** `corpus` object
+- added an `nCore` argument to the `compute_sentiment()` and `ctr_agg()` functions to allow for a parallelized sentiment computation
 
 ## sentometrics 0.3.5
 

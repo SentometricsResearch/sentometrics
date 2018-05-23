@@ -11,8 +11,8 @@ ctr_model(model = c("gaussian", "binomial", "multinomial"), type = c("BIC",
   do.parallel = FALSE)
 }
 \arguments{
-\item{model}{a \code{character} vector with one of the following: "\code{gaussian}" (linear regression), "\code{binomial}"
-(binomial logistic regression), or "\code{multinomial}" (multinomial logistic regression).}
+\item{model}{a \code{character} vector with one of the following: \code{"gaussian"} (linear regression), \code{"binomial"}
+(binomial logistic regression), or \code{"multinomial"} (multinomial logistic regression).}
 
 \item{type}{a \code{character} vector indicating which model calibration approach to use. Supports "\code{BIC}",
 "\code{AIC}" and "\code{Cp}" (Mallows's Cp) as sparse regression adapted information criteria (cf., ``On the `degrees of
@@ -36,7 +36,7 @@ values tested for are chosen by the \code{\link[glmnet]{glmnet}} function or set
 in case of cross-validation.}
 
 \item{nSample}{a positive \code{integer} as the size of the sample for model estimation at every iteration (ignored if
-\code{iter = FALSE}).}
+\code{do.iter = FALSE}).}
 
 \item{trainWindow}{a positive \code{integer} as the size of the training sample in cross-validation (ignored if
 \code{type != } "\code{cv}").}
@@ -48,7 +48,7 @@ in case of cross-validation.}
 training sample (out-of-sample) up to the test sample (ignored if \code{type != } "\code{cv}").}
 
 \item{start}{a positive \code{integer} to indicate at which point the iteration has to start (ignored if
-\code{iter = FALSE}). For example, given 100 possible iterations, \code{start = 70} leads to model estimations
+\code{do.iter = FALSE}). For example, given 100 possible iterations, \code{start = 70} leads to model estimations
 only for the last 31 samples.}
 
 \item{do.progress}{a \code{logical}, if \code{TRUE} progress statements are displayed during model calibration.}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/attribution.R
 \name{retrieve_attributions}
 \alias{retrieve_attributions}
-\title{Retrieve top-down sentiment attributions given model object}
+\title{Retrieve top-down model sentiment attributions}
 \usage{
 retrieve_attributions(model, sentomeasures, do.normalize = FALSE,
   refDates = NULL, factor = NULL)

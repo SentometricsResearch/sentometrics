@@ -2,17 +2,18 @@
 % Please edit documentation in R/sentocorpus.R
 \name{add_features}
 \alias{add_features}
-\title{Add feature columns to a sentocorpus}
+\title{Add feature columns to a (sento)corpus object}
 \usage{
-add_features(sentocorpus, featuresdf = NULL, keywords = NULL,
-  do.binary = TRUE, do.regex = FALSE)
+add_features(corpus, featuresdf = NULL, keywords = NULL, do.binary = TRUE,
+  do.regex = FALSE)
 }
 \arguments{
-\item{sentocorpus}{a \code{sentocorpus} object created with \code{\link{sento_corpus}}.}
+\item{corpus}{a \code{sentocorpus} object created with \code{\link{sento_corpus}}, or a \pkg{quanteda}
+\code{\link[quanteda]{corpus}} object.}
 
 \item{featuresdf}{a named \code{data.frame} of type \code{numeric} where each columns is a new feature to be added to the
-inputted \code{sentocorpus} object. If the number of rows in \code{featuresdf} is not equal to the number of documents
-in \code{sentocorpus}, recycling will occur. The numeric values should be between 0 and 1 (included).}
+inputted \code{corpus} object. If the number of rows in \code{featuresdf} is not equal to the number of documents
+in \code{corpus}, recycling will occur. The numeric values should be between 0 and 1 (included).}
 
 \item{keywords}{a named \code{list}. For every element, a new feature column is added with a value of 1 for the texts
 in which (at least one of) the keyword(s) appear(s), and 0 if not (for \code{do.binary = TRUE}), or with as value the
@@ -28,11 +29,11 @@ between 0 and 1,}
 regex expression is used to identify the particular feature.}
 }
 \value{
-An updated \code{sentocorpus} object.
+An updated \code{corpus} object.
 }
 \description{
 Adds new feature columns, either user-supplied or based on keyword(s)/regex pattern search, to
-a provided \code{sentocorpus} object.
+a provided \code{sentocorpus} or \pkg{quanteda} \code{\link[quanteda]{corpus}} object.
 }
 \details{
 If a provided feature name is already part of the corpus, it will be replaced. The \code{featuresdf} and

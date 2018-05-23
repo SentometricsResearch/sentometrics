@@ -5,7 +5,7 @@
     utils::globalVariables(
       c("value", "variable", "word_count", "w",
         "attrib", "feature", "id", "i", "wLex",
-        "wFeat", "wTime")
+        "wFeat", "wTime", "x", "identifier")
     )
   invisible()
 }
