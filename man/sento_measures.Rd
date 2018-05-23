@@ -29,8 +29,8 @@ If \code{ctr$do.ignoreZeros = TRUE}, all zeros are replaced by \code{NA}.}
 \item{howDocs}{a single \code{character} vector to remind how sentiment across documents was aggregated.}
 \item{fill}{a single \code{character} vector that specifies if and how missing dates have been added before
 aggregation across time was carried out.}
-\item{do.ignoreZeros}{a single \code{character} vector to remind if documents with zero sentiment have been ignored in the
-within-document aggregation.}
+\item{do.ignoreZeros}{a single \code{character} vector to remind if documents with a zero feature-sentiment score
+have been ignored in the within-document aggregation.}
 \item{attribWeights}{a \code{list} of document and time weights used in the \code{\link{retrieve_attributions}} function.
 Serves further no direct purpose.}
 }

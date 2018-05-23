@@ -6,15 +6,20 @@ context("Attribution")
 # corpus, lexicon and aggregation control creation
 data("usnews")
 corpus <- quanteda::corpus_subset(sento_corpus(corpusdf = usnews), date >= "1990-01-01" & date < "2000-10-01")
+
 data("list_lexicons")
 lex <- list_lexicons[c("GI_en", "LM_en")]
 ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional", howTime = "almon", by = "month",
                lag = 3, ordersAlm = 1:3, do.inverseAlm = TRUE, do.ignoreZeros = FALSE)
+
 sentomeasures <- sento_measures(corpus, lex, ctr)
 
+# preparation of estimation data
 y <- epu[epu$date %in% sentomeasures$measures$date, "index"]
 x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
 colnames(x) <- c("x1", "x2")
+
+# model run
 ctr <- ctr_model(model = "gaussian", type = "Cp", do.iter = TRUE, h = 3,
                  nSample = floor(0.95 * (length(y) - 3)), alphas = c(0.2, 0.7))
 out <- sento_model(sentomeasures, y, x = x, ctr = ctr)

@@ -152,7 +152,7 @@ retrieve_attributions.sentomodel <- compiler::cmpfun(.retrieve_attributions.sent
 #' @export
 retrieve_attributions.sentomodeliter <- compiler::cmpfun(.retrieve_attributions.sentomodeliter)
 
-#' Retrieve top-down sentiment attributions given model object
+#' Retrieve top-down model sentiment attributions
 #'
 #' @author Samuel Borms, Keven Bluteau
 #'

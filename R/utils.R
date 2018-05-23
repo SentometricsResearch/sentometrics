@@ -29,15 +29,33 @@ expand_lexicons <- function(lexicons, types = c(1, 2, 3), scores = c(-1, 2, 0.5)
 }
 
 # replaces valence words in texts and combines into bigrams
-include_valence <- function(texts, val, valIdentifier = c("NOT_", "VERY_", "HARDLY_")) {
-  negators <- paste0("\\b", paste0(val[val$t == 1, ]$x, collapse = " \\b|\\b"), " \\b")
-  amplif <- paste0("\\b", paste0(val[val$t == 2, ]$x, collapse = " \\b|\\b"), " \\b")
-  deamplif <- paste0("\\b", paste0(val[val$t == 3, ]$x, collapse = " \\b|\\b"), " \\b")
-  all <- c(negators, amplif, deamplif)
-  for (i in seq_along(all)) {
-    if (all[i] != "\\b \\b") texts <- stringi::stri_replace_all(texts, valIdentifier[i], regex = all[i])
+include_valence <- function(corpus, val, valId, nCore = 1) {
+  modify_texts <- function(texts, val, valId = c("NOT_", "VERY_", "HARDLY_")) {
+    val[, identifier := sapply(t, function(j) if (j == 1) valId[1] else if (j == 2) valId[2] else valId[3])]
+    all <- val[, c("x", "identifier")]
+    texts <- lapply(1:nrow(all), function(i) {
+      texts <<- stringi::stri_replace_all(texts, all[i, identifier], regex = paste0("\\b", all[i, x], " \\b"))
+    })[[nrow(all)]]
+    return(texts)
   }
-  return(texts)
+  cat("Modify corpus to account for valence words... ")
+  texts <- quanteda::texts(corpus)
+  if (nCore > 1) {
+    cl <- parallel::makeCluster(min(parallel::detectCores() - 1, nCore))
+    doParallel::registerDoParallel(cl)
+    N <- length(texts)
+    blocks <- seq(0, N + 1, by = floor(N/nCore))
+    blocks[length(blocks)] <- N
+    system.time(textsNew <- foreach::foreach(i = 1:(length(blocks) - 1), .combine = c, .export = c(":=")) %dopar% {
+      modify_texts(texts = texts[(blocks[i] + 1):blocks[i + 1]], val = val)
+    })
+    quanteda::texts(corpus) <- textsNew
+    parallel::stopCluster(cl)
+  } else {
+    quanteda::texts(corpus) <- modify_texts(texts, val)
+  }
+  cat("Done.", "\n")
+  return(corpus)
 }
 
 #' Compute Almon polynomials

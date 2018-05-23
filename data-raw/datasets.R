@@ -6,10 +6,11 @@
 ######################### US ECONOMY TEXTS CORPUS (1951-2014)
 
 useconomy <- readr::read_csv("data-raw/US_economic_news_1951-2014.csv")
-useconomy$text <- stringi::stri_replace_all(useconomy$text, replacement = " ", regex = "</br></br>")
-useconomy$text <- stringi::stri_replace_all(useconomy$text, replacement = "", regex = '[\\"]')
-# useconomy$text <- stringi::stri_replace_all(useconomy$text, replacement = "", regex = "[%#*<=>@^_`|~{}�]")
-useconomy$text <- stringi::stri_replace_all(useconomy$text, replacement = "", regex = "[^-a-zA-Z0-9,&. ]")
+useconomy$texts <- stringi::stri_replace_all(useconomy$text, replacement = " ", regex = "</br></br>")
+useconomy$text <- NULL
+useconomy$texts <- stringi::stri_replace_all(useconomy$texts, replacement = "", regex = '[\\"]')
+# useconomy$texts <- stringi::stri_replace_all(useconomy$texts, replacement = "", regex = "[%#*<=>@^_`|~{}�]")
+useconomy$texts <- stringi::stri_replace_all(useconomy$texts, replacement = "", regex = "[^-a-zA-Z0-9,&. ]")
 
 months <- lapply(stringi::stri_split(useconomy$date, regex = "/"), "[", 1)
 days <- lapply(stringi::stri_split(useconomy$date, regex = "/"), "[", 2)
@@ -48,7 +49,7 @@ USECONOMYNEWS <- data.table::as.data.table(USECONOMYNEWS)
 USECONOMYNEWS <- USECONOMYNEWS[order(date)]
 colnames(USECONOMYNEWS)[1] <- "id"
 USECONOMYNEWS <- subset(USECONOMYNEWS, date >= "1995-01-01") # drop all before 1980
-setcolorder(USECONOMYNEWS, c("id", "date", "text", "wsj", "wapo", "economy", "noneconomy"))
+setcolorder(USECONOMYNEWS, c("id", "date", "texts", "wsj", "wapo", "economy", "noneconomy"))
 useconomynews <- as.data.frame(USECONOMYNEWS) # back to lowercase before saving
 useconomynews$id <- as.character(useconomynews$id)
 usnews <- useconomynews
