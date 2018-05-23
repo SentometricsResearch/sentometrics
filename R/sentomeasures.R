@@ -251,10 +251,10 @@ print.sentomeasures <- function(x, ...) {
 #'
 #' @param lexiconsIn a named \code{list} of (raw) lexicons, each element as a \code{data.frame} or a \code{data.table} with
 #' respectively a words column and a polarity score column. Alternatively, a subset of the already formatted built-in lexicons
-#' accessible via \code{list_lexicons} can be declared too, as part of the same list input. If only (some of) the package built-in
-#' lexicons want to be used (with \emph{no} valence shifters), one can simply supply \code{list_lexicons[c(...)]} as an argument to
-#' either \code{\link{sento_measures}} or \code{\link{compute_sentiment}}. However, it is strongly recommended to pass all
-#' lexicons (and a valence word list) to this function first, in any case.
+#' accessible via \code{list_lexicons} can be declared too, as part of the same list input. If only (some of) the package
+#' built-in lexicons want to be used (with \emph{no} valence shifters), one can simply supply \code{list_lexicons[c(...)]} as
+#' an argument to either \code{\link{sento_measures}} or \code{\link{compute_sentiment}}. However, it is strongly recommended
+#' to pass all lexicons (and a valence word list) to this function first, in any case.
 #' @param valenceIn a single valence word list as a \code{data.frame} or a \code{data.table} with respectively a words column,
 #' a type column (\code{1} for negators, \code{2} for amplifiers/intensifiers, and \code{3} for deamplifiers/downtoners) and a
 #' score column. The scores should be the same within each type. This argument can be one of the already formatted

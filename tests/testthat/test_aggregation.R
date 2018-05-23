@@ -16,6 +16,6 @@ sentMeas <- sento_measures(corpus, lex, ctr)
 
 # tests from here
 test_that("Number of columns coincide with provided dimensions", {
-  expect_equal(ncol(sentMeas$measures) - 1, length(sentMeas$features) * length(lex) * length(sentMeas$time))
+  expect_equal(nmeasures(sentMeas), length(sentMeas$features) * length(lex) * length(sentMeas$time))
 })
 

@@ -124,7 +124,7 @@ compute_sentiment <- function(x, lexicons, how = "proportional", nCore = 1, dfm 
   sentocorpus <- x
   sentOut <- list(corpus = sentocorpus) # original corpus in output
 
-  quanteda::texts(corpus) <- stringi::stri_trans_tolower(quanteda::texts(corpus)) # to lowercase
+  quanteda::texts(sentocorpus) <- stringi::stri_trans_tolower(quanteda::texts(sentocorpus)) # to lowercase
   if ("valence" %in% names(lexicons))
     sentocorpus <- include_valence(sentocorpus, lexicons[["valence"]], nCore = nCore)
   lexNames <- names(lexicons)[names(lexicons) != "valence"]
