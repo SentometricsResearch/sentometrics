@@ -104,8 +104,8 @@ newx <- runif(nx) * cbind(sentomeasures$measures[, -1], x)[30:40, ]
 preds <- predict(out1, newx = as.matrix(newx), type = "link")
 
 \dontrun{
-# a cross-validation based model
-cl <- parallel::makeCluster(detectCores() - 2)
+# a cross-validation based model, parallelised
+cl <- parallel::makeCluster(2)
 doParallel::registerDoParallel(cl)
 ctrCV <- ctr_model(model = "gaussian", type = "cv", do.iter = FALSE,
                    h = 0, alphas = c(0.10, 0.50, 0.90), trainWindow = 70,
@@ -114,7 +114,7 @@ out2 <- sento_model(sentomeasures, y, x = x, ctr = ctrCV)
 parallel::stopCluster(cl)
 summary(out2)
 
-# a cross-validation based model but for a binomial target
+# a cross-validation based model for a binomial target
 yb <- epu[epu$date >= sentomeasures$measures$date[1], ]$above
 ctrCVb <- ctr_model(model = "binomial", type = "cv", do.iter = FALSE,
                     h = 0, alphas = c(0.10, 0.50, 0.90), trainWindow = 70,
@@ -123,23 +123,14 @@ out3 <- sento_model(sentomeasures, yb, x = x, ctr = ctrCVb)
 summary(out3)}
 
 \dontrun{
-# an example of an iterative analysis
-ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE,
-                     alphas = c(0.25, 0.75), h = 0, nSample = 100, start = 21)
+# an iterative out-of-sample analysis, parallelized
+ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE, h = 0
+                     alphas = c(0.25, 0.75), nSample = 100, start = 21, nCore = 2)
 out4 <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
 summary(out4)
 
 attributions2 <- retrieve_attributions(out4, sentomeasures)
-plot_attributions(attributions2, "features")
-
-# a similar iterative analysis, parallelized
-cl <- parallel::makeCluster(detectCores() - 2)
-doParallel::registerDoParallel(cl)
-ctrIter <- ctr_model(model = "gaussian", type = "Cp", do.iter = TRUE,
-                     h = 0, nSample = 100, do.parallel = TRUE)
-out5 <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
-parallel::stopCluster(cl)
-summary(out5)}
+plot_attributions(attributions2, "features")}
 
 }
 \seealso{

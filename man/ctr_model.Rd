@@ -8,7 +8,7 @@ ctr_model(model = c("gaussian", "binomial", "multinomial"), type = c("BIC",
   "AIC", "Cp", "cv"), do.intercept = TRUE, do.iter = FALSE, h = 0,
   alphas = seq(0, 1, by = 0.2), nSample = NULL, trainWindow = NULL,
   testWindow = NULL, oos = 0, start = 1, do.progress = TRUE,
-  do.parallel = FALSE)
+  nCore = 1)
 }
 \arguments{
 \item{model}{a \code{character} vector with one of the following: \code{"gaussian"} (linear regression), \code{"binomial"}
@@ -53,10 +53,11 @@ only for the last 31 samples.}
 
 \item{do.progress}{a \code{logical}, if \code{TRUE} progress statements are displayed during model calibration.}
 
-\item{do.parallel}{a \code{logical}, if \code{TRUE} the \code{\%dopar\%} construct from the \pkg{foreach} package is
-applied for iterative model estimation. A proper parallel backend needs to be set up to make it work. No progress statements
-are displayed whatsoever when \code{TRUE}. For cross-validation models, parallelization can also be carried out for
-single-run models, whenever a parallel backend is set up. See the examples in \code{\link{sento_model}}.}
+\item{nCore}{a single \code{numeric} at least equal to 1 to indicate the number of cores to use for a parallel iterative
+model estimation \code{do.iter = TRUE}. We use the \code{\%dopar\%} construct from the \pkg{foreach} package. By default,
+\code{nCore = 1}, which implies no parallelization. No progress statements are displayed whatsoever when \code{nCore > 1}.
+For cross-validation models, parallelization can also be carried out for a single-shot model (\code{do.iter = FALSE}),
+whenever a parallel backend is set up. See the examples in \code{\link{sento_model}}.}
 }
 \value{
 A \code{list} encapsulating the control parameters.
