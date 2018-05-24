@@ -72,7 +72,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
   if (length(model) > 1) model <- model[1]
   if (length(type) > 1) type <- type[1]
 
-  warning <- 0
+  warned <- 0
   if (!(model %in% c("gaussian", "binomial", "multinomial"))) {
     warning("Provide a proper modelling type.")
     warned <- warned + 1
@@ -467,7 +467,7 @@ model_CV <- compiler::cmpfun(.model_CV)
 
 .sento_model_iter <- function(sentomeasures, y, x, h, family, intercept, alphas, type,
                               nSample, start, trainWindow, testWindow, oos,
-                              do.progress, nCore) {
+                              do.progress, nCore, do.iter) {
 
   nIter <- ifelse(is.null(nrow(y)), length(y), nrow(y)) - nSample - abs(h) - oos
   if (nIter <= 0 || start > nIter)

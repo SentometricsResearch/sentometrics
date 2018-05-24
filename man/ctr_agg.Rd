@@ -52,7 +52,8 @@ of such time weighting series it can use \code{\link{almons}}, select the column
 \code{data.frame} and supply it under this argument (see examples).}
 
 \item{nCore}{a single \code{numeric} at least equal to 1 to indicate the number of cores to use for a parallel sentiment
-computation. By default, \code{nCore = 1}, which implies no parallelization.}
+computation. We use the \code{\%dopar\%} construct from the \pkg{foreach} package. By default, \code{nCore = 1}, which
+implies no parallelization.}
 
 \item{dfm}{(optional) see \code{\link{compute_sentiment}}.}
 
