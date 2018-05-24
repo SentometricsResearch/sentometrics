@@ -37,10 +37,11 @@
 #' @param start a positive \code{integer} to indicate at which point the iteration has to start (ignored if
 #' \code{do.iter = FALSE}). For example, given 100 possible iterations, \code{start = 70} leads to model estimations
 #' only for the last 31 samples.
-#' @param do.parallel a \code{logical}, if \code{TRUE} the \code{\%dopar\%} construct from the \pkg{foreach} package is
-#' applied for iterative model estimation. A proper parallel backend needs to be set up to make it work. No progress statements
-#' are displayed whatsoever when \code{TRUE}. For cross-validation models, parallelization can also be carried out for
-#' single-run models, whenever a parallel backend is set up. See the examples in \code{\link{sento_model}}.
+#' @param nCore a single \code{numeric} at least equal to 1 to indicate the number of cores to use for a parallel iterative
+#' model estimation \code{do.iter = TRUE}. We use the \code{\%dopar\%} construct from the \pkg{foreach} package. By default,
+#' \code{nCore = 1}, which implies no parallelization. No progress statements are displayed whatsoever when \code{nCore > 1}.
+#' For cross-validation models, parallelization can also be carried out for a single-shot model (\code{do.iter = FALSE}),
+#' whenever a parallel backend is set up. See the examples in \code{\link{sento_model}}.
 #'
 #' @return A \code{list} encapsulating the control parameters.
 #'
@@ -66,51 +67,78 @@
 ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c("BIC", "AIC", "Cp", "cv"),
                       do.intercept = TRUE, do.iter = FALSE, h = 0, alphas = seq(0, 1, by = 0.20),
                       nSample = NULL, trainWindow = NULL, testWindow = NULL, oos = 0, start = 1,
-                      do.progress = TRUE, do.parallel = FALSE) {
+                      do.progress = TRUE, nCore = 1) {
 
   if (length(model) > 1) model <- model[1]
-  else if (!(model %in% c("gaussian", "binomial", "multinomial")))
-    stop("Provide a proper modelling type.")
-
-  if (!is.logical(do.intercept))
-    stop("The argument 'do.intercept' should be a logical.")
-
   if (length(type) > 1) type <- type[1]
-  else if (!(type %in% c("BIC", "AIC", "Cp", "cv")))
-    stop("Provide a proper calibration type.")
 
-  if (model != "gaussian" & type != "cv")
-    stop("Elastic net-specific information criteria are currently only supported for linear models, please opt for 'cv'.")
-
-  if (oos < 0 | start <= 0)
-    stop("Make sure all integer inputs are non-negative or positive for those required.")
-
-  if (min(alphas) < 0 | max(alphas) > 1)
-    stop("Each alpha value in alphas must be between 0 and 1, inclusive.")
-
+  warning <- 0
+  if (!(model %in% c("gaussian", "binomial", "multinomial"))) {
+    warning("Provide a proper modelling type.")
+    warned <- warned + 1
+  }
+  if (!is.logical(do.intercept)) {
+    warning("The argument 'do.intercept' should be a logical.")
+    warned <- warned + 1
+  }
+  if (!(type %in% c("BIC", "AIC", "Cp", "cv"))) {
+    warning("Provide a proper calibration type.")
+    warned <- warned + 1
+  }
+  if (model != "gaussian" && type != "cv") {
+    warning("Elastic net-specific information criteria are currently only supported for linear models, please opt for 'cv'.")
+    warned <- warned + 1
+  }
+  if (oos < 0 || start <= 0) {
+    warning("Make sure all integer inputs are non-negative or positive for those required.")
+    warned <- warned + 1
+  }
+  if (min(alphas) < 0 | max(alphas) > 1) {
+    warning("Each alpha value in alphas must be between 0 and 1, inclusive.")
+    warned <- warned + 1
+  }
   if (do.iter == FALSE) nSample <- start <- NULL
-
-  if (do.iter == TRUE & is.null(nSample))
-    stop("Iterative modelling requires a non-NULL sample size given by nSample.")
-
-  if (!is.null(nSample))
-    if (nSample <= 0)
-      stop("Make sure all integers are non-negative or positive as required.")
-
-  if (type == "cv" & (is.null(trainWindow) | is.null(testWindow)))
-    stop("Cross-validation requires a non-NULL training and test window size give by trainWindow and testWindow.")
-
-  if (!is.null(trainWindow))
-    if (trainWindow <= 0)
-      stop("Make sure trainWindow is positive as required.")
-
-  if (!is.null(testWindow))
-    if (testWindow <= 0)
-      stop("Make sure testWindow is positive as required.")
-
-  if (!is.null(nSample) & !is.null(trainWindow) & !is.null(testWindow))
-    if ((trainWindow + oos + testWindow) >= nSample)
-      stop("(trainWindow + oos + testWindow) >= nSample. Adjust windows selection accordingly.")
+  if (do.iter == TRUE && is.null(nSample)) {
+    warning("Iterative modelling requires a non-NULL sample size given by nSample.")
+    warned <- warned + 1
+  }
+  if (!is.null(nSample)) {
+    if (nSample <= 0) {
+      warning("Make sure all integers are non-negative or positive.")
+      warned <- warned + 1
+    }
+  }
+  if (type == "cv" && (is.null(trainWindow) || is.null(testWindow))) {
+    warning("Cross-validation requires a non-NULL training and test window size give by trainWindow and testWindow.")
+    warned <- warned + 1
+  }
+  if (!is.null(trainWindow)) {
+    if (trainWindow <= 0) {
+      warning("Make sure trainWindow is positive.")
+      warned <- warned + 1
+    }
+  }
+  if (!is.null(testWindow)) {
+    if (testWindow <= 0) {
+      warning("Make sure testWindow is positive.")
+      warned <- warned + 1
+    }
+  }
+  if (!is.null(nSample) && !is.null(trainWindow) && !is.null(testWindow)) {
+    if ((trainWindow + oos + testWindow) >= nSample) {
+      warning("(trainWindow + oos + testWindow) >= nSample. Adjust windows selection accordingly.")
+      warned <- warned + 1
+    }
+  }
+  if (!is.numeric(nCore)) {
+    warning("The 'nCore' argument should be a numeric vector of length 1.")
+    warned <- warned + 1
+  }
+  if (is.numeric(nCore) && nCore < 1) {
+    warning("The 'nCore' argument should be least 1.")
+    warned <- warned + 1
+  }
+  if (warned > 0) stop("Wrong inputs. See warning messages for specifics.")
 
   ctr_model <- list(model = model,
                     type = type,
@@ -124,7 +152,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
                     trainWindow = trainWindow,
                     testWindow = testWindow,
                     do.progress = do.progress,
-                    do.parallel = do.parallel)
+                    nCore = nCore)
 
   return(ctr_model)
 }
@@ -227,8 +255,8 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' preds <- predict(out1, newx = as.matrix(newx), type = "link")
 #'
 #' \dontrun{
-#' # a cross-validation based model
-#' cl <- parallel::makeCluster(detectCores() - 2)
+#' # a cross-validation based model, parallelised
+#' cl <- parallel::makeCluster(2)
 #' doParallel::registerDoParallel(cl)
 #' ctrCV <- ctr_model(model = "gaussian", type = "cv", do.iter = FALSE,
 #'                    h = 0, alphas = c(0.10, 0.50, 0.90), trainWindow = 70,
@@ -237,7 +265,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' parallel::stopCluster(cl)
 #' summary(out2)
 #'
-#' # a cross-validation based model but for a binomial target
+#' # a cross-validation based model for a binomial target
 #' yb <- epu[epu$date >= sentomeasures$measures$date[1], ]$above
 #' ctrCVb <- ctr_model(model = "binomial", type = "cv", do.iter = FALSE,
 #'                     h = 0, alphas = c(0.10, 0.50, 0.90), trainWindow = 70,
@@ -246,23 +274,14 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' summary(out3)}
 #'
 #' \dontrun{
-#' # an example of an iterative analysis
-#' ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE,
-#'                      alphas = c(0.25, 0.75), h = 0, nSample = 100, start = 21)
+#' # an iterative out-of-sample analysis, parallelized
+#' ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE, h = 0
+#'                      alphas = c(0.25, 0.75), nSample = 100, start = 21, nCore = 2)
 #' out4 <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
 #' summary(out4)
 #'
 #' attributions2 <- retrieve_attributions(out4, sentomeasures)
-#' plot_attributions(attributions2, "features")
-#'
-#' # a similar iterative analysis, parallelized
-#' cl <- parallel::makeCluster(detectCores() - 2)
-#' doParallel::registerDoParallel(cl)
-#' ctrIter <- ctr_model(model = "gaussian", type = "Cp", do.iter = TRUE,
-#'                      h = 0, nSample = 100, do.parallel = TRUE)
-#' out5 <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
-#' parallel::stopCluster(cl)
-#' summary(out5)}
+#' plot_attributions(attributions2, "features")}
 #'
 #' @importFrom glmnet predict.glmnet predict.elnet predict.lognet predict.multnet
 #' @import foreach
@@ -293,18 +312,18 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
   oos <- ctr$oos # used when type is cv"
   nSample <- ctr$nSample # used when do.iter is TRUE
   start <- ctr$start # used when do.iter is TRUE
-  do.parallel <- ctr$do.parallel # used when do.iter is TRUE
+  nCore <- ctr$nCore # used when do.iter is TRUE
 
   if (do.iter == TRUE) {
     out <- sento_model_iter(sentomeasures, y = y, x = x, h = h, family = family, intercept = intercept,
                             alphas = alphas, type = type, nSample = nSample, start = start,
                             oos = oos, trainWindow = trainWindow, testWindow = testWindow,
-                            do.progress = do.progress, do.parallel = do.parallel)
+                            do.progress = do.progress, nCore = nCore, do.iter = do.iter)
   } else {
     if (type == "cv") {
       out <- model_CV(sentomeasures, y = y, x = x, h = h, family = family, intercept = intercept,
                       alphas = alphas, trainWindow = trainWindow, testWindow = testWindow,
-                      oos = oos, do.progress = do.progress)
+                      oos = oos, do.progress = do.progress, do.iter = do.iter)
     } else {
       out <- model_IC(sentomeasures, y = y, x = x, h = h, family = family, intercept = intercept,
                       alphas = alphas, ic = type, do.progress = do.progress)
@@ -387,6 +406,7 @@ model_IC <- compiler::cmpfun(.model_IC)
   dots <- list(...)
   i <- dots$i
   nSample <- dots$nSample
+  do.iter <- dots$do.iter
 
   alignedVars <- align_variables(y, sentomeasures, x, h, i = i, nSample = nSample)
   yy <- alignedVars$y
@@ -403,7 +423,7 @@ model_IC <- compiler::cmpfun(.model_IC)
 
   # train model based on slices in sliced
   sliced <- create_cv_slices(1:nrow(yy), trainWindow, testWindow = testWindow, skip = oos, do.reverse = FALSE)
-  ctrTrain <- caret::trainControl(index = sliced$train, indexOut = sliced$test, allowParallel = TRUE)
+  ctrTrain <- caret::trainControl(index = sliced$train, indexOut = sliced$test, allowParallel = ifelse(do.iter, FALSE, TRUE))
   tuneGrid <- expand.grid(alpha = alphas, lambda = 10^seq(2, -2, length.out = 100))
 
   # change y variable to format required in caret::train function
@@ -447,7 +467,7 @@ model_CV <- compiler::cmpfun(.model_CV)
 
 .sento_model_iter <- function(sentomeasures, y, x, h, family, intercept, alphas, type,
                               nSample, start, trainWindow, testWindow, oos,
-                              do.progress, do.parallel) {
+                              do.progress, nCore) {
 
   nIter <- ifelse(is.null(nrow(y)), length(y), nrow(y)) - nSample - abs(h) - oos
   if (nIter <= 0 || start > nIter)
@@ -457,17 +477,20 @@ model_CV <- compiler::cmpfun(.model_CV)
   else fun <- model_IC
 
   # perform all regressions
-  if (do.parallel == TRUE) {
+  if (nCore > 1) {
+    cl <- parallel::makeCluster(min(parallel::detectCores() - 1, nCore))
+    doParallel::registerDoParallel(cl)
     regsOpt <- foreach::foreach(i = start:nIter) %dopar% {
       return(fun(sentomeasures, y, x, h, alphas, intercept = intercept, trainWindow = trainWindow, testWindow = testWindow,
-                 oos = oos, ic = type, do.progress = FALSE, i = i, nSample = nSample, family = family))
-      }
+                 oos = oos, ic = type, do.progress = FALSE, i = i, nSample = nSample, family = family, do.iter = do.iter))
+    }
+    parallel::stopCluster(cl)
   } else {
     regsOpt <- lapply(start:nIter, function(i) {
       if (do.progress == TRUE) cat("iteration: ", (i - start + 1), " from ", (nIter - start + 1), "\n", sep = "")
       return(fun(sentomeasures, y, x, h, alphas, intercept = intercept, trainWindow = trainWindow, testWindow = testWindow,
                  oos = oos, ic = type, do.progress = do.progress, i = i, nSample = nSample, family = family))
-      })
+    })
   }
 
   # get optimal alphas and lambdas

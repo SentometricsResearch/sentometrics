@@ -69,7 +69,8 @@ get_lexicons_sentiment <- function(dfm, how, lexNames, lexicons, wCounts) {
 #' @param how a single \code{character} vector defining how aggregation within documents should be performed. For currently
 #' available options on how aggregation can occur, see \code{\link{get_hows}()$words}.
 #' @param nCore a single \code{numeric} at least equal to 1 to indicate the number of cores to use for a parallel sentiment
-#' computation. By default, \code{nCore = 1}, which implies no parallelization.
+#' computation. We use the \code{\%dopar\%} construct from the \pkg{foreach} package. By default, \code{nCore = 1}, which
+#' implies no parallelization.
 #' @param dfm (optional) an output from a \pkg{quanteda} \code{\link[quanteda]{dfm}} call, such that users can specify their
 #' own tokenisation scheme (via \code{\link[quanteda]{tokens}}) as well as other parameters related to the construction of
 #' a document-feature matrix (dfm). Make sure the document-feature matrix is constructed from the texts in the
@@ -95,18 +96,19 @@ get_lexicons_sentiment <- function(dfm, how, lexNames, lexicons, wCounts) {
 #' data("list_lexicons", package = "sentometrics")
 #' data("list_valence_shifters", package = "sentometrics")
 #'
+#' l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+#'
 #' # from a sentocorpus object
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-#' l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 #' sent <- compute_sentiment(corpusSample, l, how = "counts")
 #'
 #' # from a character vector
-#' sent <- compute_sentiment(usnews[["texts"]][1:300], l, how = "counts")
+#' sent <- compute_sentiment(usnews[["texts"]][1:200], l, how = "counts")
 #'
-#' # from a corpus object
-#' corpusQ <- quanteda::corpus(usnews[400:800, ], text_field = "texts")
-#' sent <- compute_sentiment(corpusQ, list_lexicons[c("LM_en", "HENRY_en")], how = "counts")
+#' # from a corpus object, parallelized
+#' corpusQ <- quanteda::corpus(usnews, text_field = "texts")
+#' sent <- compute_sentiment(corpusQ, l, how = "counts", nCore = 2)
 #'
 #' \dontrun{
 #' # using a user-supplied dfm with default settings
