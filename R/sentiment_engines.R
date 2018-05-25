@@ -105,7 +105,7 @@ get_lexicons_sentiment <- function(dfm, how, lexNames, lexicons, wCounts) {
 #' sent <- compute_sentiment(corpusSample, l1, how = "counts")
 #'
 #' # from a character vector
-#' sent <- compute_sentiment(usnews[["texts"]][1:500], l, how = "counts")
+#' sent <- compute_sentiment(usnews[["texts"]][1:500], l1, how = "counts")
 #'
 #' # from a corpus object, parallelized
 #' corpusQ <- quanteda::corpus(usnews, text_field = "texts")
