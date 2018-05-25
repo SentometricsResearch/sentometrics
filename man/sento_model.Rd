@@ -92,7 +92,8 @@ x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x varia
 colnames(x) <- c("x1", "x2")
 
 # a linear model based on the Akaike information criterion
-ctrIC <- ctr_model(model = "gaussian", type = "AIC", do.iter = FALSE, h = 0)
+ctrIC <- ctr_model(model = "gaussian", type = "AIC", do.iter = FALSE, h = 4,
+                   do.difference = TRUE)
 out1 <- sento_model(sentomeasures, y, x = x, ctr = ctrIC)
 
 # some post-analysis (attribution and prediction)
@@ -124,8 +125,8 @@ summary(out3)}
 
 \dontrun{
 # an iterative out-of-sample analysis, parallelized
-ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE, h = 0
-                     alphas = c(0.25, 0.75), nSample = 100, start = 21, nCore = 2)
+ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE, h = 3,
+                     oos = 2, alphas = c(0.25, 0.75), nSample = 75, nCore = 2)
 out4 <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
 summary(out4)
 

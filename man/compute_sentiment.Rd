@@ -61,25 +61,26 @@ data("usnews", package = "sentometrics")
 data("list_lexicons", package = "sentometrics")
 data("list_valence_shifters", package = "sentometrics")
 
-l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+l1 <- list_lexicons[c("LM_en", "HENRY_en")]
+l2 <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 
 # from a sentocorpus object
 corpus <- sento_corpus(corpusdf = usnews)
 corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-sent <- compute_sentiment(corpusSample, l, how = "counts")
+sent <- compute_sentiment(corpusSample, l1, how = "counts")
 
 # from a character vector
-sent <- compute_sentiment(usnews[["texts"]][1:200], l, how = "counts")
+sent <- compute_sentiment(usnews[["texts"]][1:500], l, how = "counts")
 
 # from a corpus object, parallelized
 corpusQ <- quanteda::corpus(usnews, text_field = "texts")
-sent <- compute_sentiment(corpusQ, l, how = "counts", nCore = 2)
+sent <- compute_sentiment(corpusQ, l1, how = "counts", nCore = 2)
 
 \dontrun{
 # using a user-supplied dfm with default settings
 tok <- quanteda::tokens_tolower(quanteda::tokens(corpus))
 dfm <- quanteda::dfm(tok, verbose = FALSE)
-sent <- compute_sentiment(corpus, l, how = "counts", dfm = dfm)}
+sent <- compute_sentiment(corpus, l2, how = "counts", dfm = dfm)}
 
 }
 \seealso{
