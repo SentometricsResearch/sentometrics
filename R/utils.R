@@ -193,7 +193,7 @@ create_cv_slices <- function (y, trainWindow, testWindow = 1, skip = 0, do.rever
   return(list(train = train, test = test))
 }
 
-align_variables <- function(y, sentomeasures, x, h, i = 1, nSample = NULL) {
+align_variables <- function(y, sentomeasures, x, h, do.difference, i = 1, nSample = NULL) {
 
   if (is.factor(y)) {
     levs <- levels(y)
@@ -218,13 +218,19 @@ align_variables <- function(y, sentomeasures, x, h, i = 1, nSample = NULL) {
   x[is.na(x)] <- 0 # check
 
   if (h > 0) {
-    y <- y[(h + 1):nrow(x), , drop = FALSE]
+    if (do.difference)
+      y <- diff(y, lag = h)
+    else
+      y <- y[(h + 1):nrow(x), , drop = FALSE]
     x <- x[1:nrow(y), , drop = FALSE]
     datesX <- datesX[1:nrow(y)]
   } else if (h < 0) {
     x <- x[(abs(h) + 1):nrow(y), , drop = FALSE]
     datesX <- datesX[(abs(h) + 1):nrow(y)]
-    y <- y[1:nrow(x), , drop = FALSE]
+    if (do.difference)
+      y <- diff(y, lag = abs(h))
+    else
+      y <- y[1:nrow(x), , drop = FALSE]
   }
   if (!is.null(nSample)) {
     x <- x[i:(nSample + i - 1), , drop = FALSE]

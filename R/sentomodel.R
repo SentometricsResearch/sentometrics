@@ -23,12 +23,14 @@
 #' 0 pertains to Ridge regression, a value of 1 to LASSO regression; values in between are pure elastic net. The lambda
 #' values tested for are chosen by the \code{\link[glmnet]{glmnet}} function or set to \code{10^seq(2, -2, length.out = 100)}
 #' in case of cross-validation.
-#' @param trainWindow a positive \code{integer} as the size of the training sample in cross-validation (ignored if
+#' @param trainWindow a positive \code{integer} as the size of the training sample for cross-validation (ignored if
 #' \code{type != } "\code{cv}").
-#' @param testWindow a positive \code{integer} as the size of the test sample in cross-validation (ignored if \code{type != }
+#' @param testWindow a positive \code{integer} as the size of the test sample for cross-validation (ignored if \code{type != }
 #' "\code{cv}").
-#' @param oos a non-negative \code{integer} to indicate the number of periods to skip from the end of the cross-validation
-#' training sample (out-of-sample) up to the test sample (ignored if \code{type != } "\code{cv}").
+#' @param oos a non-negative \code{integer} to indicate the number of periods to skip from the end of the training sample
+#' up to the out-of-sample prediction(s). This is either used in the cross-validation based calibration approach
+#' (if \code{type = } "\code{cv}"), or for the iterative out-of-sample prediction analysis (if \code{do.iter = TRUE}). For
+#' instance, given \eqn{t}, the (first) out-of-simple prediction is computed at \eqn{t + oos + 1}.
 #' @param do.iter a \code{logical}, \code{TRUE} induces an iterative estimation of models at the given \code{nSample} size and
 #' performs the associated one-step ahead out-of-sample prediction exercise through time.
 #' @param do.progress a \code{logical}, if \code{TRUE} progress statements are displayed during model calibration.
@@ -42,6 +44,13 @@
 #' \code{nCore = 1}, which implies no parallelization. No progress statements are displayed whatsoever when \code{nCore > 1}.
 #' For cross-validation models, parallelization can also be carried out for a single-shot model (\code{do.iter = FALSE}),
 #' whenever a parallel backend is set up. See the examples in \code{\link{sento_model}}.
+#' @param do.difference a \code{logical}, \code{TRUE} will difference the target variable \code{y} supplied in the
+#' \code{\link{sento_model}} function with as lag the absolute value of the \code{h} argument, in which case
+#' \code{abs(h) > 0} is required. For example, if \code{h = 2}, and assuming the \code{y} variable is properly aligned
+#' date-wise with the explanatory variables denoted by \eqn{X} (the sentiment measures and other in \code{x}), the regression
+#' will be of \eqn{y_(t + 2) - y_t} on \eqn{X_t}. If \code{h = -2}, the regression fitted is \eqn{y_(t + 2) - y_t} on
+#' \eqn{X_{t+2}}. The argument is always kept at \code{FALSE} if the \code{model} argument is one of
+#' \code{c("binomial", "multinomial")}.
 #'
 #' @return A \code{list} encapsulating the control parameters.
 #'
@@ -51,23 +60,24 @@
 #' # information criterion based model control functions
 #' ctrIC1 <- ctr_model(model = "gaussian", type = "BIC", do.iter = FALSE, h = 0,
 #'                     alphas = seq(0, 1, by = 0.10))
-#' ctrIC2 <- ctr_model(model = "gaussian", type = "AIC", do.iter = TRUE, h = 0, nSample = 100)
+#' ctrIC2 <- ctr_model(model = "gaussian", type = "AIC", do.iter = TRUE, h = 4, nSample = 100,
+#'                     do.difference = TRUE, oos = 3)
 #'
 #' # cross-validation based model control functions
 #' ctrCV1 <- ctr_model(model = "gaussian", type = "cv", do.iter = FALSE, h = 0,
 #'                     trainWindow = 250, testWindow = 4, oos = 0, do.progress = TRUE)
 #' ctrCV2 <- ctr_model(model = "binomial", type = "cv", h = 0, trainWindow = 250,
 #'                     testWindow = 4, oos = 0, do.progress = TRUE)
-#' ctrCV3 <- ctr_model(model = "multinomial", type = "cv", h = 0, trainWindow = 250,
-#'                     testWindow = 4, oos = 0, do.progress = TRUE)
+#' ctrCV3 <- ctr_model(model = "multinomial", type = "cv", h = 2, trainWindow = 250,
+#'                     testWindow = 4, oos = 2, do.progress = TRUE)
 #' ctrCV4 <- ctr_model(model = "gaussian", type = "cv", do.iter = TRUE, h = 0, trainWindow = 45,
 #'                     testWindow = 4, oos = 0, nSample = 70, do.progress = TRUE)
 #'
 #' @export
 ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c("BIC", "AIC", "Cp", "cv"),
-                      do.intercept = TRUE, do.iter = FALSE, h = 0, alphas = seq(0, 1, by = 0.20),
-                      nSample = NULL, trainWindow = NULL, testWindow = NULL, oos = 0, start = 1,
-                      do.progress = TRUE, nCore = 1) {
+                      do.intercept = TRUE, do.iter = FALSE, h = 0, oos = 0, do.difference = FALSE,
+                      alphas = seq(0, 1, by = 0.20), nSample = NULL, trainWindow = NULL, testWindow = NULL,
+                      start = 1, do.progress = TRUE, nCore = 1) {
 
   if (length(model) > 1) model <- model[1]
   if (length(type) > 1) type <- type[1]
@@ -138,6 +148,15 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
     warning("The 'nCore' argument should be least 1.")
     warned <- warned + 1
   }
+  if (model %in% c("binomial", "multinomial")) do.difference <- FALSE
+  if (!is.logical(do.difference)) {
+    warning("The 'do.difference' argument should a logical.")
+    warned <- warned + 1
+  }
+  if (do.difference == TRUE && abs(h) == 0) {
+    warning("If the 'do.difference' argument is TRUE, the absolute value of 'h' should be positive.")
+    warned <- warned + 1
+  }
   if (warned > 0) stop("Wrong inputs. See warning messages for specifics.")
 
   ctr_model <- list(model = model,
@@ -145,9 +164,10 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
                     intercept = do.intercept,
                     do.iter = do.iter,
                     h = h,
+                    oos = oos,
+                    do.difference = do.difference,
                     nSample = nSample,
                     start = start,
-                    oos = oos,
                     alphas = alphas,
                     trainWindow = trainWindow,
                     testWindow = testWindow,
@@ -243,7 +263,8 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' colnames(x) <- c("x1", "x2")
 #'
 #' # a linear model based on the Akaike information criterion
-#' ctrIC <- ctr_model(model = "gaussian", type = "AIC", do.iter = FALSE, h = 0)
+#' ctrIC <- ctr_model(model = "gaussian", type = "AIC", do.iter = FALSE, h = 4,
+#'                    do.difference = TRUE)
 #' out1 <- sento_model(sentomeasures, y, x = x, ctr = ctrIC)
 #'
 #' # some post-analysis (attribution and prediction)
@@ -275,8 +296,8 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #'
 #' \dontrun{
 #' # an iterative out-of-sample analysis, parallelized
-#' ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE, h = 0
-#'                      alphas = c(0.25, 0.75), nSample = 100, start = 21, nCore = 2)
+#' ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE, h = 3,
+#'                      oos = 2, alphas = c(0.25, 0.75), nSample = 75, nCore = 2)
 #' out4 <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
 #' summary(out4)
 #'
@@ -305,28 +326,29 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
   intercept <- ctr$intercept
   do.iter <- ctr$do.iter
   h <- ctr$h
+  oos <- ctr$oos # used when type is "cv" or when do.iter is TRUE
+  do.difference <- ctr$do.difference
   alphas <- ctr$alphas
   do.progress <- ctr$do.progress
   trainWindow <- ctr$trainWindow # used when type is "cv"
   testWindow <- ctr$testWindow # used when type is "cv"
-  oos <- ctr$oos # used when type is cv"
   nSample <- ctr$nSample # used when do.iter is TRUE
   start <- ctr$start # used when do.iter is TRUE
   nCore <- ctr$nCore # used when do.iter is TRUE
 
   if (do.iter == TRUE) {
     out <- sento_model_iter(sentomeasures, y = y, x = x, h = h, family = family, intercept = intercept,
-                            alphas = alphas, type = type, nSample = nSample, start = start,
-                            oos = oos, trainWindow = trainWindow, testWindow = testWindow,
-                            do.progress = do.progress, nCore = nCore, do.iter = do.iter)
+                            alphas = alphas, type = type, nSample = nSample, start = start, oos = oos,
+                            trainWindow = trainWindow, testWindow = testWindow, do.progress = do.progress,
+                            nCore = nCore, do.iter = do.iter, do.difference = do.difference)
   } else {
     if (type == "cv") {
       out <- model_CV(sentomeasures, y = y, x = x, h = h, family = family, intercept = intercept,
                       alphas = alphas, trainWindow = trainWindow, testWindow = testWindow,
-                      oos = oos, do.progress = do.progress, do.iter = do.iter)
+                      oos = oos, do.progress = do.progress, do.iter = do.iter, do.difference = do.difference)
     } else {
       out <- model_IC(sentomeasures, y = y, x = x, h = h, family = family, intercept = intercept,
-                      alphas = alphas, ic = type, do.progress = do.progress)
+                      alphas = alphas, ic = type, do.progress = do.progress, do.difference = do.difference)
     }
   }
 
@@ -334,14 +356,14 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
 }
 
 .model_IC <- function(sentomeasures, y, x, h, family, intercept,
-                      alphas, ic, do.progress, ...) {
+                      alphas, ic, do.progress, do.difference, ...) {
 
   # inputs i and nSample are NULL if one-shot model (not iterative)
   dots <- list(...)
   i <- dots$i
   nSample <- dots$nSample
 
-  alignedVars <- align_variables(y, sentomeasures, x, h, i = i, nSample = nSample)
+  alignedVars <- align_variables(y, sentomeasures, x, h, do.difference, i = i, nSample = nSample)
   yy <- alignedVars$y
   xx <- alignedVars$x # changed x to include sentiment measures
   nVar <- ncol(xx) # original number of explanatory variables (i.e. before cleaning)
@@ -400,7 +422,7 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
 model_IC <- compiler::cmpfun(.model_IC)
 
 .model_CV <- function(sentomeasures, y, x, h, family, intercept, alphas,
-                      trainWindow, testWindow, oos, do.progress, ...) {
+                      trainWindow, testWindow, oos, do.progress, do.difference, ...) {
 
   # inputs i and nSample are NULL if one-shot model (not iterative)
   dots <- list(...)
@@ -408,7 +430,7 @@ model_IC <- compiler::cmpfun(.model_IC)
   nSample <- dots$nSample
   do.iter <- dots$do.iter
 
-  alignedVars <- align_variables(y, sentomeasures, x, h, i = i, nSample = nSample)
+  alignedVars <- align_variables(y, sentomeasures, x, h, do.difference, i = i, nSample = nSample)
   yy <- alignedVars$y
   xx <- alignedVars$x # changed x to include sentiment measures
   nVar <- ncol(xx) # original number of explanatory variables (i.e. before cleaning)
@@ -467,7 +489,7 @@ model_CV <- compiler::cmpfun(.model_CV)
 
 .sento_model_iter <- function(sentomeasures, y, x, h, family, intercept, alphas, type,
                               nSample, start, trainWindow, testWindow, oos,
-                              do.progress, nCore, do.iter) {
+                              do.progress, nCore, do.iter, do.difference) {
 
   nIter <- ifelse(is.null(nrow(y)), length(y), nrow(y)) - nSample - abs(h) - oos
   if (nIter <= 0 || start > nIter)
@@ -481,15 +503,17 @@ model_CV <- compiler::cmpfun(.model_CV)
     cl <- parallel::makeCluster(min(parallel::detectCores() - 1, nCore))
     doParallel::registerDoParallel(cl)
     regsOpt <- foreach::foreach(i = start:nIter) %dopar% {
-      return(fun(sentomeasures, y, x, h, alphas, intercept = intercept, trainWindow = trainWindow, testWindow = testWindow,
-                 oos = oos, ic = type, do.progress = FALSE, i = i, nSample = nSample, family = family, do.iter = do.iter))
+      return(fun(sentomeasures, y, x, h, alphas = alphas, intercept = intercept, trainWindow = trainWindow,
+                 testWindow = testWindow, oos = oos, ic = type, do.progress = FALSE, nSample = nSample,
+                 family = family, do.iter = do.iter, do.difference = do.difference, i = i))
     }
     parallel::stopCluster(cl)
   } else {
     regsOpt <- lapply(start:nIter, function(i) {
       if (do.progress == TRUE) cat("iteration: ", (i - start + 1), " from ", (nIter - start + 1), "\n", sep = "")
-      return(fun(sentomeasures, y, x, h, alphas, intercept = intercept, trainWindow = trainWindow, testWindow = testWindow,
-                 oos = oos, ic = type, do.progress = do.progress, i = i, nSample = nSample, family = family))
+      return(fun(sentomeasures, y, x, h, alphas = alphas, intercept = intercept, trainWindow = trainWindow,
+                 testWindow = testWindow, oos = oos, ic = type, do.progress = do.progress, nSample = nSample,
+                 family = family, do.iter = do.iter, do.difference = do.difference, i = i))
     })
   }
 
@@ -498,10 +522,12 @@ model_CV <- compiler::cmpfun(.model_CV)
   lambdasOpt <- sapply(regsOpt, function(x) return(x$lambda))
 
   # prepare for and get all predictions
-  alignedVarsAll <- align_variables(y, sentomeasures, x, h)
-  xPred <- alignedVarsAll$x[(start + nSample):(nIter + nSample), , drop = FALSE]
-  yReal <- alignedVarsAll$y[(start + nSample + oos):(nIter + nSample + oos), , drop = FALSE]
-  datesX <- alignedVarsAll$datesX[(start + nSample):(nIter + nSample)] # dates from perspective of x at which forecast is made
+  alignedVarsAll <- align_variables(y, sentomeasures, x, h, do.difference)
+  oosRun <- start:nIter + nSample + oos
+  xPred <- alignedVarsAll$x[oosRun, , drop = FALSE]
+  yReal <- alignedVarsAll$y[oosRun, , drop = FALSE]
+  datesX <- alignedVarsAll$datesX[oosRun] # dates from perspective of x at which forecasts are made
+  remove(oosRun)
   names(regsOpt) <- datesX
   if (family %in% c("binomial", "multinomial")) {
     n <- length(colnames(yReal)) # number of factor levels

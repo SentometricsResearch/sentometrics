@@ -13,6 +13,7 @@
 - the `compute_sentiment()` function now also accepts a **`quanteda`** `corpus` object and a `character` vector
 - the `add_features()` function now also accepts a **`quanteda`** `corpus` object
 - added an `nCore` argument to the `compute_sentiment()` and `ctr_agg()` functions to allow for a parallelized sentiment computation
+- added a `do.difference` argument to the `ctr_model()` function and expanded the use of the already existing `oos` argument
 
 ## sentometrics 0.3.5
 
