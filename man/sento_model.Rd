@@ -123,13 +123,13 @@ ctrCVb <- ctr_model(model = "binomial", type = "cv", do.iter = FALSE,
 out3 <- sento_model(sentomeasures, yb, x = x, ctr = ctrCVb)
 summary(out3)}
 
-\dontrun{
 # an iterative out-of-sample analysis, parallelized
 ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE, h = 3,
                      oos = 2, alphas = c(0.25, 0.75), nSample = 75, nCore = 2)
 out4 <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
 summary(out4)
 
+\dontrun{
 attributions2 <- retrieve_attributions(out4, sentomeasures)
 plot_attributions(attributions2, "features")}
 
