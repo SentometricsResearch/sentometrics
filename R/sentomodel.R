@@ -294,13 +294,13 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' out3 <- sento_model(sentomeasures, yb, x = x, ctr = ctrCVb)
 #' summary(out3)}
 #'
-#' \dontrun{
 #' # an iterative out-of-sample analysis, parallelized
 #' ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE, h = 3,
 #'                      oos = 2, alphas = c(0.25, 0.75), nSample = 75, nCore = 2)
 #' out4 <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
 #' summary(out4)
 #'
+#' \dontrun{
 #' attributions2 <- retrieve_attributions(out4, sentomeasures)
 #' plot_attributions(attributions2, "features")}
 #'
@@ -363,7 +363,7 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
   i <- dots$i
   nSample <- dots$nSample
 
-  alignedVars <- align_variables(y, sentomeasures, x, h, do.difference, i = i, nSample = nSample)
+  alignedVars <- align_variables(y, sentomeasures, x, h, difference = do.difference, i = i, nSample = nSample)
   yy <- alignedVars$y
   xx <- alignedVars$x # changed x to include sentiment measures
   nVar <- ncol(xx) # original number of explanatory variables (i.e. before cleaning)
@@ -430,7 +430,7 @@ model_IC <- compiler::cmpfun(.model_IC)
   nSample <- dots$nSample
   do.iter <- dots$do.iter
 
-  alignedVars <- align_variables(y, sentomeasures, x, h, do.difference, i = i, nSample = nSample)
+  alignedVars <- align_variables(y, sentomeasures, x, h, difference = do.difference, i = i, nSample = nSample)
   yy <- alignedVars$y
   xx <- alignedVars$x # changed x to include sentiment measures
   nVar <- ncol(xx) # original number of explanatory variables (i.e. before cleaning)
@@ -495,8 +495,10 @@ model_CV <- compiler::cmpfun(.model_CV)
   if (nIter <= 0 || start > nIter)
     stop("Data not sufficient to do at least one iteration for given sample size, horizon, out-of-sample skip and start.")
 
-  if (type == "cv") fun <- model_CV
-  else fun <- model_IC
+  if (type == "cv")
+    fun <- model_CV
+  else
+    fun <- model_IC
 
   # perform all regressions
   if (nCore > 1) {
@@ -522,7 +524,7 @@ model_CV <- compiler::cmpfun(.model_CV)
   lambdasOpt <- sapply(regsOpt, function(x) return(x$lambda))
 
   # prepare for and get all predictions
-  alignedVarsAll <- align_variables(y, sentomeasures, x, h, do.difference)
+  alignedVarsAll <- align_variables(y, sentomeasures, x, h, difference = do.difference)
   oosRun <- start:nIter + nSample + oos
   xPred <- alignedVarsAll$x[oosRun, , drop = FALSE]
   yReal <- alignedVarsAll$y[oosRun, , drop = FALSE]
