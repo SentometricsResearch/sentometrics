@@ -46,9 +46,9 @@ include_valence <- function(corpus, val, valId, nCore = 1) {
     N <- length(texts)
     blocks <- seq(0, N + 1, by = floor(N/nCore))
     blocks[length(blocks)] <- N
-    system.time(textsNew <- foreach::foreach(i = 1:(length(blocks) - 1), .combine = c, .export = c(":=")) %dopar% {
+    textsNew <- foreach::foreach(i = 1:(length(blocks) - 1), .combine = c, .export = c(":=")) %dopar% {
       modify_texts(texts = texts[(blocks[i] + 1):blocks[i + 1]], val = val)
-    })
+    }
     quanteda::texts(corpus) <- textsNew
     parallel::stopCluster(cl)
   } else {
@@ -193,7 +193,7 @@ create_cv_slices <- function (y, trainWindow, testWindow = 1, skip = 0, do.rever
   return(list(train = train, test = test))
 }
 
-align_variables <- function(y, sentomeasures, x, h, do.difference, i = 1, nSample = NULL) {
+align_variables <- function(y, sentomeasures, x, h, difference, i = 1, nSample = NULL) {
 
   if (is.factor(y)) {
     levs <- levels(y)
@@ -218,7 +218,7 @@ align_variables <- function(y, sentomeasures, x, h, do.difference, i = 1, nSampl
   x[is.na(x)] <- 0 # check
 
   if (h > 0) {
-    if (do.difference)
+    if (difference)
       y <- diff(y, lag = h)
     else
       y <- y[(h + 1):nrow(x), , drop = FALSE]
@@ -227,7 +227,7 @@ align_variables <- function(y, sentomeasures, x, h, do.difference, i = 1, nSampl
   } else if (h < 0) {
     x <- x[(abs(h) + 1):nrow(y), , drop = FALSE]
     datesX <- datesX[(abs(h) + 1):nrow(y)]
-    if (do.difference)
+    if (difference)
       y <- diff(y, lag = abs(h))
     else
       y <- y[1:nrow(x), , drop = FALSE]
