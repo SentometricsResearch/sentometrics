@@ -28,7 +28,7 @@ expand_lexicons <- function(lexicons, types = c(1, 2, 3), scores = c(-1, 2, 0.5)
   return(lexiconsExp) # expanded lexicons (original + copied and negated/amplified/deamplified words and scores)
 }
 
-# replaces valence words in texts and combines into bigrams
+#' @importFrom foreach %dopar%
 include_valence <- function(corpus, val, valId, nCore = 1) {
   modify_texts <- function(texts, val, valId = c("NOT_", "VERY_", "HARDLY_")) {
     val[, identifier := sapply(t, function(j) if (j == 1) valId[1] else if (j == 2) valId[2] else valId[3])]
@@ -38,7 +38,7 @@ include_valence <- function(corpus, val, valId, nCore = 1) {
     })[[nrow(all)]]
     return(texts)
   }
-  cat("Modify corpus to account for valence words... ")
+  cat("Modify corpus to account for valence words... ") # replaces valence words in texts and combines into bigrams
   texts <- quanteda::texts(corpus)
   if (nCore > 1) {
     cl <- parallel::makeCluster(min(parallel::detectCores() - 1, nCore))

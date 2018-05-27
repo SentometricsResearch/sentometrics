@@ -305,7 +305,6 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' plot_attributions(attributions2, "features")}
 #'
 #' @importFrom glmnet predict.glmnet predict.elnet predict.lognet predict.multnet
-#' @import foreach
 #' @export
 sento_model <- function(sentomeasures, y, x = NULL, ctr) {
   check_class(sentomeasures, "sentomeasures")
@@ -487,6 +486,7 @@ model_IC <- compiler::cmpfun(.model_IC)
 #' @importFrom compiler cmpfun
 model_CV <- compiler::cmpfun(.model_CV)
 
+#' @importFrom foreach %dopar%
 .sento_model_iter <- function(sentomeasures, y, x, h, family, intercept, alphas, type,
                               nSample, start, trainWindow, testWindow, oos,
                               do.progress, nCore, do.iter, do.difference) {
