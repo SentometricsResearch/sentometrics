@@ -79,7 +79,7 @@ data("epu", package = "sentometrics")
 # construct a sentomeasures object to start with
 corpusAll <- sento_corpus(corpusdf = usnews)
 corpus <- quanteda::corpus_subset(corpusAll, date >= "2004-01-01" & date < "2014-10-01")
-l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")])
 ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional",
                howTime = c("equal_weight", "linear"),
                by = "month", lag = 3)
@@ -96,13 +96,20 @@ ctrIC <- ctr_model(model = "gaussian", type = "AIC", do.iter = FALSE, h = 4,
                    do.difference = TRUE)
 out1 <- sento_model(sentomeasures, y, x = x, ctr = ctrIC)
 
-# some post-analysis (attribution and prediction)
+# attribution and prediction as post-analysis
 attributions1 <- retrieve_attributions(out1, sentomeasures,
                                        refDates = sentomeasures$measures$date[20:40])
+plot_attributions(attributions1, "features")
 
 nx <- nmeasures(sentomeasures) + ncol(x)
 newx <- runif(nx) * cbind(sentomeasures$measures[, -1], x)[30:40, ]
 preds <- predict(out1, newx = as.matrix(newx), type = "link")
+
+# an iterative out-of-sample analysis, parallelized
+ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE, h = 3,
+                     oos = 2, alphas = c(0.25, 0.75), nSample = 75, nCore = 2)
+out2 <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
+summary(out2)
 
 \dontrun{
 # a cross-validation based model, parallelised
@@ -111,27 +118,17 @@ doParallel::registerDoParallel(cl)
 ctrCV <- ctr_model(model = "gaussian", type = "cv", do.iter = FALSE,
                    h = 0, alphas = c(0.10, 0.50, 0.90), trainWindow = 70,
                    testWindow = 10, oos = 0, do.progress = TRUE)
-out2 <- sento_model(sentomeasures, y, x = x, ctr = ctrCV)
+out3 <- sento_model(sentomeasures, y, x = x, ctr = ctrCV)
 parallel::stopCluster(cl)
-summary(out2)
+summary(out3)
 
 # a cross-validation based model for a binomial target
 yb <- epu[epu$date >= sentomeasures$measures$date[1], ]$above
 ctrCVb <- ctr_model(model = "binomial", type = "cv", do.iter = FALSE,
                     h = 0, alphas = c(0.10, 0.50, 0.90), trainWindow = 70,
                     testWindow = 10, oos = 0, do.progress = TRUE)
-out3 <- sento_model(sentomeasures, yb, x = x, ctr = ctrCVb)
-summary(out3)}
-
-# an iterative out-of-sample analysis, parallelized
-ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE, h = 3,
-                     oos = 2, alphas = c(0.25, 0.75), nSample = 75, nCore = 2)
-out4 <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
-summary(out4)
-
-\dontrun{
-attributions2 <- retrieve_attributions(out4, sentomeasures)
-plot_attributions(attributions2, "features")}
+out4 <- sento_model(sentomeasures, yb, x = x, ctr = ctrCVb)
+summary(out4)}
 
 }
 \seealso{

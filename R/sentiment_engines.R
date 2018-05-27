@@ -101,21 +101,21 @@ get_lexicons_sentiment <- function(dfm, how, lexNames, lexicons, wCounts) {
 #'
 #' # from a sentocorpus object
 #' corpus <- sento_corpus(corpusdf = usnews)
-#' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
+#' corpusSample <- quanteda::corpus_sample(corpus, size = 200)
 #' sent <- compute_sentiment(corpusSample, l1, how = "counts")
 #'
 #' # from a character vector
-#' sent <- compute_sentiment(usnews[["texts"]][1:500], l1, how = "counts")
+#' sent <- compute_sentiment(usnews[["texts"]][1:200], l1, how = "counts")
 #'
 #' # from a corpus object, parallelized
 #' corpusQ <- quanteda::corpus(usnews, text_field = "texts")
-#' sent <- compute_sentiment(corpusQ, l1, how = "counts", nCore = 2)
+#' sent <- compute_sentiment(corpusQ, l2, how = "counts", nCore = 2)
 #'
 #' \dontrun{
 #' # using a user-supplied dfm with default settings
 #' tok <- quanteda::tokens_tolower(quanteda::tokens(corpus))
 #' dfm <- quanteda::dfm(tok, verbose = FALSE)
-#' sent <- compute_sentiment(corpus, l2, how = "counts", dfm = dfm)}
+#' sent <- compute_sentiment(corpus, l1, how = "counts", dfm = dfm)}
 #'
 #' @importFrom compiler cmpfun
 #' @export
