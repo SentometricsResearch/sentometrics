@@ -12,7 +12,7 @@
 - changed `"valence_language"` naming to `"language"` in `list_valence_shifters` object
 - the `compute_sentiment()` function now also accepts a **`quanteda`** `corpus` object and a `character` vector
 - the `add_features()` function now also accepts a **`quanteda`** `corpus` object
-- added an `nCore` argument to the `compute_sentiment()` and `ctr_agg()` functions to allow for a parallelized sentiment computation
+- added an `nCore` argument to the `compute_sentiment()`, `ctr_agg()`, and `ctr_model()` functions to allow for (more straightforward) parallelized computations, and omitted the `do.parallel` argument in the `ctr_model()` function
 - added a `do.difference` argument to the `ctr_model()` function and expanded the use of the already existing `oos` argument
 
 ## sentometrics 0.3.5

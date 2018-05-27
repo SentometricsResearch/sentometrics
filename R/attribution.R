@@ -1,6 +1,7 @@
 
 .retrieve_attributions.sentomodel <- function(model, sentomeasures, do.normalize = FALSE, refDates = NULL, factor = NULL) {
   check_class(sentomeasures, "sentomeasures")
+  stopifnot(is.logical(do.normalize))
 
   sentomodel <- model
 
@@ -123,6 +124,7 @@
 }
 
 .retrieve_attributions.sentomodeliter <- function(model, sentomeasures, do.normalize = FALSE, refDates = NULL, factor = NULL) {
+  stopifnot(is.logical(do.normalize))
 
   sentomodeliter <- model
 
@@ -168,11 +170,11 @@ retrieve_attributions.sentomodeliter <- compiler::cmpfun(.retrieve_attributions.
 #' the model from the first argument.
 #' @param do.normalize a \code{logical}, \code{TRUE} divides each element of every attribution vector at a given date by its
 #' L2-norm at that date, normalizing the values between -1 and 1. The document attributions are not normalized.
-#' @param refDates the dates at which attribution is to be performed. These should be between the latest date available in the
-#' input \code{sentomeasures} object and the first estimation sample date, i.e. \code{model$dates[1]} if \code{model} is
-#' a \code{sentomodel} object. All dates should also be present in \code{sentomeasures$measures$date}. If \code{NULL}
-#' (default), attribution is calculated for all in-sample dates. Ignored if \code{model} is a
-#' \code{sentomodeliter} object, for which attribution is calculated for all out-of-sample prediction dates.
+#' @param refDates the dates (as \code{"yyyy-mm-dd"}) at which attribution is to be performed. These should be between the latest
+#' date available in the input \code{sentomeasures} object and the first estimation sample date, i.e. \code{model$dates[1]} if
+#' \code{model} is a \code{sentomodel} object. All dates should also be present in \code{sentomeasures$measures$date}. If
+#' \code{NULL} (default), attribution is calculated for all in-sample dates. Ignored if \code{model} is a \code{sentomodeliter}
+#' object, for which attribution is calculated for all out-of-sample prediction dates.
 #' @param factor the factor level as a single \code{character} vector for which attribution has to be calculated in
 #' case of (a) multinomial model(s). Ignored for linear and binomial models.
 #'
