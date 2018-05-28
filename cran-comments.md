@@ -1,9 +1,11 @@
 
 ## submission (version 0.4) [28/05/2018]
 
-## submission (version 0.3.5) [26/03/2018]
+**new**: several additional functions and functionalities, and a few API changes
 
-**new**: minor but necessary patches in to_global() and compute_sentiment() functions 
+<!--- ## submission (version 0.3.5) [26/03/2018]
+
+**new**: minor but necessary patches in to_global() and compute_sentiment() functions --->
 
 <!--- ## resubmission (version 0.3) [18/03/2018]
 
