@@ -269,7 +269,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #'
 #' # attribution and prediction as post-analysis
 #' attributions1 <- retrieve_attributions(out1, sentomeasures,
-#'                                        refDates = sentomeasures$measures$date[20:40])
+#'                                        refDates = sentomeasures$measures$date[20:25])
 #' plot_attributions(attributions1, "features")
 #'
 #' nx <- nmeasures(sentomeasures) + ncol(x)
