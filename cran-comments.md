@@ -1,5 +1,5 @@
 
-## resubmission (version 0.3) [28/05/2018]
+## resubmission (version 0.4) [28/05/2018]
 
 - modified example that took to long (to pass pre-test)
 
