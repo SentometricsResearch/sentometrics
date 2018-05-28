@@ -14,6 +14,7 @@
 - the `add_features()` function now also accepts a **`quanteda`** `corpus` object
 - added an `nCore` argument to the `compute_sentiment()`, `ctr_agg()`, and `ctr_model()` functions to allow for (more straightforward) parallelized computations, and omitted the `do.parallel` argument in the `ctr_model()` function
 - added a `do.difference` argument to the `ctr_model()` function and expanded the use of the already existing `oos` argument
+- brought **`ggplot2`** and **`foreach`** to Imports
 
 ## sentometrics 0.3.5
 

@@ -440,7 +440,7 @@ model_IC <- compiler::cmpfun(.model_IC)
   if (!is.null(x)) penalty[(ncol(xx) - nx + 1):ncol(xx)] <- 0 # no shrinkage for original x variables
 
   # train model based on slices in sliced
-  sliced <- create_cv_slices(1:nrow(yy), trainWindow, testWindow = testWindow, skip = oos, do.reverse = FALSE)
+  sliced <- create_cv_slices(1:nrow(yy), trainWindow, testWindow, skip = oos, do.reverse = FALSE)
   ctrTrain <- caret::trainControl(index = sliced$train, indexOut = sliced$test, allowParallel = ifelse(do.iter, FALSE, TRUE))
   tuneGrid <- expand.grid(alpha = alphas, lambda = 10^seq(2, -2, length.out = 100))
 
