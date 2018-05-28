@@ -1,7 +1,11 @@
 
-## submission (version 0.4) [28/05/2018]
+## resubmission (version 0.3) [28/05/2018]
 
-**new**: several additional functions and functionalities, and a few API changes
+- modified example that took to long (to pass pre-test)
+
+<!--- ## submission (version 0.4) [28/05/2018]
+
+**new**: several additional functions and functionalities, and a few API changes --->
 
 <!--- ## submission (version 0.3.5) [26/03/2018]
 

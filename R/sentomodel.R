@@ -262,6 +262,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
 #' colnames(x) <- c("x1", "x2")
 #'
+#' \dontrun{
 #' # a linear model based on the Akaike information criterion
 #' ctrIC <- ctr_model(model = "gaussian", type = "AIC", do.iter = FALSE, h = 4,
 #'                    do.difference = TRUE)
@@ -274,7 +275,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #'
 #' nx <- nmeasures(sentomeasures) + ncol(x)
 #' newx <- runif(nx) * cbind(sentomeasures$measures[, -1], x)[30:40, ]
-#' preds <- predict(out1, newx = as.matrix(newx), type = "link")
+#' preds <- predict(out1, newx = as.matrix(newx), type = "link")}
 #'
 #' # an iterative out-of-sample analysis, parallelized
 #' ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE, h = 3,
