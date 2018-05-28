@@ -136,7 +136,7 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
     warning("The 'dfm' argument should pass quanteda::is.dfm(dfm) when it is not equal to NULL.")
     warned <- warned + 1
   }
-  if (warned > 0) stop("Wrong inputs. See warning messages for specifics.")
+  if (warned > 0) stop("Wrong inputs. See warning message(s) for specifics.")
 
   other <- list(alphasExp = alphasExp, ordersAlm = ordersAlm, do.inverseAlm = do.inverseAlm, weights = weights)
 
@@ -588,7 +588,7 @@ ctr_merge <- function(sentomeasures, features = NA, lexicons = NA, time = NA, do
                    paste0(tooFew, collapse = ", "), ".")
     warning(msg2)
   }
-  if (length(msg1) > 0 | length((msg2) > 0)) stop("Wrong inputs. See warning messages for specifics.")
+  if (length(msg1) > 0 | length((msg2) > 0)) stop("Wrong inputs. See warning message(s) for specifics.")
 
   ctr <- list(sentomeasures = sentomeasures,
               lexicons = lexicons,
