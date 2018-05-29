@@ -34,10 +34,10 @@ value of the scores column of the valence word list, per type (thus why valence 
 the types).
 }
 \description{
-Structures provided lexicons and potentially integrates valence words. One can also provide (part of) the
-built-in lexicons from \code{data("list_lexicons")} or a valence word list from \code{data("list_valence_shifters")} as an
-argument. Part of this function mimicks the \code{\link[sentimentr]{as_key}} function from the \pkg{sentimentr} package to
-make the output coherent, convert all words to lowercase and check for duplicates.
+Structures provided lexicon(s) and potentially integrates valence words. One can also provide (part of) the
+built-in lexicons from \code{data("list_lexicons")} or a built-in valence word list from \code{data("list_valence_shifters")}
+as arguments. Part of this function mimicks the \code{\link[sentimentr]{as_key}} function from the \pkg{sentimentr} package
+to make the output coherent, convert all words to lowercase and check for duplicates.
 }
 \examples{
 data("list_lexicons", package = "sentometrics")
