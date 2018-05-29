@@ -45,7 +45,7 @@
 #' For cross-validation models, parallelization can also be carried out for a single-shot model (\code{do.iter = FALSE}),
 #' whenever a parallel backend is set up. See the examples in \code{\link{sento_model}}.
 #' @param do.difference a \code{logical}, \code{TRUE} will difference the target variable \code{y} supplied in the
-#' \code{\link{sento_model}} function with as lag the absolute value of the \code{h} argument, in which case
+#' \code{\link{sento_model}} function with as lag the absolute value of the \code{h} argument, but
 #' \code{abs(h) > 0} is required. For example, if \code{h = 2}, and assuming the \code{y} variable is properly aligned
 #' date-wise with the explanatory variables denoted by \eqn{X} (the sentiment measures and other in \code{x}), the regression
 #' will be of \eqn{y_(t + 2) - y_t} on \eqn{X_t}. If \code{h = -2}, the regression fitted is \eqn{y_(t + 2) - y_t} on
@@ -242,6 +242,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' \code{\link{retrieve_attributions}}
 #'
 #' @examples
+#' \dontrun{
 #' data("usnews", package = "sentometrics")
 #' data("list_lexicons", package = "sentometrics")
 #' data("list_valence_shifters", package = "sentometrics")
@@ -262,7 +263,6 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
 #' colnames(x) <- c("x1", "x2")
 #'
-#' \dontrun{
 #' # a linear model based on the Akaike information criterion
 #' ctrIC <- ctr_model(model = "gaussian", type = "AIC", do.iter = FALSE, h = 4,
 #'                    do.difference = TRUE)
@@ -275,7 +275,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #'
 #' nx <- nmeasures(sentomeasures) + ncol(x)
 #' newx <- runif(nx) * cbind(sentomeasures$measures[, -1], x)[30:40, ]
-#' preds <- predict(out1, newx = as.matrix(newx), type = "link")}
+#' preds <- predict(out1, newx = as.matrix(newx), type = "link")
 #'
 #' # an iterative out-of-sample analysis, parallelized
 #' ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE, h = 3,
@@ -283,7 +283,6 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' out2 <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
 #' summary(out2)
 #'
-#' \dontrun{
 #' # a cross-validation based model, parallelised
 #' cl <- parallel::makeCluster(2)
 #' doParallel::registerDoParallel(cl)
