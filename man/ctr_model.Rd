@@ -36,7 +36,7 @@ up to the out-of-sample prediction(s). This is either used in the cross-validati
 instance, given \eqn{t}, the (first) out-of-simple prediction is computed at \eqn{t + oos + 1}.}
 
 \item{do.difference}{a \code{logical}, \code{TRUE} will difference the target variable \code{y} supplied in the
-\code{\link{sento_model}} function with as lag the absolute value of the \code{h} argument, in which case
+\code{\link{sento_model}} function with as lag the absolute value of the \code{h} argument, but
 \code{abs(h) > 0} is required. For example, if \code{h = 2}, and assuming the \code{y} variable is properly aligned
 date-wise with the explanatory variables denoted by \eqn{X} (the sentiment measures and other in \code{x}), the regression
 will be of \eqn{y_(t + 2) - y_t} on \eqn{X_t}. If \code{h = -2}, the regression fitted is \eqn{y_(t + 2) - y_t} on
