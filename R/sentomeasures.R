@@ -245,10 +245,10 @@ print.sentomeasures <- function(x, ...) {
 #'
 #' @author Samuel Borms
 #'
-#' @description Structures provided lexicons and potentially integrates valence words. One can also provide (part of) the
-#' built-in lexicons from \code{data("list_lexicons")} or a valence word list from \code{data("list_valence_shifters")} as an
-#' argument. Part of this function mimicks the \code{\link[sentimentr]{as_key}} function from the \pkg{sentimentr} package to
-#' make the output coherent, convert all words to lowercase and check for duplicates.
+#' @description Structures provided lexicon(s) and potentially integrates valence words. One can also provide (part of) the
+#' built-in lexicons from \code{data("list_lexicons")} or a built-in valence word list from \code{data("list_valence_shifters")}
+#' as arguments. Part of this function mimicks the \code{\link[sentimentr]{as_key}} function from the \pkg{sentimentr} package
+#' to make the output coherent, convert all words to lowercase and check for duplicates.
 #'
 #' @param lexiconsIn a named \code{list} of (raw) lexicons, each element as a \code{data.frame} or a \code{data.table} with
 #' respectively a words column and a polarity score column. Alternatively, a subset of the already formatted built-in lexicons

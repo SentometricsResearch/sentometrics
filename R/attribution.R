@@ -171,8 +171,8 @@ retrieve_attributions.sentomodeliter <- compiler::cmpfun(.retrieve_attributions.
 #' @param do.normalize a \code{logical}, \code{TRUE} divides each element of every attribution vector at a given date by its
 #' L2-norm at that date, normalizing the values between -1 and 1. The document attributions are not normalized.
 #' @param refDates the dates (as \code{"yyyy-mm-dd"}) at which attribution is to be performed. These should be between the latest
-#' date available in the input \code{sentomeasures} object and the first estimation sample date, i.e. \code{model$dates[1]} if
-#' \code{model} is a \code{sentomodel} object. All dates should also be present in \code{sentomeasures$measures$date}. If
+#' date available in the input \code{sentomeasures} object and the first estimation sample date (that is, \code{model$dates[1]}
+#' if \code{model} is a \code{sentomodel} object). All dates should also be present in \code{sentomeasures$measures$date}. If
 #' \code{NULL} (default), attribution is calculated for all in-sample dates. Ignored if \code{model} is a \code{sentomodeliter}
 #' object, for which attribution is calculated for all out-of-sample prediction dates.
 #' @param factor the factor level as a single \code{character} vector for which attribution has to be calculated in
