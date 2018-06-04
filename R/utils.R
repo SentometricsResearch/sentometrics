@@ -118,7 +118,7 @@ almons <- function(n, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE) {
 #'
 #' @export
 exponentials <- function(n, alphas = seq(0.1, 0.5, by = 0.1)) {
-  if (max(alphas) >= 1 & min(alphas) <= 0)
+  if (max(alphas) >= 1 || min(alphas) <= 0)
     stop("Values in 'alphas' should be between 0 and 1 (both excluded).")
   vals <- 1:n
   exponentials <- data.frame(matrix(nrow = n, ncol = length(alphas)))
