@@ -1,4 +1,8 @@
 
+## sentometrics 0.5.0 (development)
+
+...
+
 ## sentometrics 0.4.0
 
 - new functions: `measures_delete()`, `nmeasures()`, `nobs()`, and `to_sentocorpus()`
