@@ -37,20 +37,28 @@ NULL
 #'
 #' @export
 fill_measures <- function(sentomeasures, fill = "zero") {
-  .Deprecated("measures_fill")
+  .Deprecated("measures_fill", package = "sentometrics")
   measures_fill(sentomeasures, fill = fill)
 }
 
 #' @rdname sentometrics-deprecated
 #'
-#' @param ctr output from a \code{\link{ctr_merge}} call.
+#' @param ... (other) allowed input arguments.
 #'
 #' @seealso \code{\link{measures_merge}}
 #'
 #' @export
-merge_measures <- function(ctr){
-  .Deprecated("measures_merge")
-  measures_merge(ctr)
+merge_measures <- function(...) {
+  .Deprecated("measures_merge", package = "sentometrics")
+}
+
+#' @rdname sentometrics-deprecated
+#'
+#' @seealso \code{\link{measures_merge}}
+#'
+#' @export
+ctr_merge <- function(...) {
+  .Deprecated(package = "sentometrics")
 }
 
 #' @rdname sentometrics-deprecated
@@ -61,7 +69,7 @@ merge_measures <- function(ctr){
 #'
 #' @export
 subset_measures <- function(sentomeasures, subset) {
-  .Deprecated("measures_subset")
+  .Deprecated("measures_subset", package = "sentometrics")
   measures_subset(sentomeasures, subset = subset)
 }
 
@@ -79,7 +87,7 @@ subset_measures <- function(sentomeasures, subset) {
 #'
 #' @export
 select_measures <- function(sentomeasures, toSelect, do.combine = TRUE) {
-  .Deprecated("measures_select")
+  .Deprecated("measures_select", package = "sentometrics")
   measures_select(sentomeasures, toSelect = toSelect, do.combine = do.combine)
 }
 

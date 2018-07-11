@@ -1,14 +1,15 @@
 
 ## sentometrics 0.5.0 (development)
 
-...
+- new functions: `get_dates()`, `get_dimensions()`, and `get_measures()`
+- defunct the `ctr_merge()` function, so that all merge parameters are to be passed on directly to the `measures_merge()` function
 
 ## sentometrics 0.4.0
 
 - new functions: `measures_delete()`, `nmeasures()`, `nobs()`, and `to_sentocorpus()`
 - dropped `do.normalizeAlm` argument in `ctr_agg()`, but kept in the `almons()` function
 - inverted order of rows in output of `almons()` function to be consistent with Ardia et al. (2017) paper
-- renamed the functions `subset_measures()`, `select_measures()`, `merge_measures`, and `fill_measures` to `measures_xyz()`
+- renamed the functions `subset_measures()`, `select_measures()`, `merge_measures()`, and `fill_measures()` to `measures_xyz()`
 - renamed the function `extract_peakdocs()` to `peakdocs()` for brevity
 - renamed `lexicons` to `list_lexicons`, and `valence` to `list_valence_shifters` 
 - the `stats` element of a `sentomeasures` object is now also updated in `measures_fill()`

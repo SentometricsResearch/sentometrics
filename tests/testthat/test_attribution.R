@@ -15,7 +15,7 @@ ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional", howTime = "almon"
 sentomeasures <- sento_measures(corpus, lex, ctr)
 
 # preparation of estimation data
-y <- epu[epu$date %in% sentomeasures$measures$date, "index"]
+y <- epu[epu$date %in% get_dates(sentomeasures), "index"]
 x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
 colnames(x) <- c("x1", "x2")
 

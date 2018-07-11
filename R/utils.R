@@ -210,8 +210,8 @@ align_variables <- function(y, sentomeasures, x, h, difference, i = 1, nSample =
     row.names(y) <- NULL
   }
 
-  datesX <- sentomeasures$measures$date
-  sent <- sentomeasures$measures[, -1] # drop date
+  datesX <- get_dates(sentomeasures)
+  sent <- get_measures(sentomeasures)[, -1] # drop dates
   if (is.null(x)) x <- sent
   else x <- cbind(sent, x)
   x <- as.matrix(x)
@@ -284,7 +284,7 @@ check_class <- function(x, class) {
 }
 
 compute_stats <- function(sentomeasures) {
-  measures <- sentomeasures$measures[, -1]
+  measures <- get_measures(sentomeasures)[, -1] # drop dates
   names <- c("mean", "sd", "max", "min", "meanCorr")
   stats <- data.frame(matrix(NA, nrow = length(names), ncol = length(measures), dimnames = list(names)))
   colnames(stats) <- colnames(measures)
@@ -332,7 +332,7 @@ compute_Cp <- function(y, yEst, dfA, RSS, sigma2) { # Mallows's Cp-like criterio
 }
 
 to_long <- function(measures) { # changes format of sentiment measures data.table from wide to long
-  dates <- measures$date
+  dates <- measures[["date"]]
   n <- length(dates)
   names <- colnames(measures)[-1]
   measuresTrans <- as.data.table(t(measures[, -1]))
