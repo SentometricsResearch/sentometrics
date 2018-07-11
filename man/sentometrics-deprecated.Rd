@@ -4,6 +4,7 @@
 \alias{sentometrics-deprecated}
 \alias{fill_measures}
 \alias{merge_measures}
+\alias{ctr_merge}
 \alias{subset_measures}
 \alias{select_measures}
 \alias{extract_peakdocs}
@@ -11,7 +12,9 @@
 \usage{
 fill_measures(sentomeasures, fill = "zero")
 
-merge_measures(ctr)
+merge_measures(...)
+
+ctr_merge(...)
 
 subset_measures(sentomeasures, subset)
 
@@ -26,7 +29,7 @@ extract_peakdocs(sentomeasures, sentocorpus, n = 10, type = "both",
 \item{fill}{an element of \code{c("zero", "latest", NA)}; the first and last assume missing dates represent zero sentiment,
 the second assumes missing dates represent constant sentiment.}
 
-\item{ctr}{output from a \code{\link{ctr_merge}} call.}
+\item{...}{(other) allowed input arguments.}
 
 \item{subset}{a logical expression indicating the rows to keep.}
 
@@ -58,6 +61,8 @@ have been deprecated.
 }
 \seealso{
 \code{\link{measures_fill}}
+
+\code{\link{measures_merge}}
 
 \code{\link{measures_merge}}
 

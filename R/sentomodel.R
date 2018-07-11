@@ -258,7 +258,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' sentomeasures <- sento_measures(corpus, l, ctr)
 #'
 #' # prepare y and other x variables
-#' y <- epu[epu$date >= sentomeasures$measures$date[1], ]$index
+#' y <- epu[epu$date >= get_dates(sentomeasures)[1], ]$index
 #' length(y) == nobs(sentomeasures) # TRUE
 #' x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
 #' colnames(x) <- c("x1", "x2")
@@ -270,11 +270,11 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #'
 #' # attribution and prediction as post-analysis
 #' attributions1 <- retrieve_attributions(out1, sentomeasures,
-#'                                        refDates = sentomeasures$measures$date[20:25])
+#'                                        refDates = get_dates(sentomeasures)[20:25])
 #' plot_attributions(attributions1, "features")
 #'
 #' nx <- nmeasures(sentomeasures) + ncol(x)
-#' newx <- runif(nx) * cbind(sentomeasures$measures[, -1], x)[30:40, ]
+#' newx <- runif(nx) * cbind(get_measures(sentomeasures)[, -1], x)[30:40, ]
 #' preds <- predict(out1, newx = as.matrix(newx), type = "link")
 #'
 #' # an iterative out-of-sample analysis, parallelized
@@ -294,7 +294,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' summary(out3)
 #'
 #' # a cross-validation based model for a binomial target
-#' yb <- epu[epu$date >= sentomeasures$measures$date[1], ]$above
+#' yb <- epu[epu$date >= get_dates(sentomeasures)[1], ]$above
 #' ctrCVb <- ctr_model(model = "binomial", type = "cv", do.iter = FALSE,
 #'                     h = 0, alphas = c(0.10, 0.50, 0.90), trainWindow = 70,
 #'                     testWindow = 10, oos = 0, do.progress = TRUE)
@@ -744,7 +744,7 @@ print.sentomodeliter <- function(x, ...) {
 #' sentomeasures <- sento_measures(corpus, l, ctr)
 #'
 #' # prepare y variable
-#' y <- epu[epu$date >= sentomeasures$measures$date[1], ]$index
+#' y <- epu[epu$date >= get_dates(sentomeasures)[1], "index"]
 #' length(y) == nobs(sentomeasures) # TRUE
 #'
 #' # estimate regression iteratively based on a sample of 60, skipping first 25 iterations
@@ -859,7 +859,7 @@ predict.sentomodel <- function(object, newx, type, offset = NULL, ...) {
 #' sentMeas2 <- sento_measures(corpus, l, ctr2)
 #'
 #' # prepare y and other x variables
-#' y <- epu[epu$date >= sentMeas1$measures$date[1], ]$index
+#' y <- epu[epu$date >= get_dates(sentMeas1)[1], "index"]
 #' length(y) == nobs(sentMeas1) # TRUE
 #' x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
 #' colnames(x) <- c("x1", "x2")
