@@ -92,7 +92,7 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
       if (length(toDrop) == length(isNumeric)) {
         corpusdf[["dummy"]] <- 1
         warning("No remaining feature columns. A 'dummy' feature valued at 1 throughout is added.")
-        if (do.clean) corpusdf <- clean(corpusdf)
+        if (do.clean) corpusdf <- clean_texts(corpusdf)
         corp <- quanteda::corpus(x = corpusdf, docid_field = "id", text_field = "texts", metacorpus = list(info = info))
         corp$tokens <- NULL
         class(corp) <- c("sentocorpus", class(corp))
@@ -113,7 +113,7 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
     }
   }
 
-  if (do.clean) corpusdf <- clean(corpusdf)
+  if (do.clean) corpusdf <- clean_texts(corpusdf)
   corp <- quanteda::corpus(x = corpusdf, docid_field = "id", text_field = "texts", metacorpus = list(info = info))
   corp$tokens <- NULL
   class(corp) <- c("sentocorpus", class(corp))
@@ -121,7 +121,7 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
   return(corp)
 }
 
-clean <- function(corpusdf) {
+clean_texts <- function(corpusdf) {
   corpusdf$text <- stringi::stri_replace_all(corpusdf$text, replacement = "", regex = "<.*?>") # html tags
   corpusdf$text <- stringi::stri_replace_all(corpusdf$text, replacement = "", regex = '[\\"]')
   corpusdf$text <- stringi::stri_replace_all(corpusdf$text, replacement = "", regex = "[^-a-zA-Z0-9,&. ]")

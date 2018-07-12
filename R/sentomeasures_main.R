@@ -354,12 +354,12 @@ perform_agg <- function(sentiment, ctr) {
   lag <- ctr$lag
   fill <- ctr$fill
   otherVars <- ctr$other # list or empty
-  aggDocs <- agg_documents(toAgg, by = by, how = howDocs, do.ignoreZeros = do.ignoreZeros)
-  sentomeasures <- agg_time(aggDocs, lag = lag, fill = fill, how = howTime, otherVars)
+  aggDocs <- aggregate_docs(toAgg, by = by, how = howDocs, do.ignoreZeros = do.ignoreZeros)
+  sentomeasures <- aggregate_time(aggDocs, lag = lag, fill = fill, how = howTime, otherVars)
   return(sentomeasures)
 }
 
-agg_documents <- function(toAgg, by, how = get_hows()$docs, do.ignoreZeros = TRUE) {
+aggregate_docs <- function(toAgg, by, how = get_hows()$docs, do.ignoreZeros = TRUE) {
 
   features <- toAgg$features
   lexNames <- toAgg$lexicons
@@ -425,7 +425,7 @@ agg_documents <- function(toAgg, by, how = get_hows()$docs, do.ignoreZeros = TRU
   return(sentomeasures)
 }
 
-agg_time <- function(sentomeasures, lag, fill, how = get_hows()$time, ...) {
+aggregate_time <- function(sentomeasures, lag, fill, how = get_hows()$time, ...) {
   check_class(sentomeasures, "sentomeasures")
 
   dots <- tryCatch(list(...)[[1]], # extract list from list of list
@@ -468,86 +468,6 @@ agg_time <- function(sentomeasures, lag, fill, how = get_hows()$time, ...) {
   sentomeasures$fill <- fill
 
   return(sentomeasures)
-}
-
-#' Merge sentiment measures into multiple weighted global sentiment indices
-#'
-#' @author Samuel Borms
-#'
-#' @description Merges all sentiment measures into a weighted global textual sentiment measure for each of the
-#' \code{lexicons}, \code{features}, and \code{time} dimensions.
-#'
-#' @details This function returns no new \code{sentomeasures} object. The global sentiment measures as outputted can still
-#' easily be added to regressions as an additional variable using the \code{x} argument in the \code{\link{sento_model}}
-#' function. The measures are constructed from weights that indicate the importance (and sign) along each component from
-#' the \code{lexicons}, \code{features}, and \code{time} dimensions. There is no condition in terms of allowed weights. For
-#' example, the global index based on the supplied lexicon weights (\code{"globLex"}) is obtained first by multiplying
-#' every sentiment measure with its corresponding weight (meaning, the weight given to the lexicon the sentiment is
-#' computed with), then by taking the average per date.
-#'
-#' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
-#' @param lexicons a \code{numeric} vector of weights, of size \code{length(sentomeasures$lexicons)}, in the same order.
-#' By default set to 1, which means equally weighted.
-#' @param features a \code{numeric} vector of weights, of size \code{length(sentomeasures$features)}, in the same order.
-#' By default set to 1, which means equally weighted.
-#' @param time a \code{numeric} vector of weights, of size \code{length(sentomeasures$time)}, in the same order. By default
-#' set to 1, which means equally weighted.
-#'
-#' @return A \code{data.frame} with the different types of weighted global sentiment measures, named \code{"globLex"},
-#' \code{"globFeat"}, \code{"globTime"} and \code{"global"}, with dates as row names. The last measure is an average
-#' of the the three other measures.
-#'
-#' @seealso \code{\link{sento_model}}
-#'
-#' @examples
-#' data("usnews", package = "sentometrics")
-#' data("list_lexicons", package = "sentometrics")
-#' data("list_valence_shifters", package = "sentometrics")
-#'
-#' # construct a sentomeasures object to start with
-#' corpus <- sento_corpus(corpusdf = usnews)
-#' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-#' l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
-#' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
-#' sentomeasures <- sento_measures(corpusSample, l, ctr)
-#'
-#' # merge into one global sentiment measure, with specified weighting for lexicons and features
-#' global <- to_global(sentomeasures, lexicons = c(0.40, 0.60),
-#'                                    features = c(0.10, -0.20, 0.30, -1),
-#'                                    time = 1)
-#'
-#' @export
-to_global <- function(sentomeasures, lexicons = 1, features = 1, time = 1) {
-  check_class(sentomeasures, "sentomeasures")
-
-  dims <- get_dimensions(sentomeasures)
-  n <- sapply(dims, length)
-  weightsInp <- list(features, lexicons, time)
-  weights <- sapply(1:3, function(i) {
-    if (length(weightsInp[[i]]) == 1)
-      w <- as.list(rep(1/n[i], n[i])) # modify weights if equal to default value of 1
-    else {
-      w <- as.list(weightsInp[[i]])
-      if (length(w) != n[i])
-        stop("All weights must be equal in length to the respective number of components.")
-    }
-    names(w) <- dims[[i]] # named weight lists
-    return(w)
-  })
-
-  measuresLong <- get_measures(sentomeasures, format = "long")
-  measuresLong[, "wFeat" := unlist(weights[[1]][measuresLong[["features"]]])] # weights features
-  measuresLong[, "wLex" := unlist(weights[[2]][measuresLong[["lexicons"]]])] # weights lexicon
-  measuresLong[, "wTime" :=- unlist(weights[[3]][measuresLong[["time"]]])] # weights time
-  globs <- measuresLong[, list(globLex = mean(value * wLex),
-                               globFeat = mean(value * wFeat),
-                               globTime = mean(value * wTime)), by = date]
-  globs[["global"]] <- rowMeans(globs[, -1])
-  global <- as.data.frame(globs)
-  row.names(global) <- global$date
-  global$date <- NULL
-
-  return(global)
 }
 
 #' Extract dates and documents related to sentiment peaks

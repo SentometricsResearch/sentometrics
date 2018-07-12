@@ -106,7 +106,7 @@ diff.sentomeasures <- function(x, lag = 1, differences = 1, ...) {
   dates <- get_dates(sentomeasures)[-1:-(lag * differences)]
   measures <- get_measures(sentomeasures)[, -1] # drop dates
   measuresDiff <- diff(as.matrix(measures), lag = lag, differences = differences)
-  sentomeasures$measures <- data.table(dates, measuresDiff)
+  sentomeasures$measures <- data.table(date = dates, measuresDiff)
   sentomeasures$stats <- compute_stats(sentomeasures)
   return(sentomeasures)
 }
@@ -158,9 +158,16 @@ nobs <- function(sentomeasures) {
 #' @description Scales and centers the sentiment measures from a \code{sentomeasures} object, column-per-column. By default,
 #' the measures are normalized. \code{NA}s are removed first.
 #'
+#' @details If one of the arguments \code{center} or \code{scale} is a \code{matrix}, this operation will be applied first,
+#' and eventual other centering or scaling is computed on that data.
+#'
 #' @param x a \code{sentomeasures} object created using \code{\link{sento_measures}}.
-#' @param center a \code{logical}, see documentation for the generic \code{\link{scale}}.
-#' @param scale a \code{logical}, see documentation for the generic \code{\link{scale}}.
+#' @param center a \code{logical} or a \code{numeric} vector, see documentation for the generic \code{\link{scale}}.
+#' Alternatively, one can provide a \code{matrix} of dimensions \code{nobs(sentomeasures)} times \code{1} or
+#' \code{nmeasures(sentomeasures)} with values to add to each individual observation.
+#' @param scale a \code{logical} or a \code{numeric} vector, see documentation for the generic \code{\link{scale}}.
+#' Alternatively, one can provide a \code{matrix} of dimensions \code{nobs(sentomeasures)} times \code{1} or
+#' \code{nmeasures(sentomeasures)} with values to divide each individual observation by.
 #'
 #' @return A modified \code{sentomeasures} object, with the measures replaced by the scaled measures as well as updated
 #' statistics.
@@ -177,16 +184,37 @@ nobs <- function(sentomeasures) {
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sentomeasures <- sento_measures(corpusSample, l, ctr)
 #'
-#' # scale sentiment measures
-#' scaled <- scale(sentomeasures)
+#' # scale sentiment measures to zero mean and unit standard deviation
+#' sc1 <- scale(sentomeasures)
+#'
+#' n <- nobs(sentomeasures) # row dimension
+#' m <- nmeasures(sentomeasures) # column dimension
+#'
+#' # add a matrix
+#' sc2 <- scale(sentomeasures, center = matrix(runif(n * m), n, m), scale = FALSE)
+#'
+#' # divide every row observation based on a one-column matrix, then center
+#' sc3 <- scale(sentomeasures, center = TRUE, scale = matrix(runif(n)))
 #'
 #' @export
 scale.sentomeasures <- function(x, center = TRUE, scale = TRUE) {
   sentomeasures <- x
   dates <- get_dates(sentomeasures)
   measures <- get_measures(sentomeasures)[, -1] # drop dates
+  if (is.matrix(center)) {
+    if (nrow(center) != nobs(sentomeasures) || !(ncol(center) %in% c(1, nmeasures(sentomeasures))))
+      stop("The matrix dimensions of the 'center' argument are not correct.")
+    measures <- measures + center
+    center <- FALSE
+  }
+  if (is.matrix(scale)) {
+    if (nrow(scale) != nobs(sentomeasures) || !(ncol(scale) %in% c(1, nmeasures(sentomeasures))))
+      stop("The matrix dimensions of the 'scale' argument are not correct.")
+    measures <- measures / scale
+    scale <- FALSE
+  }
   measuresNorm <- scale(measures, center, scale)
-  sentomeasures$measures <- data.table(dates, measuresNorm)
+  sentomeasures$measures <- data.table(date = dates, measuresNorm)
   sentomeasures$stats <- compute_stats(sentomeasures)
   return(sentomeasures)
 }

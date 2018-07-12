@@ -9,9 +9,13 @@
 \arguments{
 \item{x}{a \code{sentomeasures} object created using \code{\link{sento_measures}}.}
 
-\item{center}{a \code{logical}, see documentation for the generic \code{\link{scale}}.}
+\item{center}{a \code{logical} or a \code{numeric} vector, see documentation for the generic \code{\link{scale}}.
+Alternatively, one can provide a \code{matrix} of dimensions \code{nobs(sentomeasures)} times \code{1} or
+\code{nmeasures(sentomeasures)} with values to add to each individual observation.}
 
-\item{scale}{a \code{logical}, see documentation for the generic \code{\link{scale}}.}
+\item{scale}{a \code{logical} or a \code{numeric} vector, see documentation for the generic \code{\link{scale}}.
+Alternatively, one can provide a \code{matrix} of dimensions \code{nobs(sentomeasures)} times \code{1} or
+\code{nmeasures(sentomeasures)} with values to divide each individual observation by.}
 }
 \value{
 A modified \code{sentomeasures} object, with the measures replaced by the scaled measures as well as updated
@@ -20,6 +24,10 @@ statistics.
 \description{
 Scales and centers the sentiment measures from a \code{sentomeasures} object, column-per-column. By default,
 the measures are normalized. \code{NA}s are removed first.
+}
+\details{
+If one of the arguments \code{center} or \code{scale} is a \code{matrix}, this operation will be applied first,
+and eventual other centering or scaling is computed on that data.
 }
 \examples{
 data("usnews", package = "sentometrics")
@@ -33,8 +41,17 @@ l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 sentomeasures <- sento_measures(corpusSample, l, ctr)
 
-# scale sentiment measures
-scaled <- scale(sentomeasures)
+# scale sentiment measures to zero mean and unit standard deviation
+sc1 <- scale(sentomeasures)
+
+n <- nobs(sentomeasures) # row dimension
+m <- nmeasures(sentomeasures) # column dimension
+
+# add a matrix
+sc2 <- scale(sentomeasures, center = matrix(runif(n * m), n, m), scale = FALSE)
+
+# divide every row observation based on a one-column matrix, then center
+sc3 <- scale(sentomeasures, center = TRUE, scale = matrix(runif(n)))
 
 }
 \author{

@@ -3,12 +3,18 @@
 #'
 #' @author Samuel Borms
 #'
-#' @description Adds missing dates between earliest and latest date of a \code{sentomeasures} object, such that time series
-#' is continuous date-wise. Fills in these dates with either 0, the respective latest non-missing value or \code{NA}.
+#' @description Adds missing dates between earliest and latest date of a \code{sentomeasures} object, such that the time
+#' series are continuous date-wise. Fills in these dates with either 0, the respective latest non-missing value or \code{NA}.
 #'
 #' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
 #' @param fill an element of \code{c("zero", "latest", NA)}; the first and last assume missing dates represent zero sentiment,
 #' the second assumes missing dates represent constant sentiment.
+#' @param dateBefore a date as \code{"yyyy-mm-dd"}, to stretch the sentiment time series from up to the first date. Should
+#' be earlier than \code{get_dates(sentomeasures)[1]}, according to the \code{sentomeasures[["by"]]} frequency. If
+#' \code{NULL}, then ignored. The values for these dates are set to the values at \code{get_dates(sentomeasures)[1]}.
+#' @param dateAfter a date as \code{"yyyy-mm-dd"}, to stretch the sentiment time series up to this date. Should be
+#' later than \code{tail(get_dates(sentomeasures), 1)}, according to the \code{sentomeasures[["by"]]} frequency. If
+#' \code{NULL}, then ignored.
 #'
 #' @return A modified \code{sentomeasures} object.
 #'
@@ -21,25 +27,41 @@
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 #' l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
-#' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "day", lag = 7)
+#' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "day", lag = 7, fill = "none")
 #' sentomeasures <- sento_measures(corpusSample, l, ctr)
 #'
 #' # fill measures
 #' f1 <- measures_fill(sentomeasures)
 #' f2 <- measures_fill(sentomeasures, fill = "latest")
 #' f3 <- measures_fill(sentomeasures, fill = NA)
+#' f4 <- measures_fill(sentomeasures, fill = "zero",
+#'                     dateBefore = get_dates(sentomeasures)[1] - 10,
+#'                     dateAfter = tail(get_dates(sentomeasures), 1) + 15)
 #'
 #' @export
-measures_fill <- function(sentomeasures, fill = "zero") {
+measures_fill <- function(sentomeasures, fill = "zero", dateBefore = NULL, dateAfter = NULL) {
   check_class(sentomeasures, "sentomeasures")
 
   by <- sentomeasures$by
   dates <- get_dates(sentomeasures)
-  measures <- get_measures(sentomeasures)
-  ts <- seq(dates[1], dates[length(dates)], by = by) # continuous date series
+
+  start <- dates[1]
+  if (!is.null(dateBefore)) {
+    dateBefore <- convert_date(dateBefore, by = by)
+    if (dateBefore < start) start <- dateBefore
+  }
+
+  end <- utils::tail(dates, 1)
+  if (!is.null(dateAfter)) {
+    dateAfter <- convert_date(dateAfter, by = by)
+    if (dateAfter > end) end <- dateAfter
+  }
+
+  ts <- seq(start, end, by = by) # continuous date series
   dt <- data.table(date = ts)
 
-  # join and fill as provided to new measures
+  # join and fill as provided into new measures
+  measures <- get_measures(sentomeasures)
   measuresFill <- merge(dt, measures, by = "date", all = TRUE) # fills with NA
   if (is.na(fill)) {
     sentomeasures$measures <- measuresFill
@@ -47,6 +69,7 @@ measures_fill <- function(sentomeasures, fill = "zero") {
   } else if (fill == "zero") {
     measuresFill[is.na(measuresFill)] <- 0
   } else if (fill == "latest") {
+    if (!is.null(dateBefore)) measuresFill[1, 2:ncol(measures)] <- measures[1, -1]
     measuresFill <- zoo::na.locf(measuresFill)
   } else stop("Input variable 'fill' should be either 'zero', 'latest' or NA.")
   measuresFill <- data.table(date = ts, measuresFill[, lapply(.SD, as.numeric), .SDcols = colnames(measures)[-1]])
@@ -394,5 +417,87 @@ measures_delete <- function(sentomeasures, toDelete, do.combine = TRUE) {
   sentomeasures <- update_info(sentomeasures, measuresNew) # update information in sentomeasures object
 
   return(sentomeasures)
+}
+
+#' Merge sentiment measures into multiple weighted global sentiment indices
+#'
+#' @author Samuel Borms
+#'
+#' @description Merges all sentiment measures into a weighted global textual sentiment measure for each of the
+#' \code{lexicons}, \code{features}, and \code{time} dimensions.
+#'
+#' @details In contrast to other \code{measures_xyz} functions, this particular function returns no new \code{sentomeasures}
+#' object. The global sentiment measures as outputted can easily be added to regressions as an additional
+#' variable using the \code{x} argument in the \code{\link{sento_model}} function. The measures are constructed from
+#' weights that indicate the importance (and sign) along each component from the \code{lexicons}, \code{features},
+#' and \code{time} dimensions. There is no condition in terms of allowed weights. For example, the global index based
+#' on the supplied lexicon weights (\code{"globLex"}) is obtained first by multiplying every sentiment measure with
+#' its corresponding weight (meaning, the weight given to the lexicon the sentiment is computed with), then by taking
+#' the average per date.
+#'
+#' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
+#' @param lexicons a \code{numeric} vector of weights, of size \code{length(sentomeasures$lexicons)}, in the same order.
+#' By default set to 1, which means equally weighted.
+#' @param features a \code{numeric} vector of weights, of size \code{length(sentomeasures$features)}, in the same order.
+#' By default set to 1, which means equally weighted.
+#' @param time a \code{numeric} vector of weights, of size \code{length(sentomeasures$time)}, in the same order. By default
+#' set to 1, which means equally weighted.
+#'
+#' @return A \code{data.frame} with the different types of weighted global sentiment measures, named \code{"globLex"},
+#' \code{"globFeat"}, \code{"globTime"} and \code{"global"}, with dates as row names. The last measure is an average
+#' of the the three other measures.
+#'
+#' @seealso \code{\link{sento_model}}
+#'
+#' @examples
+#' data("usnews", package = "sentometrics")
+#' data("list_lexicons", package = "sentometrics")
+#' data("list_valence_shifters", package = "sentometrics")
+#'
+#' # construct a sentomeasures object to start with
+#' corpus <- sento_corpus(corpusdf = usnews)
+#' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
+#' l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+#' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
+#' sentomeasures <- sento_measures(corpusSample, l, ctr)
+#'
+#' # merge into one global sentiment measure, with specified weighting for lexicons and features
+#' global <- measures_global(sentomeasures,
+#'                           lexicons = c(0.40, 0.60),
+#'                           features = c(0.10, -0.20, 0.30, -1),
+#'                           time = 1)
+#'
+#' @export
+measures_global <- function(sentomeasures, lexicons = 1, features = 1, time = 1) {
+  check_class(sentomeasures, "sentomeasures")
+
+  dims <- get_dimensions(sentomeasures)
+  n <- sapply(dims, length)
+  weightsInp <- list(features, lexicons, time)
+  weights <- sapply(1:3, function(i) {
+    if (length(weightsInp[[i]]) == 1)
+      w <- as.list(rep(1/n[i], n[i])) # modify weights if equal to default value of 1
+    else {
+      w <- as.list(weightsInp[[i]])
+      if (length(w) != n[i])
+        stop("All weights must be equal in length to the respective number of components.")
+    }
+    names(w) <- dims[[i]] # named weight lists
+    return(w)
+  })
+
+  measuresLong <- get_measures(sentomeasures, format = "long")
+  measuresLong[, "wFeat" := unlist(weights[[1]][measuresLong[["features"]]])] # weights features
+  measuresLong[, "wLex" := unlist(weights[[2]][measuresLong[["lexicons"]]])] # weights lexicon
+  measuresLong[, "wTime" :=- unlist(weights[[3]][measuresLong[["time"]]])] # weights time
+  globs <- measuresLong[, list(globLex = mean(value * wLex),
+                               globFeat = mean(value * wFeat),
+                               globTime = mean(value * wTime)), by = date]
+  globs[["global"]] <- rowMeans(globs[, -1])
+  global <- as.data.frame(globs)
+  row.names(global) <- global$date
+  global$date <- NULL
+
+  return(global)
 }
 

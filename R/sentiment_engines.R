@@ -1,5 +1,5 @@
 
-get_features_sentiment <- function(sent, features, lexNames) {
+spread_sentiment_features <- function(sent, features, lexNames) {
   for (lexicon in lexNames) { # multiply lexicons with features to obtain feature-sentiment scores per lexicon
     nms <- paste0(lexicon, "--", features)
     sent[, nms] <- sent[[lexicon]] * sent[, features, with = FALSE]
@@ -8,7 +8,7 @@ get_features_sentiment <- function(sent, features, lexNames) {
   return(sent)
 }
 
-get_lexicons_sentiment <- function(dfm, how, lexNames, lexicons, wCounts) {
+compute_sentiment_lexicons <- function(dfm, how, lexNames, lexicons, wCounts) {
 
   if (how == "counts" || how == "proportional" || how == "proportionalPol") {
     fdm <- quanteda::t(dfm) # feature-document matrix
@@ -149,11 +149,11 @@ compute_sentiment <- function(x, lexicons, how = "proportional", nCore = 1, dfm 
   } else if (!quanteda::is.dfm(dfm)) stop("The 'dfm' argument should pass quanteda::is.dfm(dfm).")
 
   # compute sentiment per document for all lexicons
-  s <- get_lexicons_sentiment(dfm, how, lexNames, lexicons, wCounts) # date - features - word_count - lexicons (sentiment)
+  s <- compute_sentiment_lexicons(dfm, how, lexNames, lexicons, wCounts) # date - features - word_count - lexicons/sentiment
   s <- as.data.table(cbind(id = quanteda::docnames(sentocorpus), quanteda::docvars(sentocorpus), word_count = wCounts, s))
 
   # compute feature-sentiment per document for all lexicons and order by date
-  sent <- get_features_sentiment(s, features, lexNames)
+  sent <- spread_sentiment_features(s, features, lexNames)
   sent <- sent[order(date)]
 
   cat("Done.", "\n")
@@ -193,11 +193,11 @@ compute_sentiment.sentocorpus <- compiler::cmpfun(.compute_sentiment.sentocorpus
   } else if (!quanteda::is.dfm(dfm)) stop("The 'dfm' argument should pass quanteda::is.dfm(dfm).")
 
   # compute sentiment per document for all lexicons
-  s <- get_lexicons_sentiment(dfm, how, lexNames, lexicons, wCounts) # date - features - word_count - lexicons (sentiment)
+  s <- compute_sentiment_lexicons(dfm, how, lexNames, lexicons, wCounts) # date - features - word_count - lexicons/sentiment
   s <- as.data.table(cbind(id = quanteda::docnames(corpus), quanteda::docvars(corpus)[features], word_count = wCounts, s))
 
   # compute feature-sentiment per document for all lexicons
-  if (!is.null(features)) sent <- get_features_sentiment(s, features, lexNames)
+  if (!is.null(features)) sent <- spread_sentiment_features(s, features, lexNames)
 
   cat("Done.", "\n")
 
@@ -234,7 +234,7 @@ compute_sentiment.corpus <- compiler::cmpfun(.compute_sentiment.corpus)
   } else if (!quanteda::is.dfm(dfm)) stop("The 'dfm' argument should pass quanteda::is.dfm(dfm).")
 
   # compute sentiment per document for all lexicons
-  s <- get_lexicons_sentiment(dfm, how, lexNames, lexicons, wCounts) # date - word_count - lexicons (sentiment)
+  s <- compute_sentiment_lexicons(dfm, how, lexNames, lexicons, wCounts) # date - word_count - lexicons/sentiment
 
   cat("Done.", "\n")
 

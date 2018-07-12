@@ -4,20 +4,29 @@
 \alias{measures_fill}
 \title{Add and fill missing dates}
 \usage{
-measures_fill(sentomeasures, fill = "zero")
+measures_fill(sentomeasures, fill = "zero", dateBefore = NULL,
+  dateAfter = NULL)
 }
 \arguments{
 \item{sentomeasures}{a \code{sentomeasures} object created using \code{\link{sento_measures}}.}
 
 \item{fill}{an element of \code{c("zero", "latest", NA)}; the first and last assume missing dates represent zero sentiment,
 the second assumes missing dates represent constant sentiment.}
+
+\item{dateBefore}{a date as \code{"yyyy-mm-dd"}, to stretch the sentiment time series from up to the first date. Should
+be earlier than \code{get_dates(sentomeasures)[1]}, according to the \code{sentomeasures[["by"]]} frequency. If
+\code{NULL}, then ignored. The values for these dates are set to the values at \code{get_dates(sentomeasures)[1]}.}
+
+\item{dateAfter}{a date as \code{"yyyy-mm-dd"}, to stretch the sentiment time series up to this date. Should be
+later than \code{tail(get_dates(sentomeasures), 1)}, according to the \code{sentomeasures[["by"]]} frequency. If
+\code{NULL}, then ignored.}
 }
 \value{
 A modified \code{sentomeasures} object.
 }
 \description{
-Adds missing dates between earliest and latest date of a \code{sentomeasures} object, such that time series
-is continuous date-wise. Fills in these dates with either 0, the respective latest non-missing value or \code{NA}.
+Adds missing dates between earliest and latest date of a \code{sentomeasures} object, such that the time
+series are continuous date-wise. Fills in these dates with either 0, the respective latest non-missing value or \code{NA}.
 }
 \examples{
 data("usnews", package = "sentometrics")
@@ -28,13 +37,16 @@ data("list_valence_shifters", package = "sentometrics")
 corpus <- sento_corpus(corpusdf = usnews)
 corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
-ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "day", lag = 7)
+ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "day", lag = 7, fill = "none")
 sentomeasures <- sento_measures(corpusSample, l, ctr)
 
 # fill measures
 f1 <- measures_fill(sentomeasures)
 f2 <- measures_fill(sentomeasures, fill = "latest")
 f3 <- measures_fill(sentomeasures, fill = NA)
+f4 <- measures_fill(sentomeasures, fill = "zero",
+                    dateBefore = get_dates(sentomeasures)[1] - 10,
+                    dateAfter = tail(get_dates(sentomeasures), 1) + 15)
 
 }
 \author{
