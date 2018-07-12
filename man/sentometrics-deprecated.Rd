@@ -4,6 +4,7 @@
 \alias{sentometrics-deprecated}
 \alias{fill_measures}
 \alias{merge_measures}
+\alias{to_global}
 \alias{ctr_merge}
 \alias{subset_measures}
 \alias{select_measures}
@@ -13,6 +14,8 @@
 fill_measures(sentomeasures, fill = "zero")
 
 merge_measures(...)
+
+to_global(sentomeasures, lexicons, features, time)
 
 ctr_merge(...)
 
@@ -30,6 +33,15 @@ extract_peakdocs(sentomeasures, sentocorpus, n = 10, type = "both",
 the second assumes missing dates represent constant sentiment.}
 
 \item{...}{(other) allowed input arguments.}
+
+\item{lexicons}{a \code{numeric} vector of weights, of size \code{length(sentomeasures$lexicons)}, in the same order.
+By default set to 1, which means equally weighted.}
+
+\item{features}{a \code{numeric} vector of weights, of size \code{length(sentomeasures$features)}, in the same order.
+By default set to 1, which means equally weighted.}
+
+\item{time}{a \code{numeric} vector of weights, of size \code{length(sentomeasures$time)}, in the same order. By default
+set to 1, which means equally weighted.}
 
 \item{subset}{a logical expression indicating the rows to keep.}
 
@@ -64,7 +76,7 @@ have been deprecated.
 
 \code{\link{measures_merge}}
 
-\code{\link{measures_merge}}
+\code{\link{measures_global}}
 
 \code{\link{measures_subset}}
 

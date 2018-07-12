@@ -301,20 +301,23 @@ compute_stats <- function(sentomeasures) {
   return(stats)
 }
 
-compute_df_old <- function(alpha, beta, lambda, x) { # elastic net degrees-of-freedom estimator (Tibshirani and Taylor, 2012)
-  x <- scale(x) # scale x first
-  dfA <- lapply(1:length(lambda), function(df) {
-    A <- which(beta[, df] != 0)
-    if (alpha == 1) {return(length(A))} # df equal to non-zero parameters if LASSO (alpha = 1)
-    if (length(A) == 0) {return(NA)}
-    I <- diag(1, ncol = length(A), nrow = length(A))
-    xA <- as.matrix(x[, A])
-    estimate <- tryCatch(sum(diag(xA %*% solve((t(xA) %*% xA + (1 - alpha) * lambda[df] * I)) %*% t(xA))),
-                         error = function(x) {NA}) # to handle rare matrix inversion problems
-    return(estimate)
-  })
-  return(unlist(dfA))
-}
+# compute_df_old <- function(alpha, beta, lambda, x) {
+#
+#   # elastic net degrees-of-freedom estimator (Tibshirani and Taylor, 2012)
+#
+#   x <- scale(x) # scale x first
+#   dfA <- lapply(1:length(lambda), function(df) {
+#     A <- which(beta[, df] != 0)
+#     if (alpha == 1) {return(length(A))} # df equal to non-zero parameters if LASSO (alpha = 1)
+#     if (length(A) == 0) {return(NA)}
+#     I <- diag(1, ncol = length(A), nrow = length(A))
+#     xA <- as.matrix(x[, A])
+#     estimate <- tryCatch(sum(diag(xA %*% solve((t(xA) %*% xA + (1 - alpha) * lambda[df] * I)) %*% t(xA))),
+#                          error = function(x) {NA}) # to handle rare matrix inversion problems
+#     return(estimate)
+#   })
+#   return(unlist(dfA))
+# }
 
 compute_BIC <- function(y, yEst, dfA, RSS, sigma2) { # BIC-like criterion
   BIC <- RSS/(nrow(y) * sigma2) + (log(nrow(y))/nrow(y)) * dfA
@@ -401,5 +404,21 @@ sento_as_key <- function (x, ...) {
     x <- x[!x %in% sort(names(tab[tab > 1])), ]
   data.table::setkey(x, "x")
   x
+}
+
+convert_date <- function(date, by = "day") {
+  if (by == "year") {
+    year <- stringi::stri_split(date, regex = "-")[[1]][1]
+    date <- as.Date(paste0(year, "-01-01"), format = "%Y-%m-%d")
+  } else if (by == "month") {
+    month <- paste0(stringi::stri_split(date, regex = "-")[[1]][1:2], collapse = "-")
+    date <- as.Date(paste0(month, "-01"), format = "%Y-%m-%d")
+  } else if (by == "week") {
+    week <- ISOweek::ISOweek(date)
+    date <- ISOweek::ISOweek2date(paste(week, 1, sep = "-")) # get first day of week based on ISO standard
+  } else { # day
+    date <- as.Date(date, format = "%Y-%m-%d")
+  }
+  return(date)
 }
 

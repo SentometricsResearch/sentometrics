@@ -14,7 +14,8 @@
 #' \itemize{
 #' \item Feature generation: \code{\link{sento_corpus}}, \code{\link{add_features}}
 #' \item Sentiment computation and aggregation into sentiment measures: \code{\link{ctr_agg}},
-#' \code{\link{compute_sentiment}}, \code{\link{sento_measures}}, \code{\link{measures_merge}}, \code{\link{to_global}}
+#' \code{\link{compute_sentiment}}, \code{\link{sento_measures}}, \code{\link{measures_merge}},
+#' \code{\link{measures_global}}, and a series of other \code{measures_xyz} and generic functions
 #' \item Sparse modelling: \code{\link{ctr_model}}, \code{\link{sento_model}}
 #' \item Prediction and post-modelling analysis: \code{\link{predict.sentomodel}}, \code{\link{retrieve_attributions}},
 #' \code{\link{plot_attributions}}, \code{\link{perform_MCS}}

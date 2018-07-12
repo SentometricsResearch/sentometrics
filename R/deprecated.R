@@ -54,7 +54,22 @@ merge_measures <- function(...) {
 
 #' @rdname sentometrics-deprecated
 #'
-#' @seealso \code{\link{measures_merge}}
+#' @param lexicons a \code{numeric} vector of weights, of size \code{length(sentomeasures$lexicons)}, in the same order.
+#' By default set to 1, which means equally weighted.
+#' @param features a \code{numeric} vector of weights, of size \code{length(sentomeasures$features)}, in the same order.
+#' By default set to 1, which means equally weighted.
+#' @param time a \code{numeric} vector of weights, of size \code{length(sentomeasures$time)}, in the same order. By default
+#' set to 1, which means equally weighted.
+#'
+#' @seealso \code{\link{measures_global}}
+#'
+#' @export
+to_global <- function(sentomeasures, lexicons, features, time) {
+  .Deprecated("measures_global", package = "sentometrics")
+  measures_global(sentomeasures, lexicons = lexicons, features = features, time = time)
+}
+
+#' @rdname sentometrics-deprecated
 #'
 #' @export
 ctr_merge <- function(...) {
