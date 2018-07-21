@@ -252,7 +252,7 @@ check_merge_dimensions <- function(sentomeasures, features = NA, lexicons = NA, 
 #'
 #' @author Samuel Borms
 #'
-#' @description Merge (further aggregate) measures by combining across provided lexicons, features, and time weighting schemes
+#' @description Merges sentiment measures by combining across provided lexicons, features, and time weighting schemes
 #' dimensions. The combination occurs by taking the mean of the relevant measures.
 #'
 #' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}. This is necessary to check
