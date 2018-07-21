@@ -131,6 +131,45 @@ exponentials <- function(n, alphas = seq(0.1, 0.5, by = 0.1)) {
   return(as.data.frame(exponentials))
 }
 
+#' Compute beta weighting curves
+#'
+#' @description Computes beta weighting curves as in Ghysels et al. (2007). Handy to self-select specific time
+#' aggregation weighting schemes for input in \code{\link{ctr_agg}}.
+#'
+#' @details The Beta weighting abides by following formula:
+#' \eqn{f(i/n; a, b) / \sumf(i/n; a, b)}, where \eqn{i} is the lag index ordered from
+#' 1 to \eqn{n}, \eqn{a} and \eqn{b} are two decay parameters, and
+#' \eqn{f(x; a, b) = (x^(a - 1)(1 - x)^(b - 1)T(a + b)) / (T(a)T(b))}, where \eqn{T(.)} is
+#' the \code{\link{gamma}} function.
+#'
+#' @param n a single \code{numeric} to indicate the length of the curve (the number of lags).
+#' @param a a \code{numeric} vector of the first parameter.
+#' @param b a \code{numeric} vector of the second parameter.
+#'
+#' @return A \code{data.frame} of beta weighting curves per combination of \code{a} and \code{b}.
+#'
+#' @seealso \code{\link{ctr_agg}}
+#'
+#' @export
+betas <- function(n, a = 1:4, b = 1:4) {
+  if (any(c(a, b) <= 0))
+    stop("Values in 'a' and 'b' should be positive.")
+  vals <- (1:n) / n
+  betas <- data.frame(matrix(nrow = n, ncol = length(a) * length(b)))
+  colnames(betas) <- paste0("beta_", paste0(rep(a, rep(length(b), length(a))), b))
+  k <- 1
+  for (i in 1:length(a)) {
+    for(j in 1:length(b)) {
+      aa <- a[i]
+      bb <- b[j]
+      beta <- (vals^(aa - 1) * (1 - vals)^(bb - 1) * gamma(aa + bb)) / (gamma(aa) * gamma(bb))
+      betas[, k] <- beta/sum(beta)
+      k <- k + 1
+    }
+  }
+  return(as.data.frame(betas))
+}
+
 setup_time_weights <- function(lag, how, ...) {
   dots <- tryCatch(list(...)[[1]], # extract list from list of list (... a list to match with functions in sentomeasures.R)
                    error = function(x) list(...)) # if ... is empty
@@ -148,6 +187,9 @@ setup_time_weights <- function(lag, how, ...) {
   if ("almon" %in% how) {
     weights <- cbind(weights, almons(lag, dots$ordersAlm, dots$do.inverseAlm, TRUE)) # always normalize
   }
+  if ("beta" %in% how) {
+    weights <- cbind(weights, betas(lag, dots$aBeta, dots$bBeta))
+  }
   if ("own" %in% how) {
     weights <- cbind(weights, dots$weights)
   }
@@ -156,8 +198,8 @@ setup_time_weights <- function(lag, how, ...) {
 
 #' Options supported to perform aggregation into sentiment measures
 #'
-#' @description Call for information purposes only. Used within \code{\link{ctr_agg}} to check if supplied
-#' aggregation hows are supported.
+#' @description Outputs the supported aggregation arguments. Call for information purposes only. Used within
+#' \code{\link{ctr_agg}} to check if supplied aggregation hows are supported.
 #'
 #' @details See the package's \href{https://ssrn.com/abstract=3067734}{vignette} for a thoughtful explanation of
 #' the different aggregation options. The \code{howWithin = "proportionalPol"} option divides each document's
@@ -173,7 +215,7 @@ setup_time_weights <- function(lag, how, ...) {
 get_hows <- function() {
   words <- c("proportional", "proportionalPol", "tf-idf", "counts")
   docs <- c("equal_weight", "proportional")
-  time <- c("equal_weight", "almon", "linear", "exponential", "own")
+  time <- c("equal_weight", "almon", "beta", "linear", "exponential", "own")
   return(list(words = words, docs = docs, time = time))
 }
 

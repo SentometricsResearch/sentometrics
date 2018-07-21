@@ -10,13 +10,13 @@
 #' \code{howDocs} and \code{howTime} arguments), call \code{\link{get_hows}}.
 #'
 #' @param howWithin a single \code{character} vector defining how aggregation within documents will be performed. Should
-#' \code{length(howWithin) > 1}, the first element is used. For currently available options on how aggregation can occur, see
+#' \code{length(howWithin) > 1}, the first element is used. For currently available options on how aggregation can occur; see
 #' \code{\link{get_hows}()$words}.
 #' @param howDocs a single \code{character} vector defining how aggregation across documents per date will be performed.
-#' Should \code{length(howDocs) > 1}, the first element is used. For currently available options on how aggregation can occur,
+#' Should \code{length(howDocs) > 1}, the first element is used. For currently available options on how aggregation can occur;
 #' see \code{\link{get_hows}()$docs}.
 #' @param howTime a \code{character} vector defining how aggregation across dates will be performed. More than one choice
-#' is possible. For currently available options on how aggregation can occur, see \code{\link{get_hows}()$time}.
+#' is possible. For currently available options on how aggregation can occur; see \code{\link{get_hows}()$time}.
 #' @param do.ignoreZeros a \code{logical} indicating whether zero sentiment values have to be ignored in the determination of
 #' the document weights while aggregating across documents. By default \code{do.ignoreZeros = TRUE}, such that documents with
 #' a raw sentiment score of zero or for which a given feature indicator is equal to zero are considered irrelevant.
@@ -30,15 +30,17 @@
 #' applying the \code{\link{measures_fill}} function before aggregating, except if \code{fill = "none"}. By default equal to
 #' \code{"zero"}, which sets the scores (and thus also the weights) of the added dates to zero in the time aggregation.
 #' @param alphasExp a \code{numeric} vector of all exponential smoothing factors to calculate weights for, used if
-#'  \code{"exponential" \%in\% howTime}. Values should be between 0 and 1 (both excluded).
-#' @param ordersAlm a \code{numeric} vector of all Almon polynomial orders to calculate weights for, used if
-#' \code{"almon" \%in\% howTime}.
+#' \code{"exponential" \%in\% howTime}. Values should be between 0 and 1 (both excluded); see \code{\link{exponentials}}.
+#' @param ordersAlm a \code{numeric} vector of all Almon polynomial orders (positive) to calculate weights for, used if
+#' \code{"almon" \%in\% howTime}; see \code{\link{almons}}.
 #' @param do.inverseAlm a \code{logical} indicating if for every Almon polynomial its inverse has to be added, used
-#' if \code{"almon" \%in\% howTime}.
-#' @param weights an optional own weighting scheme, always used if provided as a \code{data.frame} with the number of rows
-#' equal to the desired \code{lag}. The automatic Almon polynomials are created sequentially; if the user wants only specific
-#' of such time weighting series it can use \code{\link{almons}}, select the columns it requires, combine it into a
-#' \code{data.frame} and supply it under this argument (see examples).
+#' if \code{"almon" \%in\% howTime}; see \code{\link{almons}}.
+#' @param aBeta a \code{numeric} vector of positive values as first Beta weighting decay parameter; see
+#' \code{\link{betas}}.
+#' @param bBeta a \code{numeric} vector of positive values as second Beta weighting decay parameter; see
+#' \code{\link{betas}}.
+#' @param weights optional own weighting scheme(s), used if provided as a \code{data.frame} with the number of rows
+#' equal to the desired \code{lag}.
 #' @param nCore a single \code{numeric} at least equal to 1 to indicate the number of cores to use for a parallel sentiment
 #' computation. We use the \code{\%dopar\%} construct from the \pkg{foreach} package. By default, \code{nCore = 1}, which
 #' implies no parallelization.
@@ -56,13 +58,15 @@
 #' # more elaborate control function (particular attention to time weighting schemes)
 #' ctr2 <- ctr_agg(howWithin = "proportionalPol",
 #'                 howDocs = "proportional",
-#'                 howTime = c("equal_weight", "linear", "almon", "exponential", "own"),
+#'                 howTime = c("equal_weight", "linear", "almon", "beta", "exponential", "own"),
 #'                 do.ignoreZeros = TRUE,
 #'                 by = "day",
 #'                 lag = 20,
 #'                 ordersAlm = 1:3,
 #'                 do.inverseAlm = TRUE,
 #'                 alphasExp = c(0.20, 0.50, 0.70, 0.95),
+#'                 aBeta = c(1, 3),
+#'                 bBeta = c(1, 3, 4, 7),
 #'                 weights = data.frame(myWeights = runif(20)))
 #'
 #' # set up control function with one linear and two chosen Almon weighting schemes
@@ -73,7 +77,8 @@
 #' @export
 ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTime = "equal_weight",
                     do.ignoreZeros = TRUE, by = "day", lag = 1L, fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1),
-                    ordersAlm = 1:3, do.inverseAlm = TRUE, weights = NULL, nCore = 1, dfm = NULL, ...) {
+                    ordersAlm = 1:3, do.inverseAlm = TRUE, aBeta = 1:4, bBeta = 1:4, weights = NULL,
+                    nCore = 1, dfm = NULL, ...) {
 
   if (length(howWithin) > 1) howWithin <- howWithin[1]
   if (length(howDocs) > 1) howDocs <- howDocs[1]
@@ -112,6 +117,14 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
     warning("Values in 'alphasExp' should be between 0 and 1 (both excluded).")
     warned <- warned + 1
   }
+  if (any(ordersAlm) <= 0) {
+    warning("Values in 'ordersAlm' should be positive.")
+    warned <- warned + 1
+  }
+  if (any(c(aBeta, bBeta) <= 0)) {
+    warning("Values in 'aBeta' and 'bBeta' should be positive.")
+    warned <- warned + 1
+  }
   if (lag <= 0) {
     warning("Argument 'lag' should be greater than zero.")
     warned <- warned + 1
@@ -138,7 +151,8 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
   }
   if (warned > 0) stop("Wrong inputs. See warning message(s) for specifics.")
 
-  other <- list(alphasExp = alphasExp, ordersAlm = ordersAlm, do.inverseAlm = do.inverseAlm, weights = weights)
+  other <- list(alphasExp = alphasExp, ordersAlm = ordersAlm, do.inverseAlm = do.inverseAlm,
+                aBeta = aBeta, bBeta = bBeta, weights = weights)
 
   ctr <- list(howWithin = howWithin,
               howDocs = howDocs,
