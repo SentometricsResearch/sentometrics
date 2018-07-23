@@ -342,7 +342,8 @@ measures_merge <- function(sentomeasures, features = NA, lexicons = NA, time = N
   # add old unmerged measures to merged measures (if do.keep is TRUE)
   if (do.keep == TRUE) measures <- cbind(measures, measuresOld[, !(namesOld %in% colnames(measures)), with = FALSE])
 
-  sentomeasures <- update_info(sentomeasures, measures) # update information in sentomeasures object
+  sentomeasures <- update_info(sentomeasures, measures,
+                               merges = toMerge[!is.na(toMerge)]) # update information in sentomeasures object
 
   return(sentomeasures)
 }

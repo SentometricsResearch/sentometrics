@@ -18,7 +18,7 @@ in a separate color, but this may look visually overwhelming very fast, and can 
 \value{
 Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using
 the \code{+} operator (see examples). By default, a legend is positioned at the top if there are at maximum twelve line
-graphs plotted.
+graphs plotted and \code{group} is different from \code{"all"}.
 }
 \description{
 Straightforward plotting method that shows all sentiment measures from the provided \code{sentomeasures}

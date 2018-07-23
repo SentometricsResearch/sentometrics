@@ -17,7 +17,7 @@
 #'
 #' @return Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using
 #' the \code{+} operator (see examples). By default, a legend is positioned at the top if there are at maximum twelve line
-#' graphs plotted.
+#' graphs plotted and \code{group} is different from \code{"all"}.
 #'
 #' @examples
 #' data("usnews", package = "sentometrics")
@@ -54,12 +54,13 @@ plot.sentomeasures <- function(x, group = "all", ...) {
   measures <- get_measures(sentomeasures)
   if (group == "all") {
     measuresMelt <- melt(measures, id.vars = "date", variable.factor = FALSE)
+    legendPos <- "none"
   } else {
     measuresMelt <- to_long(measures)[, c("date", group, "value"), with = FALSE]
     measuresMelt <- measuresMelt[, list(value = mean(value)), by = list(date, variable = eval(parse(text = group)))]
+    legendPos <- ifelse(length(unique(measuresMelt[["variable"]])) <= 12, "top", "none")
   }
   measuresMelt <- measuresMelt[order(rank(as.character(variable)))]
-  legendPos <- ifelse(length(unique(measuresMelt[["variable"]])) <= 12, "top", "none")
   p <- ggplot(data = measuresMelt, aes(x = date, y = value, color = variable)) +
     geom_line() +
     geom_hline(yintercept = 0, size = 0.50, linetype = "dotted") +

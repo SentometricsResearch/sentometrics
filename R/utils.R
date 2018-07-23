@@ -308,7 +308,7 @@ clean_panel <- function(x, nx, threshold = 0.25) {
   return(list(xNew = xNew, discarded = toDiscard))
 }
 
-update_info <- function(sentomeasures, newMeasures) {
+update_info <- function(sentomeasures, newMeasures, ...) {
   check_class(sentomeasures, "sentomeasures")
   n <- ncol(newMeasures)
   newNames <- stringi::stri_split(colnames(newMeasures), regex = "--")[-1] # drop first element (date column)
@@ -317,7 +317,52 @@ update_info <- function(sentomeasures, newMeasures) {
   sentomeasures$features <- unique(sapply(newNames, "[", 2))
   sentomeasures$time <- unique(sapply(newNames, "[", 3))
   sentomeasures$stats <- compute_stats(sentomeasures) # measures in sentomeasures are already updated by here
+  sentomeasures$attribWeights <- update_attribweights(sentomeasures, ...)
   return(sentomeasures)
+}
+
+update_attribweights <- function(sentomeasures, ...) {
+  attribWeights <- sentomeasures$attribWeights
+  dims <- get_dimensions(sentomeasures)
+  dots <- list(...)
+  toMerge <- dots$merges
+
+  B <- attribWeights[["B"]]
+  W <- attribWeights[["W"]]
+
+  lexFeats <- unlist(lapply(dims$lexicons, function(l) paste0(l, "--", dims$features)))
+
+  if (!is.null(toMerge)) {
+    for (t in seq_along(toMerge[["time"]])) {
+      tt <- toMerge[["time"]][t]
+      B[, names(tt)] <- rowMeans(B[, unlist(tt)])
+    }
+    lexs <- unique(sapply(stringi::stri_split(colnames(W)[-c(1:2)], regex = "--"), "[", 1))
+    for (f in seq_along(toMerge[["features"]])) {
+      ff <- toMerge[["features"]][f]
+      for (l in lexs) {
+        cols <- paste0(l, "--", unlist(ff))
+        WW <- W[, c("date", cols), with = FALSE]
+        WW[is.na(WW)] <- 0
+        W[, paste0(l, "--", names(ff))] <- WW[, list(rowMeans(.SD)/sum(rowMeans(.SD))), by = date][[2]]
+      }
+    }
+    feats <- unique(sapply(stringi::stri_split(colnames(W)[-c(1:2)], regex = "--"), "[", 2)) # updated columns
+    for (l in seq_along(toMerge[["lexicons"]])) {
+      ll <- toMerge[["lexicons"]][l]
+      for (f in feats) {
+        cols <- paste0(unlist(ll), "--", f)
+        WW <- W[, c("date", cols), with = FALSE]
+        WW[is.na(WW)] <- 0
+        W[, paste0(names(ll), "--", f)] <- WW[, list(rowMeans(.SD)/sum(rowMeans(.SD))), by = date][[2]]
+      }
+    }
+  }
+
+  newB <- B[, dims$time, drop = FALSE]
+  newW <- W[, c("id", "date", lexFeats), with = FALSE]
+
+  list(W = newW, B = newB)
 }
 
 check_class <- function(x, class) {
