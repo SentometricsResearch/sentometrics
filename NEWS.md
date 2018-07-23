@@ -1,11 +1,13 @@
 
 ## sentometrics 0.5.0 (development)
 
-- new functions: `get_dates()`, `get_dimensions()`, and `get_measures()`
+- new functions: `betas()`, `get_dates()`, `get_dimensions()`, and `get_measures()`
 - defunct the `ctr_merge()` function, so that all merge parameters are to be passed on directly to the `measures_merge()` function
 - expanded the use of the `center` and `scale` arguments in the `scale()` function
 - renamed the function `to_global()` to `measures_global()` for consistency
 - added the `dateBefore` and `dateAfter` arguments to the `measures_fill()` function
+- added a `"beta"` time aggregation option and an associated `betas()` function
+- corrected update of `attribWeights` element of output `sentomeasures` object in required `measures_xyz()` functions
 
 ## sentometrics 0.4.0
 
