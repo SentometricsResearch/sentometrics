@@ -8,6 +8,8 @@
 - added the `dateBefore` and `dateAfter` arguments to the `measures_fill()` function
 - added a `"beta"` time aggregation option and an associated `betas()` function
 - corrected update of `attribWeights` element of output `sentomeasures` object in required `measures_xyz()` functions
+- added a new attribution dimension (`"lags"`) to the `retrieve_attributions()` function, and corrected some edge cases
+- dropped `NA` option in `fill` argument of `measures_fill()` function
 
 ## sentometrics 0.4.0
 

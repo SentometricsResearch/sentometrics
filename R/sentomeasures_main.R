@@ -406,7 +406,8 @@ aggregate_docs <- function(toAgg, by, how = get_hows()$docs, do.ignoreZeros = TR
       docsIn <- s[, lapply(.SD, function(x) (x * 1) / x), by = date] # indicator of 1 if document score not equal to NA
       weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = date][, -1:-2]
     } else {
-      weights <- s[, w := 1 / .N, by = date][["w"]]
+      weights <- s[, w := 1 / .N, by = date][, "w"]
+      weights <- weights[, colnames(s)[-1:-2] := weights][, -1] # drop w column
       s[, w := NULL]
     }
   } else if (how == "proportional") { # proportional w.r.t. words in document vs. total words in all documents per date
@@ -414,7 +415,8 @@ aggregate_docs <- function(toAgg, by, how = get_hows()$docs, do.ignoreZeros = TR
       docsIn <- s[, lapply(.SD, function(x) (x * word_count) / x), by = date]
       weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = date][, -1:-2]
     } else {
-      weights <- s[, list(w = word_count / sum(word_count, na.rm = TRUE)), by = date][["w"]]
+      weights <- s[, word_count / sum(word_count, na.rm = TRUE), by = date][, 2]
+      weights <- weights[, colnames(s)[-1:-2] := weights][, -1]
     }
   }
   attribWeights[["W"]] <- data.table(id = sent$id, date = sent$date, weights)

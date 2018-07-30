@@ -26,10 +26,10 @@ object, for which attribution is calculated for all out-of-sample prediction dat
 case of (a) multinomial model(s). Ignored for linear and binomial models.}
 }
 \value{
-A \code{list} with all dimensions for which aggregation is computed, being \code{"documents"}, \code{"lexicons"},
-\code{"features"} and \code{"time"}. The last three dimensions are \code{data.table}s having a \code{"date"}
-column and the other columns the different components of the dimension, with the attributions as values. Document-level
-attribution is further decomposed into a \code{data.table} per date, with \code{"id"}, \code{"date"} and
+A \code{list} with all dimensions for which aggregation is computed, being \code{"documents"}, \code{"lags"},
+\code{"lexicons"}, \code{"features"} and \code{"time"}. The last four dimensions are \code{data.table}s having a
+\code{"date"} column and the other columns the different components of the dimension, with the attributions as values.
+Document-level attribution is further decomposed into a \code{data.table} per date, with \code{"id"}, \code{"date"} and
 \code{"attrib"} columns.
 }
 \description{
@@ -39,7 +39,8 @@ based on the coefficients associated to each sentiment measure, as estimated in 
 \details{
 See \code{\link{sento_model}} for an elaborate modelling example including the calculation and plotting of
 attributions. The attribution for logistic models is represented in terms of log odds. For binomial models, it is
-calculated with respect to the last factor level or factor column.
+calculated with respect to the last factor level or factor column. A \code{NULL} value for document-level attribution
+on a given date means that no documents are (directly) implicated for the associated prediction.
 }
 \seealso{
 \code{\link{sento_model}}
