@@ -10,7 +10,7 @@ measures_fill(sentomeasures, fill = "zero", dateBefore = NULL,
 \arguments{
 \item{sentomeasures}{a \code{sentomeasures} object created using \code{\link{sento_measures}}.}
 
-\item{fill}{an element of \code{c("zero", "latest", NA)}; the first and last assume missing dates represent zero sentiment,
+\item{fill}{an element of \code{c("zero", "latest")}; the first assumes missing dates represent zero sentiment,
 the second assumes missing dates represent constant sentiment.}
 
 \item{dateBefore}{a date as \code{"yyyy-mm-dd"}, to stretch the sentiment time series from up to the first date. Should
@@ -43,8 +43,7 @@ sentomeasures <- sento_measures(corpusSample, l, ctr)
 # fill measures
 f1 <- measures_fill(sentomeasures)
 f2 <- measures_fill(sentomeasures, fill = "latest")
-f3 <- measures_fill(sentomeasures, fill = NA)
-f4 <- measures_fill(sentomeasures, fill = "zero",
+f3 <- measures_fill(sentomeasures, fill = "zero",
                     dateBefore = get_dates(sentomeasures)[1] - 10,
                     dateAfter = tail(get_dates(sentomeasures), 1) + 15)
 

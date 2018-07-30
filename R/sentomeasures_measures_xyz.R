@@ -7,7 +7,7 @@
 #' series are continuous date-wise. Fills in these dates with either 0, the respective latest non-missing value or \code{NA}.
 #'
 #' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
-#' @param fill an element of \code{c("zero", "latest", NA)}; the first and last assume missing dates represent zero sentiment,
+#' @param fill an element of \code{c("zero", "latest")}; the first assumes missing dates represent zero sentiment,
 #' the second assumes missing dates represent constant sentiment.
 #' @param dateBefore a date as \code{"yyyy-mm-dd"}, to stretch the sentiment time series from up to the first date. Should
 #' be earlier than \code{get_dates(sentomeasures)[1]}, according to the \code{sentomeasures[["by"]]} frequency. If
@@ -33,8 +33,7 @@
 #' # fill measures
 #' f1 <- measures_fill(sentomeasures)
 #' f2 <- measures_fill(sentomeasures, fill = "latest")
-#' f3 <- measures_fill(sentomeasures, fill = NA)
-#' f4 <- measures_fill(sentomeasures, fill = "zero",
+#' f3 <- measures_fill(sentomeasures, fill = "zero",
 #'                     dateBefore = get_dates(sentomeasures)[1] - 10,
 #'                     dateAfter = tail(get_dates(sentomeasures), 1) + 15)
 #'
@@ -63,10 +62,7 @@ measures_fill <- function(sentomeasures, fill = "zero", dateBefore = NULL, dateA
   # join and fill as provided into new measures
   measures <- get_measures(sentomeasures)
   measuresFill <- merge(dt, measures, by = "date", all = TRUE) # fills with NA
-  if (is.na(fill)) {
-    sentomeasures$measures <- measuresFill
-    return(sentomeasures)
-  } else if (fill == "zero") {
+  if (fill == "zero") {
     measuresFill[is.na(measuresFill)] <- 0
   } else if (fill == "latest") {
     if (!is.null(dateBefore)) measuresFill[1, 2:ncol(measures)] <- measures[1, -1]
@@ -74,6 +70,7 @@ measures_fill <- function(sentomeasures, fill = "zero", dateBefore = NULL, dateA
   } else stop("Input variable 'fill' should be either 'zero', 'latest' or NA.")
   measuresFill <- data.table(date = ts, measuresFill[, lapply(.SD, as.numeric), .SDcols = colnames(measures)[-1]])
 
+  sentomeasures$fill <- fill # might become uninformative, if measures manipulated multiple times with different fill
   sentomeasures$measures <- measuresFill
   sentomeasures$stats <- compute_stats(sentomeasures) # will be overwritten at end of agg_time() call
 

@@ -57,8 +57,9 @@ compute_sentiment_lexicons <- function(dfm, how, lexNames, lexicons, wCounts) {
 #' the lexicons into a positive and a negative polarity counterpart. \code{NA}s are converted to 0, under the assumption that
 #' this is equivalent to no sentiment. By default, if the \code{dfm} argument is left unspecified, a document-feature matrix
 #' (dfm) is created based on a tokenisation that removes punctuation, numbers, symbols and separators, but does not remove
-#' stopwords. The number of words for each document is computed based on that same tokenisation. All tokens are converted to
-#' lowercase, in line with what the \code{\link{setup_lexicons}} function does for the lexicons and valence shifters.
+#' stopwords. The number of words for each document is computed based on that same tokenisation. A valence shifter and its
+#' neighbouring word, for example 'NOT_good', is counted as one word. All tokens are converted to lowercase, in
+#' line with what the \code{\link{setup_lexicons}} function does for the lexicons and valence shifters.
 #'
 #' @param x either a \code{sentocorpus} object created with \code{\link{sento_corpus}}, a \pkg{quanteda}
 #' \code{\link[quanteda]{corpus}} object, or a \code{character} vector. The latter two do not incorporate a

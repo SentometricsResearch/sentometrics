@@ -161,7 +161,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 
   ctr_model <- list(model = model,
                     type = type,
-                    intercept = do.intercept,
+                    do.intercept = do.intercept,
                     do.iter = do.iter,
                     h = h,
                     oos = oos,
@@ -319,7 +319,7 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
 
   family <- ctr$model
   type <- ctr$type
-  intercept <- ctr$intercept
+  intercept <- ctr$do.intercept
   do.iter <- ctr$do.iter
   h <- ctr$h
   oos <- ctr$oos # used when type is "cv" or when do.iter is TRUE
@@ -658,9 +658,6 @@ summary.sentomodel <- function(object, ...) {
     print(nonZeros)
     cat("\n \n")
   }
-  cat("In-sample performance \n")
-  cat(rep("-", 20), "\n \n")
-  cat("Fraction of deviance explained: ", round(reg$dev.ratio * 100, 2), "% \n \n")
 }
 
 #' @export
@@ -701,10 +698,6 @@ summary.sentomodeliter <- function(object, ...) {
   } else {
     cat("Accuracy:", sentomodeliter$performance$accuracy, "% \n \n")
   }
-  cat("In-sample performance \n")
-  cat(rep("-", 20), "\n \n")
-  cat("Average fraction of deviance explained:",
-      round(mean(sapply(sentomodeliter$models, function(m) return(m$reg$dev.ratio)), na.rm = TRUE) * 100, 2), "% \n \n")
 }
 
 #' @export
