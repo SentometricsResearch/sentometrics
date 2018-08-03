@@ -58,8 +58,8 @@ attribution_lags <- function(s, sentDates, seqDates, W, cols, sentomeasures, mea
         sentFull <- lapply(timeNames, function(b) {
           coeffsIn <- coeffs[stringi::stri_detect(cols, regex = paste0("\\b", b, "\\b"))]
           sel <- sapply(stringi::stri_split(names(coeffsIn), regex = "--"), function(n) paste0(n[1:2], collapse = "--"))
-          colAttr <- coeffsIn * B[lagsMissing[j], b] * sentWeighted[sel]
-          return(colAttr)
+          attr <- coeffsIn * B[lagsMissing[j], b] * sentWeighted[sel]
+          return(attr)
         })
         attribFill <- sum(unlist(sentFull), na.rm = TRUE)
         return(attribFill)

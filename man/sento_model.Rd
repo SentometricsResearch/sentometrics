@@ -2,7 +2,7 @@
 % Please edit documentation in R/sentomodel.R
 \name{sento_model}
 \alias{sento_model}
-\title{Optimized and automated sparse regression}
+\title{Optimized and automated sentiment-based sparse regression}
 \usage{
 sento_model(sentomeasures, y, x = NULL, ctr)
 }
@@ -27,9 +27,9 @@ If \code{ctr$do.iter = FALSE}, a \code{sentomodel} object which is a \code{list}
 \item{alpha}{calibrated alpha.}
 \item{lambda}{calibrated lambda.}
 \item{trained}{output from \code{\link[caret]{train}} call (if \code{ctr$type =} "\code{cv}").}
-\item{ic}{a \code{list} composed of two elements: the information criterion used in the calibration under
-\code{"criterion"}, and a vector of all minimum information criterion values for each value in \code{alphas}
-under \code{"opts"} (if \code{ctr$type !=} "\code{cv}").}
+\item{ic}{a \code{list} composed of two elements: under \code{"criterion"}, the information criterion used in the
+calibration, and under \code{"matrix"}, a matrix of all information criterion values for \code{alphas} as rows
+and the respective lambda values as columns (if \code{ctr$type !=} "\code{cv}").}
 \item{dates}{sample reference dates as a two-element \code{character} vector, being the earliest and most recent date from
 the \code{sentomeasures} object accounted for in the estimation window.}
 \item{nVar}{the sum of the number of sentiment measures and other explanatory variables inputted.}

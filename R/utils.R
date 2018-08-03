@@ -290,7 +290,7 @@ clean_panel <- function(x, nx, threshold = 0.25) {
 
   start <- ncol(x) - nx + 1
   end <- ncol(x)
-  if (nx != 0) xSent <- x[, -start:-end] # drop non-sentiment variables
+  if (nx != 0) xSent <- x[, -(start:end)] # drop non-sentiment variables
   else xSent <- x
   xSent[is.na(xSent)] <- 0 # check
   duplics <- duplicated(as.matrix(xSent), MARGIN = 2) # duplicated columns
@@ -388,7 +388,7 @@ compute_stats <- function(sentomeasures) {
   return(stats)
 }
 
-# compute_df_old <- function(alpha, beta, lambda, x) {
+# compute_df_R <- function(alpha, beta, lambda, x) {
 #
 #   # elastic net degrees-of-freedom estimator (Tibshirani and Taylor, 2012)
 #
@@ -406,17 +406,38 @@ compute_stats <- function(sentomeasures) {
 #   return(unlist(dfA))
 # }
 
-compute_BIC <- function(y, yEst, dfA, RSS, sigma2) { # BIC-like criterion
+# compute_IC <- function(reg, y, x, alpha, ic, family) {
+#   beta <- reg$beta
+#   lambda <- reg$lambda
+#   if (family == "gaussian") type <- "link"
+#   else stop("Calibration via information criteria to implement for 'binomial' and 'multinomial'.")
+#   yEst <- stats::predict(reg, newx = x, type = type)
+#   # dfA <- compute_df_R(alpha, beta, lambda, x)
+#   xScaled <- scale(x)
+#   xA <- lapply(1:length(lambda), function(i) return(as.matrix(xScaled[, which(beta[, i] != 0)])))
+#   dfA <- compute_df(alpha, lambda, xA)
+#   RSS <- apply(yEst, 2, function(est) return(sum((y - est)^2)))
+#   # sigma2 <- RSS[length(RSS)] / (nrow(y) - dfA[length(RSS)])
+#   sigma2 <- mean(RSS, na.rm = TRUE) / (nrow(y) - mean(dfA, na.rm = TRUE)) # mean, else bias towards high lambda and alpha
+#   if (ic == "BIC")
+#     return(compute_BIC(y, dfA, RSS, sigma2))
+#   else if (ic == "AIC")
+#     return(compute_AIC(y, dfA, RSS, sigma2))
+#   else if (ic == "Cp")
+#     return(compute_Cp(y, dfA, RSS, sigma2))
+# }
+
+compute_BIC <- function(y, dfA, RSS, sigma2) { # BIC-like criterion
   BIC <- RSS/(nrow(y) * sigma2) + (log(nrow(y))/nrow(y)) * dfA
   return(BIC)
 }
 
-compute_AIC <- function(y, yEst, dfA, RSS, sigma2) { # AIC-like criterion
+compute_AIC <- function(y, dfA, RSS, sigma2) { # AIC-like criterion
   AIC <- RSS/(nrow(y) * sigma2) + (2/nrow(y)) * dfA
   return(AIC)
 }
 
-compute_Cp <- function(y, yEst, dfA, RSS, sigma2) { # Mallows's Cp-like criterion
+compute_Cp <- function(y, dfA, RSS, sigma2) { # Mallows's Cp-like criterion
   Cp <- RSS/nrow(y) + (2/nrow(y)) * dfA * sigma2
   return(Cp)
 }
