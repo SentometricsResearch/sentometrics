@@ -10,6 +10,8 @@
 - corrected update of `attribWeights` element of output `sentomeasures` object in required `measures_xyz()` functions
 - added a new attribution dimension (`"lags"`) to the `retrieve_attributions()` function, and corrected some edge cases
 - dropped `NA` option in `fill` argument of `measures_fill()` function
+- made a slight correction to the information criterion estimators
+- Added a `lambdas` argument to the `ctr_model()` function, directly passed on to the `glmnet::glmnet()` function if used
 
 ## sentometrics 0.4.0
 
