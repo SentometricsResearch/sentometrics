@@ -164,7 +164,7 @@ to_sentocorpus <- function(corpus, dates, do.clean = FALSE) {
   corpusdf <- data.table::as.data.table(corpus$documents)
   corpusdf[, id := quanteda::docnames(corpus)]
   corpusdf[, date := dates]
-  data.table::setcolorder(corpusdf, c("id", "date", "texts", setdiff(names(corpusdf), c("id", "date", "texts"))))
+  setcolorder(corpusdf, c("id", "date", "texts", setdiff(names(corpusdf), c("id", "date", "texts"))))
   return(sento_corpus(corpusdf, do.clean))
 }
 
@@ -219,9 +219,9 @@ to_sentocorpus <- function(corpus, dates, do.clean = FALSE) {
 #'                         do.binary = FALSE)
 #' corpus4 <- add_features(corpus,
 #'                         featuresdf = data.frame(all = 1),
-#'                         keywords = list(pres1 = c("Obama|US [p|P]resident"),
-#'                                         pres2 = c("\\bObama\\b|\\bUS president\\b"),
-#'                                         war = c("war")),
+#'                         keywords = list(pres1 = "Obama|US [p|P]resident",
+#'                                         pres2 = "\\bObama\\b|\\bUS president\\b",
+#'                                         war = "war"),
 #'                         do.regex = c(TRUE, TRUE, FALSE))
 #'
 #' sum(corpus3$documents$pres) == sum(corpus4$documents$pres2) # TRUE

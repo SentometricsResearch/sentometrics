@@ -50,7 +50,7 @@ out6 <- sento_model(sentomeasures, ym, x = x, ctr = ctrM6)
 ctrM7 <- ctr_model(model = "gaussian", type = "AIC", do.difference = TRUE, h = 1, alphas = c(0.2, 0.7), lambdas = 50:1)
 out7 <- sento_model(sentomeasures, y, x = x, ctr = ctrM7)
 
-ctrM8 <- ctr_model(model = "gaussian", type = "Cp", h = 1, alphas = c(0.2, 0.4, 0.7),
+ctrM8 <- ctr_model(model = "gaussian", type = "Cp", h = 1, alphas = c(0, 0.4, 1),
                    nSample = floor(0.97 * (length(y))), do.iter = TRUE, start = 2)
 out8 <- sento_model(sentomeasures, y, x = x, ctr = ctrM8)
 
@@ -66,7 +66,7 @@ test_that("Different model specifications give specified output", {
   expect_equal(N - 1, nrow(out7$x))
   expect_equal(floor(0.97 * (length(y))), nrow(out8$models[[1]]$x))
   expect_true(all(c(out1$alpha, out2$alpha, out3$alpha, out4$alpha, out5$alpha, out6$alpha, out7$alpha) %in% c(0.2, 0.7)))
-  expect_true(all(out8$alphas %in% c(0.2, 0.4, 0.7)))
+  expect_true(all(out8$alphas %in% c(0, 0.4, 1)))
   expect_true(out7$lambda %in% 50:1)
   expect_equal(out7$lambda, (50:1)[which(out7$ic$matrix == min(out7$ic$matrix, na.rm = TRUE), arr.ind = TRUE)[1, 2]])
   expect_equal(N - 1 - floor(0.97 * (length(y))) - 2 + 1, length(out8$models))

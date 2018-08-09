@@ -13,7 +13,7 @@
 - made a slight correction to the information criterion estimators
 - added a `lambdas` argument to the `ctr_model()` function, directly passed on to the `glmnet::glmnet()` function if used
 - omitted `do.combine` argument in `measures_delete()` and `measures_select()` functions to simplify
-- expanded set of unit tests, and added **`covr`** to Suggests
+- expanded set of unit tests, included a coverage badge, and added **`covr`** to Suggests
 
 ## sentometrics 0.4.0
 
