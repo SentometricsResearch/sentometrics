@@ -4,19 +4,14 @@
 \alias{measures_delete}
 \title{Delete sentiment measures}
 \usage{
-measures_delete(sentomeasures, toDelete, do.combine = TRUE)
+measures_delete(sentomeasures, toDelete)
 }
 \arguments{
 \item{sentomeasures}{a \code{sentomeasures} object created using \code{\link{sento_measures}}.}
 
 \item{toDelete}{a \code{character} vector of the lexicon, feature and time weighting scheme names, to indicate which
-measures need to be deleted. One can also supply a \code{list} of such \code{character} vectors, in which case
-\code{do.combine = TRUE} is set automatically, such that the separately specified combinations are deleted.}
-
-\item{do.combine}{a \code{logical} indicating if only measures for which all (\code{do.combine = TRUE}) or at least one
-(\code{do.combine = FALSE}) from \code{toDelete} should occur in each sentiment measure's name for deletion. If
-\code{do.combine = TRUE}, the \code{toDelete} argument can only consist of one lexicon, one feature, and one time weighting
-scheme at maximum.}
+measures need to be deleted, or as a \code{list} of \code{character} vectors, possibly with separately specified
+combinations (only consisting of one lexicon, one feature, and one time weighting scheme at maximum).}
 }
 \value{
 A modified \code{sentomeasures} object, with the required sentiment measures deleted, including updated information
@@ -40,7 +35,7 @@ sentomeasures <- sento_measures(corpusSample, l, ctr)
 
 # different deletions
 del1 <- measures_delete(sentomeasures, c("equal_weight"))
-del2 <- measures_delete(sentomeasures, c("equal_weight", "linear"), do.combine = FALSE)
+del2 <- measures_delete(sentomeasures, c("equal_weight", "linear"))
 del3 <- measures_delete(sentomeasures, c("linear", "LM_en"))
 del4 <- measures_delete(sentomeasures, list(c("linear", "wsj"), c("linear", "economy")))
 

@@ -3,6 +3,8 @@ library("sentometrics")
 library("quanteda")
 context("Attribution")
 
+set.seed(123)
+
 # corpus, lexicon and aggregation control creation
 data("usnews")
 corpus <- quanteda::corpus_sample(
@@ -18,6 +20,7 @@ ctrA <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional", howTime = "almon
 sentomeasures <- sento_measures(corpus, lex, ctrA)
 
 # preparation of estimation data
+data("epu")
 y <- epu[epu$date %in% get_dates(sentomeasures), "index"]
 x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
 colnames(x) <- c("x1", "x2")
@@ -27,7 +30,8 @@ ctrM <- ctr_model(model = "gaussian", type = "Cp", do.iter = TRUE, h = 3, lambda
                   nSample = floor(0.90 * (length(y) - 3)), alphas = c(0.2, 0.7))
 out <- sento_model(sentomeasures, y, x = x, ctr = ctrM)
 
-# tests from here
+### tests from here ###
+
 attributions <- retrieve_attributions(out, sentomeasures, do.normalize = FALSE)
 
 l <- rowSums(attributions$lexicons[, -1], na.rm = TRUE)

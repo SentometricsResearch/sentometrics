@@ -156,7 +156,7 @@ betas <- function(n, a = 1:4, b = 1:4) {
     stop("Values in 'a' and 'b' should be positive.")
   vals <- (1:n) / n
   betas <- data.frame(matrix(nrow = n, ncol = length(a) * length(b)))
-  colnames(betas) <- paste0("beta_", paste0(rep(a, rep(length(b), length(a))), b))
+  colnames(betas) <- paste0("beta", paste0(rep(a, rep(length(b), length(a))), b))
   k <- 1
   for (i in 1:length(a)) {
     for(j in 1:length(b)) {
@@ -330,7 +330,10 @@ update_attribweights <- function(sentomeasures, ...) {
   B <- attribWeights[["B"]]
   W <- attribWeights[["W"]]
 
-  lexFeats <- unlist(lapply(dims$lexicons, function(l) paste0(l, "--", dims$features)))
+  lexFeats <- unique(
+    sapply(stringi::stri_split(colnames(get_measures(sentomeasures))[-1], regex = "--"),
+           function(x) paste0(x[1:2], collapse = "--"))
+  )
 
   if (!is.null(toMerge)) {
     for (t in seq_along(toMerge[["time"]])) {
@@ -359,8 +362,9 @@ update_attribweights <- function(sentomeasures, ...) {
     }
   }
 
-  newB <- B[, dims$time, drop = FALSE]
+  newB <- B[, sentomeasures$time, drop = FALSE]
   newW <- W[, c("id", "date", lexFeats), with = FALSE]
+  for (col in lexFeats) set(newW, which(is.nan(newW[[col]])), col, NA) # convert NaN to NA
 
   list(W = newW, B = newB)
 }

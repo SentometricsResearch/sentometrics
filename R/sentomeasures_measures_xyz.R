@@ -3,18 +3,21 @@
 #'
 #' @author Samuel Borms
 #'
-#' @description Adds missing dates between earliest and latest date of a \code{sentomeasures} object, such that the time
-#' series are continuous date-wise. Fills in these dates with either 0, the respective latest non-missing value or \code{NA}.
+#' @description Adds missing dates between earliest and latest date of a \code{sentomeasures} object or two more extreme
+#' boundary dates, such that the time series are continuous date-wise. Fills in any missing date with either 0 or the
+#' most recent non-missing value.
+#'
+#' @details The \code{dateBefore} and \code{dateAfter} dates are converted according to the \code{sentomeasures[["by"]]}
+#' frequency.
 #'
 #' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
 #' @param fill an element of \code{c("zero", "latest")}; the first assumes missing dates represent zero sentiment,
 #' the second assumes missing dates represent constant sentiment.
 #' @param dateBefore a date as \code{"yyyy-mm-dd"}, to stretch the sentiment time series from up to the first date. Should
-#' be earlier than \code{get_dates(sentomeasures)[1]}, according to the \code{sentomeasures[["by"]]} frequency. If
-#' \code{NULL}, then ignored. The values for these dates are set to the values at \code{get_dates(sentomeasures)[1]}.
+#' be earlier than \code{get_dates(sentomeasures)[1]} to take effect. The values for these dates are set to the values at
+#' \code{get_dates(sentomeasures)[1]}. If \code{NULL}, then ignored.
 #' @param dateAfter a date as \code{"yyyy-mm-dd"}, to stretch the sentiment time series up to this date. Should be
-#' later than \code{tail(get_dates(sentomeasures), 1)}, according to the \code{sentomeasures[["by"]]} frequency. If
-#' \code{NULL}, then ignored.
+#' later than \code{tail(get_dates(sentomeasures), 1)} to take effect. If \code{NULL}, then ignored.
 #'
 #' @return A modified \code{sentomeasures} object.
 #'
@@ -86,12 +89,8 @@ measures_fill <- function(sentomeasures, fill = "zero", dateBefore = NULL, dateA
 #'
 #' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
 #' @param toSelect a \code{character} vector of the lexicon, feature and time weighting scheme names, to indicate which
-#' measures need to be selected. One can also supply a \code{list} of such \code{character} vectors, in which case
-#' \code{do.combine = TRUE} is set automatically, such that the separately specified combinations are selected.
-#' @param do.combine a \code{logical} indicating if only measures for which all (\code{do.combine = TRUE}) or at least one
-#' (\code{do.combine = FALSE}) from \code{toSelect} should occur in each sentiment measure's name in the selection. If
-#' \code{do.combine = TRUE}, the \code{toSelect} argument can only consist of one lexicon, one feature, and one time weighting
-#' scheme at maximum.
+#' measures need to be selected, or as a \code{list} of \code{character} vectors, possibly with separately specified
+#' combinations (only consisting of one lexicon, one feature, and one time weighting scheme at maximum).
 #'
 #' @return A modified \code{sentomeasures} object, with only the sentiment measures required, including updated information
 #' and statistics, but the original sentiment scores \code{data.table} untouched.
@@ -112,32 +111,30 @@ measures_fill <- function(sentomeasures, fill = "zero", dateBefore = NULL, dateA
 #'
 #' # different selections
 #' sel1 <- measures_select(sentomeasures, c("equal_weight"))
-#' sel2 <- measures_select(sentomeasures, c("equal_weight", "linear"), do.combine = FALSE)
+#' sel2 <- measures_select(sentomeasures, c("equal_weight", "linear"))
 #' sel3 <- measures_select(sentomeasures, c("linear", "LM_en"))
 #' sel4 <- measures_select(sentomeasures, list(c("linear", "wsj"), c("linear", "economy")))
 #'
 #' @export
-measures_select <- function(sentomeasures, toSelect, do.combine = TRUE) {
+measures_select <- function(sentomeasures, toSelect) {
   check_class(sentomeasures, "sentomeasures")
 
   allOpts <- unlist(get_dimensions(sentomeasures))
   valid <- unlist(toSelect) %in% allOpts
   if (any(!valid)) {
-    stop("Following components make up none of the sentiment measures: ", paste0(unique(toSelect[!valid]), collapse = ', '))
+    stop("Following components make up none of the sentiment measures: ",
+         paste0(unique(unlist(toSelect)[!valid]), collapse = ', '))
   }
 
   measures <- get_measures(sentomeasures)
   namesList <- stringi::stri_split(colnames(measures), regex = "--")
-  if (is.list(toSelect)) do.combine <- TRUE
-  if (do.combine == TRUE) fun <- all
-  else fun <- any
   if (is.list(toSelect)) {
     ind <- rep(FALSE, length(namesList))
     for (com in toSelect) {
-      inds <- sapply(namesList, function(x) return(fun(com %in% x)))
+      inds <- sapply(namesList, function(x) return(all(com %in% x)))
       ind[inds == TRUE] <- TRUE
     }
-  } else ind <- sapply(namesList, function(x) return(fun(toSelect %in% x)))
+  } else ind <- sapply(namesList, function(x) return(any(toSelect %in% x)))
   if (!any(ind[-1])) {
     warning("No appropriate combination found. Input sentomeasures object is returned.")
     return(sentomeasures)
@@ -354,12 +351,8 @@ measures_merge <- function(sentomeasures, features = NA, lexicons = NA, time = N
 #'
 #' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
 #' @param toDelete a \code{character} vector of the lexicon, feature and time weighting scheme names, to indicate which
-#' measures need to be deleted. One can also supply a \code{list} of such \code{character} vectors, in which case
-#' \code{do.combine = TRUE} is set automatically, such that the separately specified combinations are deleted.
-#' @param do.combine a \code{logical} indicating if only measures for which all (\code{do.combine = TRUE}) or at least one
-#' (\code{do.combine = FALSE}) from \code{toDelete} should occur in each sentiment measure's name for deletion. If
-#' \code{do.combine = TRUE}, the \code{toDelete} argument can only consist of one lexicon, one feature, and one time weighting
-#' scheme at maximum.
+#' measures need to be deleted, or as a \code{list} of \code{character} vectors, possibly with separately specified
+#' combinations (only consisting of one lexicon, one feature, and one time weighting scheme at maximum).
 #'
 #' @return A modified \code{sentomeasures} object, with the required sentiment measures deleted, including updated information
 #' and statistics, but the original sentiment scores \code{data.table} untouched.
@@ -380,32 +373,30 @@ measures_merge <- function(sentomeasures, features = NA, lexicons = NA, time = N
 #'
 #' # different deletions
 #' del1 <- measures_delete(sentomeasures, c("equal_weight"))
-#' del2 <- measures_delete(sentomeasures, c("equal_weight", "linear"), do.combine = FALSE)
+#' del2 <- measures_delete(sentomeasures, c("equal_weight", "linear"))
 #' del3 <- measures_delete(sentomeasures, c("linear", "LM_en"))
 #' del4 <- measures_delete(sentomeasures, list(c("linear", "wsj"), c("linear", "economy")))
 #'
 #' @export
-measures_delete <- function(sentomeasures, toDelete, do.combine = TRUE) {
+measures_delete <- function(sentomeasures, toDelete) {
   check_class(sentomeasures, "sentomeasures")
 
   allOpts <- unlist(get_dimensions(sentomeasures))
   valid <- unlist(toDelete) %in% allOpts
   if (any(!valid)) {
-    stop("Following components make up none of the sentiment measures: ", paste0(unique(toDelete[!valid]), collapse = ', '))
+    stop("Following components make up none of the sentiment measures: ",
+         paste0(unique(unlist(toDelete)[!valid]), collapse = ', '))
   }
 
   measures <- get_measures(sentomeasures)
   namesList <- stringi::stri_split(colnames(measures), regex = "--")
-  if (is.list(toDelete)) do.combine <- TRUE
-  if (do.combine == TRUE) fun <- all
-  else fun <- any
   if (is.list(toDelete)) {
     ind <- rep(FALSE, length(namesList))
     for (com in toDelete) {
-      inds <- sapply(namesList, function(x) return(fun(com %in% x)))
+      inds <- sapply(namesList, function(x) return(all(com %in% x)))
       ind[inds == TRUE] <- TRUE
     }
-  } else ind <- sapply(namesList, function(x) return(fun(toDelete %in% x)))
+  } else ind <- sapply(namesList, function(x) return(any(toDelete %in% x)))
   if (all(ind[-1]) || all(!ind[-1])) {
     warning("No appropriate combination found or all measures selected for deletion. Input sentomeasures object is returned.")
     return(sentomeasures)

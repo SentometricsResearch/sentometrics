@@ -18,7 +18,7 @@ BugReports: https://github.com/sborms/sentometrics/issues
 URL: https://github.com/sborms/sentometrics
 Encoding: UTF-8
 LazyData: true
-Suggests: testthat, e1071, randomForest
+Suggests: covr, testthat, e1071, randomForest
 Imports: utils, stats, quanteda, stringi, zoo, abind, glmnet, caret,
     compiler, Rcpp (>= 0.12.13), RcppRoll, ggthemes, ISOweek, MCS,
     ggplot2, parallel, foreach, doParallel
