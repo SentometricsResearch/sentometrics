@@ -11,7 +11,9 @@
 - added a new attribution dimension (`"lags"`) to the `retrieve_attributions()` function, and corrected some edge cases
 - dropped `NA` option in `fill` argument of `measures_fill()` function
 - made a slight correction to the information criterion estimators
-- Added a `lambdas` argument to the `ctr_model()` function, directly passed on to the `glmnet::glmnet()` function if used
+- added a `lambdas` argument to the `ctr_model()` function, directly passed on to the `glmnet::glmnet()` function if used
+- omitted `do.combine` argument in `measures_delete()` and `measures_select()` functions to simplify
+- expanded set of unit tests, and added **`covr`** to Suggests
 
 ## sentometrics 0.4.0
 
@@ -40,7 +42,7 @@
 ## sentometrics 0.3.0
 
 - new functions: `diff()`, `extract_peakdocs()`, and `subset_measures()` 
-- modified R depends from 3.4.2 to 3.3.0, and import of **`sentimentr`** omitted
+- modified R Depends from 3.4.2 to 3.3.0, and omitted import of **`sentimentr`**
 - word count per document now determined based on a separate tokenisation
 - improved valence shifters search (modified `incluce_valence()` helper function)
 - new option added for within-document aggregation (`"proportionalPol"`)

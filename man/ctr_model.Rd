@@ -67,7 +67,7 @@ only for the last 31 samples.}
 \item{do.progress}{a \code{logical}, if \code{TRUE} progress statements are displayed during model calibration.}
 
 \item{nCore}{a single \code{numeric} at least equal to 1 to indicate the number of cores to use for a parallel iterative
-model estimation \code{do.iter = TRUE}. We use the \code{\%dopar\%} construct from the \pkg{foreach} package. By default,
+model estimation (\code{do.iter = TRUE}). We use the \code{\%dopar\%} construct from the \pkg{foreach} package. By default,
 \code{nCore = 1}, which implies no parallelization. No progress statements are displayed whatsoever when \code{nCore > 1}.
 For cross-validation models, parallelization can also be carried out for a single-shot model (\code{do.iter = FALSE}),
 whenever a parallel backend is set up. See the examples in \code{\link{sento_model}}.}

@@ -42,7 +42,7 @@
 #' \code{do.iter = FALSE}). For example, given 100 possible iterations, \code{start = 70} leads to model estimations
 #' only for the last 31 samples.
 #' @param nCore a single \code{numeric} at least equal to 1 to indicate the number of cores to use for a parallel iterative
-#' model estimation \code{do.iter = TRUE}. We use the \code{\%dopar\%} construct from the \pkg{foreach} package. By default,
+#' model estimation (\code{do.iter = TRUE}). We use the \code{\%dopar\%} construct from the \pkg{foreach} package. By default,
 #' \code{nCore = 1}, which implies no parallelization. No progress statements are displayed whatsoever when \code{nCore > 1}.
 #' For cross-validation models, parallelization can also be carried out for a single-shot model (\code{do.iter = FALSE}),
 #' whenever a parallel backend is set up. See the examples in \code{\link{sento_model}}.
@@ -473,6 +473,7 @@ choose_optim_params <- function(dfs, y, ic, alphas) {
     IC <- compute_AIC(y, dfsMat, RSSMat, sigma2)
   else if (ic == "Cp")
     IC <- compute_Cp(y, dfsMat, RSSMat, sigma2)
+  rownames(IC) <- alphas
   opt <-  which(IC == min(IC, na.rm = TRUE), arr.ind = TRUE)
   return(list(IC = IC, lambda = lambdasMat[opt[1, 1], opt[1, 2]], alpha = alphas[opt[1, 1]]))
 }

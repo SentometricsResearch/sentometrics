@@ -14,19 +14,23 @@ measures_fill(sentomeasures, fill = "zero", dateBefore = NULL,
 the second assumes missing dates represent constant sentiment.}
 
 \item{dateBefore}{a date as \code{"yyyy-mm-dd"}, to stretch the sentiment time series from up to the first date. Should
-be earlier than \code{get_dates(sentomeasures)[1]}, according to the \code{sentomeasures[["by"]]} frequency. If
-\code{NULL}, then ignored. The values for these dates are set to the values at \code{get_dates(sentomeasures)[1]}.}
+be earlier than \code{get_dates(sentomeasures)[1]} to take effect. The values for these dates are set to the values at
+\code{get_dates(sentomeasures)[1]}. If \code{NULL}, then ignored.}
 
 \item{dateAfter}{a date as \code{"yyyy-mm-dd"}, to stretch the sentiment time series up to this date. Should be
-later than \code{tail(get_dates(sentomeasures), 1)}, according to the \code{sentomeasures[["by"]]} frequency. If
-\code{NULL}, then ignored.}
+later than \code{tail(get_dates(sentomeasures), 1)} to take effect. If \code{NULL}, then ignored.}
 }
 \value{
 A modified \code{sentomeasures} object.
 }
 \description{
-Adds missing dates between earliest and latest date of a \code{sentomeasures} object, such that the time
-series are continuous date-wise. Fills in these dates with either 0, the respective latest non-missing value or \code{NA}.
+Adds missing dates between earliest and latest date of a \code{sentomeasures} object or two more extreme
+boundary dates, such that the time series are continuous date-wise. Fills in any missing date with either 0 or the
+most recent non-missing value.
+}
+\details{
+The \code{dateBefore} and \code{dateAfter} dates are converted according to the \code{sentomeasures[["by"]]}
+frequency.
 }
 \examples{
 data("usnews", package = "sentometrics")

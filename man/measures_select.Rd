@@ -4,19 +4,14 @@
 \alias{measures_select}
 \title{Select sentiment measures}
 \usage{
-measures_select(sentomeasures, toSelect, do.combine = TRUE)
+measures_select(sentomeasures, toSelect)
 }
 \arguments{
 \item{sentomeasures}{a \code{sentomeasures} object created using \code{\link{sento_measures}}.}
 
 \item{toSelect}{a \code{character} vector of the lexicon, feature and time weighting scheme names, to indicate which
-measures need to be selected. One can also supply a \code{list} of such \code{character} vectors, in which case
-\code{do.combine = TRUE} is set automatically, such that the separately specified combinations are selected.}
-
-\item{do.combine}{a \code{logical} indicating if only measures for which all (\code{do.combine = TRUE}) or at least one
-(\code{do.combine = FALSE}) from \code{toSelect} should occur in each sentiment measure's name in the selection. If
-\code{do.combine = TRUE}, the \code{toSelect} argument can only consist of one lexicon, one feature, and one time weighting
-scheme at maximum.}
+measures need to be selected, or as a \code{list} of \code{character} vectors, possibly with separately specified
+combinations (only consisting of one lexicon, one feature, and one time weighting scheme at maximum).}
 }
 \value{
 A modified \code{sentomeasures} object, with only the sentiment measures required, including updated information
@@ -40,7 +35,7 @@ sentomeasures <- sento_measures(corpusSample, l, ctr)
 
 # different selections
 sel1 <- measures_select(sentomeasures, c("equal_weight"))
-sel2 <- measures_select(sentomeasures, c("equal_weight", "linear"), do.combine = FALSE)
+sel2 <- measures_select(sentomeasures, c("equal_weight", "linear"))
 sel3 <- measures_select(sentomeasures, c("linear", "LM_en"))
 sel4 <- measures_select(sentomeasures, list(c("linear", "wsj"), c("linear", "economy")))
 
