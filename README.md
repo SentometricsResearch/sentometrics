@@ -6,7 +6,7 @@
 [![CRAN](http://www.r-pkg.org/badges/version/sentometrics)](https://cran.r-project.org/package=sentometrics)
 [![Downloads](http://cranlogs.r-pkg.org/badges/sentometrics?color=brightgreen)](http://www.r-pkg.org/pkg/sentometrics)
 [![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/sentometrics?color=brightgreen)](http://www.r-pkg.org/pkg/sentometrics)
-[![codecov](https://codecov.io/github/sentometrics/branch/master/graphs/badge.svg)](https://codecov.io/github/sentometrics) 
+[![codecov](https://codecov.io/github/sborms/sentometrics/branch/master/graphs/badge.svg)](https://codecov.io/github/sborms/sentometrics) 
 <!--- [![Pending Pull-Requests](http://githubbadges.herokuapp.com/sborms/sentometrics/pulls.svg?style=flat)](https://github.com/sborms/sentometrics/pulls) --->
 <!--- [![Github Issues](http://githubbadges.herokuapp.com/sborms/sentometrics/issues.svg)](https://github.com/sborms/sentometrics/issues) --->
 

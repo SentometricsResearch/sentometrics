@@ -149,8 +149,8 @@ compute_sentiment <- function(x, lexicons, how = "proportional", nCore = 1, dfm 
     dfm <- quanteda::dfm(tok, tolower = FALSE, verbose = FALSE) # rows: corpus ids, columns: words, values: frequencies
   } else if (!quanteda::is.dfm(dfm)) stop("The 'dfm' argument should pass quanteda::is.dfm(dfm).")
 
-  # compute sentiment per document for all lexicons
-  s <- compute_sentiment_lexicons(dfm, how, lexNames, lexicons, wCounts) # date - features - word_count - lexicons/sentiment
+  # compute sentiment per document for all lexicons and reconstruct to date - features - word_count - lexicons/sentiment
+  s <- compute_sentiment_lexicons(dfm, how, lexNames, lexicons, wCounts)
   s <- as.data.table(cbind(id = quanteda::docnames(sentocorpus), quanteda::docvars(sentocorpus), word_count = wCounts, s))
 
   # compute feature-sentiment per document for all lexicons and order by date
@@ -177,7 +177,7 @@ compute_sentiment.sentocorpus <- compiler::cmpfun(.compute_sentiment.sentocorpus
     corpus <- include_valence(corpus, lexicons[["valence"]], nCore = nCore)
   lexNames <- names(lexicons)[names(lexicons) != "valence"]
   isNumeric <- sapply(quanteda::docvars(corpus), is.numeric)
-  features <- names(isNumeric[isNumeric])
+  if (length(isNumeric) == 0) features <- NULL else features <- names(isNumeric[isNumeric])
 
   cat("Compute sentiment... ")
 
@@ -193,12 +193,14 @@ compute_sentiment.sentocorpus <- compiler::cmpfun(.compute_sentiment.sentocorpus
     dfm <- quanteda::dfm(tok, tolower = FALSE, verbose = FALSE) # rows: corpus ids, columns: words, values: frequencies
   } else if (!quanteda::is.dfm(dfm)) stop("The 'dfm' argument should pass quanteda::is.dfm(dfm).")
 
-  # compute sentiment per document for all lexicons
-  s <- compute_sentiment_lexicons(dfm, how, lexNames, lexicons, wCounts) # date - features - word_count - lexicons/sentiment
-  s <- as.data.table(cbind(id = quanteda::docnames(corpus), quanteda::docvars(corpus)[features], word_count = wCounts, s))
-
-  # compute feature-sentiment per document for all lexicons
-  if (!is.null(features)) sent <- spread_sentiment_features(s, features, lexNames)
+  # compute sentiment per document for all lexicons and spread across features if present
+  s <- compute_sentiment_lexicons(dfm, how, lexNames, lexicons, wCounts)
+  if (!is.null(features)) {
+      s <- as.data.table(cbind(id = quanteda::docnames(corpus), quanteda::docvars(corpus)[features], word_count = wCounts, s))
+      sent <- spread_sentiment_features(s, features, lexNames) # compute feature-sentiment per document for all lexicons
+  } else {
+    sent <- as.data.table(cbind(id = quanteda::docnames(corpus), word_count = wCounts, s))
+  }
 
   cat("Done.", "\n")
 
