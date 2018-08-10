@@ -57,6 +57,7 @@ out8 <- sento_model(sentomeasures, y, x = x, ctr = ctrM8)
 ctrM9 <- ctrM8
 ctrM9$nSample <- N - 1 - 2 + 1
 
+# sento_model
 test_that("Different model specifications give specified output", {
   expect_equal(N - 8, nrow(out1$x))
   expect_equal(N - 1, nrow(out2$x))
@@ -73,5 +74,27 @@ test_that("Different model specifications give specified output", {
   expect_true(all(sapply(c(list(out1, out2, out3, out4, out5, out7), out8$models),
                          function(out) stats::coef(out$reg)[c("x1", "x2"), ]) != 0))
   expect_error(sento_model(sentomeasures, y, x = x, ctr = ctrM9))
+  expect_null(summary(out1))
+  expect_null(summary(out5))
+  expect_null(summary(out6))
+  expect_null(summary(out8))
+})
+
+# summary.sentomodel, summary.sentomodeliter, print.sentomodel, print.sentomodeliter
+test_that("No output returned when object summarized or printed", {
+  expect_null(summary(out1))
+  expect_null(summary(out5))
+  expect_null(summary(out6))
+  expect_null(summary(out8))
+  expect_null(print(out1))
+  expect_null(print(out5))
+  expect_null(print(out6))
+  expect_null(print(out8))
+})
+
+# plot.sentomodeliter
+p <- plot(out8)
+test_that("Plot is a ggplot object", {
+  expect_true(inherits(p, "ggplot"))
 })
 

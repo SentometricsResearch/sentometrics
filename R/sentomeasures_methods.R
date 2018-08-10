@@ -235,6 +235,7 @@ summary.sentomeasures <- function(object, ...) {
   cat("\n")
   cat("Aggregate statistics:", "\n")
   print(round(rowMeans(sentomeasures$stats), 5))
+  NULL
 }
 
 #' @export
