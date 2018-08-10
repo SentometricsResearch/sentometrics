@@ -42,13 +42,19 @@ test_that("Scaling is properly done", {
   expect_equal(s1$stats["sd", ], s4$stats["sd", ])
 })
 
-# plot
+# summary.sentomeasures, print.sentomeasures
+test_that("No output returned when object summarized or printed", {
+  expect_null(summary(sentMeas))
+  expect_null(print(sentMeas))
+})
+
+# plot.sentomeasures
 p <- plot(sentMeas, group = sample(c("features", "lexicons", "time"), 1))
 test_that("Plot is a ggplot object", {
   expect_true(inherits(p, "ggplot"))
 })
 
-# get_measures (to_long)
+# get_measures, to_long
 measuresLong <- get_measures(sentMeas, format = "long")
 test_that("Proper long formatting of sentiment measures", {
   expect_true(nrow(measuresLong) == nobs(sentMeas) * nmeasures(sentMeas))
