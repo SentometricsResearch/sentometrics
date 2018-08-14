@@ -393,9 +393,9 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
       alpha <- alphas[i]
       if (do.progress == TRUE) {
         if (length(alphas) == 1) cat("alphas run: ", alpha, "\n", sep = "")
-        else if (alpha == alphas[1]) cat("alphas run: ", alpha, sep = "")
-        else if (alpha == tail(alphas, 1)) cat(alpha, "\n", sep = "")
-        else cat(", ", alpha, ", ", sep = "")
+        else if (alpha == alphas[1]) cat("alphas run: ", alpha, ", ", sep = "")
+        else if (alpha == utils::tail(alphas, 1)) cat(alpha, "\n", sep = "")
+        else cat(alpha, ", ", sep = "")
       }
       reg <- glmnet::glmnet(x = xx, y = yy, penalty.factor = penalty, intercept = intercept,
                             alpha = alpha, lambda = lambdas, standardize = TRUE, family = family)
