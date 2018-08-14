@@ -68,11 +68,12 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
   dates <- as.Date(corpusdf$date, format = "%Y-%m-%d")
   if (any(is.na(dates))) stop("Some dates are not in appropriate format. Should be 'yyyy-mm-dd'.")
   else corpusdf$date <- dates
-  # check for duplicated feature names
   features <- cols[!(cols %in% nonfeatures)]
-
+  if (!is_names_correct(features))
+    stop("At least one feature's name contains '-'. Please provide proper names.")
   corpusdf <- corpusdf[, c("id", "date", "texts", features)]
   info <- "This is a sentocorpus object derived from a quanteda corpus object."
+
   if (length(features) == 0) {
     corpusdf[["dummy"]] <- 1
     warning("No features detected. A 'dummy' feature valued at 1 throughout is added.")
@@ -237,6 +238,8 @@ add_features <- function(corpus, featuresdf = NULL, keywords = NULL, do.binary =
 
   if (!is.null(featuresdf)) {
     stopifnot(is.data.frame(featuresdf))
+    if (!is_names_correct(colnames(featuresdf)))
+      stop("At least one feature's name in 'featuresdf' contains '-'. Please provide proper names.")
     features <- stringi::stri_replace_all(colnames(featuresdf), "_", regex = " ")
     isNumeric <- sapply(featuresdf, is.numeric)
     mins <- sapply(featuresdf, min, na.rm = TRUE) >= 0
@@ -254,6 +257,8 @@ add_features <- function(corpus, featuresdf = NULL, keywords = NULL, do.binary =
     stopifnot(is.logical(do.binary) && is.logical(do.regex))
     if ("" %in% names(keywords) || is.null(names(keywords)) || !inherits(keywords, "list"))
       stop("Please provide a list with proper names as part of the 'keywords' argument.")
+    if (!is_names_correct(names(keywords)))
+      stop("At least one feature's name in 'keywords' contains '-'. Please provide proper names.")
     textsAll <- quanteda::texts(corpus)
     if (do.binary == TRUE) fct <- stringi::stri_detect
     else fct <- stringi::stri_count

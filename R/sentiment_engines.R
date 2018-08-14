@@ -122,6 +122,8 @@ compute_sentiment_lexicons <- function(dfm, how, lexNames, lexicons, wCounts) {
 #' @importFrom compiler cmpfun
 #' @export
 compute_sentiment <- function(x, lexicons, how = "proportional", nCore = 1, dfm = NULL) {
+  if (!is_names_correct(names(lexicons)))
+    stop("At least one lexicon's name contains '-'. Please provide proper names.")
   UseMethod("compute_sentiment", x)
 }
 

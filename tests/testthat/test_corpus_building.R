@@ -17,6 +17,7 @@ test_that("Corpus building works and fails when appropriate", {
   expect_warning(sento_corpus(corpusdf = cbind(usnews, "notNumeric")))
   expect_warning(sento_corpus(corpusdf = cbind(usnews[, 1:3], usnews[, -c(1:3)] * 100)))
   expect_error(sento_corpus(corpusdf = cbind(usnews[, 1:3], same = 0.5, same = 0.5, unique = 1.2)))
+  expect_error(sento_corpus(corpusdf = cbind(usnews, "-doesNotBelong-" = 0.5)))
 })
 
 # to_sentocorpus
@@ -38,6 +39,7 @@ test_that("Multiple additions of features to existing sentocorpus object", {
   expect_warning(add_features(corpus, keywords = list(wrong = "forSureNotHere")))
   expect_equal(c("wsj", "wapo", "economy", "noneconomy", "good", "cut"), colnames(quanteda::docvars(corpus2)[-1]))
   expect_error(add_features(corpus, keywords = list(cut = c("cut", "rates")), do.regex = TRUE))
+  expect_error(add_features(corpus, keywords = list("cut--rates" = c("cut", "rates")), do.regex = TRUE))
   expect_true(max(quanteda::docvars(corpus2)[, c("good", "cut")]) <= 1)
   expect_true(min(quanteda::docvars(corpus2)[, c("good", "cut")]) >= 0)
 })

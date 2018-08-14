@@ -84,86 +84,72 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
   if (length(model) > 1) model <- model[1]
   if (length(type) > 1) type <- type[1]
 
-  warned <- 0
+  err <- NULL
   if (!(model %in% c("gaussian", "binomial", "multinomial"))) {
-    warning("Provide a proper modelling type.")
-    warned <- warned + 1
-  }
-  if (!is.logical(do.intercept)) {
-    warning("The argument 'do.intercept' should be a logical.")
-    warned <- warned + 1
+    err <- c(err, "Provide a proper modelling type under 'model'.")
   }
   if (!(type %in% c("BIC", "AIC", "Cp", "cv"))) {
-    warning("Provide a proper calibration type.")
-    warned <- warned + 1
+    err <- c(err, "Provide a proper calibration type under 'type'.")
   }
-  if (model != "gaussian" && type != "cv") {
-    warning("Elastic net-specific information criteria are currently only supported for linear models, please opt for 'cv'.")
-    warned <- warned + 1
+  if (!is.logical(do.intercept)) {
+    err <- c(err, "The 'do.intercept' argument should be a logical.")
   }
-  if (oos < 0 || start <= 0) {
-    warning("Make sure all integer inputs are non-negative or positive for those required.")
-    warned <- warned + 1
+  if (model %in% c("binomial", "multinomial") && type != "cv") {
+    err <- c(err, "Information criteria are currently only supported for linear models, opt for cross-validation instead.")
   }
-  if (min(alphas) < 0 | max(alphas) > 1) {
-    warning("Each alpha value in alphas must be between 0 and 1, inclusive.")
-    warned <- warned + 1
+  if (oos < 0) {
+    err <- c(err, "Make sure 'oos' is positive.")
+  }
+  if (min(alphas) < 0 || max(alphas) > 1) {
+    err <- c(err, "Each alpha value in 'alphas' must be between 0 and 1, inclusive.")
   }
   if (ifelse(is.null(lambdas), 0, min(lambdas)) < 0) {
-    warning("Each lambda value in lambdas must be at least 0.")
-    warned <- warned + 1
+    err <- c(err, "Each lambda value in 'lambdas' must be at least 0.")
   }
   if (do.iter == FALSE) nSample <- start <- NULL
   if (do.iter == TRUE && is.null(nSample)) {
-    warning("Iterative modelling requires a non-NULL sample size given by nSample.")
-    warned <- warned + 1
+    err <- c(err, "Iterative modelling requires a non-NULL sample size given by 'nSample'.")
   }
-  if (!is.null(nSample)) {
+  if (do.iter == TRUE && !is.null(nSample)) {
     if (nSample <= 0) {
-      warning("Make sure all integers are non-negative or positive.")
-      warned <- warned + 1
+      err <- c(err, "Make sure 'nSample' is positive.")
+    }
+    if (start <= 0) {
+      err <- c(err, "Make sure 'start' is non-negative.")
     }
   }
   if (type == "cv" && (is.null(trainWindow) || is.null(testWindow))) {
-    warning("Cross-validation requires a non-NULL training and test window size give by trainWindow and testWindow.")
-    warned <- warned + 1
+    err <- c(err, "Cross-validation requires a non-NULL training and test window size given by 'trainWindow' and 'testWindow'.")
   }
   if (!is.null(trainWindow)) {
     if (trainWindow <= 0) {
-      warning("Make sure trainWindow is positive.")
-      warned <- warned + 1
+      err <- c(err, "Make sure 'trainWindow' is positive.")
     }
   }
   if (!is.null(testWindow)) {
     if (testWindow <= 0) {
-      warning("Make sure testWindow is positive.")
-      warned <- warned + 1
+      err <- c(err, "Make sure 'testWindow' is positive.")
     }
   }
   if (!is.null(nSample) && !is.null(trainWindow) && !is.null(testWindow)) {
     if ((trainWindow + oos + testWindow) >= nSample) {
-      warning("(trainWindow + oos + testWindow) >= nSample. Adjust windows selection accordingly.")
-      warned <- warned + 1
+      err <- c(err, "('trainWindow' + 'oos' + 'testWindow') >= 'nSample'. Adjust windows selection accordingly.")
     }
   }
   if (!is.numeric(nCore)) {
-    warning("The 'nCore' argument should be a numeric vector of length 1.")
-    warned <- warned + 1
+    err <- c(err, "The 'nCore' argument should be a numeric vector of length 1.")
   }
   if (is.numeric(nCore) && nCore < 1) {
-    warning("The 'nCore' argument should be least 1.")
-    warned <- warned + 1
+    err <- c(err, "The 'nCore' argument should be least 1.")
   }
   if (model %in% c("binomial", "multinomial")) do.difference <- FALSE
   if (!is.logical(do.difference)) {
-    warning("The 'do.difference' argument should a logical.")
-    warned <- warned + 1
+    err <- c(err, "The 'do.difference' argument should a logical.")
   }
   if (do.difference == TRUE && abs(h) == 0) {
-    warning("If the 'do.difference' argument is TRUE, the absolute value of 'h' should be positive.")
-    warned <- warned + 1
+    err <- c(err, "If the 'do.difference' argument is TRUE, the absolute value of 'h' should be positive.")
   }
-  if (warned > 0) stop("Wrong inputs. See warning messages for specifics.")
+  if (!is.null(err)) stop("Wrong inputs. See below for specifics. \n", paste0(err, collapse = "\n"))
 
   ctr_model <- list(model = model,
                     type = type,
@@ -406,9 +392,10 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
     for (i in seq_along(alphas)) {
       alpha <- alphas[i]
       if (do.progress == TRUE) {
-        if (alpha == alphas[1]) cat("alphas run: ", alpha, ", ", sep = "")
-        else if (alpha == alphas[length(alphas)]) cat(alpha, "\n")
-        else cat(alpha, ", ", sep = "")
+        if (length(alphas) == 1) cat("alphas run: ", alpha, "\n", sep = "")
+        else if (alpha == alphas[1]) cat("alphas run: ", alpha, sep = "")
+        else if (alpha == tail(alphas, 1)) cat(alpha, "\n", sep = "")
+        else cat(", ", alpha, ", ", sep = "")
       }
       reg <- glmnet::glmnet(x = xx, y = yy, penalty.factor = penalty, intercept = intercept,
                             alpha = alpha, lambda = lambdas, standardize = TRUE, family = family)
@@ -862,11 +849,13 @@ perform_MCS <- function(models, loss = c("DA", "errorSq", "AD", "accuracy"), ...
   modelFamilies <- unlist(lapply(models, function(m) return(m$models[[1]]$model)))
   if (!(length(table(modelFamilies)) == 1)) stop("All models should come from the same family.")
   mF <- as.character(modelFamilies[1])
+  if (!all(sapply(models, function(m) length(m$models)) == length(models[[1]][["models"]])))
+    stop("All models should contain the same number of iterations.")
   if (length(loss) != 1) stop("The 'loss' argument should contain a single argument.")
   checkGaussian <- (mF == "gaussian" & (loss %in% c("DA", "errorSq", "AD")))
   checkLogistic <- (mF %in% c("binomial", "multinomial") & (loss == "accuracy"))
   if (!(checkGaussian | checkLogistic))
-      stop("The 'loss' argument is not in line with the model families.")
+    stop("The 'loss' argument is not in line with the model families.")
 
   # extract loss data
   lossData <- matrix(unlist(lapply(models, function(m) m$performance$raw[[loss]]), use.names = FALSE), ncol = length(models))

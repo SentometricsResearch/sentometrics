@@ -91,19 +91,15 @@ subset_measures <- function(sentomeasures, subset) {
 #' @rdname sentometrics-deprecated
 #'
 #' @param toSelect a \code{character} vector of the lexicon, feature and time weighting scheme names, to indicate which
-#' measures need to be selected. One can also supply a \code{list} of such \code{character} vectors, in which case
-#' \code{do.combine = TRUE} is set automatically, such that the separately specified combinations are selected.
-#' @param do.combine a \code{logical} indicating if only measures for which all (\code{do.combine = TRUE}) or at least one
-#' (\code{do.combine = FALSE}) of the selection components should occur in each sentiment measure's name in the selection. If
-#' \code{do.combine = TRUE}, the \code{toSelect} argument can only consist of one lexicon, one feature, and one time weighting
-#' scheme at maximum.
+#' measures need to be selected, or as a \code{list} of \code{character} vectors, possibly with separately specified
+#' combinations (only consisting of one lexicon, one feature, and one time weighting scheme at maximum).
 #'
 #' @seealso \code{\link{measures_select}}
 #'
 #' @export
-select_measures <- function(sentomeasures, toSelect, do.combine = TRUE) {
+select_measures <- function(sentomeasures, toSelect) {
   .Deprecated("measures_select", package = "sentometrics")
-  measures_select(sentomeasures, toSelect = toSelect, do.combine = do.combine)
+  measures_select(sentomeasures, toSelect = toSelect)
 }
 
 #' @rdname sentometrics-deprecated

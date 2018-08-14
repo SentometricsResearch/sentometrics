@@ -86,70 +86,60 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 
   # check if provided aggregation specifications are supported
   hows <- get_hows() # get all supported options for each aggregation level
-  warned <- 0
+  err <- NULL
   if (!(howWithin %in% hows[["words"]])) {
-    warning(paste0(howWithin, " is no current option for aggregation across words."))
-    warned <- warned + 1
+    err <- c(err, paste0(howWithin, " is no current option for aggregation across words."))
   }
   if (!(howDocs %in% hows[["docs"]])) {
-    warning(paste0(howDocs, " is no current option for aggregation across docs."))
-    warned <- warned + 1
+    err <- c(err, paste0(howDocs, " is no current option for aggregation across docs."))
   }
   if (!all(howTime %in% hows[["time"]])) {
-    warning(paste0(howTime[!(howTime %in% hows[["time"]])], " is no current option for aggregation across time. "))
-    warned <- warned + 1
+    err <- c(err, paste0(howTime[!(howTime %in% hows[["time"]])], " is no current option for aggregation across time. "))
   }
-  if ("own" %in% howTime & is.null(weights)) {
-    warning(paste0("Provide a 'weights' data.frame if 'own' provided as an option in 'howTime'."))
-    warned <- warned + 1
+  if ("own" %in% howTime && is.null(weights)) {
+    err <- c(err, "Provide a 'weights' data.frame if 'own' provided as an option in 'howTime'.")
   }
-  if (!("own" %in% howTime) & is.data.frame(weights)) {
+  if (!("own" %in% howTime) && is.data.frame(weights)) {
     howTime <- c(howTime, "own")
-    warning(paste0("The option 'own' is added to 'howTime' since a valid (not NULL) 'weights' data.frame was supplied."))
+    warning("The option 'own' is added to 'howTime' since a valid (not NULL) 'weights' data.frame was supplied.")
   }
   if ("own" %in% howTime) {
     if (lag != nrow(weights)) {
       lag <- nrow(weights)
       warning("Argument 'lag' is set equal to the number of rows in the 'weights' data.frame.")
     }
+    if (!is_names_correct(colnames(weights))) {
+      err <- c(err, "The column names in the 'weights' data.frame should not contain any '-'.")
+    }
   }
-  if (max(alphasExp) >= 1 & min(alphasExp) <= 0) {
-    warning("Values in 'alphasExp' should be between 0 and 1 (both excluded).")
-    warned <- warned + 1
+  if ("almon" %in% howTime && any(ordersAlm <= 0)) {
+    err <- c(err, "Values in 'ordersAlm' should be positive.")
   }
-  if (any(ordersAlm) <= 0) {
-    warning("Values in 'ordersAlm' should be positive.")
-    warned <- warned + 1
+  if ("beta" %in% howTime && any(c(aBeta, bBeta) <= 0)) {
+    err <- c(err, "Values in 'aBeta' and 'bBeta' should be positive.")
   }
-  if (any(c(aBeta, bBeta) <= 0)) {
-    warning("Values in 'aBeta' and 'bBeta' should be positive.")
-    warned <- warned + 1
+  if ("exponential" %in% howTime && max(alphasExp) >= 1 || min(alphasExp) <= 0) {
+    err <- c(err, "Values in 'alphasExp' should be between 0 and 1 (both excluded).")
   }
   if (lag <= 0) {
-    warning("Argument 'lag' should be greater than zero.")
-    warned <- warned + 1
+    err <- c(err, "Argument 'lag' should be greater than zero.")
   }
   if (!(by %in% c("year", "month", "week", "day"))) {
-    warning(paste0(by, " is no current 'by' option."))
-    warned <- warned + 1
+    err <- c(err, paste0(by, " is no current 'by' option."))
   }
   if (!(fill %in% c("zero", "latest", "none"))) {
-    warning(paste0(fill, " is no current 'fill' option."))
-    warned <- warned + 1
+    err <- c(err, paste0(fill, " is no current 'fill' option."))
   }
   if (!is.numeric(nCore)) {
-    warning("The 'nCore' argument should be a numeric vector of length 1.")
-    warned <- warned + 1
+    err <- c(err, "The 'nCore' argument should be a numeric vector of length 1.")
   }
   if (is.numeric(nCore) && nCore < 1) {
-    warning("The 'nCore' argument should be least 1.")
-    warned <- warned + 1
+    err <- c(err, "The 'nCore' argument should be least 1.")
   }
   if (!is.null(dfm) & !quanteda::is.dfm(dfm)) {
-    warning("The 'dfm' argument should pass quanteda::is.dfm(dfm) when it is not equal to NULL.")
-    warned <- warned + 1
+    err <- c(err, "The 'dfm' argument should pass quanteda::is.dfm(dfm) when it is not equal to NULL.")
   }
-  if (warned > 0) stop("Wrong inputs. See warning message(s) for specifics.")
+  if (!is.null(err)) stop("Wrong inputs. See below for specifics. \n", paste0(err, collapse = "\n"))
 
   other <- list(alphasExp = alphasExp, ordersAlm = ordersAlm, do.inverseAlm = do.inverseAlm,
                 aBeta = aBeta, bBeta = bBeta, weights = weights)
@@ -175,6 +165,9 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #' @description Wrapper function which assembles calls to \code{\link{compute_sentiment}} and \code{\link{perform_agg}}, and
 #' includes the input \code{sentocorpus} and computed sentiment scores in its output. Serves as the most direct way towards a
 #' panel of textual sentiment measures as a \code{sentomeasures} object.
+#'
+#' @details As a general rule, neither the names of the features, lexicons or time weighting schemes may contain
+#' any '-' symbol.
 #'
 #' @param sentocorpus a \code{sentocorpus} object created with \code{\link{sento_corpus}}.
 #' @param lexicons output from a \code{\link{setup_lexicons}} call.
@@ -290,7 +283,9 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
   if (is.null(names(lexiconsIn)))
     stop("The list elements (the lexicons) are not named.")
   if (any(is.na(names(lexiconsIn))))
-    stop("At least one lexicon's name is NA. Please provide proper list names.")
+    stop("At least one lexicon's name is NA. Please provide proper names.")
+  if (!is_names_correct(names(lexiconsIn)))
+    stop("At least one lexicon's name contains '-'. Please provide proper names.")
   if (!is.data.frame(valenceIn) && !is.null(valenceIn))
     stop("The 'valenceIn' argument should be a data.table or data.frame if not NULL.")
 
@@ -460,20 +455,19 @@ aggregate_time <- function(sentomeasures, lag, fill, how = get_hows()$time, ...)
   if (!(fill %in% "none")) sentomeasures <- measures_fill(sentomeasures, fill = fill)
   measures <- get_measures(sentomeasures)
   toRoll <- measures[, -1]
-  n <- nrow(weights)
   m <- nrow(measures)
-  if (n > m)
-    stop("Rolling time aggregation window (= ", n, ") is too large for number of observations per measure (= ", m, ")")
+  if (lag > m)
+    stop("Rolling time aggregation window (= ", lag, ") is too large for number of observations per measure (= ", m, ")")
   for (i in 1:ncol(weights)) {
     name <- colnames(weights)[i]
-    add <- RcppRoll::roll_sum(as.matrix(toRoll), n = n, weights = as.vector(weights[, i]),
+    add <- RcppRoll::roll_sum(as.matrix(toRoll), n = lag, weights = as.vector(weights[, i]),
                               normalize = FALSE, align = "right", na.rm = TRUE)
     colnames(add) <- paste0(colnames(toRoll), "--", name)
     if (i == 1) measuresAggTime <- add
     else measuresAggTime <- cbind(measuresAggTime, add)
   }
   measuresAggTime <- as.data.table(measuresAggTime)
-  if (n > 1) date <- measures$date[-1:-(n-1)]
+  if (lag > 1) date <- measures$date[-1:-(lag-1)]
   else date <- measures$date
   measuresAggTime$date <- date
   measuresAggTime <- setcolorder(measuresAggTime, c("date", colnames(measuresAggTime)[-ncol(measuresAggTime)]))

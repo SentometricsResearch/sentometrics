@@ -26,3 +26,21 @@ test_that("Number of columns coincide with provided dimensions", {
   expect_equal(nmeasures(sentMeas2), length(sentMeas2$features) * length(sentMeas2$lexicons) * length(sentMeas2$time))
 })
 
+# ctr_agg
+test_that("Aggregation control function breaks when wrong inputs supplied", {
+  expect_error(ctr_agg(howWithin = c("oops", "again"), howDocs = c("mistake", "forYou"), howTime = "bad",
+                       by = "infinitely", fill = "theMartiniPolice", nCore = c("yes", "man")))
+  expect_error(ctr_agg(howTime = c("almon", "beta", "exponential"), lag = 0,
+                       ordersAlm = -1:2, aBeta = -2, bBeta = -3, alphasExp = c(-1, -3)))
+  expect_warning(ctr_agg(howTime = "linear", lag = 4, weights = data.frame(a = c(1/2, 1/2))))
+  expect_error(ctr_agg(howTime = "own", lag = 12, weights = data.frame("dot--hacker" = rep(1/12, 12), check.names = FALSE)))
+})
+
+# peakdocs
+test_that("Number of output dates for peak documents extraction in line with input", {
+  expect_length(peakdocs(sentMeas1, corpus, n = 15, type = "both")[["dates"]], 15)
+  expect_length(peakdocs(sentMeas1, corpus, n = 21, type = "pos")[["dates"]], 21)
+  expect_length(peakdocs(sentMeas1, corpus, n = 4, type = "neg")[["dates"]], 4)
+  expect_length(peakdocs(sentMeas1, corpus, n = 10, type = "both", do.average = TRUE)[["dates"]], 10)
+})
+
