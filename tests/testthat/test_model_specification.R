@@ -28,6 +28,7 @@ colnames(x) <- c("x1", "x2")
 ### tests from here ###
 
 N <- nrow(x)
+nSample <- floor(0.95 * N)
 
 ctrM1 <- ctr_model(model = "gaussian", type = "Cp", h = 8, alphas = c(0.2, 0.7))
 out1 <- sento_model(sentomeasures, y, x = x, ctr = ctrM1)
@@ -51,11 +52,24 @@ ctrM7 <- ctr_model(model = "gaussian", type = "AIC", do.difference = TRUE, h = 1
 out7 <- sento_model(sentomeasures, y, x = x, ctr = ctrM7)
 
 ctrM8 <- ctr_model(model = "gaussian", type = "Cp", h = 1, alphas = c(0, 0.4, 1),
-                   nSample = floor(0.97 * (length(y))), do.iter = TRUE, start = 2)
+                   nSample = nSample, do.iter = TRUE, start = 2)
 out8 <- sento_model(sentomeasures, y, x = x, ctr = ctrM8)
 
 ctrM9 <- ctrM8
 ctrM9$nSample <- N - 1 - 2 + 1
+
+ctrM10 <- ctr_model(model = "gaussian", type = "Cp", h = 1, alphas = 0,
+                    nSample = nSample, do.iter = TRUE, start = 2)
+out10 <- sento_model(sentomeasures, y, x = x, ctr = ctrM10)
+
+ctrM11 <- ctr_model(model = "gaussian", type = "Cp", h = 1, alphas = 1,
+                    nSample = nSample, do.iter = TRUE, start = 2)
+out11 <- sento_model(sentomeasures, y, x = x, ctr = ctrM11)
+
+ctrM12 <- ctr_model(model = "gaussian", type = "Cp", h = 1, alphas = c(0, 0.4, 1),
+                    nSample = nSample, do.iter = TRUE, start = 2)
+out12 <- sento_model(measures_select(sentomeasures, c("LM_en", "wsj", "almon1")),
+                     y, x = cbind(x, measures_global(sentomeasures)), ctr = ctrM12)
 
 # sento_model
 test_that("Different model specifications give specified output", {
@@ -65,12 +79,12 @@ test_that("Different model specifications give specified output", {
   expect_equal(N - 1, nrow(out5$x))
   expect_equal(N - 5, nrow(out6$x))
   expect_equal(N - 1, nrow(out7$x))
-  expect_equal(floor(0.97 * (length(y))), nrow(out8$models[[1]]$x))
+  expect_equal(nSample, nrow(out8$models[[1]]$x))
   expect_true(all(c(out1$alpha, out2$alpha, out3$alpha, out4$alpha, out5$alpha, out6$alpha, out7$alpha) %in% c(0.2, 0.7)))
   expect_true(all(out8$alphas %in% c(0, 0.4, 1)))
   expect_true(out7$lambda %in% 50:1)
   expect_equal(out7$lambda, (50:1)[which(out7$ic$matrix == min(out7$ic$matrix, na.rm = TRUE), arr.ind = TRUE)[1, 2]])
-  expect_equal(N - 1 - floor(0.97 * (length(y))) - 2 + 1, length(out8$models))
+  expect_equal(N - 1 - nSample - 2 + 1, length(out8$models))
   expect_true(all(sapply(c(list(out1, out2, out3, out4, out5, out7), out8$models),
                          function(out) stats::coef(out$reg)[c("x1", "x2"), ]) != 0))
   expect_error(sento_model(sentomeasures, y, x = x, ctr = ctrM9))
@@ -78,6 +92,16 @@ test_that("Different model specifications give specified output", {
   expect_null(summary(out5))
   expect_null(summary(out6))
   expect_null(summary(out8))
+})
+
+# perform_MCS
+models <- list(elnet = out8, ridge = out10, lasso = out11, elnetLM = out12)
+test_that("Model confidence set procedure works and fails if needed", {
+  expect_true(inherits(suppressWarnings(perform_MCS(models, loss = "DA")), "SSM"))
+  expect_true(inherits(suppressWarnings(perform_MCS(models, loss = "errorSq")), "SSM"))
+  expect_true(inherits(suppressWarnings(perform_MCS(models, loss = "AD")), "SSM"))
+  expect_error(perform_MCS(models, loss = "accuracy"))
+  expect_error(perform_MCS(list(wrong = out1, elnet = out8), loss = "errorSq"))
 })
 
 # summary.sentomodel, summary.sentomodeliter, print.sentomodel, print.sentomodeliter
@@ -96,5 +120,16 @@ test_that("No output returned when object summarized or printed", {
 p <- plot(out8)
 test_that("Plot is a ggplot object", {
   expect_true(inherits(p, "ggplot"))
+})
+
+# ctr_model
+test_that("Modelling control function breaks when wrong inputs supplied", {
+  expect_error(ctr_model(model = "stuck", type = "puzzle", do.intercept = "yes", do.difference = "yep", nCore = "yip"))
+  expect_error(ctr_model(alphas = c(-1, 0.4, 0.7, 1.2), lambdas = seq(-10, 100, by = 2), oos = -4, start = 0))
+  expect_error(ctr_model(type = "cv"))
+  expect_error(ctr_model(type = "cv", trainWindow = 0, testWindow = 0))
+  expect_error(ctr_model(do.iter = TRUE))
+  expect_error(ctr_model(model = "multinomial", type = "cv", do.iter = TRUE,
+                         trainWindow = 7, testWindow = 12, nSample = 10))
 })
 

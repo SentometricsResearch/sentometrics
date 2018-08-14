@@ -463,6 +463,8 @@ to_long <- function(measures) { # changes format of sentiment measures data.tabl
   return(long)
 }
 
+is_names_correct <- function(x) !any(stringi::stri_detect(x, regex = "-"))
+
 nonzero_coeffs <- function(reg) {
   coeffs <- stats::coef(reg)
   df <- as.data.frame(as.matrix(coeffs))

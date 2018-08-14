@@ -39,6 +39,10 @@ Wrapper function which assembles calls to \code{\link{compute_sentiment}} and \c
 includes the input \code{sentocorpus} and computed sentiment scores in its output. Serves as the most direct way towards a
 panel of textual sentiment measures as a \code{sentomeasures} object.
 }
+\details{
+As a general rule, neither the names of the features, lexicons or time weighting schemes may contain
+any '-' symbol.
+}
 \examples{
 data("usnews", package = "sentometrics")
 data("list_lexicons", package = "sentometrics")
