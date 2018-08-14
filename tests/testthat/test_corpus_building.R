@@ -9,7 +9,7 @@ data("usnews")
 ### tests from here ###
 
 # sento_corpus
-corpus <- sento_corpus(corpusdf = usnews)
+corpus <- sento_corpus(corpusdf = usnews, do.clean = TRUE)
 test_that("Corpus building works and fails when appropriate", {
   expect_equal(c("texts", "date", "wsj", "wapo", "economy", "noneconomy"), colnames(corpus$documents))
   expect_warning(corpusDummy <- sento_corpus(corpusdf = usnews[, 1:3]))

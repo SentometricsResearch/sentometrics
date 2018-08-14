@@ -42,6 +42,7 @@ la <- rowSums(attributions$lags[, -1], na.rm = TRUE)
 
 TOL <- 1e-04
 
+# retrieve_attributions
 test_that("Attributions across all dimensions should be the same across rows", {
   expect_equal(l, f)
   expect_equal(l, t)
@@ -53,5 +54,11 @@ test_that("Attributions across all dimensions should be the same across rows", {
   expect_equal(t, la, tolerance = TOL)
   # expect_equal(t, d)
   # expect_equal(la, d)
+})
+
+# plot_attributions
+p <- plot_attributions(attributions, group = sample(c("features", "lexicons", "time", "lags"), 1))
+test_that("Plot is a ggplot object", {
+  expect_true(inherits(p, "ggplot"))
 })
 
