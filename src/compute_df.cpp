@@ -8,7 +8,9 @@ using namespace Rcpp;
 // elastic net degrees-of-freedom estimator (Tibshirani and Taylor, 2012)
 
 // [[Rcpp::export]]
-Rcpp::NumericVector compute_df(double alpha, Rcpp::NumericVector lambda, Rcpp::List xA) {
+Rcpp::NumericVector compute_df(double alpha,
+                               Rcpp::NumericVector lambda,
+                               Rcpp::List xA) {
   int nLambda = lambda.size();
   Rcpp::NumericVector dfA(nLambda);
   for (int i = 0; i < nLambda; i++) {

@@ -40,7 +40,11 @@ changing a given \code{sentocorpus} object too drastically using some of \pkg{qu
 structure the corpus is meant to have (as defined in the \code{corpusdf} argument) to be able to be used as an input
 in other functions of the \pkg{sentometrics} package. There are functions, including \code{\link[quanteda]{corpus_sample}}
 or \code{\link[quanteda]{corpus_subset}}, that do not change the actual corpus structure and may come in handy. To add
-additional features, use \code{\link{add_features}}.
+additional features, use \code{\link{add_features}}. Binary features are useful as a mechanism to select the
+texts which have to be integrated in the respective feature-based sentiment measure(s); beware however, the option
+\code{do.ignoreZeros} should be set to \code{TRUE} and the within-document aggregation still considers the entire corpus
+in case of \code{"tf-idf"} (see \code{\link{ctr_agg}}). Because of this (implicit) selection that can be performed, having
+complementary features (e.g., \code{"economy"} and \code{"noneconomy"}) makes sense.
 }
 \examples{
 data("usnews", package = "sentometrics")

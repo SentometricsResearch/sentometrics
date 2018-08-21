@@ -15,10 +15,10 @@ an argument to either \code{\link{sento_measures}} or \code{\link{compute_sentim
 to pass all lexicons (and a valence word list) to this function first, in any case.}
 
 \item{valenceIn}{a single valence word list as a \code{data.frame} or a \code{data.table} with respectively a words column,
-a type column (\code{1} for negators, \code{2} for amplifiers/intensifiers, and \code{3} for deamplifiers/downtoners) and a
-score column. The scores should be the same within each type. This argument can be one of the already formatted
-built-in valence word lists accessible via \code{list_valence_shifters}. If \code{NULL}, no valence word list is part of this
-function's output, nor will it applied in the sentiment analysis.}
+and a score column. This argument can be one of the already formatted built-in valence word lists accessible via
+\code{list_valence_shifters}. A word that appears in both a lexicon and the valence word list is prioritized as a
+valence shifter. If \code{NULL}, no valence word list is part of this function's output, and is thus not applied in the
+sentiment analysis.}
 
 \item{do.split}{a \code{logical} that if \code{TRUE} splits every lexicon into a separate positive polarity and negative
 polarity lexicon.}
@@ -26,12 +26,7 @@ polarity lexicon.}
 \value{
 A \code{list} with each lexicon as a separate element according to its name, as a \code{data.table}, and optionally
 an element named \code{valence} that comprises the valence words. Every \code{x} column contains the words, every \code{y}
-column contains the polarity score, and for the valence word list, \code{t} contains the word type. If a valence word list
-is provided, all lexicons are expanded by copying the respective lexicon, and changing the words and scores according to
-the valence word type: "NOT_" is added for negators, "VERY_" is added for amplifiers and "HARDLY_" is added for
-deamplifiers. New lexicon scores are obtained by multiplication of the original lexicon scores with the first
-value of the scores column of the valence word list, per type (thus why valence scores should be the same across
-the types).
+column contains the polarity score.
 }
 \description{
 Structures provided lexicon(s) and potentially integrates valence words. One can also provide (part of) the

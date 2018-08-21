@@ -239,21 +239,16 @@ sento_measures<- function(sentocorpus, lexicons, ctr) {
 #' an argument to either \code{\link{sento_measures}} or \code{\link{compute_sentiment}}. However, it is strongly recommended
 #' to pass all lexicons (and a valence word list) to this function first, in any case.
 #' @param valenceIn a single valence word list as a \code{data.frame} or a \code{data.table} with respectively a words column,
-#' a type column (\code{1} for negators, \code{2} for amplifiers/intensifiers, and \code{3} for deamplifiers/downtoners) and a
-#' score column. The scores should be the same within each type. This argument can be one of the already formatted
-#' built-in valence word lists accessible via \code{list_valence_shifters}. If \code{NULL}, no valence word list is part of this
-#' function's output, nor will it applied in the sentiment analysis.
+#' and a score column. This argument can be one of the already formatted built-in valence word lists accessible via
+#' \code{list_valence_shifters}. A word that appears in both a lexicon and the valence word list is prioritized as a
+#' valence shifter. If \code{NULL}, no valence word list is part of this function's output, and is thus not applied in the
+#' sentiment analysis.
 #' @param do.split a \code{logical} that if \code{TRUE} splits every lexicon into a separate positive polarity and negative
 #' polarity lexicon.
 #'
 #' @return A \code{list} with each lexicon as a separate element according to its name, as a \code{data.table}, and optionally
 #' an element named \code{valence} that comprises the valence words. Every \code{x} column contains the words, every \code{y}
-#' column contains the polarity score, and for the valence word list, \code{t} contains the word type. If a valence word list
-#' is provided, all lexicons are expanded by copying the respective lexicon, and changing the words and scores according to
-#' the valence word type: "NOT_" is added for negators, "VERY_" is added for amplifiers and "HARDLY_" is added for
-#' deamplifiers. New lexicon scores are obtained by multiplication of the original lexicon scores with the first
-#' value of the scores column of the valence word list, per type (thus why valence scores should be the same across
-#' the types).
+#' column contains the polarity score.
 #'
 #' @examples
 #' data("list_lexicons", package = "sentometrics")
@@ -300,12 +295,6 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
   lexicons <- suppressWarnings(lapply(lexiconsIn, sento_as_key))
   lexicons <- lapply(lexicons, function(x) {names(x) <- c("x", "y"); return(x)})
   names(lexicons) <- lexNames
-  if (!is.null(valenceIn)) {
-    names(valenceIn) <- c("x", "t", "y")
-    valTypes <- unique(valenceIn$t)
-    scores <- c(valenceIn[valenceIn$t == 1, ]$y[1], valenceIn[valenceIn$t == 2, ]$y[1], valenceIn[valenceIn$t == 3, ]$y[1])
-    lexicons <- expand_lexicons(lexicons, types = valTypes, scores = scores)
-  }
   # split each lexicon into a positive and a negative polarity words only lexicon
   if (do.split == TRUE) {
     lexiconsPos <- lapply(lexicons, function(lex) return(lex[lex$y > 0]))
@@ -316,6 +305,7 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
   }
   lexicons <- lapply(lexicons, function(l) {l$x <- stringi::stri_replace_all(l$x, "_", regex = "\\s+"); return(l)})
   if (!is.null(valenceIn)) {
+    names(valenceIn) <- c("x", "y")
     valenceIn$x <- stringi::stri_trans_tolower(valenceIn$x)
     lexicons[["valence"]] <- valenceIn[!duplicated(valenceIn$x), ]
   }
