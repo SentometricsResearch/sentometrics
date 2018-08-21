@@ -8,13 +8,26 @@ spread_sentiment_features <- function(sent, features, lexNames) {
   return(sent)
 }
 
-tokenise_texts <- function(corpus, what = "word") {
-  tok <- quanteda::tokens(
-    corpus,
-    what = what,
-    ngrams = 1,
-    remove_numbers = TRUE, remove_punct = TRUE, remove_symbols = TRUE
-  )
+tokenise_texts <- function(corpus, nCore = 1) {
+  if (nCore > 1) {
+    cl <- parallel::makeCluster(min(parallel::detectCores() - 1, nCore))
+    doParallel::registerDoParallel(cl)
+    N <- quanteda::ndoc(corpus)
+    blocks <- seq(0, N + 1, by = floor(N/nCore))
+    blocks[length(blocks)] <- N
+    tok <- foreach::foreach(i = 1:(length(blocks) - 1), .combine = '+', .export = c(":=")) %dopar% {
+      quanteda::tokens(
+        corpus[(blocks[i] + 1):blocks[i + 1]], what = "word", ngrams = 1,
+        remove_numbers = TRUE, remove_punct = TRUE, remove_symbols = TRUE
+      )
+    }
+    parallel::stopCluster(cl)
+  } else {
+    tok <- quanteda::tokens(
+      corpus, what = "word", ngrams = 1,
+      remove_numbers = TRUE, remove_punct = TRUE, remove_symbols = TRUE
+    )
+  }
   tok <- quanteda::tokens_tolower(tok) # to lowercase
   wCounts <- quanteda::ntoken(tok)
   return(list(tok = tok, wCounts = wCounts))
@@ -72,19 +85,17 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, wCounts) {
 #'
 #' @author Samuel Borms
 #'
-#' @description Given a corpus of texts, computes sentiment per document using the bag-of-words approach
-#' based on the lexicons provided and a choice of aggregation across words per document. Relies partly on the
-#' \pkg{quanteda} package. The scores computed are net sentiment (sum of positive minus sum of negative scores).
+#' @description Given a corpus of texts, computes (net) sentiment per document using the bag-of-words approach
+#' based on the lexicons provided and a choice of aggregation across words per document.
 #'
 #' @details
 #' For a separate calculation of positive (resp. negative) sentiment, one has to provide distinct positive (resp. negative)
 #' lexicons. This can be done using the \code{do.split} option in the \code{\link{setup_lexicons}} function, which splits out
-#' the lexicons into a positive and a negative polarity counterpart. \code{NA}s are converted to 0, under the assumption that
-#' this is equivalent to no sentiment. By default, if the \code{dfm} argument is left unspecified, a document-feature matrix
-#' (dfm) is created based on a tokenisation that removes punctuation, numbers and symbols, but does not remove
-#' stopwords. The number of words for each document is computed based on that same tokenisation. A valence shifter and its
-#' neighbouring word, for example 'NOT_good', is counted as one word. All tokens are converted to lowercase, in
-#' line with what the \code{\link{setup_lexicons}} function does for the lexicons and valence shifters.
+#' the lexicons into a positive and a negative polarity counterpart. All \code{NA}s are converted to 0, under the assumption
+#' that this is equivalent to no sentiment. Texts are tokenised as unigrams; punctuation, numbers and symbols are removed, but
+#' not stopwords (see the \code{\link[quanteda]{tokens}} function for more details). The number of words for each document is
+#' computed based on that same tokenisation. All tokens are converted to lowercase, in line with what the
+#' \code{\link{setup_lexicons}} function does for the lexicons and valence shifters.
 #'
 #' @param x either a \code{sentocorpus} object created with \code{\link{sento_corpus}}, a \pkg{quanteda}
 #' \code{\link[quanteda]{corpus}} object, or a \code{character} vector. The latter two do not incorporate a
@@ -93,14 +104,12 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, wCounts) {
 #' case of a \code{character} vector, sentiment is only computed across lexicons.
 #' @param lexicons output from a \code{\link{setup_lexicons}} call.
 #' @param how a single \code{character} vector defining how aggregation within documents should be performed. For currently
-#' available options on how aggregation can occur, see \code{\link{get_hows}()$words}.
-#' @param nCore a single \code{numeric} at least equal to 1 to indicate the number of cores to use for a parallel sentiment
-#' computation. We use the \code{\%dopar\%} construct from the \pkg{foreach} package. By default, \code{nCore = 1}, which
-#' implies no parallelization.
-#' @param dfm (optional) an output from a \pkg{quanteda} \code{\link[quanteda]{dfm}} call, such that users can specify their
-#' own tokenisation scheme (via \code{\link[quanteda]{tokens}}) as well as other parameters related to the construction of
-#' a document-feature matrix (dfm). Make sure the document-feature matrix is constructed from the texts in the
-#' \code{sentocorpus} object, otherwise, results will be spurious or errors may occur.
+#' available options on how aggregation can occur, see \code{\link{get_hows}()$words}. The \code{"tf-idf"} option is not
+#' available when the \code{lexicons} input has a \code{"valence"} element.
+#' @param nCore a single \code{numeric} at least equal to 1 to indicate the number of cores to use for a parallel
+#' tokenisation of the input corpus. We use the \code{\%dopar\%} construct from the \pkg{foreach} package. By default,
+#' \code{nCore = 1}, which implies no parallelization. May improve speed of sentiment computation overall only for
+#' sufficiently large corpora, say, in the order of having at least 50,000 documents.
 #'
 #' @return A \code{list} containing:
 #' \item{corpus}{the supplied \code{x} object, transformed into a \code{\link[quanteda]{corpus}} if a \code{character} vector.}
@@ -114,8 +123,6 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, wCounts) {
 #' \code{"sentiment"} \code{data.table} also has a \code{"date"} column, meaning it can be used for further
 #' aggregation into sentiment time series with the \code{\link{perform_agg}} function.
 #'
-#' @seealso \code{\link[quanteda]{dfm}}, \code{\link[quanteda]{tokens}}
-#'
 #' @examples
 #' data("usnews", package = "sentometrics")
 #' data("list_lexicons", package = "sentometrics")
@@ -127,7 +134,7 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, wCounts) {
 #' # from a sentocorpus object
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 200)
-#' sent <- compute_sentiment(corpusSample, l1, how = "counts")
+#' sent <- compute_sentiment(corpusSample, l1, how = "proportionalPol")
 #'
 #' # from a character vector
 #' sent <- compute_sentiment(usnews[["texts"]][1:200], l1, how = "counts")
@@ -137,21 +144,17 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, wCounts) {
 #' corpusQ <- quanteda::corpus(usnews, text_field = "texts")
 #' sent <- compute_sentiment(corpusQ, l2, how = "counts", nCore = 2)}
 #'
-#' \dontrun{
-#' # using a user-supplied dfm with default settings
-#' tok <- quanteda::tokens_tolower(quanteda::tokens(corpus))
-#' dfm <- quanteda::dfm(tok, verbose = FALSE)
-#' sent <- compute_sentiment(corpus, l1, how = "counts", dfm = dfm)}
-#'
 #' @importFrom compiler cmpfun
 #' @export
-compute_sentiment <- function(x, lexicons, how = "proportional", nCore = 1, dfm = NULL) {
+compute_sentiment <- function(x, lexicons, how = "proportional", nCore = 1) {
   if (!is_names_correct(names(lexicons)))
     stop("At least one lexicon's name contains '-'. Please provide proper names.")
+  if ("valence" %in% names(lexicons) && how == "tf-idf")
+    stop("The 'tf-idf' option is not available when the 'lexicons' argument has valence shifters incorporated.")
   UseMethod("compute_sentiment", x)
 }
 
-.compute_sentiment.sentocorpus <- function(x, lexicons, how, nCore = 1, dfm = NULL) {
+.compute_sentiment.sentocorpus <- function(x, lexicons, how, nCore = 1) {
   sentocorpus <- x
   sentOut <- list(corpus = sentocorpus) # original corpus in output
 
@@ -159,7 +162,7 @@ compute_sentiment <- function(x, lexicons, how = "proportional", nCore = 1, dfm 
 
   cat("Compute sentiment... ")
 
-  tokenised <- tokenise_texts(sentocorpus, what = "word")
+  tokenised <- tokenise_texts(sentocorpus, nCore = nCore)
   tok <- tokenised[["tok"]]
   wCounts <- tokenised[["wCounts"]]
 
@@ -182,7 +185,7 @@ compute_sentiment <- function(x, lexicons, how = "proportional", nCore = 1, dfm 
 #' @export
 compute_sentiment.sentocorpus <- compiler::cmpfun(.compute_sentiment.sentocorpus)
 
-.compute_sentiment.corpus <- function(x, lexicons, how, nCore = 1, dfm = NULL) {
+.compute_sentiment.corpus <- function(x, lexicons, how, nCore = 1) {
   corpus <- x
   sentOut <- list(corpus = corpus) # original corpus in output
 
@@ -191,7 +194,7 @@ compute_sentiment.sentocorpus <- compiler::cmpfun(.compute_sentiment.sentocorpus
 
   cat("Compute sentiment... ")
 
-  tokenised <- tokenise_texts(corpus, what = "word")
+  tokenised <- tokenise_texts(corpus, nCore = nCore)
   tok <- tokenised[["tok"]]
   wCounts <- tokenised[["wCounts"]]
 
@@ -217,13 +220,13 @@ compute_sentiment.sentocorpus <- compiler::cmpfun(.compute_sentiment.sentocorpus
 #' @export
 compute_sentiment.corpus <- compiler::cmpfun(.compute_sentiment.corpus)
 
-.compute_sentiment.character <- function(x, lexicons, how, nCore = 1, dfm = NULL) {
+.compute_sentiment.character <- function(x, lexicons, how, nCore = 1) {
   corpus <- quanteda::corpus(x)
   sentOut <- list(corpus = corpus) # original corpus in output
 
   cat("Compute sentiment... ")
 
-  tokenised <- tokenise_texts(corpus, what = "word")
+  tokenised <- tokenise_texts(corpus, nCore = nCore)
   tok <- tokenised[["tok"]]
   wCounts <- tokenised[["wCounts"]]
 

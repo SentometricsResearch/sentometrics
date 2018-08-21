@@ -7,10 +7,10 @@
 
 useconomy <- readr::read_csv("data-raw/US_economic_news_1951-2014.csv")
 useconomy$texts <- stringi::stri_replace_all(useconomy$text, replacement = " ", regex = "</br></br>")
-useconomy$text <- NULL
 useconomy$texts <- stringi::stri_replace_all(useconomy$texts, replacement = "", regex = '[\\"]')
 # useconomy$texts <- stringi::stri_replace_all(useconomy$texts, replacement = "", regex = "[%#*<=>@^_`|~{}�]")
-useconomy$texts <- stringi::stri_replace_all(useconomy$texts, replacement = "", regex = "[^-a-zA-Z0-9,&. ]")
+useconomy$texts <- stringi::stri_replace_all(useconomy$texts, replacement = "", regex = "[^-a-zA-Z0-9,&.' ]")
+useconomy$text <- NULL
 
 months <- lapply(stringi::stri_split(useconomy$date, regex = "/"), "[", 1)
 days <- lapply(stringi::stri_split(useconomy$date, regex = "/"), "[", 2)

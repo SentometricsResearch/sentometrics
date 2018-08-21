@@ -8,12 +8,13 @@ ctr_agg(howWithin = "proportional", howDocs = "equal_weight",
   howTime = "equal_weight", do.ignoreZeros = TRUE, by = "day", lag = 1L,
   fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1), ordersAlm = 1:3,
   do.inverseAlm = TRUE, aBeta = 1:4, bBeta = 1:4, weights = NULL,
-  nCore = 1, dfm = NULL, ...)
+  nCore = 1, ...)
 }
 \arguments{
 \item{howWithin}{a single \code{character} vector defining how aggregation within documents will be performed. Should
 \code{length(howWithin) > 1}, the first element is used. For currently available options on how aggregation can occur; see
-\code{\link{get_hows}()$words}.}
+\code{\link{get_hows}()$words}. The \code{"tf-idf"} option will raise an error during sentiment computation
+if valence shifters are integrated.}
 
 \item{howDocs}{a single \code{character} vector defining how aggregation across documents per date will be performed.
 Should \code{length(howDocs) > 1}, the first element is used. For currently available options on how aggregation can occur;
@@ -56,11 +57,7 @@ if \code{"almon" \%in\% howTime}; see \code{\link{almons}}.}
 \item{weights}{optional own weighting scheme(s), used if provided as a \code{data.frame} with the number of rows
 equal to the desired \code{lag}.}
 
-\item{nCore}{a single \code{numeric} at least equal to 1 to indicate the number of cores to use for a parallel sentiment
-computation. We use the \code{\%dopar\%} construct from the \pkg{foreach} package. By default, \code{nCore = 1}, which
-implies no parallelization.}
-
-\item{dfm}{(optional) see \code{\link{compute_sentiment}}.}
+\item{nCore}{see \code{\link{compute_sentiment}}.}
 
 \item{...}{not used.}
 }

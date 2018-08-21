@@ -55,7 +55,7 @@ struct SentimentScorerBigrams : public Worker {
         }
       }
 
-      if (how == "counts") { // TODO: is there a way to integrate the "tf-idf" option?
+      if (how == "counts") {
         sentScores[i] = score;
       } else if (how == "proportional") {
         sentScores[i] = score / nTokens;
