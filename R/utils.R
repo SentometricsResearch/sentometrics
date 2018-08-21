@@ -3,60 +3,60 @@
 ################# UTILITY/HELPER FUNCTIONS #################
 ############################################################
 
-negate <- function(lexicon, s = -1) {
-  lexicon$x <- paste0("NOT_", lexicon$x); lexicon$y <- s * (lexicon$y)
-  return(lexicon)
-}
-amplify <- function(lexicon, s = 2) {
-  lexicon$x <- paste0("VERY_", lexicon$x); lexicon$y <- s * (lexicon$y)
-  return(lexicon)
-}
-deamplify <- function(lexicon, s = 0.5) {
-  lexicon$x <- paste0("HARDLY_", lexicon$x); lexicon$y <- s * (lexicon$y)
-  return(lexicon)
-}
+# #' @importFrom foreach %dopar%
+# include_valence <- function(corpus, val, valId, nCore = 1) {
+#   modify_texts <- function(texts, val, valId = c("NOT_", "VERY_", "HARDLY_")) {
+#     val[, identifier := sapply(t, function(j) if (j == 1) valId[1] else if (j == 2) valId[2] else valId[3])]
+#     all <- val[, c("x", "identifier")]
+#     texts <- lapply(1:nrow(all), function(i) {
+#       texts <<- stringi::stri_replace_all(texts, all[i, identifier], regex = paste0("\\b", all[i, x], " \\b"))
+#     })[[nrow(all)]]
+#     return(texts)
+#   }
+#   cat("Modify corpus to account for valence words... ") # replaces valence words in texts and combines into bigrams
+#   texts <- quanteda::texts(corpus)
+#   if (nCore > 1) {
+#     cl <- parallel::makeCluster(min(parallel::detectCores() - 1, nCore))
+#     doParallel::registerDoParallel(cl)
+#     N <- length(texts)
+#     blocks <- seq(0, N + 1, by = floor(N/nCore))
+#     blocks[length(blocks)] <- N
+#     textsNew <- foreach::foreach(i = 1:(length(blocks) - 1), .combine = c, .export = c(":=")) %dopar% {
+#       modify_texts(texts = texts[(blocks[i] + 1):blocks[i + 1]], val = val)
+#     }
+#     quanteda::texts(corpus) <- textsNew
+#     parallel::stopCluster(cl)
+#   } else {
+#     quanteda::texts(corpus) <- modify_texts(texts, val)
+#   }
+#   cat("Done.", "\n")
+#   return(corpus)
+# }
 
-expand_lexicons <- function(lexicons, types = c(1, 2, 3), scores = c(-1, 2, 0.5)) {
-  funcs <- list(negate, amplify, deamplify) # types: 1, 2, 3
-  lexiconsExp <- lapply(lexicons, function(l) {
-    out <- lapply(c(0, types), function(x) {
-      if (x == 0) return(l)
-      else {f = funcs[[x]]; return(f(l, scores[[x]]))}
-    })
-    return(rbindlist(out))
-  })
-  return(lexiconsExp) # expanded lexicons (original + copied and negated/amplified/deamplified words and scores)
-}
-
-#' @importFrom foreach %dopar%
-include_valence <- function(corpus, val, valId, nCore = 1) {
-  modify_texts <- function(texts, val, valId = c("NOT_", "VERY_", "HARDLY_")) {
-    val[, identifier := sapply(t, function(j) if (j == 1) valId[1] else if (j == 2) valId[2] else valId[3])]
-    all <- val[, c("x", "identifier")]
-    texts <- lapply(1:nrow(all), function(i) {
-      texts <<- stringi::stri_replace_all(texts, all[i, identifier], regex = paste0("\\b", all[i, x], " \\b"))
-    })[[nrow(all)]]
-    return(texts)
-  }
-  cat("Modify corpus to account for valence words... ") # replaces valence words in texts and combines into bigrams
-  texts <- quanteda::texts(corpus)
-  if (nCore > 1) {
-    cl <- parallel::makeCluster(min(parallel::detectCores() - 1, nCore))
-    doParallel::registerDoParallel(cl)
-    N <- length(texts)
-    blocks <- seq(0, N + 1, by = floor(N/nCore))
-    blocks[length(blocks)] <- N
-    textsNew <- foreach::foreach(i = 1:(length(blocks) - 1), .combine = c, .export = c(":=")) %dopar% {
-      modify_texts(texts = texts[(blocks[i] + 1):blocks[i + 1]], val = val)
-    }
-    quanteda::texts(corpus) <- textsNew
-    parallel::stopCluster(cl)
-  } else {
-    quanteda::texts(corpus) <- modify_texts(texts, val)
-  }
-  cat("Done.", "\n")
-  return(corpus)
-}
+# negate <- function(lexicon, s = -1) {
+#   lexicon$x <- paste0("NOT_", lexicon$x); lexicon$y <- s * (lexicon$y)
+#   return(lexicon)
+# }
+# amplify <- function(lexicon, s = 2) {
+#   lexicon$x <- paste0("VERY_", lexicon$x); lexicon$y <- s * (lexicon$y)
+#   return(lexicon)
+# }
+# deamplify <- function(lexicon, s = 0.5) {
+#   lexicon$x <- paste0("HARDLY_", lexicon$x); lexicon$y <- s * (lexicon$y)
+#   return(lexicon)
+# }
+#
+# expand_lexicons <- function(lexicons, types = c(1, 2, 3), scores = c(-1, 2, 0.5)) {
+#   funcs <- list(negate, amplify, deamplify) # types: 1, 2, 3
+#   lexiconsExp <- lapply(lexicons, function(l) {
+#     out <- lapply(c(0, types), function(x) {
+#       if (x == 0) return(l)
+#       else {f = funcs[[x]]; return(f(l, scores[[x]]))}
+#     })
+#     return(rbindlist(out))
+#   })
+#   return(lexiconsExp) # expanded lexicons (original + copied and negated/amplified/deamplified words and scores)
+# }
 
 #' Compute Almon polynomials
 #'
@@ -137,7 +137,7 @@ exponentials <- function(n, alphas = seq(0.1, 0.5, by = 0.1)) {
 #' aggregation weighting schemes for input in \code{\link{ctr_agg}}.
 #'
 #' @details The Beta weighting abides by following formula:
-#' \eqn{f(i/n; a, b) / \sumf(i/n; a, b)}, where \eqn{i} is the lag index ordered from
+#' \eqn{f(i/n; a, b) / \sum(i/n; a, b)}, where \eqn{i} is the lag index ordered from
 #' 1 to \eqn{n}, \eqn{a} and \eqn{b} are two decay parameters, and
 #' \eqn{f(x; a, b) = (x^(a - 1)(1 - x)^(b - 1)T(a + b)) / (T(a)T(b))}, where \eqn{T(.)} is
 #' the \code{\link{gamma}} function.

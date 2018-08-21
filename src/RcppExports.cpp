@@ -18,9 +18,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// compute_sentiment_bigrams
+Rcpp::List compute_sentiment_bigrams(std::vector< std::vector<std::string> > texts, Rcpp::List lexicons, std::string how);
+RcppExport SEXP _sentometrics_compute_sentiment_bigrams(SEXP textsSEXP, SEXP lexiconsSEXP, SEXP howSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector< std::vector<std::string> > >::type texts(textsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type lexicons(lexiconsSEXP);
+    Rcpp::traits::input_parameter< std::string >::type how(howSEXP);
+    rcpp_result_gen = Rcpp::wrap(compute_sentiment_bigrams(texts, lexicons, how));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_sentometrics_compute_df", (DL_FUNC) &_sentometrics_compute_df, 3},
+    {"_sentometrics_compute_sentiment_bigrams", (DL_FUNC) &_sentometrics_compute_sentiment_bigrams, 3},
     {NULL, NULL, 0}
 };
 

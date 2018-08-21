@@ -22,7 +22,7 @@ aggregation weighting schemes for input in \code{\link{ctr_agg}}.
 }
 \details{
 The Beta weighting abides by following formula:
-\eqn{f(i/n; a, b) / \sumf(i/n; a, b)}, where \eqn{i} is the lag index ordered from
+\eqn{f(i/n; a, b) / \sum(i/n; a, b)}, where \eqn{i} is the lag index ordered from
 1 to \eqn{n}, \eqn{a} and \eqn{b} are two decay parameters, and
 \eqn{f(x; a, b) = (x^(a - 1)(1 - x)^(b - 1)T(a + b)) / (T(a)T(b))}, where \eqn{T(.)} is
 the \code{\link{gamma}} function.

@@ -5,3 +5,7 @@ compute_df <- function(alpha, lambda, xA) {
     .Call(`_sentometrics_compute_df`, alpha, lambda, xA)
 }
 
+compute_sentiment_bigrams <- function(texts, lexicons, how) {
+    .Call(`_sentometrics_compute_sentiment_bigrams`, texts, lexicons, how)
+}
+

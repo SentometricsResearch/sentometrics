@@ -14,6 +14,7 @@
 - added a `lambdas` argument to the `ctr_model()` function, directly passed on to the `glmnet::glmnet()` function if used
 - omitted `do.combine` argument in `measures_delete()` and `measures_select()` functions to simplify
 - expanded set of unit tests, included a coverage badge, and added **`covr`** to Suggests
+- reimplementation of how valence shifters are integrated into the `compute_sentiment()` function, by writing part of the code in **`Rcpp`** relying on **`RcppParallel`** (added to Imports), and removing related but now abundant manipulations and documentation in for example the `setup_lexicons()` function
 
 ## sentometrics 0.4.0
 

@@ -26,8 +26,7 @@ implies no parallelization.}
 \item{dfm}{(optional) an output from a \pkg{quanteda} \code{\link[quanteda]{dfm}} call, such that users can specify their
 own tokenisation scheme (via \code{\link[quanteda]{tokens}}) as well as other parameters related to the construction of
 a document-feature matrix (dfm). Make sure the document-feature matrix is constructed from the texts in the
-\code{sentocorpus} object, otherwise, results will be spurious or errors may occur. Note that valence shifters will
-not be integrated into the features of a user-provided dfm.}
+\code{sentocorpus} object, otherwise, results will be spurious or errors may occur.}
 }
 \value{
 A \code{list} containing:
@@ -52,7 +51,7 @@ For a separate calculation of positive (resp. negative) sentiment, one has to pr
 lexicons. This can be done using the \code{do.split} option in the \code{\link{setup_lexicons}} function, which splits out
 the lexicons into a positive and a negative polarity counterpart. \code{NA}s are converted to 0, under the assumption that
 this is equivalent to no sentiment. By default, if the \code{dfm} argument is left unspecified, a document-feature matrix
-(dfm) is created based on a tokenisation that removes punctuation, numbers, symbols and separators, but does not remove
+(dfm) is created based on a tokenisation that removes punctuation, numbers and symbols, but does not remove
 stopwords. The number of words for each document is computed based on that same tokenisation. A valence shifter and its
 neighbouring word, for example 'NOT_good', is counted as one word. All tokens are converted to lowercase, in
 line with what the \code{\link{setup_lexicons}} function does for the lexicons and valence shifters.

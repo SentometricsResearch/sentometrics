@@ -11,13 +11,13 @@ corpus <- sento_corpus(corpusdf = usnews[1:250, ])
 
 data("list_lexicons")
 lex <- setup_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")], list_valence_shifters[["en"]])
-lexSplit <- setup_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")], list_valence_shifters[["en"]], do.split = TRUE)
+lexSplit <- setup_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")], do.split = TRUE)
 
 ### tests from here ###
 
 sentimentList <- list(
   s1 = compute_sentiment(quanteda::texts(corpus), lex, how = "counts"),
-  s2 = compute_sentiment(quanteda::texts(corpus), lex, how = "tf-idf"),
+  s2 = compute_sentiment(quanteda::texts(corpus), lex[names(lex) != "valence"], how = "tf-idf"),
   s3 = compute_sentiment(quanteda::texts(corpus), lex, how = "proportional"),
   s4 = compute_sentiment(quanteda::texts(corpus), lex, how = "proportionalPol"),
   s5 = compute_sentiment(quanteda::corpus(usnews[1:250, "texts"]), lex, how = "counts"),

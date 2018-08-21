@@ -387,7 +387,7 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
     lambdaOpt <- as.numeric(trained$bestTune[2])
 
     outAdd <- list(trained = trained)
-  } else { # information criterion #
+  } else { # information criterion
     dfs <- as.list(numeric(length(alphas)))
     for (i in seq_along(alphas)) {
       alpha <- alphas[i]
@@ -436,7 +436,7 @@ compute_df_full <- function(reg, y, x, alpha) {
   lambdas <- reg$lambda
   xScaled <- scale(x)
   xA <- lapply(1:length(lambdas), function(j) return(as.matrix(xScaled[, which(reg$beta[, j] != 0)])))
-  dfA <- compute_df(alpha, lambdas, xA) # written in C++
+  dfA <- compute_df(alpha, lambdas, xA) # C++ implementation
   yEst <- stats::predict(reg, newx = x)
   RSS <- apply(yEst, 2, FUN = function(est) sum((y - est)^2))
   return(list(lambda = lambdas, df = dfA, RSS = RSS))
