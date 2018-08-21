@@ -30,7 +30,7 @@ data("epu", package = "sentometrics")
 corpusAll <- sento_corpus(corpusdf = usnews)
 corpus <- quanteda::corpus_subset(corpusAll, date >= "2007-01-01" & date < "2014-10-01")
 l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
-ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional",
+ctr <- ctr_agg(howWithin = "proportional", howDocs = "proportional",
                howTime = c("equal_weight", "linear"),
                by = "month", lag = 3)
 sentomeasures <- sento_measures(corpus, l, ctr)

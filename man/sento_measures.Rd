@@ -52,7 +52,7 @@ data("list_valence_shifters", package = "sentometrics")
 corpus <- sento_corpus(corpusdf = usnews)
 corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
-ctr <- ctr_agg(howWithin = "tf-idf",
+ctr <- ctr_agg(howWithin = "counts",
                howDocs = "proportional",
                howTime = c("equal_weight", "linear", "almon"),
                by = "month",

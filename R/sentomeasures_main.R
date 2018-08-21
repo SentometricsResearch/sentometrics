@@ -11,7 +11,8 @@
 #'
 #' @param howWithin a single \code{character} vector defining how aggregation within documents will be performed. Should
 #' \code{length(howWithin) > 1}, the first element is used. For currently available options on how aggregation can occur; see
-#' \code{\link{get_hows}()$words}.
+#' \code{\link{get_hows}()$words}. The \code{"tf-idf"} option will raise an error during sentiment computation
+#' if valence shifters are integrated.
 #' @param howDocs a single \code{character} vector defining how aggregation across documents per date will be performed.
 #' Should \code{length(howDocs) > 1}, the first element is used. For currently available options on how aggregation can occur;
 #' see \code{\link{get_hows}()$docs}.
@@ -41,12 +42,9 @@
 #' \code{\link{betas}}.
 #' @param weights optional own weighting scheme(s), used if provided as a \code{data.frame} with the number of rows
 #' equal to the desired \code{lag}.
-#' @param nCore a single \code{numeric} at least equal to 1 to indicate the number of cores to use for a parallel sentiment
-#' computation. We use the \code{\%dopar\%} construct from the \pkg{foreach} package. By default, \code{nCore = 1}, which
-#' implies no parallelization.
-#' @param dfm (optional) see \code{\link{compute_sentiment}}.
+#' @param nCore see \code{\link{compute_sentiment}}.
 #' @param ... not used.
-#'
+#
 #' @return A \code{list} encapsulating the control parameters.
 #'
 #' @seealso \code{\link{measures_fill}}, \code{\link{almons}}, \code{\link{compute_sentiment}}
@@ -78,7 +76,7 @@
 ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTime = "equal_weight",
                     do.ignoreZeros = TRUE, by = "day", lag = 1L, fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1),
                     ordersAlm = 1:3, do.inverseAlm = TRUE, aBeta = 1:4, bBeta = 1:4, weights = NULL,
-                    nCore = 1, dfm = NULL, ...) {
+                    nCore = 1, ...) {
 
   if (length(howWithin) > 1) howWithin <- howWithin[1]
   if (length(howDocs) > 1) howDocs <- howDocs[1]
@@ -136,9 +134,6 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
   if (is.numeric(nCore) && nCore < 1) {
     err <- c(err, "The 'nCore' argument should be least 1.")
   }
-  if (!is.null(dfm) & !quanteda::is.dfm(dfm)) {
-    err <- c(err, "The 'dfm' argument should pass quanteda::is.dfm(dfm) when it is not equal to NULL.")
-  }
   if (!is.null(err)) stop("Wrong inputs. See below for specifics. \n", paste0(err, collapse = "\n"))
 
   other <- list(alphasExp = alphasExp, ordersAlm = ordersAlm, do.inverseAlm = do.inverseAlm,
@@ -152,7 +147,6 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
               lag = lag,
               fill = fill,
               nCore = nCore,
-              dfm = dfm,
               other = other)
 
   return(ctr)
@@ -204,7 +198,7 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 #' l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
-#' ctr <- ctr_agg(howWithin = "tf-idf",
+#' ctr <- ctr_agg(howWithin = "counts",
 #'                howDocs = "proportional",
 #'                howTime = c("equal_weight", "linear", "almon"),
 #'                by = "month",
@@ -218,7 +212,7 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #' @export
 sento_measures<- function(sentocorpus, lexicons, ctr) {
   check_class(sentocorpus, "sentocorpus")
-  toAgg <- compute_sentiment(sentocorpus, lexicons, how = ctr$howWithin, nCore = ctr$nCore, dfm = ctr$dfm)
+  toAgg <- compute_sentiment(sentocorpus, lexicons, how = ctr$howWithin, nCore = ctr$nCore)
   sentomeasures <- perform_agg(toAgg, ctr)
   return(sentomeasures)
 }

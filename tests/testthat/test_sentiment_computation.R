@@ -38,6 +38,7 @@ test_that("Agreement between sentiment scores across input objects", {
                     sentimentList$s7$sentiment[, colnames(sentimentList$s6$sentiment)[-c(1:2)], with = FALSE])
   expect_true(all(sentimentList$s8$sentiment[, c("GI_en_POS", "LM_en_POS", "HENRY_en_POS")] >= 0))
   expect_true(all(sentimentList$s8$sentiment[, c("GI_en_NEG", "LM_en_NEG", "HENRY_en_NEG")] <= 0))
+  expect_error(compute_sentiment(quanteda::texts(corpus), lex, how = "tf-idf"))
 })
 
 # setup_lexicons

@@ -4,8 +4,7 @@
 \alias{compute_sentiment}
 \title{Compute document-level sentiment across features and lexicons}
 \usage{
-compute_sentiment(x, lexicons, how = "proportional", nCore = 1,
-  dfm = NULL)
+compute_sentiment(x, lexicons, how = "proportional", nCore = 1)
 }
 \arguments{
 \item{x}{either a \code{sentocorpus} object created with \code{\link{sento_corpus}}, a \pkg{quanteda}
@@ -17,16 +16,13 @@ case of a \code{character} vector, sentiment is only computed across lexicons.}
 \item{lexicons}{output from a \code{\link{setup_lexicons}} call.}
 
 \item{how}{a single \code{character} vector defining how aggregation within documents should be performed. For currently
-available options on how aggregation can occur, see \code{\link{get_hows}()$words}.}
+available options on how aggregation can occur, see \code{\link{get_hows}()$words}. The \code{"tf-idf"} option is not
+available when the \code{lexicons} input has a \code{"valence"} element.}
 
-\item{nCore}{a single \code{numeric} at least equal to 1 to indicate the number of cores to use for a parallel sentiment
-computation. We use the \code{\%dopar\%} construct from the \pkg{foreach} package. By default, \code{nCore = 1}, which
-implies no parallelization.}
-
-\item{dfm}{(optional) an output from a \pkg{quanteda} \code{\link[quanteda]{dfm}} call, such that users can specify their
-own tokenisation scheme (via \code{\link[quanteda]{tokens}}) as well as other parameters related to the construction of
-a document-feature matrix (dfm). Make sure the document-feature matrix is constructed from the texts in the
-\code{sentocorpus} object, otherwise, results will be spurious or errors may occur.}
+\item{nCore}{a single \code{numeric} at least equal to 1 to indicate the number of cores to use for a parallel
+tokenisation of the input corpus. We use the \code{\%dopar\%} construct from the \pkg{foreach} package. By default,
+\code{nCore = 1}, which implies no parallelization. May improve speed of sentiment computation overall only for
+sufficiently large corpora, say, in the order of having at least 50,000 documents.}
 }
 \value{
 A \code{list} containing:
@@ -42,19 +38,17 @@ The last three elements are only present if \code{x} is a \code{sentocorpus} obj
 aggregation into sentiment time series with the \code{\link{perform_agg}} function.
 }
 \description{
-Given a corpus of texts, computes sentiment per document using the bag-of-words approach
-based on the lexicons provided and a choice of aggregation across words per document. Relies partly on the
-\pkg{quanteda} package. The scores computed are net sentiment (sum of positive minus sum of negative scores).
+Given a corpus of texts, computes (net) sentiment per document using the bag-of-words approach
+based on the lexicons provided and a choice of aggregation across words per document.
 }
 \details{
 For a separate calculation of positive (resp. negative) sentiment, one has to provide distinct positive (resp. negative)
 lexicons. This can be done using the \code{do.split} option in the \code{\link{setup_lexicons}} function, which splits out
-the lexicons into a positive and a negative polarity counterpart. \code{NA}s are converted to 0, under the assumption that
-this is equivalent to no sentiment. By default, if the \code{dfm} argument is left unspecified, a document-feature matrix
-(dfm) is created based on a tokenisation that removes punctuation, numbers and symbols, but does not remove
-stopwords. The number of words for each document is computed based on that same tokenisation. A valence shifter and its
-neighbouring word, for example 'NOT_good', is counted as one word. All tokens are converted to lowercase, in
-line with what the \code{\link{setup_lexicons}} function does for the lexicons and valence shifters.
+the lexicons into a positive and a negative polarity counterpart. All \code{NA}s are converted to 0, under the assumption
+that this is equivalent to no sentiment. Texts are tokenised as unigrams; punctuation, numbers and symbols are removed, but
+not stopwords (see the \code{\link[quanteda]{tokens}} function for more details). The number of words for each document is
+computed based on that same tokenisation. All tokens are converted to lowercase, in line with what the
+\code{\link{setup_lexicons}} function does for the lexicons and valence shifters.
 }
 \examples{
 data("usnews", package = "sentometrics")
@@ -67,7 +61,7 @@ l2 <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifter
 # from a sentocorpus object
 corpus <- sento_corpus(corpusdf = usnews)
 corpusSample <- quanteda::corpus_sample(corpus, size = 200)
-sent <- compute_sentiment(corpusSample, l1, how = "counts")
+sent <- compute_sentiment(corpusSample, l1, how = "proportionalPol")
 
 # from a character vector
 sent <- compute_sentiment(usnews[["texts"]][1:200], l1, how = "counts")
@@ -77,15 +71,6 @@ sent <- compute_sentiment(usnews[["texts"]][1:200], l1, how = "counts")
 corpusQ <- quanteda::corpus(usnews, text_field = "texts")
 sent <- compute_sentiment(corpusQ, l2, how = "counts", nCore = 2)}
 
-\dontrun{
-# using a user-supplied dfm with default settings
-tok <- quanteda::tokens_tolower(quanteda::tokens(corpus))
-dfm <- quanteda::dfm(tok, verbose = FALSE)
-sent <- compute_sentiment(corpus, l1, how = "counts", dfm = dfm)}
-
-}
-\seealso{
-\code{\link[quanteda]{dfm}}, \code{\link[quanteda]{tokens}}
 }
 \author{
 Samuel Borms
