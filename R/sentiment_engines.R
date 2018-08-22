@@ -8,20 +8,23 @@ spread_sentiment_features <- function(sent, features, lexNames) {
   return(sent)
 }
 
+#' @importFrom foreach %dopar%
 tokenise_texts <- function(corpus, nCore = 1) {
   if (nCore > 1) {
-    cl <- parallel::makeCluster(min(parallel::detectCores() - 1, nCore))
+    cl <- parallel::makeCluster(min(parallel::detectCores(), nCore))
     doParallel::registerDoParallel(cl)
     N <- quanteda::ndoc(corpus)
     blocks <- seq(0, N + 1, by = floor(N/nCore))
     blocks[length(blocks)] <- N
-    tok <- foreach::foreach(i = 1:(length(blocks) - 1), .combine = '+', .export = c(":=")) %dopar% {
-      quanteda::tokens(
+    tok <- foreach::foreach(i = 1:(length(blocks) - 1), .combine = '+') %dopar% {
+      tokBit <- quanteda::tokens(
         corpus[(blocks[i] + 1):blocks[i + 1]], what = "word", ngrams = 1,
         remove_numbers = TRUE, remove_punct = TRUE, remove_symbols = TRUE
       )
+      return(tokBit)
     }
     parallel::stopCluster(cl)
+    foreach::registerDoSEQ()
   } else {
     tok <- quanteda::tokens(
       corpus, what = "word", ngrams = 1,
@@ -72,7 +75,7 @@ compute_sentiment_onegrams <- function(dfm, how, lexicons, wCounts) {
 compute_sentiment_lexicons <- function(tok, lexicons, how, wCounts) {
   doValence <- "valence" %in% names(lexicons)
   if (doValence == TRUE) {
-    RcppParallel::setThreadOptions(numThreads = RcppParallel::defaultNumThreads() - 1)
+    RcppParallel::setThreadOptions(numThreads = max(RcppParallel::defaultNumThreads() - 1, 1))
     s <- as.data.table(compute_sentiment_bigrams(as.list(tok), lexicons, how)) # C++ implementation
   } else {
     dfm <- quanteda::dfm(tok, tolower = FALSE, verbose = FALSE) # rows: corpus ids, columns: words, values: frequencies
@@ -149,6 +152,8 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, wCounts) {
 compute_sentiment <- function(x, lexicons, how = "proportional", nCore = 1) {
   if (!is_names_correct(names(lexicons)))
     stop("At least one lexicon's name contains '-'. Please provide proper names.")
+  if (!(how %in% get_hows()[["words"]]))
+    stop("Please select an appropriate aggregation 'how'.")
   if ("valence" %in% names(lexicons) && how == "tf-idf")
     stop("The 'tf-idf' option is not available when the 'lexicons' argument has valence shifters incorporated.")
   UseMethod("compute_sentiment", x)

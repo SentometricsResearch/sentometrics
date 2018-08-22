@@ -26,6 +26,7 @@
 #     }
 #     quanteda::texts(corpus) <- textsNew
 #     parallel::stopCluster(cl)
+#     foreach::registerDoSEQ()
 #   } else {
 #     quanteda::texts(corpus) <- modify_texts(texts, val)
 #   }

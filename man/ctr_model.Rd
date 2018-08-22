@@ -23,7 +23,7 @@ only available for a linear regression.}
 \item{do.intercept}{a \code{logical}, \code{TRUE} by default fits an intercept.}
 
 \item{do.iter}{a \code{logical}, \code{TRUE} induces an iterative estimation of models at the given \code{nSample} size and
-performs the associated one-step ahead out-of-sample prediction exercise through time.}
+performs the associated out-of-sample prediction exercise through time.}
 
 \item{h}{an \code{integer} value that shifts the time series to have the desired prediction setup; \code{h = 0} means
 no change to the input data (nowcasting assuming data is aligned properly), \code{h > 0} shifts the dependent variable by

@@ -21,13 +21,24 @@ Rcpp::NumericVector compute_df(double alpha,
     } else if (alpha == 1) { // lasso df
       dfA[i] = nA;
     } else if (alpha == 0) { // ridge df
-      arma::vec s = arma::svd(matr);
-      double estimate = arma::sum(arma::sqrt(s) / (arma::sqrt(s) + lambda[i]));
-      dfA[i] = estimate;
+      arma::vec s;
+      bool pass = arma::svd(s, matr);
+      if (pass == true) {
+        double estimate = arma::sum(arma::sqrt(s) / (arma::sqrt(s) + lambda[i]));
+        dfA[i] = estimate;
+      } else {
+        dfA[i] = NumericVector::get_na();
+      }
     } else { // elastic net df
-      arma::mat inverted = (matr * inv(matr.t() * matr + (1 - alpha) * lambda[i] * arma::eye<arma::mat>(nA, nA))) * matr.t();
-      double estimate = arma::sum(arma::diagvec(inverted));
-      dfA[i] = estimate; // potential need for error handling in case no inversion feasible
+      arma::mat inverted;
+      arma::mat toInvert = matr.t() * matr + (1 - alpha) * lambda[i] * arma::eye<arma::mat>(nA, nA);
+      bool pass = arma::inv(inverted, toInvert);
+      if (pass == true) {
+        double estimate = arma::sum(arma::diagvec(matr * inverted * matr.t()));
+        dfA[i] = estimate;
+      } else {
+        dfA[i] = NumericVector::get_na();
+      }
     }
   }
   return dfA;

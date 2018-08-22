@@ -1,7 +1,8 @@
 
+context("Aggregation")
+
 library("sentometrics")
 library("quanteda")
-context("Aggregation")
 
 # corpus, lexicon and aggregation control creation
 data("usnews")
@@ -12,7 +13,7 @@ lex <- list_lexicons[c("GI_en", "LM_en")]
 
 ### tests from here ###
 
-ctr1 <- ctr_agg(howWithin = "tf-idf", howDocs = "equal_weight", howTime = "almon", by = "month",
+ctr1 <- ctr_agg(howWithin = "proportionalPol", howDocs = "equal_weight", howTime = "almon", by = "month",
                lag = 5, ordersAlm = 1:3, do.inverseAlm = TRUE)
 sentMeas1 <- sento_measures(corpus, lex, ctr1)
 
