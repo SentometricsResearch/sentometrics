@@ -1,7 +1,8 @@
 
+context("Model specification")
+
 library("sentometrics")
 library("quanteda")
-context("Model specification")
 
 set.seed(123)
 
@@ -11,7 +12,7 @@ corpus <- quanteda::corpus_sample(quanteda::corpus_subset(sento_corpus(corpusdf 
 
 data("list_lexicons")
 lex <- list_lexicons[c("GI_en", "LM_en")]
-ctrA <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional", howTime = "almon", by = "month",
+ctrA <- ctr_agg(howWithin = "proportional", howDocs = "proportional", howTime = "almon", by = "month",
                 lag = 7, ordersAlm = 1:3, do.inverseAlm = TRUE, do.ignoreZeros = FALSE, fill = "latest")
 
 sentomeasures <- sento_measures(corpus, lex, ctrA)
@@ -82,7 +83,6 @@ test_that("Different model specifications give specified output", {
   expect_equal(nSample, nrow(out8$models[[1]]$x))
   expect_true(all(c(out1$alpha, out2$alpha, out3$alpha, out4$alpha, out5$alpha, out6$alpha, out7$alpha) %in% c(0.2, 0.7)))
   expect_true(all(out8$alphas %in% c(0, 0.4, 1)))
-  expect_true(out7$lambda %in% 50:1)
   expect_equal(out7$lambda, (50:1)[which(out7$ic$matrix == min(out7$ic$matrix, na.rm = TRUE), arr.ind = TRUE)[1, 2]])
   expect_equal(N - 1 - nSample - 2 + 1, length(out8$models))
   expect_true(all(sapply(c(list(out1, out2, out3, out4, out5, out7), out8$models),

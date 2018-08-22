@@ -1,7 +1,8 @@
 
+context("Corpus building")
+
 library("sentometrics")
 library("quanteda")
-context("Corpus building")
 
 # load built-in corpus
 data("usnews")

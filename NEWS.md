@@ -1,5 +1,5 @@
 
-## sentometrics 0.5.0 (development)
+## sentometrics 0.5.0
 
 - new functions: `betas()`, `get_dates()`, `get_dimensions()`, and `get_measures()`
 - defunct the `ctr_merge()` function, so that all merge parameters are to be passed on directly to the `measures_merge()` function

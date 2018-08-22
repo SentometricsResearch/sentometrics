@@ -1,7 +1,8 @@
 
+context("Methods sentomeasures")
+
 library("sentometrics")
 library("quanteda")
-context("Methods sentomeasures")
 
 # corpus, lexicon and aggregation control creation
 data("usnews")

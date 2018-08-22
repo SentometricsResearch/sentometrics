@@ -1,7 +1,8 @@
 
+context("Sentiment computation")
+
 library("sentometrics")
 library("quanteda")
-context("Sentiment computation")
 
 set.seed(123)
 
@@ -24,7 +25,8 @@ sentimentList <- list(
   s6 = compute_sentiment(quanteda::corpus(usnews[1:250, c("texts", "wsj", "economy")], text_field = "texts"),
                          lex, how = "counts"),
   s7 = compute_sentiment(corpus, lex, how = "counts"),
-  s8 = compute_sentiment(quanteda::texts(corpus), lexSplit, how = "counts")
+  s8 = compute_sentiment(quanteda::texts(corpus), lexSplit, how = "counts"),
+  s9 = compute_sentiment(quanteda::texts(corpus), lex[names(lex) != "valence"], how = "tf-idf", nCore = 2)
 )
 
 # compute_sentiment
@@ -32,13 +34,16 @@ test_that("Agreement between sentiment scores across input objects", {
   expect_true(all(unlist(lapply(sentimentList, function(s) nrow(s$sentiment) == 250))))
   expect_true(all(unlist(lapply(sentimentList, function(s) all(s$sentiment$word_count
                                                                == sentimentList$s1$sentiment$word_count)))))
+  expect_true(all(sentimentList$s8$sentiment[, c("GI_en_POS", "LM_en_POS", "HENRY_en_POS")] >= 0))
+  expect_true(all(sentimentList$s8$sentiment[, c("GI_en_NEG", "LM_en_NEG", "HENRY_en_NEG")] <= 0))
+  expect_true(all(sentimentList$s2$sentiment == sentimentList$s9$sentiment))
   expect_equivalent(sentimentList$s1$sentiment[, c("GI_en", "LM_en", "HENRY_en")],
                     sentimentList$s5$sentiment[, c("GI_en", "LM_en", "HENRY_en")])
   expect_equivalent(sentimentList$s6$sentiment[, -c(1:2)],
                     sentimentList$s7$sentiment[, colnames(sentimentList$s6$sentiment)[-c(1:2)], with = FALSE])
-  expect_true(all(sentimentList$s8$sentiment[, c("GI_en_POS", "LM_en_POS", "HENRY_en_POS")] >= 0))
-  expect_true(all(sentimentList$s8$sentiment[, c("GI_en_NEG", "LM_en_NEG", "HENRY_en_NEG")] <= 0))
   expect_error(compute_sentiment(quanteda::texts(corpus), lex, how = "tf-idf"))
+  expect_error(compute_sentiment(quanteda::texts(corpus), lex, how = "notAnOption"))
+
 })
 
 # setup_lexicons

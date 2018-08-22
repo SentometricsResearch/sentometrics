@@ -1,7 +1,8 @@
 
+context("Measures manipulation")
+
 library("sentometrics")
 library("quanteda")
-context("Measures manipulation")
 
 # corpus, lexicon and aggregation control creation
 data("usnews")

@@ -1,7 +1,8 @@
 
+context("Attribution")
+
 library("sentometrics")
 library("quanteda")
-context("Attribution")
 
 set.seed(123)
 

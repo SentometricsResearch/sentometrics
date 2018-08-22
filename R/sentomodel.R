@@ -34,7 +34,7 @@
 #' (if \code{type = } "\code{cv}"), or for the iterative out-of-sample prediction analysis (if \code{do.iter = TRUE}). For
 #' instance, given \eqn{t}, the (first) out-of-simple prediction is computed at \eqn{t + oos + 1}.
 #' @param do.iter a \code{logical}, \code{TRUE} induces an iterative estimation of models at the given \code{nSample} size and
-#' performs the associated one-step ahead out-of-sample prediction exercise through time.
+#' performs the associated out-of-sample prediction exercise through time.
 #' @param do.progress a \code{logical}, if \code{TRUE} progress statements are displayed during model calibration.
 #' @param nSample a positive \code{integer} as the size of the sample for model estimation at every iteration (ignored if
 #' \code{do.iter = FALSE}).
@@ -176,8 +176,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #'
 #' @description Linear or nonlinear penalized regression of any dependent variable on the wide number of sentiment measures and
 #' potentially other explanatory variables. Either performs a regression given the provided variables at once, or computes
-#' regressions sequentially for a given sample size over a longer time horizon, with associated one-step ahead prediction
-#' performance metrics.
+#' regressions sequentially for a given sample size over a longer time horizon, with associated prediction performance metrics.
 #'
 #' @details Models are computed using the elastic net regularization as implemented in the \pkg{glmnet} package, to account for
 #' the multidimensionality of the sentiment measures. Additional explanatory variables are not subject to shrinkage. Independent
@@ -206,9 +205,10 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' \item{alpha}{calibrated alpha.}
 #' \item{lambda}{calibrated lambda.}
 #' \item{trained}{output from \code{\link[caret]{train}} call (if \code{ctr$type =} "\code{cv}").}
-#' \item{ic}{a \code{list} composed of two elements: under \code{"criterion"}, the information criterion used in the
-#' calibration, and under \code{"matrix"}, a matrix of all information criterion values for \code{alphas} as rows
-#' and the respective lambda values as columns (if \code{ctr$type !=} "\code{cv}").}
+#' \item{ic}{a \code{list} composed of two elements: under \code{"criterion"}, the type of information criterion used in the
+#' calibration, and under \code{"matrix"}, a \code{matrix} of all information criterion values for \code{alphas} as rows
+#' and the respective lambda values as columns (if \code{ctr$type !=} "\code{cv}"). Any \code{NA} value in the latter
+#' element means the specific information criterion could not be computed.}
 #' \item{dates}{sample reference dates as a two-element \code{character} vector, being the earliest and most recent date from
 #' the \code{sentomeasures} object accounted for in the estimation window.}
 #' \item{nVar}{the sum of the number of sentiment measures and other explanatory variables inputted.}
@@ -284,6 +284,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #'                    testWindow = 10, oos = 0, do.progress = TRUE)
 #' out3 <- sento_model(sentomeasures, y, x = x, ctr = ctrCV)
 #' parallel::stopCluster(cl)
+#' foreach::registerDoSEQ()
 #' summary(out3)
 #'
 #' # a cross-validation based model for a binomial target
@@ -445,15 +446,18 @@ compute_df_full <- function(reg, y, x, alpha) {
 choose_optim_params <- function(dfs, y, ic, alphas) {
   N <- max(sapply(dfs, function(df) return(length(df$lambda))))
   lambdasMat <- dfsMat <- RSSMat <- matrix(NA, nrow = length(dfs), ncol = N)
-  for (i in 1:length(dfs)) {
-    df <- dfs[[i]]
+  for (i in 1:length(dfs)) { # loop across alphas
+    df <- dfs[[i]] # list of lambdas, degrees-of-freedom and RSS
     K <- length(df$lambda)
     lambdasMat[i, 1:K] <- df$lambda
     dfsMat[i, 1:K] <- unlist(df$df)
     RSSMat[i, 1:K] <- df$RSS
   }
-  idx <- which(dfsMat == max(dfsMat, na.rm = TRUE), arr.ind = TRUE)
-  sigma2 <- RSSMat[idx[1, 1], idx[1, 2]] / (length(y) - dfsMat[idx[1, 1], idx[1, 2]])
+  idx <- suppressWarnings(which(dfsMat == max(dfsMat, na.rm = TRUE), arr.ind = TRUE))
+  if (dim(idx)[1] == 0)
+    sigma2 <- NA
+  else
+    sigma2 <- RSSMat[idx[1, 1], idx[1, 2]] / (length(y) - dfsMat[idx[1, 1], idx[1, 2]])
   if (ic == "BIC")
     IC <- compute_BIC(y, dfsMat, RSSMat, sigma2)
   else if (ic == "AIC")
@@ -461,8 +465,14 @@ choose_optim_params <- function(dfs, y, ic, alphas) {
   else if (ic == "Cp")
     IC <- compute_Cp(y, dfsMat, RSSMat, sigma2)
   rownames(IC) <- alphas
-  opt <-  which(IC == min(IC, na.rm = TRUE), arr.ind = TRUE)
-  return(list(IC = IC, lambda = lambdasMat[opt[1, 1], opt[1, 2]], alpha = alphas[opt[1, 1]]))
+  opt <-  suppressWarnings(which(IC == min(IC, na.rm = TRUE), arr.ind = TRUE))
+  if (dim(opt)[1] == 0) {
+    return(list(IC = IC, lambda = lambdasMat[1, 1], alpha = alphas[1]))
+    warning("Computation of information criteria not resolved. First alpha and lambda are used as optimum.")
+  }
+  else {
+    return(list(IC = IC, lambda = lambdasMat[opt[1, 1], opt[1, 2]], alpha = alphas[opt[1, 1]]))
+  }
 }
 
 #' @importFrom foreach %dopar%
@@ -476,7 +486,7 @@ choose_optim_params <- function(dfs, y, ic, alphas) {
 
   # perform all regressions
   if (nCore > 1) {
-    cl <- parallel::makeCluster(min(parallel::detectCores() - 1, nCore))
+    cl <- parallel::makeCluster(min(parallel::detectCores(), nCore))
     doParallel::registerDoParallel(cl)
     regsOpt <- foreach::foreach(i = start:nIter) %dopar% {
       out <- run_sento_model(
@@ -487,6 +497,7 @@ choose_optim_params <- function(dfs, y, ic, alphas) {
       return(out)
     }
     parallel::stopCluster(cl)
+    foreach::registerDoSEQ()
   } else {
     regsOpt <- lapply(start:nIter, function(i) {
       if (do.progress == TRUE) cat("iteration: ", (i - start + 1), " from ", (nIter - start + 1), "\n", sep = "")
