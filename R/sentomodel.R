@@ -402,12 +402,12 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
       }
       reg <- glmnet::glmnet(x = xx, y = yy, penalty.factor = penalty, intercept = intercept,
                             alpha = alpha, lambda = lambdas, standardize = TRUE, family = family)
-      lambdas <- reg$lambda
+      lambdasReg <- reg$lambda
       xScaled <- scale(xx)
-      xA <- lapply(1:length(lambdas), function(j) return(as.matrix(xScaled[, which(reg$beta[, j] != 0)])))
+      xA <- lapply(1:length(lambdasReg), function(j) return(as.matrix(xScaled[, which(reg$beta[, j] != 0)])))
       yEst <- stats::predict(reg, newx = xx)
-      dfs[[i]] <- list(lambda = lambdas,
-                       df = compute_df(alpha, lambdas, xA), # C++ implementation
+      dfs[[i]] <- list(lambda = lambdasReg,
+                       df = compute_df(alpha = alpha, lambda = lambdasReg, xA = xA), # C++ implementation
                        RSS = apply(yEst, 2, FUN = function(est) sum((yy - est)^2)))
     }
 
@@ -415,7 +415,7 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
     extract_optim_params <- function(dfs, y, ic, alphas) {
       N <- max(sapply(dfs, function(df) return(length(df$lambda))))
       lambdasMat <- dfsMat <- RSSMat <- matrix(NA, nrow = length(dfs), ncol = N)
-      for (i in 1:length(dfs)) { # loop across alphas
+      for (i in 1:length(dfs)) { # for every alpha
         df <- dfs[[i]] # list of lambdas, degrees-of-freedom and RSS
         K <- length(df$lambda)
         lambdasMat[i, 1:K] <- df$lambda
@@ -425,8 +425,7 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
       idx <- suppressWarnings(which(dfsMat == max(dfsMat, na.rm = TRUE), arr.ind = TRUE))
       if (dim(idx)[1] == 0)
         sigma2 <- NA
-      else
-        sigma2 <- RSSMat[idx[1, 1], idx[1, 2]] / (length(y) - dfsMat[idx[1, 1], idx[1, 2]])
+      else sigma2 <- RSSMat[idx[1, 1], idx[1, 2]] / (length(y) - dfsMat[idx[1, 1], idx[1, 2]])
       if (ic == "BIC")
         IC <- compute_BIC(y = y, dfA = dfsMat, RSS = RSSMat, sigma2 = sigma2)
       else if (ic == "AIC")

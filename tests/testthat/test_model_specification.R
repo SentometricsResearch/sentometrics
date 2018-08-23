@@ -29,7 +29,7 @@ colnames(x) <- c("x1", "x2")
 ### tests from here ###
 
 N <- nrow(x)
-nSample <- floor(0.95 * N)
+nSample <- floor(0.925 * N)
 
 ctrM1 <- ctr_model(model = "gaussian", type = "Cp", h = 8, alphas = c(0.2, 0.7))
 out1 <- sento_model(sentomeasures, y, x = x, ctr = ctrM1)
@@ -60,7 +60,7 @@ ctrM9 <- ctrM8
 ctrM9$nSample <- N - 1 - 2 + 1
 
 ctrM10 <- ctr_model(model = "gaussian", type = "Cp", h = 1, alphas = 0,
-                    nSample = nSample, do.iter = TRUE, start = 2, nCore = 4)
+                    nSample = nSample, do.iter = TRUE, start = 2, nCore = 2)
 out10 <- sento_model(sentomeasures, y, x = x, ctr = ctrM10)
 
 ctrM11 <- ctr_model(model = "gaussian", type = "Cp", h = 1, alphas = 1,
@@ -92,6 +92,7 @@ test_that("Different model specifications give specified output", {
   expect_null(summary(out5))
   expect_null(summary(out6))
   expect_null(summary(out8))
+  expect_null(summary(out10))
 })
 
 # perform_MCS
