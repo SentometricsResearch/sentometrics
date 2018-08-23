@@ -447,7 +447,7 @@ compute_Cp <- function(y, dfA, RSS, sigma2) { # Mallows's Cp-like criterion
   return(Cp)
 }
 
-to_long <- function(measures) { # changes format of sentiment measures data.table from wide to long
+measures_to_long <- function(measures) { # changes format of sentiment measures data.table from wide to long
   dates <- measures[["date"]]
   n <- length(dates)
   names <- colnames(measures)[-1]
