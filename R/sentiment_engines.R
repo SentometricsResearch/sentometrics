@@ -90,7 +90,10 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, wCounts, nCore = 2) {
 #' @author Samuel Borms
 #'
 #' @description Given a corpus of texts, computes (net) sentiment per document using the bag-of-words approach
-#' based on the lexicons provided and a choice of aggregation across words per document.
+#' based on the lexicons provided and a choice of aggregation across words per document. If the \code{lexicons} argument
+#' has no \code{"valence"} element, the sentiment computed corresponds to simple unigram matching with the lexicons. If valence
+#' shifters are included in \code{lexicons}, these have the effect of modifying the polarity of a word detected from the
+#' lexicon if appearing right before such word (examples: not good, very bad or can't defend).
 #'
 #' @details
 #' For a separate calculation of positive (resp. negative) sentiment, one has to provide distinct positive (resp. negative)

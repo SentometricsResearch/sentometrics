@@ -14,7 +14,7 @@ built-in lexicons want to be used (with \emph{no} valence shifters), one can sim
 an argument to either \code{\link{sento_measures}} or \code{\link{compute_sentiment}}. However, it is strongly recommended
 to pass all lexicons (and a valence word list) to this function first, in any case.}
 
-\item{valenceIn}{a single valence word list as a \code{data.frame} or a \code{data.table} with respectively a words column,
+\item{valenceIn}{a single valence word list as a \code{data.table} or a \code{data.frame} with respectively a words column,
 and a score column. This argument can be one of the already formatted built-in valence word lists accessible via
 \code{list_valence_shifters}. A word that appears in both a lexicon and the valence word list is prioritized as a
 valence shifter. If \code{NULL}, no valence word list is part of this function's output, and is thus not applied in the
@@ -29,10 +29,11 @@ an element named \code{valence} that comprises the valence words. Every \code{x}
 column contains the polarity score.
 }
 \description{
-Structures provided lexicon(s) and potentially integrates valence words. One can also provide (part of) the
-built-in lexicons from \code{data("list_lexicons")} or a built-in valence word list from \code{data("list_valence_shifters")}
-as arguments. Part of this function mimicks the \code{\link[sentimentr]{as_key}} function from the \pkg{sentimentr} package
-to make the output coherent, convert all words to lowercase and check for duplicates.
+Structures provided lexicon(s) and optionally valence words. One can for example combine (part of) the
+built-in lexicons from \code{data("list_lexicons")} with other lexicons, and add one of the built-in valence word lists
+from \code{data("list_valence_shifters")}. This function makes the output coherent, by converting all words to
+lowercase and checking for duplicates. All entries consisting of more than one word are discarded, as required for
+bag-of-words sentiment analysis.
 }
 \examples{
 data("list_lexicons", package = "sentometrics")

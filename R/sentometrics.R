@@ -45,8 +45,8 @@
 #' suffix if the lexicon is translated. The translation was done via Microsoft Translator through Microsoft
 #' Word. Only the entries that conform to the original language entry after retranslation, and those that have actually been
 #' translated, are kept. The last condition is assumed to be fulfilled when the translation differs from the original entry.
-#' All words are in lowercase. The lexicons are in the format required for further sentiment analysis. The built-in lexicons
-#' are the following:
+#' All words are unigrams and in lowercase. The lexicons are in the format required for further sentiment analysis. The built-in
+#' lexicons are the following:
 #'
 #' \itemize{
 #'   \item FEEL_en_tr (French Expanded Emotion Lexicon)
@@ -63,7 +63,7 @@
 #'   \item LM_nl_tr
 #' }
 #'
-#' Other immediate lexicon options can be found in the \pkg{lexicon} package, more specifically the datasets preceded by
+#' Other useful lexicons can be found in the \pkg{lexicon} package, more specifically the datasets preceded by
 #' \code{hash_sentiment_}.
 #'
 #' @usage data("list_lexicons")
@@ -90,7 +90,7 @@
 #' (based on the two-letter ISO code convention as in \code{\link[stopwords]{stopwords}}) of the valence word list. All
 #' non-English word lists are translated via Microsoft Translator through Microsoft Word. Only the entries whose translation
 #' differs from the original entry are kept. The valence word lists are in the form required for further sentiment analysis.
-#' All words are in lowercase. The built-in valence word lists are available in following languages:
+#' All words are unigrams and in lowercase. The built-in valence word lists are available in following languages:
 #'
 #' \itemize{
 #'   \item English (\code{"en"})
