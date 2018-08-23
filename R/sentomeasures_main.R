@@ -76,11 +76,10 @@
 ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTime = "equal_weight",
                     do.ignoreZeros = TRUE, by = "day", lag = 1L, fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1),
                     ordersAlm = 1:3, do.inverseAlm = TRUE, aBeta = 1:4, bBeta = 1:4, weights = NULL,
-                    nCore = 1, ...) {
+                    nCore = c(2, 1), ...) {
 
   if (length(howWithin) > 1) howWithin <- howWithin[1]
   if (length(howDocs) > 1) howDocs <- howDocs[1]
-  if (length(nCore) > 1) nCore <- nCore[1]
 
   # check if provided aggregation specifications are supported
   hows <- get_hows() # get all supported options for each aggregation level
@@ -128,11 +127,12 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
   if (!(fill %in% c("zero", "latest", "none"))) {
     err <- c(err, paste0(fill, " is no current 'fill' option."))
   }
-  if (!is.numeric(nCore)) {
-    err <- c(err, "The 'nCore' argument should be a numeric vector of length 1.")
+  if (length(nCore) != 2 || !is.numeric(nCore)) {
+    err <- c(err, "The 'nCore' argument should be a numeric vector of size two.")
   }
-  if (is.numeric(nCore) && nCore < 1) {
-    err <- c(err, "The 'nCore' argument should be least 1.")
+  if (length(nCore) == 2 && is.numeric(nCore) && any(nCore < 1)) {
+    nCore[which(nCore < 1)] <- 1
+    warning("Nonpositive elements in the 'nCore' argument are set to 1.")
   }
   if (!is.null(err)) stop("Wrong inputs. See below for specifics. \n", paste0(err, collapse = "\n"))
 

@@ -26,7 +26,7 @@ sentimentList <- list(
                          lex, how = "counts"),
   s7 = compute_sentiment(corpus, lex, how = "counts"),
   s8 = compute_sentiment(quanteda::texts(corpus), lexSplit, how = "counts"),
-  s9 = compute_sentiment(quanteda::texts(corpus), lex[names(lex) != "valence"], how = "tf-idf", nCore = 2)
+  s9 = compute_sentiment(quanteda::texts(corpus), lex[names(lex) != "valence"], how = "tf-idf", nCore = c(2, 2))
 )
 
 # compute_sentiment
@@ -43,7 +43,7 @@ test_that("Agreement between sentiment scores across input objects", {
                     sentimentList$s7$sentiment[, colnames(sentimentList$s6$sentiment)[-c(1:2)], with = FALSE])
   expect_error(compute_sentiment(quanteda::texts(corpus), lex, how = "tf-idf"))
   expect_error(compute_sentiment(quanteda::texts(corpus), lex, how = "notAnOption"))
-
+  expect_warning(compute_sentiment(quanteda::texts(corpus), lex[names(lex) != "valence"], how = "tf-idf", nCore = c(-3, 0)))
 })
 
 # setup_lexicons

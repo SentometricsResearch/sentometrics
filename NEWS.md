@@ -15,7 +15,7 @@
 - omitted `do.combine` argument in `measures_delete()` and `measures_select()` functions to simplify
 - expanded set of unit tests, included a coverage badge, and added **`covr`** to Suggests
 - reimplementation of how valence shifters are integrated into the `compute_sentiment()` function, by writing part of the code in **`Rcpp`** relying on **`RcppParallel`** (added to Imports), and removing related but now abundant manipulations and documentation in for example the `setup_lexicons()` function
-- dropped the `dfm` argument from the `compute_sentiment()` and `ctr_agg()` functions, and altered the behaviour of the `nCore` argument of these same two functions
+- dropped the `dfm` argument from the `compute_sentiment()` and `ctr_agg()` functions, and altered the input and behaviour of the `nCore` argument of these same two functions
 
 ## sentometrics 0.4.0
 

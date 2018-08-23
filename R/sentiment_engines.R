@@ -72,10 +72,11 @@ compute_sentiment_onegrams <- function(dfm, how, lexicons, wCounts) {
   return(s[])
 }
 
-compute_sentiment_lexicons <- function(tok, lexicons, how, wCounts) {
+compute_sentiment_lexicons <- function(tok, lexicons, how, wCounts, nCore = 2) {
   doValence <- "valence" %in% names(lexicons)
   if (doValence == TRUE) {
-    RcppParallel::setThreadOptions(numThreads = max(RcppParallel::defaultNumThreads() - 1, 1))
+    threads <- min(RcppParallel::defaultNumThreads(), nCore)
+    RcppParallel::setThreadOptions(numThreads = threads)
     s <- as.data.table(compute_sentiment_bigrams(as.list(tok), lexicons, how)) # C++ implementation
   } else {
     dfm <- quanteda::dfm(tok, tolower = FALSE, verbose = FALSE) # rows: corpus ids, columns: words, values: frequencies
@@ -109,9 +110,12 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, wCounts) {
 #' @param how a single \code{character} vector defining how aggregation within documents should be performed. For currently
 #' available options on how aggregation can occur, see \code{\link{get_hows}()$words}. The \code{"tf-idf"} option is not
 #' available when the \code{lexicons} input has a \code{"valence"} element.
-#' @param nCore a single \code{numeric} at least equal to 1 to indicate the number of cores to use for a parallel
-#' tokenisation of the input corpus. We use the \code{\%dopar\%} construct from the \pkg{foreach} package. By default,
-#' \code{nCore = 1}, which implies no parallelization. May improve speed of sentiment computation overall only for
+#' @param nCore a two-length positive \code{numeric} vector to define the parallelisation setup for the sentiment calculation.
+#' The first element is passed on to the \code{numThreads} argument of the \code{\link[RcppParallel]{setThreadOptions}}
+#' function, and parallelizes the sentiment computation across texts, but only when valence shifters are involved. The
+#' second element indicates the number of cores to use for a parallel tokenisation of the input corpus. We use the
+#' \code{\%dopar\%} construct from the \pkg{foreach} package for the latter. By default, \code{nCore = c(2, 1)}. A value of
+#' 1 implies no parallelisation. Either parallelisation is expected to improve speed of the sentiment computation only for
 #' sufficiently large corpora, say, in the order of having at least 50,000 documents.
 #'
 #' @return A \code{list} containing:
@@ -145,21 +149,26 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, wCounts) {
 #' \dontrun{
 #' # from a corpus object, parallelized
 #' corpusQ <- quanteda::corpus(usnews, text_field = "texts")
-#' sent <- compute_sentiment(corpusQ, l2, how = "counts", nCore = 2)}
+#' sent <- compute_sentiment(corpusQ, l2, how = "counts", nCore = c(2, 2))}
 #'
 #' @importFrom compiler cmpfun
 #' @export
-compute_sentiment <- function(x, lexicons, how = "proportional", nCore = 1) {
+compute_sentiment <- function(x, lexicons, how = "proportional", nCore = c(2, 1)) {
   if (!is_names_correct(names(lexicons)))
     stop("At least one lexicon's name contains '-'. Please provide proper names.")
   if (!(how %in% get_hows()[["words"]]))
     stop("Please select an appropriate aggregation 'how'.")
   if ("valence" %in% names(lexicons) && how == "tf-idf")
     stop("The 'tf-idf' option is not available when the 'lexicons' argument has valence shifters incorporated.")
+  if (length(nCore) != 2 || !is.numeric(nCore))
+    stop("The 'nCore' argument should be a numeric vector of size two.")
+
   UseMethod("compute_sentiment", x)
 }
 
-.compute_sentiment.sentocorpus <- function(x, lexicons, how, nCore = 1) {
+.compute_sentiment.sentocorpus <- function(x, lexicons, how, nCore = c(2, 1)) {
+  nCore <- validate_nCore(nCore)
+
   sentocorpus <- x
   sentOut <- list(corpus = sentocorpus) # original corpus in output
 
@@ -167,11 +176,11 @@ compute_sentiment <- function(x, lexicons, how = "proportional", nCore = 1) {
 
   cat("Compute sentiment... ")
 
-  tokenised <- tokenise_texts(sentocorpus, nCore = nCore)
+  tokenised <- tokenise_texts(sentocorpus, nCore = nCore[2])
   tok <- tokenised[["tok"]]
   wCounts <- tokenised[["wCounts"]]
 
-  s <- compute_sentiment_lexicons(tok, lexicons, how, wCounts) # compute sentiment per document for all lexicons
+  s <- compute_sentiment_lexicons(tok, lexicons, how, wCounts, nCore[1]) # compute sentiment per document for all lexicons
 
   # reconstruct sentiment to id - date - features - word_count - lexicons/sentiment, and compute feature-sentiment
   lexNames <- names(lexicons)[names(lexicons) != "valence"]
@@ -190,7 +199,9 @@ compute_sentiment <- function(x, lexicons, how = "proportional", nCore = 1) {
 #' @export
 compute_sentiment.sentocorpus <- compiler::cmpfun(.compute_sentiment.sentocorpus)
 
-.compute_sentiment.corpus <- function(x, lexicons, how, nCore = 1) {
+.compute_sentiment.corpus <- function(x, lexicons, how, nCore = c(2, 1)) {
+  nCore <- validate_nCore(nCore)
+
   corpus <- x
   sentOut <- list(corpus = corpus) # original corpus in output
 
@@ -199,11 +210,11 @@ compute_sentiment.sentocorpus <- compiler::cmpfun(.compute_sentiment.sentocorpus
 
   cat("Compute sentiment... ")
 
-  tokenised <- tokenise_texts(corpus, nCore = nCore)
+  tokenised <- tokenise_texts(corpus, nCore = nCore[2])
   tok <- tokenised[["tok"]]
   wCounts <- tokenised[["wCounts"]]
 
-  s <- compute_sentiment_lexicons(tok, lexicons, how, wCounts) # compute sentiment per document for all lexicons
+  s <- compute_sentiment_lexicons(tok, lexicons, how, wCounts, nCore[1]) # compute sentiment per document for all lexicons
 
   # spread sentiment across features if present and reformat
   if (!is.null(features)) {
@@ -225,17 +236,19 @@ compute_sentiment.sentocorpus <- compiler::cmpfun(.compute_sentiment.sentocorpus
 #' @export
 compute_sentiment.corpus <- compiler::cmpfun(.compute_sentiment.corpus)
 
-.compute_sentiment.character <- function(x, lexicons, how, nCore = 1) {
+.compute_sentiment.character <- function(x, lexicons, how, nCore = c(2, 1)) {
+  nCore <- validate_nCore(nCore)
+
   corpus <- quanteda::corpus(x)
   sentOut <- list(corpus = corpus) # original corpus in output
 
   cat("Compute sentiment... ")
 
-  tokenised <- tokenise_texts(corpus, nCore = nCore)
+  tokenised <- tokenise_texts(corpus, nCore = nCore[2])
   tok <- tokenised[["tok"]]
   wCounts <- tokenised[["wCounts"]]
 
-  s <- compute_sentiment_lexicons(tok, lexicons, how, wCounts) # compute sentiment per document for all lexicons
+  s <- compute_sentiment_lexicons(tok, lexicons, how, wCounts, nCore[1]) # compute sentiment per document for all lexicons
 
   cat("Done.", "\n")
 

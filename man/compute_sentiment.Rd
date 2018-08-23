@@ -4,7 +4,7 @@
 \alias{compute_sentiment}
 \title{Compute document-level sentiment across features and lexicons}
 \usage{
-compute_sentiment(x, lexicons, how = "proportional", nCore = 1)
+compute_sentiment(x, lexicons, how = "proportional", nCore = c(2, 1))
 }
 \arguments{
 \item{x}{either a \code{sentocorpus} object created with \code{\link{sento_corpus}}, a \pkg{quanteda}
@@ -19,9 +19,12 @@ case of a \code{character} vector, sentiment is only computed across lexicons.}
 available options on how aggregation can occur, see \code{\link{get_hows}()$words}. The \code{"tf-idf"} option is not
 available when the \code{lexicons} input has a \code{"valence"} element.}
 
-\item{nCore}{a single \code{numeric} at least equal to 1 to indicate the number of cores to use for a parallel
-tokenisation of the input corpus. We use the \code{\%dopar\%} construct from the \pkg{foreach} package. By default,
-\code{nCore = 1}, which implies no parallelization. May improve speed of sentiment computation overall only for
+\item{nCore}{a two-length positive \code{numeric} vector to define the parallelisation setup for the sentiment calculation.
+The first element is passed on to the \code{numThreads} argument of the \code{\link[RcppParallel]{setThreadOptions}}
+function, and parallelizes the sentiment computation across texts, but only when valence shifters are involved. The
+second element indicates the number of cores to use for a parallel tokenisation of the input corpus. We use the
+\code{\%dopar\%} construct from the \pkg{foreach} package for the latter. By default, \code{nCore = c(2, 1)}. A value of
+1 implies no parallelisation. Either parallelisation is expected to improve speed of the sentiment computation only for
 sufficiently large corpora, say, in the order of having at least 50,000 documents.}
 }
 \value{
@@ -69,7 +72,7 @@ sent <- compute_sentiment(usnews[["texts"]][1:200], l1, how = "counts")
 \dontrun{
 # from a corpus object, parallelized
 corpusQ <- quanteda::corpus(usnews, text_field = "texts")
-sent <- compute_sentiment(corpusQ, l2, how = "counts", nCore = 2)}
+sent <- compute_sentiment(corpusQ, l2, how = "counts", nCore = c(2, 2))}
 
 }
 \author{
