@@ -1,36 +1,4 @@
 
-extract_optim_params <- function(dfs, y, ic, alphas) {
-  N <- max(sapply(dfs, function(df) return(length(df$lambda))))
-  lambdasMat <- dfsMat <- RSSMat <- matrix(NA, nrow = length(dfs), ncol = N)
-  for (i in 1:length(dfs)) { # loop across alphas
-    df <- dfs[[i]] # list of lambdas, degrees-of-freedom and RSS
-    K <- length(df$lambda)
-    lambdasMat[i, 1:K] <- df$lambda
-    dfsMat[i, 1:K] <- unlist(df$df)
-    RSSMat[i, 1:K] <- df$RSS
-  }
-  idx <- suppressWarnings(which(dfsMat == max(dfsMat, na.rm = TRUE), arr.ind = TRUE))
-  if (dim(idx)[1] == 0)
-    sigma2 <- NA
-  else
-    sigma2 <- RSSMat[idx[1, 1], idx[1, 2]] / (length(y) - dfsMat[idx[1, 1], idx[1, 2]])
-  if (ic == "BIC")
-    IC <- compute_BIC(y, dfsMat, RSSMat, sigma2)
-  else if (ic == "AIC")
-    IC <- compute_AIC(y, dfsMat, RSSMat, sigma2)
-  else if (ic == "Cp")
-    IC <- compute_Cp(y, dfsMat, RSSMat, sigma2)
-  rownames(IC) <- alphas
-  opt <-  suppressWarnings(which(IC == min(IC, na.rm = TRUE), arr.ind = TRUE))
-  if (dim(opt)[1] == 0) {
-    return(list(IC = IC, lambda = lambdasMat[1, 1], alpha = alphas[1]))
-    warning("Computation of none of the information criteria is resolved. First alpha and lambda are used as optimum.")
-  }
-  else {
-    return(list(IC = IC, lambda = lambdasMat[opt[1, 1], opt[1, 2]], alpha = alphas[opt[1, 1]]))
-  }
-}
-
 #' Set up control for sentiment-based sparse regression modelling
 #'
 #' @author Samuel Borms, Keven Bluteau
@@ -441,7 +409,39 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
       dfs[[i]] <- list(lambda = lambdas,
                        df = compute_df(alpha, lambdas, xA), # C++ implementation
                        RSS = apply(yEst, 2, FUN = function(est) sum((yy - est)^2)))
-      # dfs[[i]] <- compute_df_full(reg, yy, xx, alpha)
+    }
+
+    # define extractor function for optimal alpha and lambda parameters
+    extract_optim_params <- function(dfs, y, ic, alphas) {
+      N <- max(sapply(dfs, function(df) return(length(df$lambda))))
+      lambdasMat <- dfsMat <- RSSMat <- matrix(NA, nrow = length(dfs), ncol = N)
+      for (i in 1:length(dfs)) { # loop across alphas
+        df <- dfs[[i]] # list of lambdas, degrees-of-freedom and RSS
+        K <- length(df$lambda)
+        lambdasMat[i, 1:K] <- df$lambda
+        dfsMat[i, 1:K] <- unlist(df$df)
+        RSSMat[i, 1:K] <- df$RSS
+      }
+      idx <- suppressWarnings(which(dfsMat == max(dfsMat, na.rm = TRUE), arr.ind = TRUE))
+      if (dim(idx)[1] == 0)
+        sigma2 <- NA
+      else
+        sigma2 <- RSSMat[idx[1, 1], idx[1, 2]] / (length(y) - dfsMat[idx[1, 1], idx[1, 2]])
+      if (ic == "BIC")
+        IC <- compute_BIC(y = y, dfA = dfsMat, RSS = RSSMat, sigma2 = sigma2)
+      else if (ic == "AIC")
+        IC <- compute_AIC(y = y, dfA = dfsMat, RSS = RSSMat, sigma2 = sigma2)
+      else if (ic == "Cp")
+        IC <- compute_Cp(y = y, dfA = dfsMat, RSS = RSSMat, sigma2 = sigma2)
+      rownames(IC) <- alphas
+      opt <-  suppressWarnings(which(IC == min(IC, na.rm = TRUE), arr.ind = TRUE))
+      if (dim(opt)[1] == 0) {
+        return(list(IC = IC, lambda = lambdasMat[1, 1], alpha = alphas[1]))
+        warning("Computation of none of the information criteria is resolved. First alpha and lambda are used as optimum.")
+      }
+      else {
+        return(list(IC = IC, lambda = lambdasMat[opt[1, 1], opt[1, 2]], alpha = alphas[opt[1, 1]]))
+      }
     }
 
     # retrieve optimal alphas and lambdas
@@ -487,7 +487,7 @@ run_sento_model <- compiler::cmpfun(.run_sento_model)
   if (nCore > 1) {
     cl <- parallel::makeCluster(min(parallel::detectCores(), nCore))
     doParallel::registerDoParallel(cl)
-    regsOpt <- foreach::foreach(i = start:nIter) %dopar% {
+    regsOpt <- foreach::foreach(i = start:nIter, .export = c("run_sento_model")) %dopar% {
       out <- run_sento_model(
         sentomeasures, y, x, h, alphas = alphas, lambdas = lambdas, intercept = intercept,
         trainWindow = trainWindow, testWindow = testWindow, oos = oos, type = type, do.progress = FALSE,
