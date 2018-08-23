@@ -432,16 +432,6 @@ compute_stats <- function(sentomeasures) {
 #     return(compute_Cp(y, dfA, RSS, sigma2))
 # }
 
-compute_df_full <- function(reg, y, x, alpha) {
-  lambdas <- reg$lambda
-  xScaled <- scale(x)
-  xA <- lapply(1:length(lambdas), function(j) return(as.matrix(xScaled[, which(reg$beta[, j] != 0)])))
-  dfA <- compute_df(alpha, lambdas, xA) # C++ implementation
-  yEst <- stats::predict(reg, newx = x)
-  RSS <- apply(yEst, 2, FUN = function(est) sum((y - est)^2))
-  return(list(lambda = lambdas, df = dfA, RSS = RSS))
-}
-
 compute_BIC <- function(y, dfA, RSS, sigma2) { # BIC-like criterion
   BIC <- RSS/(nrow(y) * sigma2) + (log(nrow(y))/nrow(y)) * dfA
   return(BIC)

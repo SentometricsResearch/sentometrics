@@ -60,7 +60,7 @@ ctrM9 <- ctrM8
 ctrM9$nSample <- N - 1 - 2 + 1
 
 ctrM10 <- ctr_model(model = "gaussian", type = "Cp", h = 1, alphas = 0,
-                    nSample = nSample, do.iter = TRUE, start = 2, nCore = 2)
+                    nSample = nSample, do.iter = TRUE, start = 2, nCore = 4)
 out10 <- sento_model(sentomeasures, y, x = x, ctr = ctrM10)
 
 ctrM11 <- ctr_model(model = "gaussian", type = "Cp", h = 1, alphas = 1,
