@@ -221,10 +221,11 @@ sento_measures<- function(sentocorpus, lexicons, ctr) {
 #'
 #' @author Samuel Borms
 #'
-#' @description Structures provided lexicon(s) and potentially integrates valence words. One can also provide (part of) the
-#' built-in lexicons from \code{data("list_lexicons")} or a built-in valence word list from \code{data("list_valence_shifters")}
-#' as arguments. Part of this function mimicks the \code{\link[sentimentr]{as_key}} function from the \pkg{sentimentr} package
-#' to make the output coherent, convert all words to lowercase and check for duplicates.
+#' @description Structures provided lexicon(s) and optionally valence words. One can for example combine (part of) the
+#' built-in lexicons from \code{data("list_lexicons")} with other lexicons, and add one of the built-in valence word lists
+#' from \code{data("list_valence_shifters")}. This function makes the output coherent, by converting all words to
+#' lowercase and checking for duplicates. All entries consisting of more than one word are discarded, as required for
+#' bag-of-words sentiment analysis.
 #'
 #' @param lexiconsIn a named \code{list} of (raw) lexicons, each element as a \code{data.frame} or a \code{data.table} with
 #' respectively a words column and a polarity score column. Alternatively, a subset of the already formatted built-in lexicons
@@ -232,7 +233,7 @@ sento_measures<- function(sentocorpus, lexicons, ctr) {
 #' built-in lexicons want to be used (with \emph{no} valence shifters), one can simply supply \code{list_lexicons[c(...)]} as
 #' an argument to either \code{\link{sento_measures}} or \code{\link{compute_sentiment}}. However, it is strongly recommended
 #' to pass all lexicons (and a valence word list) to this function first, in any case.
-#' @param valenceIn a single valence word list as a \code{data.frame} or a \code{data.table} with respectively a words column,
+#' @param valenceIn a single valence word list as a \code{data.table} or a \code{data.frame} with respectively a words column,
 #' and a score column. This argument can be one of the already formatted built-in valence word lists accessible via
 #' \code{list_valence_shifters}. A word that appears in both a lexicon and the valence word list is prioritized as a
 #' valence shifter. If \code{NULL}, no valence word list is part of this function's output, and is thus not applied in the
@@ -297,12 +298,12 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
     names(lexiconsNeg) <- paste0(names(lexicons), "_NEG")
     lexicons <- c(lexiconsPos, lexiconsNeg)
   }
-  lexicons <- lapply(lexicons, function(l) {l$x <- stringi::stri_replace_all(l$x, "_", regex = "\\s+"); return(l)})
   if (!is.null(valenceIn)) {
     names(valenceIn) <- c("x", "y")
     valenceIn$x <- stringi::stri_trans_tolower(valenceIn$x)
-    lexicons[["valence"]] <- valenceIn[!duplicated(valenceIn$x), ]
+    lexicons[["valence"]] <- as.data.table(valenceIn[!duplicated(valenceIn$x), ])
   }
+  lexicons <- lapply(lexicons, function(l) l[!stringi::stri_detect(l$x, regex = "\\s+"), ])
 
   return(lexicons)
 }

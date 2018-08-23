@@ -16,6 +16,7 @@
 - expanded set of unit tests, included a coverage badge, and added **`covr`** to Suggests
 - reimplementation of how valence shifters are integrated into the `compute_sentiment()` function, by writing part of the code in **`Rcpp`** relying on **`RcppParallel`** (added to Imports), and removing related but now abundant manipulations and documentation in for example the `setup_lexicons()` function
 - dropped the `dfm` argument from the `compute_sentiment()` and `ctr_agg()` functions, and altered the input and behaviour of the `nCore` argument of these same two functions
+- trimmed the `list_lexicons` and `list_valence_shifters` built--in word lists by keeping only unigrams, and included same trimming procedure in the `setup_lexicons()` function
 
 ## sentometrics 0.4.0
 
@@ -26,7 +27,7 @@
 - renamed the function `extract_peakdocs()` to `peakdocs()` for brevity
 - renamed `lexicons` to `list_lexicons`, and `valence` to `list_valence_shifters` 
 - the `stats` element of a `sentomeasures` object is now also updated in `measures_fill()`
-- changed `"_eng"` to `"_en"`' in `list_lexicons` and `list_valence_shifters` objects, to be in accordance with two-letter ISO language naming
+- changed `"_eng"` to `"_en"`' in `list_lexicons` and `list_valence_shifters` objects, to be in accordance with two--letter ISO language naming
 - changed `"valence_language"` naming to `"language"` in `list_valence_shifters` object
 - the `compute_sentiment()` function now also accepts a **`quanteda`** `corpus` object and a `character` vector
 - the `add_features()` function now also accepts a **`quanteda`** `corpus` object
@@ -47,13 +48,13 @@
 - modified R Depends from 3.4.2 to 3.3.0, and omitted import of **`sentimentr`**
 - word count per document now determined based on a separate tokenisation
 - improved valence shifters search (modified `incluce_valence()` helper function)
-- new option added for within-document aggregation (`"proportionalPol"`)
-- now correct pass-through of `dfm` argument in `ctr_agg()`
+- new option added for within--document aggregation (`"proportionalPol"`)
+- now correct pass--through of `dfm` argument in `ctr_agg()`
 - `select_measures()` simplified, but `toSelect` argument expanded
 - calculation in `to_global()` changed (see vignette)
-- improved `add_features()`: regex and non-binary (between 0 and 1) allowed
+- improved `add_features()`: regex and non--binary (between 0 and 1) allowed
 - all texts and lexicons now automatically to lowercase for sentiment calculation
-- (re)translation of built-in lexicons and valence word lists
+- (re)translation of built--in lexicons and valence word lists
 - small documentation clarifications and fixes
 - new vignette and run_vignette.R script
 - shortened project page (no code example anymore)
