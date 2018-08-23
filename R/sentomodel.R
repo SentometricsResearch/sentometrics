@@ -1,4 +1,36 @@
 
+extract_optim_params <- function(dfs, y, ic, alphas) {
+  N <- max(sapply(dfs, function(df) return(length(df$lambda))))
+  lambdasMat <- dfsMat <- RSSMat <- matrix(NA, nrow = length(dfs), ncol = N)
+  for (i in 1:length(dfs)) { # loop across alphas
+    df <- dfs[[i]] # list of lambdas, degrees-of-freedom and RSS
+    K <- length(df$lambda)
+    lambdasMat[i, 1:K] <- df$lambda
+    dfsMat[i, 1:K] <- unlist(df$df)
+    RSSMat[i, 1:K] <- df$RSS
+  }
+  idx <- suppressWarnings(which(dfsMat == max(dfsMat, na.rm = TRUE), arr.ind = TRUE))
+  if (dim(idx)[1] == 0)
+    sigma2 <- NA
+  else
+    sigma2 <- RSSMat[idx[1, 1], idx[1, 2]] / (length(y) - dfsMat[idx[1, 1], idx[1, 2]])
+  if (ic == "BIC")
+    IC <- compute_BIC(y, dfsMat, RSSMat, sigma2)
+  else if (ic == "AIC")
+    IC <- compute_AIC(y, dfsMat, RSSMat, sigma2)
+  else if (ic == "Cp")
+    IC <- compute_Cp(y, dfsMat, RSSMat, sigma2)
+  rownames(IC) <- alphas
+  opt <-  suppressWarnings(which(IC == min(IC, na.rm = TRUE), arr.ind = TRUE))
+  if (dim(opt)[1] == 0) {
+    return(list(IC = IC, lambda = lambdasMat[1, 1], alpha = alphas[1]))
+    warning("Computation of none of the information criteria is resolved. First alpha and lambda are used as optimum.")
+  }
+  else {
+    return(list(IC = IC, lambda = lambdasMat[opt[1, 1], opt[1, 2]], alpha = alphas[opt[1, 1]]))
+  }
+}
+
 #' Set up control for sentiment-based sparse regression modelling
 #'
 #' @author Samuel Borms, Keven Bluteau
@@ -41,8 +73,8 @@
 #' @param start a positive \code{integer} to indicate at which point the iteration has to start (ignored if
 #' \code{do.iter = FALSE}). For example, given 100 possible iterations, \code{start = 70} leads to model estimations
 #' only for the last 31 samples.
-#' @param nCore a single \code{numeric} at least equal to 1 to indicate the number of cores to use for a parallel iterative
-#' model estimation (\code{do.iter = TRUE}). We use the \code{\%dopar\%} construct from the \pkg{foreach} package. By default,
+#' @param nCore a positive \code{integer} to indicate the number of cores to use for a parallel iterative model
+#' estimation (\code{do.iter = TRUE}). We use the \code{\%dopar\%} construct from the \pkg{foreach} package. By default,
 #' \code{nCore = 1}, which implies no parallelization. No progress statements are displayed whatsoever when \code{nCore > 1}.
 #' For cross-validation models, parallelization can also be carried out for a single-shot model (\code{do.iter = FALSE}),
 #' whenever a parallel backend is set up. See the examples in \code{\link{sento_model}}.
@@ -83,6 +115,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 
   if (length(model) > 1) model <- model[1]
   if (length(type) > 1) type <- type[1]
+  if (length(nCore) > 1) nCore <- nCore[1]
 
   err <- NULL
   if (!(model %in% c("gaussian", "binomial", "multinomial"))) {
@@ -140,7 +173,8 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
     err <- c(err, "The 'nCore' argument should be a numeric vector of length 1.")
   }
   if (is.numeric(nCore) && nCore < 1) {
-    err <- c(err, "The 'nCore' argument should be least 1.")
+    nCore <- 1
+    warning("The 'nCore' argument is set to 1.")
   }
   if (model %in% c("binomial", "multinomial")) do.difference <- FALSE
   if (!is.logical(do.difference)) {
@@ -400,11 +434,18 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
       }
       reg <- glmnet::glmnet(x = xx, y = yy, penalty.factor = penalty, intercept = intercept,
                             alpha = alpha, lambda = lambdas, standardize = TRUE, family = family)
-      dfs[[i]] <- compute_df_full(reg, yy, xx, alpha)
+      lambdas <- reg$lambda
+      xScaled <- scale(xx)
+      xA <- lapply(1:length(lambdas), function(j) return(as.matrix(xScaled[, which(reg$beta[, j] != 0)])))
+      yEst <- stats::predict(reg, newx = xx)
+      dfs[[i]] <- list(lambda = lambdas,
+                       df = compute_df(alpha, lambdas, xA), # C++ implementation
+                       RSS = apply(yEst, 2, FUN = function(est) sum((yy - est)^2)))
+      # dfs[[i]] <- compute_df_full(reg, yy, xx, alpha)
     }
 
     # retrieve optimal alphas and lambdas
-    params <- choose_optim_params(dfs, yy, type, alphas)
+    params <- extract_optim_params(dfs, yy, type, alphas)
     lambdaOpt <- params$lambda
     alphaOpt <- params$alpha
 
@@ -432,48 +473,6 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
 
 #' @importFrom compiler cmpfun
 run_sento_model <- compiler::cmpfun(.run_sento_model)
-
-compute_df_full <- function(reg, y, x, alpha) {
-  lambdas <- reg$lambda
-  xScaled <- scale(x)
-  xA <- lapply(1:length(lambdas), function(j) return(as.matrix(xScaled[, which(reg$beta[, j] != 0)])))
-  dfA <- compute_df(alpha, lambdas, xA) # C++ implementation
-  yEst <- stats::predict(reg, newx = x)
-  RSS <- apply(yEst, 2, FUN = function(est) sum((y - est)^2))
-  return(list(lambda = lambdas, df = dfA, RSS = RSS))
-}
-
-choose_optim_params <- function(dfs, y, ic, alphas) {
-  N <- max(sapply(dfs, function(df) return(length(df$lambda))))
-  lambdasMat <- dfsMat <- RSSMat <- matrix(NA, nrow = length(dfs), ncol = N)
-  for (i in 1:length(dfs)) { # loop across alphas
-    df <- dfs[[i]] # list of lambdas, degrees-of-freedom and RSS
-    K <- length(df$lambda)
-    lambdasMat[i, 1:K] <- df$lambda
-    dfsMat[i, 1:K] <- unlist(df$df)
-    RSSMat[i, 1:K] <- df$RSS
-  }
-  idx <- suppressWarnings(which(dfsMat == max(dfsMat, na.rm = TRUE), arr.ind = TRUE))
-  if (dim(idx)[1] == 0)
-    sigma2 <- NA
-  else
-    sigma2 <- RSSMat[idx[1, 1], idx[1, 2]] / (length(y) - dfsMat[idx[1, 1], idx[1, 2]])
-  if (ic == "BIC")
-    IC <- compute_BIC(y, dfsMat, RSSMat, sigma2)
-  else if (ic == "AIC")
-    IC <- compute_AIC(y, dfsMat, RSSMat, sigma2)
-  else if (ic == "Cp")
-    IC <- compute_Cp(y, dfsMat, RSSMat, sigma2)
-  rownames(IC) <- alphas
-  opt <-  suppressWarnings(which(IC == min(IC, na.rm = TRUE), arr.ind = TRUE))
-  if (dim(opt)[1] == 0) {
-    return(list(IC = IC, lambda = lambdasMat[1, 1], alpha = alphas[1]))
-    warning("Computation of information criteria not resolved. First alpha and lambda are used as optimum.")
-  }
-  else {
-    return(list(IC = IC, lambda = lambdasMat[opt[1, 1], opt[1, 2]], alpha = alphas[opt[1, 1]]))
-  }
-}
 
 #' @importFrom foreach %dopar%
 .run_sento_model_iter <- function(sentomeasures, y, x, h, family, intercept, alphas, lambdas,
