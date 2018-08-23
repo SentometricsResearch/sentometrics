@@ -12,17 +12,17 @@ The package was first created during a [Google Summer of Code 2017](https://gith
 Below represent the typical **`sentometrics`** package workflow, and the associated output objects and functions. The steps are generally carried out linearly, but not necessarily so. For example, the model information from steps 4 and 5 can be exploited to further merge the sentiment measures in step 3. This serves as a broad taxonomy of what can be done and with which functions.
 
 **Step 1**: Acquire and pre--process a selection of texts and generate relevant features
-------    
+
 **_Functions:_** `sento_corpus()`, `add_features()`, and `to_sentocorpus()`. 
 
 **Outputs** a `sentocorpus` object.
 
 **Step 2**: Choose lexicons and compute document--level textual sentiment
-------    
+
 **_Functions:_** `setup_lexicons()`, and `compute_sentiment()`.
 
 **Step 3**: Aggregate the sentiment into multiple textual sentiment time series
-------    
+
 **_Functions:_** `ctr_agg()`, `sento_measures()`, `plot()`, `perform_agg()`, `diff()`, `scale()`, and `summary()`.
 
 A bunch of functions to manipulate the sentiment measures are available (`measures_merge()`, `measures_global()`, `measures_subset()`, `measures_select()`, `measures_delete()`, and `measures_fill()`), as well as a number of convenient extractor functions (`nobs()`, `nmeasures()`, `get_dimensions()`, and `get_dates()`). Make use of them to facilitate your analysis!
@@ -30,13 +30,13 @@ A bunch of functions to manipulate the sentiment measures are available (`measur
 **Outputs** a `sentomeasures` object.
 
 **Step 4**: Calibrate (sparse) regression model and perform (out--of--sample) predictions
-------    
+
 **_Functions:_** `ctr_model()`, and `sento_model()`.
 
 **Outputs** a `sentomodel` or a `sentomodeliter` object.
 
 **Step 5**: Evaluate prediction performance and retrieve sentiment attributions
-------    
+
 **_Functions:_** `predict()`, `retrieve_attributions()`, `plot_attributions()`, `peakdocs()`, `perform_MCS()`, `summary()`, and `plot()`.
 
 ## For you to read
