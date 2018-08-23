@@ -12,8 +12,8 @@
 #' @param type a \code{character} vector indicating which model calibration approach to use. Supports "\code{BIC}",
 #' "\code{AIC}" and "\code{Cp}" (Mallows's Cp) as sparse regression adapted information criteria (cf., ``On the `degrees of
 #' freedom' of the LASSO''; Zou, Hastie, Tibshirani et al., 2007), and "\code{cv}" (cross-validation based on the
-#' \code{\link[caret]{train}} function from the \pkg{caret} package). The adapted information criteria are currently
-#' only available for a linear regression.
+#' \code{\link[caret]{train}} function from the \pkg{caret} package). The adapted information criteria are only available
+#' for a linear regression.
 #' @param do.intercept a \code{logical}, \code{TRUE} by default fits an intercept.
 #' @param h an \code{integer} value that shifts the time series to have the desired prediction setup; \code{h = 0} means
 #' no change to the input data (nowcasting assuming data is aligned properly), \code{h > 0} shifts the dependent variable by
@@ -411,7 +411,7 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
                        RSS = apply(yEst, 2, FUN = function(est) sum((yy - est)^2)))
     }
 
-    # define extractor function for optimal alpha and lambda parameters
+    # define function that pinpoints optimal alpha and lambda parameters
     extract_optim_params <- function(dfs, y, ic, alphas) {
       N <- max(sapply(dfs, function(df) return(length(df$lambda))))
       lambdasMat <- dfsMat <- RSSMat <- matrix(NA, nrow = length(dfs), ncol = N)

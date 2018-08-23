@@ -56,7 +56,7 @@ plot.sentomeasures <- function(x, group = "all", ...) {
     measuresMelt <- melt(measures, id.vars = "date", variable.factor = FALSE)
     legendPos <- "none"
   } else {
-    measuresMelt <- to_long(measures)[, c("date", group, "value"), with = FALSE]
+    measuresMelt <- measures_to_long(measures)[, c("date", group, "value"), with = FALSE]
     measuresMelt <- measuresMelt[, list(value = mean(value)), by = list(date, variable = eval(parse(text = group)))]
     legendPos <- ifelse(length(unique(measuresMelt[["variable"]])) <= 12, "top", "none")
   }
@@ -295,7 +295,7 @@ get_measures <- function(sentomeasures, format = "wide") {
   if (format == "wide")
     sentomeasures[["measures"]]
   else if (format == "long")
-    to_long(sentomeasures[["measures"]])
+    measures_to_long(sentomeasures[["measures"]])
   else
     stop("The 'format' argument should be 'wide' or 'long'.")
 }
