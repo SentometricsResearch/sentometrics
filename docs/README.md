@@ -13,31 +13,31 @@ Below represent the typical **`sentometrics`** package workflow, and the associa
 
 **Step 1**: Acquire and pre--process a selection of texts and generate relevant features
 
-**_Functions:_** `sento_corpus()`, `add_features()`, and `to_sentocorpus()`. 
+_Functions:_ `sento_corpus()`, `add_features()`, and `to_sentocorpus()`. 
 
-**Outputs** a `sentocorpus` object.
+Outputs a **`sentocorpus`** **object**.
 
 **Step 2**: Choose lexicons and compute document--level textual sentiment
 
-**_Functions:_** `setup_lexicons()`, and `compute_sentiment()`.
+_Functions:_ `setup_lexicons()`, and `compute_sentiment()`.
 
 **Step 3**: Aggregate the sentiment into multiple textual sentiment time series
 
-**_Functions:_** `ctr_agg()`, `sento_measures()`, `plot()`, `perform_agg()`, `diff()`, `scale()`, and `summary()`.
+_Functions:_** `ctr_agg()`, `sento_measures()`, `plot()`, `perform_agg()`, `diff()`, `scale()`, and `summary()`.
 
 A bunch of functions to manipulate the sentiment measures are available (`measures_merge()`, `measures_global()`, `measures_subset()`, `measures_select()`, `measures_delete()`, and `measures_fill()`), as well as a number of convenient extractor functions (`nobs()`, `nmeasures()`, `get_dimensions()`, and `get_dates()`). Make use of them to facilitate your analysis!
 
-**Outputs** a `sentomeasures` object.
+Outputs a **`sentomeasures`** **object**.
 
 **Step 4**: Calibrate (sparse) regression model and perform (out--of--sample) predictions
 
-**_Functions:_** `ctr_model()`, and `sento_model()`.
+_Functions:_ `ctr_model()`, and `sento_model()`.
 
-**Outputs** a `sentomodel` or a `sentomodeliter` object.
+Outputs a **`sentomodel`** or a **`sentomodeliter`** **object**.
 
 **Step 5**: Evaluate prediction performance and retrieve sentiment attributions
 
-**_Functions:_** `predict()`, `retrieve_attributions()`, `plot_attributions()`, `peakdocs()`, `perform_MCS()`, `summary()`, and `plot()`.
+_Functions:_ `predict()`, `retrieve_attributions()`, `plot_attributions()`, `peakdocs()`, `perform_MCS()`, `summary()`, and `plot()`.
 
 ## For you to read
 
