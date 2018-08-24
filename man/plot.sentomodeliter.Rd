@@ -36,7 +36,7 @@ ctr <- ctr_agg(howWithin = "proportional", howDocs = "proportional",
 sentomeasures <- sento_measures(corpus, l, ctr)
 
 # prepare y variable
-y <- epu[epu$date >= get_dates(sentomeasures)[1], "index"]
+y <- epu[epu$date \%in\% get_dates(sentomeasures), "index"]
 length(y) == nobs(sentomeasures) # TRUE
 
 # estimate regression iteratively based on a sample of 60, skipping first 25 iterations

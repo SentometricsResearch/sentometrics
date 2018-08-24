@@ -245,7 +245,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #'
 #' # construct a sentomeasures object to start with
 #' corpusAll <- sento_corpus(corpusdf = usnews)
-#' corpus <- quanteda::corpus_subset(corpusAll, date >= "2004-01-01" & date < "2014-10-01")
+#' corpus <- quanteda::corpus_subset(corpusAll, date >= "2004-01-01")
 #' l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")])
 #' ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional",
 #'                howTime = c("equal_weight", "linear"),
@@ -253,7 +253,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' sentomeasures <- sento_measures(corpus, l, ctr)
 #'
 #' # prepare y and other x variables
-#' y <- epu[epu$date >= get_dates(sentomeasures)[1], ]$index
+#' y <- epu[epu$date %in% get_dates(sentomeasures), "index"]
 #' length(y) == nobs(sentomeasures) # TRUE
 #' x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
 #' colnames(x) <- c("x1", "x2")
@@ -290,7 +290,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' summary(out3)
 #'
 #' # a cross-validation based model for a binomial target
-#' yb <- epu[epu$date >= get_dates(sentomeasures)[1], ]$above
+#' yb <- epu[epu$date %in% get_dates(sentomeasures), "above"]
 #' ctrCVb <- ctr_model(model = "binomial", type = "cv", do.iter = FALSE,
 #'                     h = 0, alphas = c(0.10, 0.50, 0.90), trainWindow = 70,
 #'                     testWindow = 10, oos = 0, do.progress = TRUE)
@@ -708,7 +708,7 @@ print.sentomodeliter <- function(x, ...) {
 #' sentomeasures <- sento_measures(corpus, l, ctr)
 #'
 #' # prepare y variable
-#' y <- epu[epu$date >= get_dates(sentomeasures)[1], "index"]
+#' y <- epu[epu$date %in% get_dates(sentomeasures), "index"]
 #' length(y) == nobs(sentomeasures) # TRUE
 #'
 #' # estimate regression iteratively based on a sample of 60, skipping first 25 iterations
@@ -823,7 +823,7 @@ predict.sentomodel <- function(object, newx, type, offset = NULL, ...) {
 #' sentMeas2 <- sento_measures(corpus, l, ctr2)
 #'
 #' # prepare y and other x variables
-#' y <- epu[epu$date >= get_dates(sentMeas1)[1], "index"]
+#' y <- epu[epu$date %in% get_dates(sentMeas1), "index"]
 #' length(y) == nobs(sentMeas1) # TRUE
 #' x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
 #' colnames(x) <- c("x1", "x2")

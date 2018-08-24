@@ -57,14 +57,14 @@ usnews <- useconomynews
 save(usnews, file = "data/usnews.rda", compress = 'xz')
 # load("data/usnews.rda")
 
-######################### Economic Policy Uncertainty Index (1980-2014, monthly)
+######################### Economic Policy Uncertainty Index (1985-2018, monthly)
 
-epu <- readr::read_csv2("data-raw/US_EPU_1900-2014.csv")
+epu <- readr::read_csv2("data-raw/US_EPU_1985-2018.csv")
 epu$date <- as.Date(paste0(epu$Year, "-", epu$Month, "-01"))
 epu$Year <- epu$Month <- NULL
 colnames(epu)[1] <- "epu"
 epu <- epu[c("date", "epu")]
-epu <- as.data.frame(epu[epu$date >= "1980-01-01" & epu$date <= "2014-09-01", ])
+epu <- as.data.frame(epu[epu$date >= "1985-01-01" & epu$date <= "2018-07-01", ])
 plot(epu$epu, type = "l")
 
 yb <- ifelse(epu$epu >= mean(epu$epu), 1, -1)
@@ -176,6 +176,7 @@ prepare_word_list <- function(fileName, type, name) {
     w <- sentometrics:::sento_as_key(w) # makes absolutely sure duplicated words are removed
   }
   w <- w[w$x != "" & w$x != " " & w$x != "#naam", ]
+  w <- w[!stringi::stri_detect(w$x, regex = "\\s+"), ]
 
   fileOut <- paste0("data-raw/", name, ".rda")
 
@@ -232,33 +233,12 @@ form_word_list <- function(type) {
 }
 
 form_word_list(type = "lexicons")
-# load("data/lexicons.rda")
 
-# list_lexicons <- lexicons
-# save(list_lexicons, file = "data/list_lexicons.rda")
+load("data/lexicons.rda")
+list_lexicons <- lexicons
+save(list_lexicons, file = "data/list_lexicons.rda")
 
-######################### VALENCE WORD LISTS -- OLD
-
-# get negators from lexicon package
-negators <- lexicon::hash_valence_shifters[y == 1]
-negators$y <- as.numeric(negators$y)
-negators$t <- -1
-colnames(negators) <- c("x", "t", "y") # flip last two columns
-negators <- negators[seq(1, NROW(negators), by = 2), ]
-write.csv2(negators, file = "data-raw/valence-raw/NEGATORS.csv", row.names = FALSE)
-
-typeV <- "valence"
-v <- prepare_word_list("NEGATORS.csv", typeV, "valence_en"); "valence_en" <- v$w
-save(valence_en, file = v$file)
-v <- prepare_word_list("NEGATORS_fr.csv", typeV, "valence_fr"); "valence_fr" <- v$w
-save(valence_fr, file = v$file)
-v <- prepare_word_list("NEGATORS_nl.csv", typeV, "valence_nl"); "valence_nl" <- v$w
-save(valence_nl, file = v$file)
-
-form_word_list(type = "valence")
-# load("data/valence.rda")
-
-######################### VALENCE WORD LISTS -- NEW
+######################### VALENCE WORD LISTS
 
 load("data-raw/valence-raw/valShifters.rda")
 names(valShifters) <- c("en", "fr", "nl")
@@ -269,7 +249,9 @@ valShifters <- lapply(valShifters, function(v) {
   v[t == 2, "y"] <- 2
   v[t == 3, "y"] <- 0.5
   v$x <- as.character(v$x)
-  Encoding(v$x) <- "UTF-8"
+  # Encoding(v$x) <- "UTF-8"
+  v$t <- NULL
+  v <- v[!stringi::stri_detect(v$x, regex = "\\s+"), ]
   return(v)
 })
 list_valence_shifters <- valShifters
