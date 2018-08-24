@@ -15,7 +15,7 @@
 #' \item Feature generation: \code{\link{sento_corpus}}, \code{\link{add_features}}
 #' \item Sentiment computation and aggregation into sentiment measures: \code{\link{ctr_agg}},
 #' \code{\link{compute_sentiment}}, \code{\link{sento_measures}}, \code{\link{peakdocs}}, \code{\link{measures_merge}},
-#' \code{\link{measures_global}}, and a series of other \code{measures_xyz} and generic functions
+#' \code{\link{measures_global}}, and a series of other \code{measures_xyz}, generic and extractor functions
 #' \item Sparse modelling: \code{\link{ctr_model}}, \code{\link{sento_model}}
 #' \item Prediction and post-modelling analysis: \code{\link{predict.sentomodel}}, \code{\link{retrieve_attributions}},
 #' \code{\link{plot_attributions}}, \code{\link{perform_MCS}}
@@ -74,10 +74,11 @@
 #'
 #' @format A \code{list} with all built-in lexicons, appropriately named as \code{"NAME_language(_tr)"} .
 #'
-#' @source \href{http://www.lirmm.fr/~abdaoui/FEEL}{FEEL lexicon}
-#' @source \href{http://www.wjh.harvard.edu/~inquirer/spreadsheet_guide.htm}{GI lexicon}
-#' @source \href{https://study.sagepub.com/sites/default/files/1\%20Henry\%202008_0.pdf}{HENRY lexicon}
-#' @source \href{https://www3.nd.edu/~mcdonald/Word_Lists.html}{LM lexicon}
+#' @source \href{http://www.lirmm.fr/~abdaoui/FEEL}{FEEL lexicon}. Retrieved November 1, 2017.
+#' @source \href{http://www.wjh.harvard.edu/~inquirer/spreadsheet_guide.htm}{GI lexicon}. Retrieved November 1, 2017.
+#' @source \href{https://study.sagepub.com/sites/default/files/1\%20Henry\%202008_0.pdf}{HENRY lexicon}. Retrieved
+#' November 1, 2017.
+#' @source \href{https://www3.nd.edu/~mcdonald/Word_Lists.html}{LM lexicon}. Retrieved November 1, 2017.
 "list_lexicons"
 
 #' Built-in valence word lists
@@ -106,7 +107,7 @@
 #'
 #' @format A \code{list} with all built-in valence word lists, appropriately named.
 #'
-#' @source \code{\link[lexicon]{hash_valence_shifters}} (English valence shifters)
+#' @source \code{\link[lexicon]{hash_valence_shifters}} (English valence shifters). Retrieved August 24, 2018.
 "list_valence_shifters"
 
 #' Texts (not) relevant to the U.S. economy
@@ -137,7 +138,8 @@
 #'
 #' @format A \code{data.frame}, formatted as required to be an input for \code{\link{sento_corpus}}.
 #'
-#' @source \href{https://www.crowdflower.com/data-for-everyone/}{Economic News Article Tone and Relevance}
+#' @source \href{https://www.crowdflower.com/data-for-everyone/}{Economic News Article Tone and Relevance}. Retrieved
+#' November 1, 2017.
 "usnews"
 
 #' Monthly Economic Policy Uncertainty Index
@@ -145,9 +147,9 @@
 #' @docType data
 #'
 #' @description
-#' Monthly values of a news-based index of U.S. Economic Policy Uncertainty (EPU) between January 1980 and September
-#' 2014, including a binomial and a multinomial example series. For more information on its calculation, see
-#' \href{http://www.policyuncertainty.com/methodology.html}{this}. Following columns are present:
+#' Monthly values of the well-known news-based index of U.S. Economic Policy Uncertainty (EPU) between January 1985 and July
+#' 2018, including a binomial and a multinomial example series. For more information on its calculation, see
+#' \href{http://www.policyuncertainty.com/methodology.html}{here}. Following columns are present:
 #'
 #' \itemize{
 #'   \item date. Date as \code{"yyyy-mm-01"}.
@@ -165,9 +167,10 @@
 #' data("epu", package = "sentometrics")
 #' head(epu)
 #'
-#' @format A \code{data.frame} with 417 rows and 4 columns.
+#' @format A \code{data.frame} with 403 rows and 4 columns.
 #'
-#' @source \href{http://www.policyuncertainty.com/research.html}{Research on Economic Policy Uncertainty}
+#' @source \href{http://www.policyuncertainty.com/us_monthly.html}{Measuring Economic Policy Uncertainty} (by Scott Baker,
+#' Nicholas Bloom and Steven J. Davis). Retrieved August 24, 2018.
 "epu"
 
 #' @useDynLib sentometrics,.registration = TRUE

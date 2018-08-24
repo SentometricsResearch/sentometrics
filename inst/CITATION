@@ -1,5 +1,5 @@
 
-year <- "2018"
+year <- "2017"
 link <- "https://ssrn.com/abstract=3067734"
 
 citHeader("To cite the R package 'sentometrics' in publications use:")

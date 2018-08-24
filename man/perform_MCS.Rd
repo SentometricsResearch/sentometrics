@@ -46,7 +46,7 @@ ctr2 <- ctr_agg(howWithin = "counts", howDocs = "equal_weight",
 sentMeas2 <- sento_measures(corpus, l, ctr2)
 
 # prepare y and other x variables
-y <- epu[epu$date >= get_dates(sentMeas1)[1], "index"]
+y <- epu[epu$date \%in\% get_dates(sentMeas1), "index"]
 length(y) == nobs(sentMeas1) # TRUE
 x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
 colnames(x) <- c("x1", "x2")

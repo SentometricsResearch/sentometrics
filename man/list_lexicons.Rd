@@ -6,13 +6,14 @@
 \title{Built-in lexicons}
 \format{A \code{list} with all built-in lexicons, appropriately named as \code{"NAME_language(_tr)"} .}
 \source{
-\href{http://www.lirmm.fr/~abdaoui/FEEL}{FEEL lexicon}
+\href{http://www.lirmm.fr/~abdaoui/FEEL}{FEEL lexicon}. Retrieved November 1, 2017.
 
-\href{http://www.wjh.harvard.edu/~inquirer/spreadsheet_guide.htm}{GI lexicon}
+\href{http://www.wjh.harvard.edu/~inquirer/spreadsheet_guide.htm}{GI lexicon}. Retrieved November 1, 2017.
 
-\href{https://study.sagepub.com/sites/default/files/1\%20Henry\%202008_0.pdf}{HENRY lexicon}
+\href{https://study.sagepub.com/sites/default/files/1\%20Henry\%202008_0.pdf}{HENRY lexicon}. Retrieved
+November 1, 2017.
 
-\href{https://www3.nd.edu/~mcdonald/Word_Lists.html}{LM lexicon}
+\href{https://www3.nd.edu/~mcdonald/Word_Lists.html}{LM lexicon}. Retrieved November 1, 2017.
 }
 \usage{
 data("list_lexicons")
