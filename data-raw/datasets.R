@@ -249,7 +249,8 @@ valShifters <- lapply(valShifters, function(v) {
   v[t == 2, "y"] <- 2
   v[t == 3, "y"] <- 0.5
   v$x <- as.character(v$x)
-  # Encoding(v$x) <- "UTF-8"
+  Encoding(v$x) <- "latin1"
+  v$x <- iconv(v$x, "latin1", "UTF-8")
   v$t <- NULL
   v <- v[!stringi::stri_detect(v$x, regex = "\\s+"), ]
   return(v)
