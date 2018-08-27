@@ -36,7 +36,7 @@ the \code{sentomeasures} object accounted for in the estimation window.}
 \item{nVar}{the sum of the number of sentiment measures and other explanatory variables inputted.}
 \item{discarded}{a named \code{logical} vector of length equal to the number of sentiment measures, in which \code{TRUE}
 indicates that the particular sentiment measure has not been considered in the regression process. A sentiment measure is
-not considered when it is a duplicate of another, or when at least 25\% of the observations are equal to zero.}
+not considered when it is a duplicate of another, or when at least 50\% of the observations are equal to zero.}
 
 If \code{ctr$do.iter = TRUE}, a \code{sentomodeliter} object which is a \code{list} containing:
 \item{models}{all sparse regressions, i.e. separate \code{sentomodel} objects as above, as a \code{list} with as names the

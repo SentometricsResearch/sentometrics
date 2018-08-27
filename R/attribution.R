@@ -30,7 +30,7 @@ attribution_lags <- function(s, sentDates, seqDates, W, cols, sentomeasures, mea
                              attribsDocs, timeNames, do.normalize) {
   B <- sentomeasures$attribWeights$B
   nLags <- nrow(B)
-  namesLags <- paste0("lag_", (nLags - 1):0)
+  namesLags <- get_names_lags(nLags)
   attribsLag <- lapply(names(attribsDocs), function(d) {
     if (is.null(attribsDocs[[d]])) {
       doc <- data.table(date = "xxxx-yy-zz", attrib = 0) # throw-away template
@@ -41,10 +41,10 @@ attribution_lags <- function(s, sentDates, seqDates, W, cols, sentomeasures, mea
     lagsMissing <- which(!(datesLags %in% doc[["date"]]))
     setnames(doc, "date", "lag")
     if (length(lagsMissing) == 0) {
-      doc[, "lag" := paste0("lag_", ((nLags - 1):0))]
+      doc[, "lag" := namesLags]
       return(doc)
     }
-    if (length(lagsMissing) != nLags) doc[, "lag" := paste0("lag_", ((nLags - 1):0)[-lagsMissing])]
+    if (length(lagsMissing) != nLags) doc[, "lag" := namesLags[-lagsMissing]]
     datesMissing <- datesLags[lagsMissing]
     if (sentomeasures$fill == "latest") {
       attribFills <- lapply(seq_along(datesMissing), function(j) {
@@ -281,7 +281,7 @@ plot_attributions <- function(attributions, group = "features") {
   # melt attributions for plotting
   attributions <- attributions[[group]]
   attributionsMelt <- melt(attributions, id.vars = "date", variable.factor = FALSE)
-  attributionsMelt <- attributionsMelt[order(rank(variable))]
+  attributionsMelt <- attributionsMelt[order(rank(as.character(variable)))]
   legendPos <- ifelse(length(unique(attributionsMelt[["variable"]])) <= 12, "top", "none")
   p <- ggplot(data = attributionsMelt, aes(x = date, y = value, group = variable, color = variable)) +
     geom_area(aes(colour = variable, fill = variable), alpha = 1) +

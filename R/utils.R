@@ -202,10 +202,12 @@ setup_time_weights <- function(lag, how, ...) {
 #' @description Outputs the supported aggregation arguments. Call for information purposes only. Used within
 #' \code{\link{ctr_agg}} to check if supplied aggregation hows are supported.
 #'
-#' @details See the package's \href{https://ssrn.com/abstract=3067734}{vignette} for a thoughtful explanation of
-#' the different aggregation options. The \code{howWithin = "proportionalPol"} option divides each document's
-#' initial sentiment score by the number of polarized words found in the document (counting each word only once
-#' would it appear multiple times), instead of the total number of words which the \code{"proportional"} option gives.
+#' @details The \code{howWithin = "counts"} option multiplies the frequency of detected words
+#' with their associated polarity scores, then takes the sum of these values as sentiment per document, without any
+#' normalisation. The \code{howWithin = "proportionalPol"} option divides each document's initial sentiment score by the
+#' number of polarized words found in the document (counting each word only once would it appear multiple times), instead
+#' of the total number of words which the \code{howWithin = "proportional"} option gives. See the package's
+#' \href{https://ssrn.com/abstract=3067734}{vignette} for further explanation of all aggregation options.
 #'
 #' @return A list with the supported aggregation hows for arguments \code{howWithin} (\code{"words"}), \code{howDows}
 #' (\code{"docs"}) and \code{howTime} (\code{"time"}), to be supplied to \code{\link{ctr_agg}}.
@@ -284,7 +286,7 @@ align_variables <- function(y, sentomeasures, x, h, difference, i = 1, nSample =
   return(list(y = y, x = x, datesX = datesX))
 }
 
-clean_panel <- function(x, nx, threshold = 0.25) {
+clean_panel <- function(x, nx, threshold = 0.50) {
 
   # discards columns only from panel of sentiment measures based on a few simple rules
   # useful to simplify (to some extent) the penalized variables regression (cf. 'exclude')
@@ -544,5 +546,13 @@ convert_date <- function(date, by = "day") {
     date <- as.Date(date, format = "%Y-%m-%d")
   }
   return(date)
+}
+
+get_names_lags <- function(nLags) {
+  k <- nchar(nLags)
+  paste0("lag_",
+         sapply((nLags - 1):0, function(n) ifelse(nchar(n) == k,
+                                                  as.character(n),
+                                                  paste0(c(rep("0", k - nchar(n)), n), collapse = ""))))
 }
 
