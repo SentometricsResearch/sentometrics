@@ -216,7 +216,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' \item{nVar}{the sum of the number of sentiment measures and other explanatory variables inputted.}
 #' \item{discarded}{a named \code{logical} vector of length equal to the number of sentiment measures, in which \code{TRUE}
 #' indicates that the particular sentiment measure has not been considered in the regression process. A sentiment measure is
-#' not considered when it is a duplicate of another, or when at least 25\% of the observations are equal to zero.}
+#' not considered when it is a duplicate of another, or when at least 50\% of the observations are equal to zero.}
 #'
 #' @return If \code{ctr$do.iter = TRUE}, a \code{sentomodeliter} object which is a \code{list} containing:
 #' \item{models}{all sparse regressions, i.e. separate \code{sentomodel} objects as above, as a \code{list} with as names the
@@ -608,8 +608,7 @@ summary.sentomodel <- function(object, ...) {
                          length(sentomodel$trained$control$index[[1]]),
                          ", selection based on ", sentomodel$trained$metric, " metric")
   }
-  cat("\n")
-  cat("Model specifications \n")
+  cat("Model specification \n")
   cat(rep("-", 20), "\n \n")
   cat("Model type:", sentomodel$model, "\n")
   cat("Calibration:", printCalib, "\n")
@@ -620,15 +619,14 @@ summary.sentomodel <- function(object, ...) {
     cat("Non-zero coefficients \n")
     cat(rep("-", 20), "\n")
     print(nonzero_coeffs(reg))
-    cat("\n \n")
   } else {
     cat("Number of non-zero coefficients per level (excl. intercept, incl. non-sentiment variables) \n")
     cat(rep("-", 20), "\n")
     nonZeros <- as.data.frame(sentomodel$reg$dfmat)
     colnames(nonZeros) <- NULL
     print(nonZeros)
-    cat("\n \n")
   }
+  cat()
 }
 
 #' @export
@@ -650,8 +648,7 @@ summary.sentomodeliter <- function(object, ...) {
                          length(sentomodel$trained$control$index[[1]]),
                          ", selection based on ", sentomodel$trained$metric, " metric")
   }
-  cat("\n")
-  cat("Model specifications \n")
+  cat("Model specification \n")
   cat(rep("-", 20), "\n \n")
   cat("Model type:", sentomodel$model, "\n")
   cat("Calibration:", printCalib, "\n")
@@ -664,11 +661,12 @@ summary.sentomodeliter <- function(object, ...) {
   if (model == "gaussian") {
     cat("Mean directional accuracy:", round(sentomodeliter$performance$MDA, 2), "% \n")
     cat("Root mean squared prediction error:", round(sentomodeliter$performance$RMSFE, 2), "\n")
-    cat("Mean absolute deviation:", round(sentomodeliter$performance$MAD, 2), "\n \n")
+    cat("Mean absolute deviation:", round(sentomodeliter$performance$MAD, 2))
 
   } else {
-    cat("Accuracy:", sentomodeliter$performance$accuracy, "% \n \n")
+    cat("Accuracy:", sentomodeliter$performance$accuracy, "%")
   }
+  cat()
 }
 
 #' @export
