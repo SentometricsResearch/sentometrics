@@ -59,58 +59,12 @@
 #   return(lexiconsExp) # expanded lexicons (original + copied and negated/amplified/deamplified words and scores)
 # }
 
-#' Compute Almon polynomials
-#'
-#' @description Computes Almon polynomial weighting curves. Handy to self-select specific time aggregation weighting schemes
-#' for input in \code{\link{ctr_agg}}.
-#'
-#' @details The Almon polynomial formula implemented is:
-#' \eqn{(1 - (i/n)^{b})(i/n)^{B - b}}{(1 - (i/n)^b) * (i/n)^(B - b)}, where \eqn{i} is the lag index ordered from
-#' \eqn{n} to 1. The inverse is computed by changing \eqn{i/n} to \eqn{1 - i/n}.
-#'
-#' @param n a single \code{numeric} to indicate the length of the curve (the number of lags, cf., \emph{n}).
-#' @param orders a \code{numeric} vector as the sequence of the Almon orders (cf., \emph{b}). The maximum value
-#' corresponds to \emph{B}.
-#' @param do.inverse \code{TRUE} if the inverse Almon polynomials should be calculated as well.
-#' @param do.normalize \code{TRUE} if polynomials should be normalized to unity.
-#'
-#' @return A \code{data.frame} of all Almon polynomial weighting curves, of size \code{length(orders)} (times two if
-#' \code{do.inverse = TRUE}).
-#'
-#' @seealso \code{\link{ctr_agg}}
-#'
-#' @export
-almons <- function(n, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE) {
-  vals <- n:1 # first row is most lagged value
-  inv <- ifelse(do.inverse, 2, 1)
-  almons <- data.frame(matrix(nrow = n, ncol = length(orders) * inv))
-  colnames(almons) <- paste0("almon", rep(orders, rep(inv, length(orders))), c("", "_inv")[1:inv])
-  if (n == 1) {
-    almons[, ] <- 1
-    return(almons)
-  }
-  for (i in 1:length(orders)) {
-    b <- orders[i]
-    stdindex <- vals/max(vals)
-    if (do.inverse) {
-      stdindex <- cbind(stdindex, - stdindex + 1)
-      ind <- (i*2 - 1):(i*2)
-    } else {
-      ind <- i
-    }
-    almon <- (1 - (stdindex)^b) * stdindex^(max(orders) - b)
-    almons[, ind] <- almon
-  }
-  if (do.normalize) almons <- t(t(almons)/colSums(almons)) # make weights sum to 1 (if do.normalize is TRUE)
-  return(as.data.frame(almons))
-}
-
 #' Compute exponential weighting curves
 #'
 #' @description Computes exponential weighting curves. Handy to self-select specific time aggregation weighting schemes
 #' for input in \code{\link{ctr_agg}}.
 #'
-#' @param n a single \code{numeric} to indicate the length of the curve (the number of lags).
+#' @param n a single \code{numeric} to indicate the lag length.
 #' @param alphas a \code{numeric} vector of decay factors.
 #'
 #' @return A \code{data.frame} of exponential weighting curves per value of \code{alphas}.
@@ -132,20 +86,67 @@ exponentials <- function(n, alphas = seq(0.1, 0.5, by = 0.1)) {
   return(as.data.frame(exponentials))
 }
 
+#' Compute Almon polynomials
+#'
+#' @description Computes Almon polynomial weighting curves. Handy to self-select specific time aggregation weighting schemes
+#' for input in \code{\link{ctr_agg}}.
+#'
+#' @details The Almon polynomial formula implemented is:
+#' \eqn{(1 - (1 - i/n)^{b})(1 - i/n)^{B - b}}{(1 - (1 - i/n)^b) * (1 - i/n)^(B - b)}, where \eqn{i} is the lag index ordered from
+#' 1 to \eqn{n}. The inverse is computed by changing \eqn{i/n} to \eqn{1 - i/n}.
+#'
+#' @param n a single \code{numeric} to indicate the lag length (cf., \emph{n}).
+#' @param orders a \code{numeric} vector as the sequence of the Almon orders (cf., \emph{b}). The maximum value
+#' corresponds to \emph{B}.
+#' @param do.inverse \code{TRUE} if the inverse Almon polynomials should be calculated as well.
+#' @param do.normalize \code{TRUE} if polynomials should be normalized to unity.
+#'
+#' @return A \code{data.frame} of all Almon polynomial weighting curves, of size \code{length(orders)} (times two if
+#' \code{do.inverse = TRUE}).
+#'
+#' @seealso \code{\link{ctr_agg}}
+#'
+#' @export
+almons <- function(n, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE) {
+  vals <- (1:n) / n
+  inv <- ifelse(do.inverse, 2, 1)
+  almons <- data.frame(matrix(nrow = n, ncol = length(orders) * inv))
+  colnames(almons) <- paste0("almon", rep(orders, rep(inv, length(orders))), c("", "_inv")[1:inv])
+  if (n == 1) {
+    almons[, ] <- 1
+    return(almons)
+  }
+  for (i in 1:length(orders)) {
+    b <- orders[i]
+    stdindex <- 1 - vals
+    if (do.inverse) {
+      stdindex <- cbind(stdindex, - stdindex + 1)
+      ind <- (i*2 - 1):(i*2)
+    } else {
+      ind <- i
+    }
+    almon <- (1 - stdindex^b) * (stdindex)^(max(orders) - b)
+    almons[, ind] <- almon
+  }
+  if (do.normalize) almons <- t(t(almons)/colSums(almons)) # make weights sum to 1 (if do.normalize is TRUE)
+  return(as.data.frame(almons)) # first row is most lagged value
+}
+
 #' Compute beta weighting curves
 #'
-#' @description Computes beta weighting curves as in Ghysels et al. (2007). Handy to self-select specific time
+#' @description Computes Beta weighting curves as in Ghysels et al. (2007). Handy to self-select specific time
 #' aggregation weighting schemes for input in \code{\link{ctr_agg}}.
 #'
 #' @details The Beta weighting abides by following formula:
 #' \eqn{f(i/n; a, b) / \sum(i/n; a, b)}, where \eqn{i} is the lag index ordered from
 #' 1 to \eqn{n}, \eqn{a} and \eqn{b} are two decay parameters, and
-#' \eqn{f(x; a, b) = (x^(a - 1)(1 - x)^(b - 1)T(a + b)) / (T(a)T(b))}, where \eqn{T(.)} is
+#' \eqn{f(x; a, b) = (x^{a - 1}(1 - x)^{b - 1}T(a + b)) / (T(a)T(b))}{f(x; a, b)
+#'  = (x^(a - 1) * (1 - x)^(b - 1) * T(a + b)) / (T(a) * T(b))}, where \eqn{T(.)} is
 #' the \code{\link{gamma}} function.
 #'
-#' @param n a single \code{numeric} to indicate the length of the curve (the number of lags).
-#' @param a a \code{numeric} vector of the first parameter.
-#' @param b a \code{numeric} vector of the second parameter.
+#' @param n a single \code{numeric} to indicate the lag length (cf., \emph{n}).
+#' @param a a \code{numeric} as the first parameter (cf., \emph{a}).
+#' @param b a \code{numeric} as the second parameter (cf., \emph{b}).
 #'
 #' @return A \code{data.frame} of beta weighting curves per combination of \code{a} and \code{b}.
 #'
@@ -216,7 +217,7 @@ setup_time_weights <- function(lag, how, ...) {
 #'
 #' @export
 get_hows <- function() {
-  words <- c("proportional", "proportionalPol", "tf-idf", "counts")
+  words <- c("proportional", "proportionalPol", "counts")
   docs <- c("equal_weight", "proportional")
   time <- c("equal_weight", "almon", "beta", "linear", "exponential", "own")
   return(list(words = words, docs = docs, time = time))
@@ -468,13 +469,36 @@ measures_to_long <- function(measures) { # changes format of sentiment measures 
 
 is_names_correct <- function(x) !any(stringi::stri_detect(x, regex = "-"))
 
-validate_nCore <- function(nCore) {
-  if (any(nCore < 1)) {
-    nCore[which(nCore < 1)] <- 1
-    warning("Nonpositive elements in the 'nCore' argument are set to 1.", call. = FALSE)
+check_nCore <- function(nCore) {
+  # if (any(nCore < 1)) {
+  #   nCore[which(nCore < 1)] <- 1
+  #   warning("Nonpositive elements in the 'nCore' argument are set to 1.", call. = FALSE)
+  # }
+  if (length(nCore) == 1 && is.numeric(nCore) && nCore < 1) {
+    nCore <- 1
+    warning("The 'nCore' argument is set to 1.")
   }
   nCore
 }
+
+# #' @importFrom foreach %dopar%
+# tokenise_texts_parallel <- function(x, nCore) {
+#   cl <- parallel::makeCluster(min(parallel::detectCores(), nCore))
+#   doParallel::registerDoParallel(cl)
+#   N <- ifelse(inherits(x, "corpus"), quanteda::ndoc(x), length(x))
+#   blocks <- seq(0, N + 1, by = floor(N/nCore))
+#   blocks[length(blocks)] <- N
+#   tok <- foreach::foreach(i = 1:(length(blocks) - 1), .combine = '+') %dopar% {
+#     tokBit <- quanteda::tokens(
+#       x[(blocks[i] + 1):blocks[i + 1]], what = "fasterword", ngrams = 1,
+#       remove_numbers = TRUE, remove_punct = TRUE, remove_symbols = TRUE
+#     )
+#     return(tokBit)
+#   }
+#   parallel::stopCluster(cl)
+#   foreach::registerDoSEQ()
+#   tok
+# }
 
 nonzero_coeffs <- function(reg) {
   coeffs <- stats::coef(reg)

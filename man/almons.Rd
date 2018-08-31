@@ -7,7 +7,7 @@
 almons(n, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE)
 }
 \arguments{
-\item{n}{a single \code{numeric} to indicate the length of the curve (the number of lags, cf., \emph{n}).}
+\item{n}{a single \code{numeric} to indicate the lag length (cf., \emph{n}).}
 
 \item{orders}{a \code{numeric} vector as the sequence of the Almon orders (cf., \emph{b}). The maximum value
 corresponds to \emph{B}.}
@@ -26,8 +26,8 @@ for input in \code{\link{ctr_agg}}.
 }
 \details{
 The Almon polynomial formula implemented is:
-\eqn{(1 - (i/n)^{b})(i/n)^{B - b}}{(1 - (i/n)^b) * (i/n)^(B - b)}, where \eqn{i} is the lag index ordered from
-\eqn{n} to 1. The inverse is computed by changing \eqn{i/n} to \eqn{1 - i/n}.
+\eqn{(1 - (1 - i/n)^{b})(1 - i/n)^{B - b}}{(1 - (1 - i/n)^b) * (1 - i/n)^(B - b)}, where \eqn{i} is the lag index ordered from
+1 to \eqn{n}. The inverse is computed by changing \eqn{i/n} to \eqn{1 - i/n}.
 }
 \seealso{
 \code{\link{ctr_agg}}

@@ -241,9 +241,9 @@ summary.sentomeasures <- function(object, ...) {
 #' @export
 print.sentomeasures <- function(x, ...) {
   sentomeasures <- x
-  cat("A sentomeasures object that carries with it", nmeasures(sentomeasures),
-      "distinct textual sentiment time series of", nobs(sentomeasures),
-      "observations each.")
+  cat("A sentomeasures object (", nmeasures(sentomeasures),
+      " textual sentiment time series, ", nobs(sentomeasures),
+      " observations).", sep = "")
 }
 
 #' Get the dates of the sentiment measures/time series

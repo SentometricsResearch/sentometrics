@@ -32,7 +32,7 @@
 #' @param oos a non-negative \code{integer} to indicate the number of periods to skip from the end of the training sample
 #' up to the out-of-sample prediction(s). This is either used in the cross-validation based calibration approach
 #' (if \code{type = } "\code{cv}"), or for the iterative out-of-sample prediction analysis (if \code{do.iter = TRUE}). For
-#' instance, given \eqn{t}, the (first) out-of-simple prediction is computed at \eqn{t + oos + 1}.
+#' instance, given \eqn{t}, the (first) out-of-sample prediction is computed at \eqn{t + oos + 1}.
 #' @param do.iter a \code{logical}, \code{TRUE} induces an iterative estimation of models at the given \code{nSample} size and
 #' performs the associated out-of-sample prediction exercise through time.
 #' @param do.progress a \code{logical}, if \code{TRUE} progress statements are displayed during model calibration.
@@ -83,7 +83,6 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 
   if (length(model) > 1) model <- model[1]
   if (length(type) > 1) type <- type[1]
-  if (length(nCore) > 1) nCore <- nCore[1]
 
   err <- NULL
   if (!(model %in% c("gaussian", "binomial", "multinomial"))) {
@@ -137,13 +136,10 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
       err <- c(err, "('trainWindow' + 'oos' + 'testWindow') >= 'nSample'. Adjust windows selection accordingly.")
     }
   }
-  if (!is.numeric(nCore)) {
-    err <- c(err, "The 'nCore' argument should be a numeric vector of length 1.")
+  if (length(nCore) != 1 || !is.numeric(nCore)) {
+    err <- c(err, "The 'nCore' argument should be a numeric vector of size one.")
   }
-  if (is.numeric(nCore) && nCore < 1) {
-    nCore <- 1
-    warning("The 'nCore' argument is set to 1.")
-  }
+  nCore <- check_nCore(nCore)
   if (model %in% c("binomial", "multinomial")) do.difference <- FALSE
   if (!is.logical(do.difference)) {
     err <- c(err, "The 'do.difference' argument should a logical.")
@@ -197,7 +193,8 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' a logistic regression, the response variable is either a \code{factor} or a \code{matrix} with the factors represented by
 #' the columns as binary indicators, with the second factor level or column as the reference class in case of a binomial
 #' regression. No \code{NA} values are allowed.
-#' @param x a named \code{data.frame} with other explanatory variables as \code{numeric}, by default set to \code{NULL}.
+#' @param x a named \code{data.table}, \code{data.frame} or \code{matrix} with other explanatory variables as \code{numeric}, by
+#' default set to \code{NULL}.
 #' @param ctr output from a \code{\link{ctr_model}} call.
 #'
 #' @return If \code{ctr$do.iter = FALSE}, a \code{sentomodel} object which is a \code{list} containing:
@@ -206,7 +203,8 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' \item{x}{a \code{matrix} of the values used in the regression for all explanatory variables.}
 #' \item{alpha}{calibrated alpha.}
 #' \item{lambda}{calibrated lambda.}
-#' \item{trained}{output from \code{\link[caret]{train}} call (if \code{ctr$type =} "\code{cv}").}
+#' \item{trained}{output from \code{\link[caret]{train}} call (if \code{ctr$type =} "\code{cv}"). There is no such
+#' output if the control parameters \code{alphas} and \code{lambdas} both specified one value.}
 #' \item{ic}{a \code{list} composed of two elements: under \code{"criterion"}, the type of information criterion used in the
 #' calibration, and under \code{"matrix"}, a \code{matrix} of all information criterion values for \code{alphas} as rows
 #' and the respective lambda values as columns (if \code{ctr$type !=} "\code{cv}"). Any \code{NA} value in the latter
@@ -247,7 +245,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' corpusAll <- sento_corpus(corpusdf = usnews)
 #' corpus <- quanteda::corpus_subset(corpusAll, date >= "2004-01-01")
 #' l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")])
-#' ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional",
+#' ctr <- ctr_agg(howWithin = "counts", howDocs = "proportional",
 #'                howTime = c("equal_weight", "linear"),
 #'                by = "month", lag = 3)
 #' sentomeasures <- sento_measures(corpus, l, ctr)
@@ -302,9 +300,13 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 sento_model <- function(sentomeasures, y, x = NULL, ctr) {
   check_class(sentomeasures, "sentomeasures")
 
+  if (!is.null(x)) {
+    stopifnot(is.data.frame(x) || is.matrix(x))
+    stopifnot(!is.null(colnames(x)))
+    stopifnot(unique(apply(x, 2, class)) == "numeric")
+  }
   if (any(is.na(y))) stop("No NA values are allowed in y.")
-  nrows <- c(nobs(sentomeasures), ifelse(is.null(nrow(y)), length(y), nrow(y)), nrow(x))
-  if (length(unique(nrows)) != 1)
+  if (length(unique(c(nobs(sentomeasures), ifelse(is.null(nrow(y)), length(y), nrow(y)), nrow(x)))) != 1)
     stop("Number of rows or length for y, x and measures in sentomeasures must be equal.")
   if (sum(nmeasures(sentomeasures) + ifelse(is.null(x), 0, ncol(x))) < 2)
     stop("There should be at least two explanatory variables out of sentomeasures and x combined.")
@@ -379,17 +381,20 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
     # align training metric based on whether family is a linear or classification model
     metric <- ifelse(family == "gaussian", "RMSE", "Accuracy")
 
-    if (do.progress == TRUE) cat("Training model... ")
-    trained <- caret::train(x = xx, y = yyy, method = "glmnet", family = family,
-                            standardize = TRUE, penalty.factor = penalty,
-                            trControl = ctrTrain, tuneGrid = tuneGrid, metric = metric)
-    if (do.progress == TRUE) cat("Done.", "\n")
-
-    # retrieve optimal alphas and lambdas
-    alphaOpt <- as.numeric(trained$bestTune[1])
-    lambdaOpt <- as.numeric(trained$bestTune[2])
-
-    outAdd <- list(trained = trained)
+    if (nrow(tuneGrid) == 1) {
+      alphaOpt <- tuneGrid[1, 1]
+      lambdaOpt <- tuneGrid[1, 2]
+      outAdd <- NULL
+    } else {
+      if (do.progress == TRUE) cat("Training model... ")
+      trained <- caret::train(x = xx, y = yyy, method = "glmnet", family = family,
+                              standardize = TRUE, penalty.factor = penalty,
+                              trControl = ctrTrain, tuneGrid = tuneGrid, metric = metric)
+      if (do.progress == TRUE) cat("Done.", "\n")
+      alphaOpt <- as.numeric(trained$bestTune[1])
+      lambdaOpt <- as.numeric(trained$bestTune[2])
+      outAdd <- list(trained = trained)
+    }
   } else { # information criterion
     dfs <- as.list(numeric(length(alphas)))
     for (i in seq_along(alphas)) {
@@ -666,7 +671,7 @@ summary.sentomodeliter <- function(object, ...) {
   } else {
     cat("Accuracy:", sentomodeliter$performance$accuracy, "%")
   }
-  cat()
+  cat("\n")
 }
 
 #' @export
@@ -870,6 +875,7 @@ perform_MCS <- function(models, loss = c("DA", "errorSq", "AD", "accuracy"), ...
   if (loss %in% c("DA", "accuracy")) lossData <- abs(lossData - 1) # from accuracy to inaccuracy
   if (loss == "DA") lossData <- lossData[-1, ] # get rid of first NA values
   # get parameters for MCS calculation, plug in package's default values if nothing provided
+  if (any(duplicated(t(lossData)))) stop("Loss data across some of the models is duplicated.")
   dots <- list(...)
   alpha <- ifelse(is.null(dots$alpha), 0.15, dots$alpha)
   B <- ifelse(is.null(dots$B), 5000, dots$B)

@@ -3,11 +3,11 @@
 #'
 #' @author Samuel Borms
 #'
-#' @description Formalizes a collection of texts into a well-defined corpus object, by mainly calling the
-#' \code{\link[quanteda]{corpus}} function from the \pkg{quanteda} package. This package provides a fast text mining
-#' infrastructure; for more info, see \href{http://quanteda.io/index.html}{quanteda}. Their formal corpus structure is
-#' required for better memory management, corpus manipulation, and sentiment calculation. This function mainly performs
-#' a set of checks on the input data and prepares the corpus for further sentiment analysis.
+#' @description Formalizes a collection of texts into a well-defined corpus object derived from the
+#' \code{\link[quanteda]{corpus}} object. The \pkg{quanteda} package provides a fast text mining infrastructure,
+#' see \href{http://quanteda.io/index.html}{quanteda}. Their formal corpus structure brings better memory management and a
+#' handy corpus manipulation toolset. This function mainly performs a set of checks on the input data and prepares the
+#' corpus for further sentiment analysis.
 #'
 #' @details A \code{sentocorpus} object is a specialized instance of a \pkg{quanteda} corpus. In theory, all
 #' \pkg{quanteda} functions applicable to its corpus object can also be applied to a \code{sentocorpus} object. However,
@@ -16,20 +16,17 @@
 #' in other functions of the \pkg{sentometrics} package. There are functions, including \code{\link[quanteda]{corpus_sample}}
 #' or \code{\link[quanteda]{corpus_subset}}, that do not change the actual corpus structure and may come in handy. To add
 #' additional features, use \code{\link{add_features}}. Binary features are useful as a mechanism to select the
-#' texts which have to be integrated in the respective feature-based sentiment measure(s); beware however, the option
-#' \code{do.ignoreZeros} should be set to \code{TRUE} and the within-document aggregation still considers the entire corpus
-#' in case of \code{"tf-idf"} (see \code{\link{ctr_agg}}). Because of this (implicit) selection that can be performed, having
-#' complementary features (e.g., \code{"economy"} and \code{"noneconomy"}) makes sense.
+#' texts which have to be integrated in the respective feature-based sentiment measure(s), but applies only when
+#' \code{do.ignoreZeros = TRUE}. Because of this (implicit) selection that can be performed, having complementary
+#' features (e.g., \code{"economy"} and \code{"noneconomy"}) makes sense.
 #'
 #' @param corpusdf a \code{data.frame} (or a \code{data.table}, or a \code{tbl}) with as named columns: a document \code{"id"}
 #' column (in \code{character} mode), a \code{"date"} column (as \code{"yyyy-mm-dd"}), a \code{"texts"} column (in
-#' \code{character} mode), and a series of feature columns of type \code{numeric}, with values pointing to the applicability of
-#' a particular feature to a particular text. The latter columns can be binary (\code{1} means the feature is applicable to
-#' the document in the same row) or a value between 0 and 1 to specify the degree of connectedness of a feature to a
-#' document. Features could be topics (e.g., legal, political, or economic), article sources (e.g., online or printed press),
-#' amongst many more options. In the case of no feature column provided, the corpus constructor automatically adds a feature
-#' named \code{"dummy"}. All spaces in the names of the features are replaced by underscores. If the feature columns have
-#' values not between 0 and 1, they will be rescaled column-wise and a warning will be issued.
+#' \code{character} mode), and a series of feature columns of type \code{numeric}, with values between 0 and 1 to specify the
+#' degree of connectedness of a feature to a document. Features could be topics (e.g., legal, political, or economic),
+#' article sources (e.g., online or printed press), amongst many more options. In the case of no feature column provided, a
+#' feature named \code{"dummy"} is added. All spaces in the names of the features are replaced by underscores. Feature
+#' columns with values not between 0 and 1 are rescaled column-wise.
 #' @param do.clean a \code{logical}, if \code{TRUE} all texts undergo a cleaning routine to eliminate common textual garbage.
 #' This includes a brute force replacement of HTML tags and non-alphanumeric characters by an empty string. To use with care
 #' if the text is meant to have non-alphanumeric characters! Preferably, cleaning is done outside of this function call.

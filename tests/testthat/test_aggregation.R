@@ -4,6 +4,8 @@ context("Aggregation")
 library("sentometrics")
 library("quanteda")
 
+set.seed(123)
+
 # corpus, lexicon and aggregation control creation
 data("usnews")
 corpus <- quanteda::corpus_sample(sento_corpus(corpusdf = usnews), size = 1000)
@@ -17,7 +19,7 @@ ctr1 <- ctr_agg(howWithin = "proportionalPol", howDocs = "equal_weight", howTime
                lag = 5, ordersAlm = 1:3, do.inverseAlm = TRUE)
 sentMeas1 <- sento_measures(corpus, lex, ctr1)
 
-ctr2 <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional", howTime = c("equal_weight", "linear", "own"), by = "year",
+ctr2 <- ctr_agg(howWithin = "counts", howDocs = "proportional", howTime = c("equal_weight", "linear", "own"), by = "year",
                lag = 2, weights = data.frame(q1 = c(0.25, 0.75), q3 = c(0.75, 0.25)))
 sentMeas2 <- sento_measures(corpus, lex, ctr2)
 
