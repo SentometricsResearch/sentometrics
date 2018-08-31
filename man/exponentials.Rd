@@ -7,7 +7,7 @@
 exponentials(n, alphas = seq(0.1, 0.5, by = 0.1))
 }
 \arguments{
-\item{n}{a single \code{numeric} to indicate the length of the curve (the number of lags).}
+\item{n}{a single \code{numeric} to indicate the lag length.}
 
 \item{alphas}{a \code{numeric} vector of decay factors.}
 }

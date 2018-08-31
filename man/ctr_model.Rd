@@ -33,7 +33,7 @@ periods.}
 \item{oos}{a non-negative \code{integer} to indicate the number of periods to skip from the end of the training sample
 up to the out-of-sample prediction(s). This is either used in the cross-validation based calibration approach
 (if \code{type = } "\code{cv}"), or for the iterative out-of-sample prediction analysis (if \code{do.iter = TRUE}). For
-instance, given \eqn{t}, the (first) out-of-simple prediction is computed at \eqn{t + oos + 1}.}
+instance, given \eqn{t}, the (first) out-of-sample prediction is computed at \eqn{t + oos + 1}.}
 
 \item{do.difference}{a \code{logical}, \code{TRUE} will difference the target variable \code{y} supplied in the
 \code{\link{sento_model}} function with as lag the absolute value of the \code{h} argument, but

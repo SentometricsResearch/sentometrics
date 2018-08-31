@@ -9,3 +9,7 @@ compute_sentiment_bigrams <- function(texts, lexicons, how) {
     .Call(`_sentometrics_compute_sentiment_bigrams`, texts, lexicons, how)
 }
 
+compute_sentiment_onegrams <- function(texts, lexicons, how) {
+    .Call(`_sentometrics_compute_sentiment_onegrams`, texts, lexicons, how)
+}
+

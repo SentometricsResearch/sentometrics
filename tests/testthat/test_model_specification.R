@@ -53,7 +53,7 @@ ctrM7 <- ctr_model(model = "gaussian", type = "AIC", do.difference = TRUE, h = 1
 out7 <- sento_model(sentomeasures, y, x = x, ctr = ctrM7)
 
 ctrM8 <- ctr_model(model = "gaussian", type = "Cp", h = 1, alphas = c(0, 0.4, 1),
-                   nSample = nSample, do.iter = TRUE, start = 2)
+                   do.intercept = FALSE, nSample = nSample, do.iter = TRUE, start = 2)
 out8 <- sento_model(sentomeasures, y, x = x, ctr = ctrM8)
 
 ctrM9 <- ctrM8
@@ -61,16 +61,12 @@ ctrM9$nSample <- N - 1 - 2 + 1
 
 ctrM10 <- ctr_model(model = "gaussian", type = "Cp", h = 1, alphas = 0,
                     nSample = nSample, do.iter = TRUE, start = 2, nCore = 2)
-out10 <- sento_model(sentomeasures, y, x = x, ctr = ctrM10)
+out10 <- sento_model(measures_select(sentomeasures, c("GI_en")), y, ctr = ctrM10)
 
-ctrM11 <- ctr_model(model = "gaussian", type = "Cp", h = 1, alphas = 1,
+ctrM11 <- ctr_model(model = "gaussian", type = "Cp", h = 1, alphas = c(0, 0.4, 1),
                     nSample = nSample, do.iter = TRUE, start = 2)
-out11 <- sento_model(sentomeasures, y, x = x, ctr = ctrM11)
-
-ctrM12 <- ctr_model(model = "gaussian", type = "Cp", h = 1, alphas = c(0, 0.4, 1),
-                    nSample = nSample, do.iter = TRUE, start = 2)
-out12 <- sento_model(measures_select(sentomeasures, c("LM_en", "wsj", "almon1")),
-                     y, x = cbind(x, measures_global(sentomeasures)), ctr = ctrM12)
+out11 <- sento_model(measures_select(sentomeasures, c("LM_en", "wsj", "almon1")),
+                     y, x = cbind(x, measures_global(sentomeasures)[, -1]), ctr = ctrM11)
 
 # sento_model
 test_that("Different model specifications give specified output", {
@@ -96,13 +92,14 @@ test_that("Different model specifications give specified output", {
 })
 
 # perform_MCS
-models <- list(elnet = out8, ridge = out10, lasso = out11, elnetLM = out12)
+models <- list(elnet = out8, ridgeGI = out10, lassoLM = out11)
 test_that("Model confidence set procedure works and fails if needed", {
   expect_true(inherits(suppressWarnings(perform_MCS(models, loss = "DA")), "SSM"))
   expect_true(inherits(suppressWarnings(perform_MCS(models, loss = "errorSq")), "SSM"))
   expect_true(inherits(suppressWarnings(perform_MCS(models, loss = "AD")), "SSM"))
   expect_error(perform_MCS(models, loss = "accuracy"))
   expect_error(perform_MCS(list(wrong = out1, elnet = out8), loss = "errorSq"))
+  expect_error(perform_MCS(list(same1 = out8, same2 = out8, different = out11), loss = "errorSq"))
 })
 
 # summary.sentomodel, summary.sentomodeliter, print.sentomodel, print.sentomodeliter

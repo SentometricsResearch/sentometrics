@@ -52,13 +52,11 @@ measures_fill <- function(sentomeasures, fill = "zero", dateBefore = NULL, dateA
     dateBefore <- convert_date(dateBefore, by = by)
     if (dateBefore < start) start <- dateBefore
   }
-
   end <- utils::tail(dates, 1)
   if (!is.null(dateAfter)) {
     dateAfter <- convert_date(dateAfter, by = by)
     if (dateAfter > end) end <- dateAfter
   }
-
   ts <- seq(start, end, by = by) # continuous date series
   dt <- data.table(date = ts)
 
@@ -417,10 +415,10 @@ measures_delete <- function(sentomeasures, toDelete) {
 #'
 #' @details In contrast to other \code{measures_xyz} functions, this particular function returns no new \code{sentomeasures}
 #' object. The global sentiment measures as outputted can easily be added to regressions as an additional
-#' variable using the \code{x} argument in the \code{\link{sento_model}} function. The measures are constructed from
-#' weights that indicate the importance (and sign) along each component from the \code{lexicons}, \code{features},
-#' and \code{time} dimensions. There is no condition in terms of allowed weights. For example, the global index based
-#' on the supplied lexicon weights (\code{"globLex"}) is obtained first by multiplying every sentiment measure with
+#' variable using the \code{x} argument in the \code{\link{sento_model}} function (omitting the \code{"date"} column). The
+#' measures are constructed from weights that indicate the importance (and sign) along each component from the \code{lexicons},
+#' \code{features}, and \code{time} dimensions. There is no condition in terms of allowed weights. For example, the global index
+#' based on the supplied lexicon weights (\code{"globLex"}) is obtained first by multiplying every sentiment measure with
 #' its corresponding weight (meaning, the weight given to the lexicon the sentiment is computed with), then by taking
 #' the average per date.
 #'
@@ -432,8 +430,8 @@ measures_delete <- function(sentomeasures, toDelete) {
 #' @param time a \code{numeric} vector of weights, of size \code{length(sentomeasures$time)}, in the same order. By default
 #' set to 1, which means equally weighted.
 #'
-#' @return A \code{data.frame} with the different types of weighted global sentiment measures, named \code{"globLex"},
-#' \code{"globFeat"}, \code{"globTime"} and \code{"global"}, with dates as row names. The last measure is an average
+#' @return A \code{data.table} with the different types of weighted global sentiment measures, named \code{"globLex"},
+#' \code{"globFeat"}, \code{"globTime"} and \code{"global"}, with \code{"date"} as the first column. The last measure is an average
 #' of the the three other measures.
 #'
 #' @seealso \code{\link{sento_model}}
@@ -483,10 +481,7 @@ measures_global <- function(sentomeasures, lexicons = 1, features = 1, time = 1)
                                globFeat = mean(value * wFeat),
                                globTime = mean(value * wTime)), by = date]
   globs[["global"]] <- rowMeans(globs[, -1])
-  global <- as.data.frame(globs)
-  row.names(global) <- global$date
-  global$date <- NULL
 
-  return(global)
+  return(globs)
 }
 

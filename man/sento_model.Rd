@@ -15,7 +15,8 @@ a logistic regression, the response variable is either a \code{factor} or a \cod
 the columns as binary indicators, with the second factor level or column as the reference class in case of a binomial
 regression. No \code{NA} values are allowed.}
 
-\item{x}{a named \code{data.frame} with other explanatory variables as \code{numeric}, by default set to \code{NULL}.}
+\item{x}{a named \code{data.table}, \code{data.frame} or \code{matrix} with other explanatory variables as \code{numeric}, by
+default set to \code{NULL}.}
 
 \item{ctr}{output from a \code{\link{ctr_model}} call.}
 }
@@ -26,7 +27,8 @@ If \code{ctr$do.iter = FALSE}, a \code{sentomodel} object which is a \code{list}
 \item{x}{a \code{matrix} of the values used in the regression for all explanatory variables.}
 \item{alpha}{calibrated alpha.}
 \item{lambda}{calibrated lambda.}
-\item{trained}{output from \code{\link[caret]{train}} call (if \code{ctr$type =} "\code{cv}").}
+\item{trained}{output from \code{\link[caret]{train}} call (if \code{ctr$type =} "\code{cv}"). There is no such
+output if the control parameters \code{alphas} and \code{lambdas} both specified one value.}
 \item{ic}{a \code{list} composed of two elements: under \code{"criterion"}, the type of information criterion used in the
 calibration, and under \code{"matrix"}, a \code{matrix} of all information criterion values for \code{alphas} as rows
 and the respective lambda values as columns (if \code{ctr$type !=} "\code{cv}"). Any \code{NA} value in the latter
@@ -81,7 +83,7 @@ data("epu", package = "sentometrics")
 corpusAll <- sento_corpus(corpusdf = usnews)
 corpus <- quanteda::corpus_subset(corpusAll, date >= "2004-01-01")
 l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")])
-ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional",
+ctr <- ctr_agg(howWithin = "counts", howDocs = "proportional",
                howTime = c("equal_weight", "linear"),
                by = "month", lag = 3)
 sentomeasures <- sento_measures(corpus, l, ctr)

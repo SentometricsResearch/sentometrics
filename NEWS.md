@@ -14,12 +14,16 @@
 - added a `lambdas` argument to the `ctr_model()` function, directly passed on to the `glmnet::glmnet()` function if used
 - omitted `do.combine` argument in `measures_delete()` and `measures_select()` functions to simplify
 - expanded set of unit tests, included a coverage badge, and added **`covr`** to Suggests
-- reimplementation of how valence shifters are integrated into the `compute_sentiment()` function, by writing part of the code in **`Rcpp`** relying on **`RcppParallel`** (added to Imports), and removing related but now abundant manipulations and documentation in for example the `setup_lexicons()` function
-- dropped the `dfm` argument from the `compute_sentiment()` and `ctr_agg()` functions, and altered the input and behaviour of the `nCore` argument of these same two functions
+- reimplementation of the sentiment calculation in the `compute_sentiment()` function, by writing part of the code in **`Rcpp`** relying on **`RcppParallel`** (added to Imports), and removing now abundant manipulations and documentation related to the integration of valence shifters in for example the `setup_lexicons()` function
+- replaced the `dfm` argument from the `compute_sentiment()` and `ctr_agg()` functions by a `tokens` argument, and altered the input and behaviour of the `nCore` argument of these same two functions
+- switched from the **`quanteda`** package to the **`tokenizers`** package (added to Imports) for faster tokenisation
 - trimmed the `list_lexicons` and `list_valence_shifters` built-in word lists by keeping only unigrams, and included same trimming procedure in the `setup_lexicons()` function
 - updated the `epu` built-in dataset with the newest available series, up to July 2018
 - corrected the word 'sparesly' to 'sparsely' in `list_valence_shifters[["en"]]`
 - further shortened project page to the bare essence
+- omitted statement printed ('Compute sentiment... Done.') in the `compute_sentiment()` function
+- slightly modified `print()` generic for a `sentomeasures` object 
+- dropped the `tf-idf` option for within-document aggregation in the `ctr_agg()` function
 
 ## sentometrics 0.4.0
 

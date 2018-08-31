@@ -1,6 +1,7 @@
 
 #include <Rcpp.h>
 #include <RcppParallel.h>
+#include "utils.h"
 
 using namespace Rcpp;
 using namespace RcppParallel;
@@ -8,25 +9,20 @@ using namespace std;
 
 // [[Rcpp::depends(RcppParallel)]]
 
-Rcpp::CharacterVector get_seq_names(Rcpp::CharacterVector x, int end) {
-  Rcpp::IntegerVector idx = Rcpp::seq(0, end-1);
-  return x[idx];
-}
-
 struct SentimentScorerBigrams : public Worker {
 
   // input (thread-safe versions, as one cannot safely call R or Rcpp API; non-R variables are copied once)
   const std::vector< std::vector<std::string> > texts;
-  const std::map<std::string, double> lexiconMap;
-  const std::map<std::string, double> valenceMap;
+  const std::unordered_map<std::string, double> lexiconMap;
+  const std::unordered_map<std::string, double> valenceMap;
   const std::string how;
 
   // output
   RVector<double> sentScores;
 
   SentimentScorerBigrams(const std::vector< std::vector<std::string> > texts,
-                         const std::map<std::string, double> lexiconMap,
-                         const std::map<std::string, double> valenceMap,
+                         const std::unordered_map<std::string, double> lexiconMap,
+                         const std::unordered_map<std::string, double> valenceMap,
                          const std::string how,
                          Rcpp::NumericVector sentScores)
   : texts(texts), lexiconMap(lexiconMap), valenceMap(valenceMap), how(how), sentScores(sentScores) {}
@@ -82,7 +78,7 @@ Rcpp::List compute_sentiment_bigrams(std::vector< std::vector<std::string> > tex
   int nVals = wordsVal.size();
   Rcpp::NumericVector scoresVal = valence["y"];
 
-  std::map<std::string, double> valenceMap;
+  std::unordered_map<std::string, double> valenceMap;
   for (int v = 0; v < nVals; v++) { // fill up valenceMap
     valenceMap[wordsVal[v]] = scoresVal[v];
   }
@@ -93,7 +89,7 @@ Rcpp::List compute_sentiment_bigrams(std::vector< std::vector<std::string> > tex
     Rcpp::NumericVector scores = lexicon["y"];
     int nWords = words.size();
 
-    std::map<std::string, double> lexiconMap;
+    std::unordered_map<std::string, double> lexiconMap;
     for (int k = 0; k < nWords; k++) { // fill up lexiconMap
       lexiconMap[words[k]] = scores[k];
     }

@@ -4,13 +4,15 @@ context("Methods sentomeasures")
 library("sentometrics")
 library("quanteda")
 
+set.seed(123)
+
 # corpus, lexicon and aggregation control creation
 data("usnews")
 corpus <- quanteda::corpus_sample(sento_corpus(corpusdf = usnews), size = 600)
 
 data("list_lexicons")
 lex <- list_lexicons[c("HENRY_en", "LM_en")]
-ctr <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional", howTime = c("linear", "exponential"), by = "day",
+ctr <- ctr_agg(howWithin = "counts", howDocs = "proportional", howTime = c("linear", "exponential"), by = "day",
                lag = 60, alphasExp = c(0.1, 0.6))
 
 sentMeas <- sento_measures(corpus, lex, ctr)

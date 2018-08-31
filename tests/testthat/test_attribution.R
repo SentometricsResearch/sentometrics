@@ -15,7 +15,7 @@ corpus <- quanteda::corpus_sample(
 
 data("list_lexicons")
 lex <- list_lexicons[c("GI_en", "LM_en")]
-ctrA <- ctr_agg(howWithin = "tf-idf", howDocs = "proportional", howTime = "almon", by = "month",
+ctrA <- ctr_agg(howWithin = "counts", howDocs = "proportional", howTime = "almon", by = "month",
                 lag = 7, ordersAlm = 1:3, do.inverseAlm = TRUE, do.ignoreZeros = FALSE, fill = "latest")
 
 sentomeasures <- sento_measures(corpus, lex, ctrA)

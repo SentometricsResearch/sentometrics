@@ -11,8 +11,7 @@
 #'
 #' @param howWithin a single \code{character} vector defining how aggregation within documents will be performed. Should
 #' \code{length(howWithin) > 1}, the first element is used. For currently available options on how aggregation can occur; see
-#' \code{\link{get_hows}()$words}. The \code{"tf-idf"} option will raise an error during sentiment computation
-#' if valence shifters are integrated.
+#' \code{\link{get_hows}()$words}.
 #' @param howDocs a single \code{character} vector defining how aggregation across documents per date will be performed.
 #' Should \code{length(howDocs) > 1}, the first element is used. For currently available options on how aggregation can occur;
 #' see \code{\link{get_hows}()$docs}.
@@ -42,6 +41,7 @@
 #' \code{\link{betas}}.
 #' @param weights optional own weighting scheme(s), used if provided as a \code{data.frame} with the number of rows
 #' equal to the desired \code{lag}.
+#' @param tokens see \code{\link{compute_sentiment}}.
 #' @param nCore see \code{\link{compute_sentiment}}.
 #' @param ... not used.
 #
@@ -76,7 +76,7 @@
 ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTime = "equal_weight",
                     do.ignoreZeros = TRUE, by = "day", lag = 1L, fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1),
                     ordersAlm = 1:3, do.inverseAlm = TRUE, aBeta = 1:4, bBeta = 1:4, weights = NULL,
-                    nCore = c(2, 1), ...) {
+                    tokens = NULL, nCore = 2, ...) {
 
   if (length(howWithin) > 1) howWithin <- howWithin[1]
   if (length(howDocs) > 1) howDocs <- howDocs[1]
@@ -127,12 +127,12 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
   if (!(fill %in% c("zero", "latest", "none"))) {
     err <- c(err, paste0(fill, " is no current 'fill' option."))
   }
-  if (length(nCore) != 2 || !is.numeric(nCore)) {
-    err <- c(err, "The 'nCore' argument should be a numeric vector of size two.")
+  if (length(nCore) != 1 || !is.numeric(nCore)) {
+    err <- c(err, "The 'nCore' argument should be a numeric vector of size one.")
   }
-  if (length(nCore) == 2 && is.numeric(nCore) && any(nCore < 1)) {
-    nCore[which(nCore < 1)] <- 1
-    warning("Nonpositive elements in the 'nCore' argument are set to 1.")
+  nCore <- check_nCore(nCore)
+  if (!is.null(tokens) && !is.list(tokens)) {
+    err <- c(err, "The 'tokens' argument, if not NULL, must be a list.")
   }
   if (!is.null(err)) stop("Wrong inputs. See below for specifics. \n", paste0(err, collapse = "\n"))
 
@@ -146,6 +146,7 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
               by = by,
               lag = lag,
               fill = fill,
+              tokens = tokens,
               nCore = nCore,
               other = other)
 
@@ -210,9 +211,9 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #'
 #' @import data.table
 #' @export
-sento_measures<- function(sentocorpus, lexicons, ctr) {
+sento_measures <- function(sentocorpus, lexicons, ctr) {
   check_class(sentocorpus, "sentocorpus")
-  toAgg <- compute_sentiment(sentocorpus, lexicons, how = ctr$howWithin, nCore = ctr$nCore)
+  toAgg <- compute_sentiment(sentocorpus, lexicons, how = ctr$howWithin, tokens = ctr$tokens, nCore = ctr$nCore)
   sentomeasures <- perform_agg(toAgg, ctr)
   return(sentomeasures)
 }
