@@ -20,7 +20,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // compute_sentiment_bigrams
-Rcpp::List compute_sentiment_bigrams(std::vector< std::vector<std::string> > texts, Rcpp::List lexicons, std::string how);
+Rcpp::NumericMatrix compute_sentiment_bigrams(std::vector< std::vector<std::string> > texts, Rcpp::List lexicons, std::string how);
 RcppExport SEXP _sentometrics_compute_sentiment_bigrams(SEXP textsSEXP, SEXP lexiconsSEXP, SEXP howSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -33,7 +33,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // compute_sentiment_onegrams
-Rcpp::List compute_sentiment_onegrams(std::vector< std::vector<std::string> > texts, Rcpp::List lexicons, std::string how);
+Rcpp::NumericMatrix compute_sentiment_onegrams(std::vector< std::vector<std::string> > texts, Rcpp::List lexicons, std::string how);
 RcppExport SEXP _sentometrics_compute_sentiment_onegrams(SEXP textsSEXP, SEXP lexiconsSEXP, SEXP howSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
