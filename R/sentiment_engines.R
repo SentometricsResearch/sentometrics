@@ -21,7 +21,7 @@ tokenise_texts <- function(x, tokens = NULL) { # x is a (sento)corpus object or 
   return(list(tok = tok, wCounts = wCounts))
 }
 
-# compute_sentiment_onegrams_R <- function(dfm, lexicons, how, wCounts) {
+# compute_sentiment_onegrams <- function(dfm, lexicons, how, wCounts) {
 #
 #   if (how == "counts" || how == "proportional" || how == "proportionalPol") {
 #     fdm <- quanteda::t(dfm) # feature-document matrix
@@ -64,7 +64,6 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, nCore = 2) {
   } else {
     s <- as.data.table(compute_sentiment_onegrams(tok, lexicons, how))
   }
-  s[is.na(s)] <- 0 # set NA/NaN sentiment to 0 (e.g., if document contains no words, or division by zero number of polarized words)
   s
 }
 
@@ -100,10 +99,9 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, nCore = 2) {
 #' constructed from (the texts from) the input corpus, are unigrams, and preferably set to lowercase, otherwise, results
 #' will be spurious or errors may occur. By default set to \code{NULL}.
 #' @param nCore a positive \code{numeric} passed on to the \code{numThreads} argument of the
-#' \code{\link[RcppParallel]{setThreadOptions}} function, to parallelize the sentiment computation across texts. Takes
-#' effect only when valence shifters are involved. A value of 1 implies no parallelisation. Parallelisation is
-#' expected to improve speed of the sentiment computation only for sufficiently large corpora, say, in the order of having
-#' at least 50,000 documents.
+#' \code{\link[RcppParallel]{setThreadOptions}} function, to parallelize the sentiment computation across texts. A
+#' value of 1 implies no parallelisation. Parallelisation is expected to improve speed of the sentiment computation
+#' only for sufficiently large corpora, say, in the order of having at least 100,000 documents.
 #'
 #' @return A \code{list} containing:
 #' \item{corpus}{the supplied \code{x} object (except if \code{x} is a \code{character} vector).}

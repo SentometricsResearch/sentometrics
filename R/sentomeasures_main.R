@@ -299,12 +299,15 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
     names(lexiconsNeg) <- paste0(names(lexicons), "_NEG")
     lexicons <- c(lexiconsPos, lexiconsNeg)
   }
+  lexicons <- lapply(lexicons, function(l) l[!stringi::stri_detect(l$x, regex = "\\s+"), ])
+  # lexiconsWide <- data.table::dcast(melt(lexicons, id.vars = "x"), x ~ L1, value.var = "value")
+  # lexiconsWide[is.na(lexiconsWide)] <- 0
   if (!is.null(valenceIn)) {
     names(valenceIn) <- c("x", "y")
     valenceIn$x <- stringi::stri_trans_tolower(valenceIn$x)
-    lexicons[["valence"]] <- as.data.table(valenceIn[!duplicated(valenceIn$x), ])
+    valenceIn <- valenceIn[!(stringi::stri_detect(valenceIn$x, regex = "\\s+") | duplicated(valenceIn$x)), ]
+    lexicons[["valence"]] <- valenceIn
   }
-  lexicons <- lapply(lexicons, function(l) l[!stringi::stri_detect(l$x, regex = "\\s+"), ])
 
   return(lexicons)
 }

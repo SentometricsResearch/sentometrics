@@ -2,88 +2,75 @@
 #include <Rcpp.h>
 #include <RcppParallel.h>
 #include "utils.h"
+// [[Rcpp::depends(RcppParallel)]]
 
+using namespace std;
 using namespace Rcpp;
 using namespace RcppParallel;
-using namespace std;
-
-// [[Rcpp::depends(RcppParallel)]]
 
 struct SentimentScorerOnegrams : public Worker {
 
-  // input
+  // thread-safe input
   const std::vector< std::vector<std::string> > texts;
-  const std::unordered_map<std::string, double> lexiconMap;
+  const std::unordered_map< std::string, std::vector<double> > lexiconMap;
   const std::string how;
+  const int nL;
 
   // output
-  RVector<double> sentScores;
+  RMatrix<double> sentScores;
 
   SentimentScorerOnegrams(const std::vector< std::vector<std::string> > texts,
-                          const std::unordered_map<std::string, double> lexiconMap,
+                          const std::unordered_map< std::string, std::vector<double> > lexiconMap,
                           const std::string how,
-                          Rcpp::NumericVector sentScores)
-  : texts(texts), lexiconMap(lexiconMap), how(how), sentScores(sentScores) {}
+                          int nL,
+                          Rcpp::NumericMatrix sentScores)
+  : texts(texts), lexiconMap(lexiconMap), how(how), nL(nL), sentScores(sentScores) {}
 
   void operator()(std::size_t begin, std::size_t end) {
 
     for (std::size_t i = begin; i < end; i++) {
 
       std::vector<std::string> tokens = texts[i];
-      float score = 0;
+      std::vector<double> scores(nL, 0.0);
+      std::vector<double> nPolarized(nL, 0.0);
       int nTokens = tokens.size();
-      int nPolarized = 0;
 
       for (int j = 0; j < nTokens; j++) {
         std::string token = tokens[j];
         if (lexiconMap.find(token) != lexiconMap.end()) { // assumes no duplicates across lexicon
-          score += lexiconMap.at(token);
-          nPolarized += 1;
+          std::vector<double> lexScores = lexiconMap.at(token);
+          update_scores(scores, lexScores, nPolarized, 1.0);
         }
       }
 
-      if (how == "counts") {
-        sentScores[i] = score;
-      } else if (how == "proportional") {
-        sentScores[i] = score / nTokens;
-      } else if (how == "proportionalPol") {
-        sentScores[i] = score / nPolarized;
+      if (how == "proportional") rescale_scores_proportional(scores, nTokens);
+      else if (how == "proportionalPol") rescale_scores_proportionalPol(scores, nPolarized);
+
+      for (int m = 0; m < nL; m++) {
+        sentScores(i, m) = scores[m];
       }
 
     }
-
   }
 };
 
 // [[Rcpp::export]]
-Rcpp::List compute_sentiment_onegrams(std::vector< std::vector<std::string> > texts,
-                                      Rcpp::List lexicons,
-                                      std::string how) {
+Rcpp::NumericMatrix compute_sentiment_onegrams(std::vector< std::vector<std::string> > texts,
+                                               Rcpp::List lexicons,
+                                               std::string how) {
 
   int nTexts = texts.size(); // already tokenized texts
-  int L = lexicons.size();
-  Rcpp::CharacterVector lexNames = get_seq_names(lexicons.names(), L);
-  Rcpp::List out(L);
+  int nL = lexicons.size();
+  Rcpp::CharacterVector lexNames = get_lexicon_names(lexicons.names(), nL);
 
-  for (int l = 0; l < L; l++) {
-    Rcpp::List lexicon = lexicons[l];
-    std::vector<std::string> words = as< std::vector<std::string> >(lexicon["x"]);
-    Rcpp::NumericVector scores = lexicon["y"];
-    int nWords = words.size();
+  std::unordered_map< std::string, std::vector<double> > lexiconMap = make_lexicon_map(lexicons, nL);
 
-    std::unordered_map<std::string, double> lexiconMap;
-    for (int k = 0; k < nWords; k++) { // fill up lexiconMap
-      lexiconMap[words[k]] = scores[k];
-    }
+  Rcpp::NumericMatrix sentScores(nTexts, nL); // output matrix of sentiment scores
+  SentimentScorerOnegrams sentimentScorer(texts, lexiconMap, how, nL, sentScores);
+  parallelFor(0, nTexts, sentimentScorer); // parallelized across texts
 
-    Rcpp::NumericVector sentScores(nTexts); // output vector of sentiment scores
-    SentimentScorerOnegrams sentimentScorer(texts, lexiconMap, how, sentScores);
-    parallelFor(0, nTexts, sentimentScorer); // parallelized across texts
+  colnames(sentScores) = lexNames;
 
-    out[l] = sentScores;
-  }
-  out.attr("names") = lexNames;
-
-  return out;
+  return(sentScores);
 }
 
