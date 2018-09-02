@@ -4,7 +4,7 @@ spread_sentiment_features <- function(sent, features, lexNames) {
     nms <- paste0(lexicon, "--", features)
     sent[, nms] <- sent[[lexicon]] * sent[, features, with = FALSE]
   }
-  sent[, eval(c(lexNames, features)) := NULL][] # remove since replaced by lexicon--feature columns
+  sent[, eval(c(lexNames, features)) := NULL] # remove since replaced by lexicon--feature columns
   sent
 }
 
@@ -17,8 +17,7 @@ tokenise_texts <- function(x, tokens = NULL) { # x is a (sento)corpus object or 
     # tok <- quanteda::tokens_tolower(tok) # to lowercase
     tok <- tokenizers::tokenize_words(x, lowercase = TRUE, strip_punct = TRUE, strip_numeric = TRUE)
   } else tok <- tokens
-  wCounts <- sapply(tok, length)
-  return(list(tok = tok, wCounts = wCounts))
+  tok
 }
 
 # compute_sentiment_onegrams <- function(dfm, lexicons, how, wCounts) {
@@ -158,21 +157,18 @@ compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, 
 
   features <- names(quanteda::docvars(sentocorpus))[-1] # drop date column
 
-  tokenised <- tokenise_texts(quanteda::texts(sentocorpus), tokens)
-  tok <- tokenised[["tok"]]
-  wCounts <- tokenised[["wCounts"]]
-
+  tok <- tokenise_texts(quanteda::texts(sentocorpus), tokens)
   s <- compute_sentiment_lexicons(tok, lexicons, how, nCore) # compute sentiment per document for all lexicons
 
   # reconstruct sentiment to id - date - features - word_count - lexicons/sentiment, and compute feature-sentiment
-  lexNames <- names(lexicons)[names(lexicons) != "valence"]
-  s <- as.data.table(cbind(id = quanteda::docnames(sentocorpus), quanteda::docvars(sentocorpus), word_count = wCounts, s))
+  lexNames <- colnames(s)[-1]
+  s <- cbind(id = quanteda::docnames(sentocorpus), quanteda::docvars(sentocorpus), s)
   sent <- spread_sentiment_features(s, features, lexNames)
   sent <- sent[order(date)] # order by date
 
-  sentOut <- c(sentOut, list(sentiment = sent[], features = features, lexicons = lexNames, howWithin = how))
+  sentOut <- c(sentOut, list(sentiment = sent, features = features, lexicons = lexNames, howWithin = how))
 
-  return(sentOut)
+  sentOut
 }
 
 #' @importFrom compiler cmpfun
@@ -188,24 +184,21 @@ compute_sentiment.sentocorpus <- compiler::cmpfun(.compute_sentiment.sentocorpus
   isNumeric <- sapply(quanteda::docvars(corpus), is.numeric)
   if (length(isNumeric) == 0) features <- NULL else features <- names(isNumeric[isNumeric])
 
-  tokenised <- tokenise_texts(quanteda::texts(corpus), tokens)
-  tok <- tokenised[["tok"]]
-  wCounts <- tokenised[["wCounts"]]
-
+  tok <- tokenise_texts(quanteda::texts(corpus), tokens)
   s <- compute_sentiment_lexicons(tok, lexicons, how, nCore) # compute sentiment per document for all lexicons
 
   # spread sentiment across features if present and reformat
   if (!is.null(features)) {
-      s <- as.data.table(cbind(id = quanteda::docnames(corpus), quanteda::docvars(corpus)[features], word_count = wCounts, s))
-      lexNames <- names(lexicons)[names(lexicons) != "valence"]
+      lexNames <- colnames(s)[-1]
+      s <- cbind(id = quanteda::docnames(corpus), quanteda::docvars(corpus)[features], s)
       sent <- spread_sentiment_features(s, features, lexNames) # compute feature-sentiment per document for all lexicons
   } else {
-    sent <- as.data.table(cbind(id = quanteda::docnames(corpus), word_count = wCounts, s))
+    sent <- cbind(id = quanteda::docnames(corpus), s)
   }
 
-  sentOut[["sentiment"]] <- sent[]
+  sentOut[["sentiment"]] <- sent
 
-  return(sentOut)
+  sentOut
 }
 
 #' @importFrom compiler cmpfun
@@ -214,14 +207,9 @@ compute_sentiment.corpus <- compiler::cmpfun(.compute_sentiment.corpus)
 
 .compute_sentiment.character <- function(x, lexicons, how, tokens = NULL, nCore = 2) {
   nCore <- check_nCore(nCore)
-
-  tokenised <- tokenise_texts(x, tokens)
-  tok <- tokenised[["tok"]]
-  wCounts <- tokenised[["wCounts"]]
-
+  tok <- tokenise_texts(x, tokens)
   s <- compute_sentiment_lexicons(tok, lexicons, how, nCore) # compute sentiment per document for all lexicons
-
-  return(data.table(word_count = wCounts, s[]))
+  s
 }
 
 #' @importFrom compiler cmpfun

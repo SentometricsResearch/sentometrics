@@ -40,9 +40,9 @@ struct SentimentScorerBigrams : public Worker {
 
       for (int j = 0; j < nTokens; j++) {
         std::string token = tokens[j];
-        if (valenceMap.find(token) != valenceMap.end()) { // assumes no duplicates across valence shifters
+        if (valenceMap.find(token) != valenceMap.end()) {
           valPos = j;
-        } else if (lexiconMap.find(token) != lexiconMap.end()) { // assumes no duplicates across lexicon
+        } else if (lexiconMap.find(token) != lexiconMap.end()) {
           std::vector<double> lexScores = lexiconMap.at(token);
           if ((valPos + 1) == j) { // bigram valence shifting
             double valShifter = valenceMap.at(tokens[valPos]);
@@ -56,8 +56,9 @@ struct SentimentScorerBigrams : public Worker {
       if (how == "proportional") rescale_scores_proportional(scores, nTokens);
       else if (how == "proportionalPol") rescale_scores_proportionalPol(scores, nPolarized);
 
+      sentScores(i, 0) = nTokens;
       for (int m = 0; m < nL; m++) {
-        sentScores(i, m) = scores[m];
+        sentScores(i, m + 1) = scores[m];
       }
 
     }
@@ -72,7 +73,7 @@ Rcpp::NumericMatrix compute_sentiment_bigrams(std::vector< std::vector<std::stri
 
   int nTexts = texts.size(); // already tokenized texts
   int nL = lexicons.size() - 1;
-  Rcpp::CharacterVector lexNames = get_lexicon_names(lexicons.names(), nL);
+  Rcpp::CharacterVector colNames = prepare_column_names(lexicons.names(), nL);
 
   Rcpp::List valence = lexicons[nL];
   std::vector<std::string> wordsVal = as< std::vector<std::string> >(valence["x"]);
@@ -85,11 +86,11 @@ Rcpp::NumericMatrix compute_sentiment_bigrams(std::vector< std::vector<std::stri
 
   std::unordered_map< std::string, std::vector<double> > lexiconMap = make_lexicon_map(lexicons, nL);
 
-  Rcpp::NumericMatrix sentScores(nTexts, nL); // output matrix of sentiment scores
+  Rcpp::NumericMatrix sentScores(nTexts, nL + 1); // output matrix of word count and sentiment scores
   SentimentScorerBigrams sentimentScorer(texts, lexiconMap, valenceMap, how, nL, sentScores);
   parallelFor(0, nTexts, sentimentScorer); // parallelized across texts
 
-  colnames(sentScores) = lexNames;
+  colnames(sentScores) = colNames;
 
   return(sentScores);
 }

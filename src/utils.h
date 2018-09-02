@@ -5,9 +5,13 @@
 using namespace std;
 using namespace Rcpp;
 
-inline Rcpp::CharacterVector get_lexicon_names(Rcpp::CharacterVector x, int end) {
-  Rcpp::IntegerVector idx = Rcpp::seq(0, end - 1);
-  return x[idx];
+inline Rcpp::CharacterVector prepare_column_names(Rcpp::CharacterVector x, int n) {
+  Rcpp::CharacterVector names(n + 1);
+  names[0] = "word_count";
+  for (int i = 0; i < n; i++) {
+    names[i + 1] = x[i]; // add lexicon names
+  }
+  return(names);
 }
 
 inline std::unordered_map< std::string, std::vector<double> > make_lexicon_map(Rcpp::List lexicons,
