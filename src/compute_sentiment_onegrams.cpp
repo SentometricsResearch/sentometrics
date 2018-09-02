@@ -37,7 +37,7 @@ struct SentimentScorerOnegrams : public Worker {
 
       for (int j = 0; j < nTokens; j++) {
         std::string token = tokens[j];
-        if (lexiconMap.find(token) != lexiconMap.end()) { // assumes no duplicates across lexicon
+        if (lexiconMap.find(token) != lexiconMap.end()) {
           std::vector<double> lexScores = lexiconMap.at(token);
           update_scores(scores, lexScores, nPolarized, 1.0);
         }
@@ -46,8 +46,9 @@ struct SentimentScorerOnegrams : public Worker {
       if (how == "proportional") rescale_scores_proportional(scores, nTokens);
       else if (how == "proportionalPol") rescale_scores_proportionalPol(scores, nPolarized);
 
+      sentScores(i, 0) = nTokens;
       for (int m = 0; m < nL; m++) {
-        sentScores(i, m) = scores[m];
+        sentScores(i, m + 1) = scores[m];
       }
 
     }
@@ -61,15 +62,15 @@ Rcpp::NumericMatrix compute_sentiment_onegrams(std::vector< std::vector<std::str
 
   int nTexts = texts.size(); // already tokenized texts
   int nL = lexicons.size();
-  Rcpp::CharacterVector lexNames = get_lexicon_names(lexicons.names(), nL);
+  Rcpp::CharacterVector colNames = prepare_column_names(lexicons.names(), nL);
 
   std::unordered_map< std::string, std::vector<double> > lexiconMap = make_lexicon_map(lexicons, nL);
 
-  Rcpp::NumericMatrix sentScores(nTexts, nL); // output matrix of sentiment scores
+  Rcpp::NumericMatrix sentScores(nTexts, nL + 1); // output matrix of word count and sentiment scores
   SentimentScorerOnegrams sentimentScorer(texts, lexiconMap, how, nL, sentScores);
   parallelFor(0, nTexts, sentimentScorer); // parallelized across texts
 
-  colnames(sentScores) = lexNames;
+  colnames(sentScores) = colNames;
 
   return(sentScores);
 }

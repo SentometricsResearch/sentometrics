@@ -25,10 +25,9 @@ constructed from (the texts from) the input corpus, are unigrams, and preferably
 will be spurious or errors may occur. By default set to \code{NULL}.}
 
 \item{nCore}{a positive \code{numeric} passed on to the \code{numThreads} argument of the
-\code{\link[RcppParallel]{setThreadOptions}} function, to parallelize the sentiment computation across texts. Takes
-effect only when valence shifters are involved. A value of 1 implies no parallelisation. Parallelisation is
-expected to improve speed of the sentiment computation only for sufficiently large corpora, say, in the order of having
-at least 50,000 documents.}
+\code{\link[RcppParallel]{setThreadOptions}} function, to parallelize the sentiment computation across texts. A
+value of 1 implies no parallelisation. Parallelisation is expected to improve speed of the sentiment computation
+only for sufficiently large corpora, say, in the order of having at least 100,000 documents.}
 }
 \value{
 A \code{list} containing:
