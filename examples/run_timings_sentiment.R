@@ -1,4 +1,6 @@
 
+###
+
 ###########################################
 #### COMPARISON SENTIMENT COMPUTATIONS ####
 ###########################################
@@ -44,16 +46,17 @@ lexiconsIn <- c(
   )
 )
 
-lex <- setup_lexicons(lexiconsIn = lexiconsIn,
-                      valenceIn = list_valence_shifters[["en"]])
-lexPure <- lex[names(lex) != "valence"]
+lex <- setup_lexicons(lexiconsIn = lexiconsIn, valenceIn = list_valence_shifters[["en"]])
 
 usnewsLarge <- sample(rep(usnews$texts, 25), 100000)
 nTexts <- c(1, 5, 10, 25, 50, 75, 100) * 1000
 
 ########################################### definition of sentiment functions
 
-sentoSimpleFunc <- function(texts) compute_sentiment(texts, lexicons = lex["huliu"], how = "counts")
+lexPure <- setup_lexicons(lexiconsIn = lexiconsIn)
+lexHul <- setup_lexicons(lex["huliu"])
+
+sentoSimpleFunc <- function(texts) compute_sentiment(texts, lexicons = lexHul, how = "counts")
 sentoSimpleAllFunc <- function(texts) compute_sentiment(texts, lexicons = lexPure, how = "counts")
 sentoValenceFunc <- function(texts) compute_sentiment(texts, lexicons = lex, how = "counts")
 sentoValenceAllFunc <- function(texts) compute_sentiment(texts, lexicons = lex, how = "counts")

@@ -14,7 +14,7 @@ measures_fill(sentomeasures, fill = "zero", dateBefore = NULL,
 the second assumes missing dates represent constant sentiment.}
 
 \item{dateBefore}{a date as \code{"yyyy-mm-dd"}, to stretch the sentiment time series from up to the first date. Should
-be earlier than \code{get_dates(sentomeasures)[1]} to take effect. The values for these dates are set to the values at
+be earlier than \code{get_dates(sentomeasures)[1]} to take effect. The values for these dates are set to those at
 \code{get_dates(sentomeasures)[1]}. If \code{NULL}, then ignored.}
 
 \item{dateAfter}{a date as \code{"yyyy-mm-dd"}, to stretch the sentiment time series up to this date. Should be

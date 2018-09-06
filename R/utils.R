@@ -134,14 +134,15 @@ almons <- function(n, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE) {
 
 #' Compute beta weighting curves
 #'
-#' @description Computes Beta weighting curves as in Ghysels et al. (2007). Handy to self-select specific time
-#' aggregation weighting schemes for input in \code{\link{ctr_agg}}.
+#' @description Computes Beta weighting curves as in ``MIDAS regressions: Further results and new directions''
+#' (Ghysels, Sinko and Valkanov, 2007). Handy to self-select specific time aggregation weighting schemes for
+#' input in \code{\link{ctr_agg}}.
 #'
 #' @details The Beta weighting abides by following formula:
-#' \eqn{f(i/n; a, b) / \sum(i/n; a, b)}, where \eqn{i} is the lag index ordered from
-#' 1 to \eqn{n}, \eqn{a} and \eqn{b} are two decay parameters, and
-#' \eqn{f(x; a, b) = (x^{a - 1}(1 - x)^{b - 1}T(a + b)) / (T(a)T(b))}{f(x; a, b)
-#'  = (x^(a - 1) * (1 - x)^(b - 1) * T(a + b)) / (T(a) * T(b))}, where \eqn{T(.)} is
+#' \eqn{f(i/n; a, b) / \sum_{i}(i/n; a, b)}{f(i/n; a, b) / \sum(i/n; a, b)}, where \eqn{i} is the lag index ordered
+#' from 1 to \eqn{n}, \eqn{a} and \eqn{b} are two decay parameters, and
+#' \eqn{f(x; a, b) = (x^{a - 1}(1 - x)^{b - 1}\Gamma(a + b)) / (\Gamma(a)\Gamma(b))}{f(x; a, b)
+#'  = (x^(a - 1) * (1 - x)^(b - 1) * T(a + b)) / (T(a) * T(b))}, where \eqn{\Gamma(.)}{T(.)} is
 #' the \code{\link{gamma}} function.
 #'
 #' @param n a single \code{numeric} to indicate the lag length (cf., \emph{n}).
@@ -552,7 +553,6 @@ sento_as_key <- function (x, ...) {
   x <- x[order(x), ]
   if (!is.null(culprits))
     x <- x[!x %in% sort(names(tab[tab > 1])), ]
-  data.table::setkey(x, "x")
   x
 }
 

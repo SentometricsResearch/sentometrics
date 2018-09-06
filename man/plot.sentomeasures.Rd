@@ -21,7 +21,7 @@ the \code{+} operator (see examples). By default, a legend is positioned at the 
 graphs plotted and \code{group} is different from \code{"all"}.
 }
 \description{
-Straightforward plotting method that shows all sentiment measures from the provided \code{sentomeasures}
+Plotting method that shows all sentiment measures from the provided \code{sentomeasures}
 object in one plot, or the average along one of the lexicons, features and time weighting dimensions. We suggest to make
 use of the \code{\link{measures_select}} function when you desire to plot only a subset of the sentiment measures.
 }

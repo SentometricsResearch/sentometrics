@@ -9,7 +9,7 @@ sento_measures(sentocorpus, lexicons, ctr)
 \arguments{
 \item{sentocorpus}{a \code{sentocorpus} object created with \code{\link{sento_corpus}}.}
 
-\item{lexicons}{output from a \code{\link{setup_lexicons}} call.}
+\item{lexicons}{a \code{sentolexicons} object created with \code{\link{setup_lexicons}}.}
 
 \item{ctr}{output from a \code{\link{ctr_agg}} call.}
 }

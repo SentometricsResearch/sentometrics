@@ -17,15 +17,16 @@ betas(n, a = 1:4, b = 1:4)
 A \code{data.frame} of beta weighting curves per combination of \code{a} and \code{b}.
 }
 \description{
-Computes Beta weighting curves as in Ghysels et al. (2007). Handy to self-select specific time
-aggregation weighting schemes for input in \code{\link{ctr_agg}}.
+Computes Beta weighting curves as in ``MIDAS regressions: Further results and new directions''
+(Ghysels, Sinko and Valkanov, 2007). Handy to self-select specific time aggregation weighting schemes for
+input in \code{\link{ctr_agg}}.
 }
 \details{
 The Beta weighting abides by following formula:
-\eqn{f(i/n; a, b) / \sum(i/n; a, b)}, where \eqn{i} is the lag index ordered from
-1 to \eqn{n}, \eqn{a} and \eqn{b} are two decay parameters, and
-\eqn{f(x; a, b) = (x^{a - 1}(1 - x)^{b - 1}T(a + b)) / (T(a)T(b))}{f(x; a, b)
- = (x^(a - 1) * (1 - x)^(b - 1) * T(a + b)) / (T(a) * T(b))}, where \eqn{T(.)} is
+\eqn{f(i/n; a, b) / \sum_{i}(i/n; a, b)}{f(i/n; a, b) / \sum(i/n; a, b)}, where \eqn{i} is the lag index ordered
+from 1 to \eqn{n}, \eqn{a} and \eqn{b} are two decay parameters, and
+\eqn{f(x; a, b) = (x^{a - 1}(1 - x)^{b - 1}\Gamma(a + b)) / (\Gamma(a)\Gamma(b))}{f(x; a, b)
+ = (x^(a - 1) * (1 - x)^(b - 1) * T(a + b)) / (T(a) * T(b))}, where \eqn{\Gamma(.)}{T(.)} is
 the \code{\link{gamma}} function.
 }
 \seealso{

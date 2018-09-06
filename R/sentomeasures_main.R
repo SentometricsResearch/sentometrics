@@ -129,8 +129,7 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
   }
   if (length(nCore) != 1 || !is.numeric(nCore)) {
     err <- c(err, "The 'nCore' argument should be a numeric vector of size one.")
-  }
-  nCore <- check_nCore(nCore)
+  } else nCore <- check_nCore(nCore)
   if (!is.null(tokens) && !is.list(tokens)) {
     err <- c(err, "The 'tokens' argument, if not NULL, must be a list.")
   }
@@ -165,7 +164,7 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #' any '-' symbol.
 #'
 #' @param sentocorpus a \code{sentocorpus} object created with \code{\link{sento_corpus}}.
-#' @param lexicons output from a \code{\link{setup_lexicons}} call.
+#' @param lexicons a \code{sentolexicons} object created with \code{\link{setup_lexicons}}.
 #' @param ctr output from a \code{\link{ctr_agg}} call.
 #'
 #' @return A \code{sentomeasures} object, which is a \code{list} containing:
@@ -216,100 +215,6 @@ sento_measures <- function(sentocorpus, lexicons, ctr) {
   toAgg <- compute_sentiment(sentocorpus, lexicons, how = ctr$howWithin, tokens = ctr$tokens, nCore = ctr$nCore)
   sentomeasures <- perform_agg(toAgg, ctr)
   return(sentomeasures)
-}
-
-#' Set up lexicons (and valence word list) for use in sentiment analysis
-#'
-#' @author Samuel Borms
-#'
-#' @description Structures provided lexicon(s) and optionally valence words. One can for example combine (part of) the
-#' built-in lexicons from \code{data("list_lexicons")} with other lexicons, and add one of the built-in valence word lists
-#' from \code{data("list_valence_shifters")}. This function makes the output coherent, by converting all words to
-#' lowercase and checking for duplicates. All entries consisting of more than one word are discarded, as required for
-#' bag-of-words sentiment analysis.
-#'
-#' @param lexiconsIn a named \code{list} of (raw) lexicons, each element as a \code{data.frame} or a \code{data.table} with
-#' respectively a words column and a polarity score column. Alternatively, a subset of the already formatted built-in lexicons
-#' accessible via \code{list_lexicons} can be declared too, as part of the same list input. If only (some of) the package
-#' built-in lexicons want to be used (with \emph{no} valence shifters), one can simply supply \code{list_lexicons[c(...)]} as
-#' an argument to either \code{\link{sento_measures}} or \code{\link{compute_sentiment}}. However, it is strongly recommended
-#' to pass all lexicons (and a valence word list) to this function first, in any case.
-#' @param valenceIn a single valence word list as a \code{data.table} or a \code{data.frame} with respectively a words column,
-#' and a score column. This argument can be one of the already formatted built-in valence word lists accessible via
-#' \code{list_valence_shifters}. A word that appears in both a lexicon and the valence word list is prioritized as a
-#' valence shifter. If \code{NULL}, no valence word list is part of this function's output, and is thus not applied in the
-#' sentiment analysis.
-#' @param do.split a \code{logical} that if \code{TRUE} splits every lexicon into a separate positive polarity and negative
-#' polarity lexicon.
-#'
-#' @return A \code{list} with each lexicon as a separate element according to its name, as a \code{data.table}, and optionally
-#' an element named \code{valence} that comprises the valence words. Every \code{x} column contains the words, every \code{y}
-#' column contains the polarity score.
-#'
-#' @examples
-#' data("list_lexicons", package = "sentometrics")
-#' data("list_valence_shifters", package = "sentometrics")
-#'
-#' # lexicons straight from built-in word lists
-#' l1 <- list_lexicons[c("LM_en", "HENRY_en")]
-#'
-#' # including a self-made lexicon, with and without valence shifters
-#' lexIn <- c(list(myLexicon = data.table(w = c("nice", "boring"), s = c(2, -1))),
-#'            list_lexicons[c("GI_en")])
-#' valIn <- list_valence_shifters[["en"]]
-#' l2 <- setup_lexicons(lexIn)
-#' l3 <- setup_lexicons(lexIn, valIn)
-#' l4 <- setup_lexicons(lexIn, valIn, do.split = TRUE)
-#'
-#' \dontrun{
-#' # include lexicons from lexicon package
-#' lexIn2 <- list(hul = lexicon::hash_sentiment_huliu, joc = lexicon::hash_sentiment_jockers)
-#' l5 <- setup_lexicons(c(lexIn, lexIn2), valIn)}
-#'
-#' @export
-setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
-
-  if (!("list" %in% class(lexiconsIn)))
-    stop("The 'lexiconsIn' input should be a named list.")
-  if (is.null(names(lexiconsIn)))
-    stop("The list elements (the lexicons) are not named.")
-  if (any(is.na(names(lexiconsIn))))
-    stop("At least one lexicon's name is NA. Please provide proper names.")
-  if (!is_names_correct(names(lexiconsIn)))
-    stop("At least one lexicon's name contains '-'. Please provide proper names.")
-  if (!is.data.frame(valenceIn) && !is.null(valenceIn))
-    stop("The 'valenceIn' argument should be a data.table or data.frame if not NULL.")
-
-  # check for duplicated lexicon names
-  if (sum(duplicated(names(lexiconsIn))) > 0) {
-    duplics <- unique(names(lexiconsIn[duplicated(names(lexiconsIn))]))
-    stop(paste0("Names of lexicons are not unique. Following names occur at least twice: ",
-                paste0(duplics, collapse = ", ")))
-  }
-  lexNames <- names(lexiconsIn)
-  # convert to sentimentr format while supressing warnings on removal of duplicated values
-  lexicons <- suppressWarnings(lapply(lexiconsIn, sento_as_key))
-  lexicons <- lapply(lexicons, function(x) {names(x) <- c("x", "y"); return(x)})
-  names(lexicons) <- lexNames
-  # split each lexicon into a positive and a negative polarity words only lexicon
-  if (do.split == TRUE) {
-    lexiconsPos <- lapply(lexicons, function(lex) return(lex[lex$y > 0]))
-    names(lexiconsPos) <- paste0(names(lexicons), "_POS")
-    lexiconsNeg <- lapply(lexicons, function(lex) return(lex[lex$y < 0]))
-    names(lexiconsNeg) <- paste0(names(lexicons), "_NEG")
-    lexicons <- c(lexiconsPos, lexiconsNeg)
-  }
-  lexicons <- lapply(lexicons, function(l) l[!stringi::stri_detect(l$x, regex = "\\s+"), ])
-  # lexiconsWide <- data.table::dcast(melt(lexicons, id.vars = "x"), x ~ L1, value.var = "value")
-  # lexiconsWide[is.na(lexiconsWide)] <- 0
-  if (!is.null(valenceIn)) {
-    names(valenceIn) <- c("x", "y")
-    valenceIn$x <- stringi::stri_trans_tolower(valenceIn$x)
-    valenceIn <- valenceIn[!(stringi::stri_detect(valenceIn$x, regex = "\\s+") | duplicated(valenceIn$x)), ]
-    lexicons[["valence"]] <- valenceIn
-  }
-
-  return(lexicons)
 }
 
 #' Aggregate textual sentiment across documents and time
@@ -420,7 +325,7 @@ aggregate_docs <- function(toAgg, by, how = get_hows()$docs, do.ignoreZeros = TR
                         do.ignoreZeros = do.ignoreZeros,
                         attribWeights = attribWeights)
 
-  class(sentomeasures) <- c("sentomeasures")
+  class(sentomeasures) <- "sentomeasures"
 
   return(sentomeasures)
 }
