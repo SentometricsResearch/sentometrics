@@ -11,7 +11,7 @@ data("usnews")
 corpus <- quanteda::corpus_sample(sento_corpus(corpusdf = usnews), size = 1000)
 
 data("list_lexicons")
-lex <- list_lexicons[c("GI_en", "LM_en")]
+lex <- setup_lexicons(list_lexicons[c("GI_en", "LM_en")])
 
 ### tests from here ###
 

@@ -14,16 +14,19 @@
 - added a `lambdas` argument to the `ctr_model()` function, directly passed on to the `glmnet::glmnet()` function if used
 - omitted `do.combine` argument in `measures_delete()` and `measures_select()` functions to simplify
 - expanded set of unit tests, included a coverage badge, and added **`covr`** to Suggests
-- reimplementation of the sentiment calculation in the `compute_sentiment()` function, by writing part of the code in **`Rcpp`** relying on **`RcppParallel`** (added to Imports), and removing now abundant manipulations and documentation related to the integration of valence shifters in for example the `setup_lexicons()` function
+- reimplementation of the sentiment calculation in the `compute_sentiment()` function, by writing part of the code in **`Rcpp`** relying on **`RcppParallel`** (added to Imports), and removing now abundant manipulations and documentation related to the integration of valence shifters in for example the `setup_lexicons()` function; there are now three approaches to computing sentiment (unigram, bigram and cluster)
 - replaced the `dfm` argument from the `compute_sentiment()` and `ctr_agg()` functions by a `tokens` argument, and altered the input and behaviour of the `nCore` argument of these same two functions
-- switched from the **`quanteda`** package to the **`tokenizers`** package (added to Imports) for faster tokenisation
+- switched from the **`quanteda`** package to the **`stringi`** package for more direct tokenisation
 - trimmed the `list_lexicons` and `list_valence_shifters` built-in word lists by keeping only unigrams, and included same trimming procedure in the `setup_lexicons()` function
+- added a type column `"t"` to the `list_valence_shifters` built-in word list, and reset values of the `"y"` column from 2 to 1.8 and from 0.5 to 0.2
 - updated the `epu` built-in dataset with the newest available series, up to July 2018
 - corrected the word 'sparesly' to 'sparsely' in `list_valence_shifters[["en"]]`
 - further shortened project page to the bare essence
 - omitted statement printed ('Compute sentiment... Done.') in the `compute_sentiment()` function
 - slightly modified `print()` generic for a `sentomeasures` object 
 - dropped the `tf-idf` option for within-document aggregation in the `ctr_agg()` function
+- the `setup_lexicons()` function now outputs a `sentolexicons` object, which the `compute_sentiment()` function 
+specifically requires as an input
 
 ## sentometrics 0.4.0
 

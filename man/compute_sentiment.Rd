@@ -14,7 +14,7 @@ date dimension. In case of a \code{\link[quanteda]{corpus}} object, the \code{nu
 \code{\link[quanteda]{docvars}} are considered as features over which sentiment will be computed. In
 case of a \code{character} vector, sentiment is only computed across lexicons.}
 
-\item{lexicons}{output from a \code{\link{setup_lexicons}} call, i.e., a named \code{list} of lexicons.}
+\item{lexicons}{a \code{sentolexicons} object created with \code{\link{setup_lexicons}}.}
 
 \item{how}{a single \code{character} vector defining how aggregation within documents should be performed. For currently
 available options on how aggregation can occur, see \code{\link{get_hows}()$words}.}
@@ -24,7 +24,7 @@ available options on how aggregation can occur, see \code{\link{get_hows}()$word
 constructed from (the texts from) the input corpus, are unigrams, and preferably set to lowercase, otherwise, results
 will be spurious or errors may occur. By default set to \code{NULL}.}
 
-\item{nCore}{a positive \code{numeric} passed on to the \code{numThreads} argument of the
+\item{nCore}{a positive \code{numeric} that will be passed on to the \code{numThreads} argument of the
 \code{\link[RcppParallel]{setThreadOptions}} function, to parallelize the sentiment computation across texts. A
 value of 1 implies no parallelisation. Parallelisation is expected to improve speed of the sentiment computation
 only for sufficiently large corpora, say, in the order of having at least 100,000 documents.}
@@ -44,40 +44,54 @@ aggregation into sentiment time series with the \code{\link{perform_agg}} functi
 }
 \description{
 Given a corpus of texts, computes (net) sentiment per document using the bag-of-words approach
-based on the lexicons provided and a choice of aggregation across words per document. If the \code{lexicons} argument
-has no \code{"valence"} element, the sentiment computed corresponds to simple unigram matching with the lexicons. If
-valence shifters are included in \code{lexicons}, these have the effect of modifying the polarity of a word detected from
-the lexicon if appearing right before such word (examples: not good, very bad or can't defend).
+based on the lexicons provided and a choice of aggregation across words per document.
 }
 \details{
-For a separate calculation of positive (resp. negative) sentiment, one has to provide distinct positive (resp. negative)
-lexicons. This can be done using the \code{do.split} option in the \code{\link{setup_lexicons}} function, which splits out
-the lexicons into a positive and a negative polarity counterpart. All \code{NA}s are converted to 0, under the assumption
-that this is equivalent to no sentiment. If \code{tokens = NULL} (as per default), texts are tokenised as unigrams using
-the \code{\link[tokenizers]{tokenize_words}} function. Punctuation and numbers are removed, but not stopwords. The number
-of words for each document is computed based on that same tokenisation. All tokens are converted to lowercase, in line
-with what the \code{\link{setup_lexicons}} function does for the lexicons and valence shifters.
+For a separate calculation of positive (resp. negative) sentiment, one has to provide distinct positive (resp.
+negative) lexicons. This can be done using the \code{do.split} option in the \code{\link{setup_lexicons}} function, which
+splits out the lexicons into a positive and a negative polarity counterpart. All \code{NA}s are converted to 0, under the
+assumption that this is equivalent to no sentiment. If \code{tokens = NULL} (as per default), texts are tokenised as
+unigrams using the \code{\link[tokenizers]{tokenize_words}} function. Punctuation and numbers are removed, but not
+stopwords. The number of words for each document is computed based on that same tokenisation. All tokens are converted
+to lowercase, in line with what the \code{\link{setup_lexicons}} function does for the lexicons and valence shifters.
 }
+\section{Calculation}{
+
+If the \code{lexicons} argument has no \code{"valence"} element, the sentiment computed corresponds to simple unigram
+matching with the lexicons [\emph{unigram} approach]. If valence shifters are included in \code{lexicons} with a
+corresponding \code{"y"} column, these have the effect of modifying the polarity of a word detected from the lexicon if
+appearing right before such word (examples: not good, very bad or can't defend) [\emph{bigram} approach]. If these valence
+shifters contain a \code{"t"} column, they are searched for in a cluster centered around a detected polarity word
+[\emph{cluster} approach]. The latter approach is similar along the one utilized by the \pkg{sentimentr} package, but
+simplified. A cluster amounts to four words before and two words after a polarity word. A cluster never overlaps with a
+preceding one. The polarity of a cluster is calculated as \eqn{n(1 + 0.80d)S + \sum s}. The polarity score of the detected
+word is \eqn{S}, \eqn{s} represents polarities of eventual other sentiment words, and \eqn{d} is the difference between
+the number of amplifiers (\code{t = 2}) and the number of deamplifiers (\code{t = 3}). If there is an odd number of
+negators (\code{t = 1}), \eqn{n = -1} and amplifiers are counted as deamplifiers, else \eqn{n = 1}.
+}
+
 \examples{
 data("usnews", package = "sentometrics")
 data("list_lexicons", package = "sentometrics")
 data("list_valence_shifters", package = "sentometrics")
 
-l1 <- list_lexicons[c("LM_en", "HENRY_en")]
+l1 <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")])
 l2 <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+l3 <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")],
+                     list_valence_shifters[["en"]][, c("x", "t")])
 
-# from a sentocorpus object
+# from a sentocorpus object, unigram approach
 corpus <- sento_corpus(corpusdf = usnews)
 corpusSample <- quanteda::corpus_sample(corpus, size = 200)
 sent <- compute_sentiment(corpusSample, l1, how = "proportionalPol")
 
-# from a character vector
-sent <- compute_sentiment(usnews[["texts"]][1:200], l1, how = "counts")
+# from a character vector, bigram approach
+sent <- compute_sentiment(usnews[["texts"]][1:200], l2, how = "counts")
 
-\dontrun{
-# from a corpus object, parallelized
+# from a corpus object, cluster approach
 corpusQ <- quanteda::corpus(usnews, text_field = "texts")
-sent <- compute_sentiment(corpusQ, l2, how = "counts", nCore = 2)}
+corpusQSample <- quanteda::corpus_sample(corpusQ, size = 200)
+sent <- compute_sentiment(corpusQSample, l3, how = "counts", nCore = 2)
 
 }
 \author{

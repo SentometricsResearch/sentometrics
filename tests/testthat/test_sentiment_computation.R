@@ -12,13 +12,15 @@ corpus <- sento_corpus(corpusdf = usnews[1:250, ])
 
 data("list_lexicons")
 lex <- setup_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+lexSimple <- setup_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")])
 lexSplit <- setup_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")], do.split = TRUE)
+lexClust <- setup_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")], list_valence_shifters[["en"]][, c("x", "t")])
 
 ### tests from here ###
 
 sentimentList <- list(
   s1 = compute_sentiment(quanteda::texts(corpus), lex, how = "counts"),
-  s2 = compute_sentiment(quanteda::texts(corpus), lex[names(lex) != "valence"], how = "counts"),
+  s2 = compute_sentiment(quanteda::texts(corpus), lexSimple, how = "counts"),
   s3 = compute_sentiment(quanteda::texts(corpus), lex, how = "proportional"),
   s4 = compute_sentiment(quanteda::texts(corpus), lex, how = "proportionalPol", nCore = 2),
   s5 = compute_sentiment(quanteda::corpus(usnews[1:250, "texts"]), lex, how = "counts"),
@@ -26,7 +28,10 @@ sentimentList <- list(
                          lex, how = "counts"),
   s7 = compute_sentiment(corpus, lex, how = "counts"),
   s8 = compute_sentiment(quanteda::texts(corpus), lexSplit, how = "counts"),
-  s9 = compute_sentiment(quanteda::texts(corpus), lex, how = "proportionalPol", nCore = 1)
+  s9 = compute_sentiment(quanteda::texts(corpus), lex, how = "proportionalPol", nCore = 1),
+  s10 = compute_sentiment(quanteda::texts(corpus), lexClust, how = "counts"),
+  s11 = compute_sentiment(corpus, lexClust, how = "proportional"),
+  s12 = compute_sentiment(quanteda::texts(corpus), lexClust, how = "proportionalPol")
 )
 
 # compute_sentiment
@@ -42,11 +47,15 @@ test_that("Agreement between sentiment scores across input objects", {
   expect_equivalent(sentimentList$s6$sentiment[, -c(1:2)],
                     sentimentList$s7$sentiment[, colnames(sentimentList$s6$sentiment)[-c(1:2)], with = FALSE])
   expect_error(compute_sentiment(quanteda::texts(corpus), lex, how = "notAnOption"))
-  expect_warning(compute_sentiment(quanteda::texts(corpus), lex[names(lex) != "valence"], how = "counts", nCore = -1))
+  expect_warning(compute_sentiment(quanteda::texts(corpus), lex, how = "counts", nCore = -1))
+  expect_error(compute_sentiment(quanteda::texts(corpus), list_lexicons))
 })
 
 # setup_lexicons
-test_that("Proper fail when at least one lexicon name contains a '-'", {
+test_that("Proper fails when issues with lexicons and valence shifters input", {
   expect_error(setup_lexicons(list("heart--break--hotel" = list_lexicons[["LM_en"]], "good" = list_lexicons[["GI_en"]])))
+  expect_error(setup_lexicons(list_lexicons["GI_en"], valenceIn = data.table(x = rep("w", 10))))
+  expect_error(setup_lexicons(list_lexicons["GI_en"], valenceIn = data.table(x = "w", wrong = 1:3)))
+  expect_error(setup_lexicons(list_lexicons["GI_en"], valenceIn = data.table(x = "w", t = 2:4)))
 })
 

@@ -10,58 +10,19 @@ spread_sentiment_features <- function(sent, features, lexNames) {
 
 tokenise_texts <- function(x, tokens = NULL) { # x is a (sento)corpus object or a character vector
   if (is.null(tokens)) {
-    # tok <- quanteda::tokens(
-    #   x, what = "fasterword", ngrams = 1,
-    #   remove_numbers = TRUE, remove_punct = TRUE, remove_symbols = TRUE
-    # )
-    # tok <- quanteda::tokens_tolower(tok) # to lowercase
-    tok <- tokenizers::tokenize_words(x, lowercase = TRUE, strip_punct = TRUE, strip_numeric = TRUE)
+    x <- stringi::stri_trans_tolower(x)
+    tok <- stringi::stri_split_boundaries(x, type = "word", skip_word_none = TRUE, skip_word_number = TRUE)
   } else tok <- tokens
   tok
 }
 
-# compute_sentiment_onegrams <- function(dfm, lexicons, how, wCounts) {
-#
-#   if (how == "counts" || how == "proportional" || how == "proportionalPol") {
-#     fdm <- quanteda::t(dfm) # feature-document matrix
-#   } else if (how == "tf-idf") {
-#     weights <- quanteda::dfm_tfidf(dfm, scheme_tf = "prop")
-#     fdmWeighted <- quanteda::t(weights)
-#   } else stop("Please select an appropriate aggregation 'how'.")
-#
-#   lexNames <- names(lexicons)
-#   s <- as.data.table(matrix(0, nrow = nrow(dfm), ncol = length(lexNames)))
-#   names(s) <- lexNames
-#   allWords <- quanteda::featnames(dfm)
-#   for (lexicon in lexNames) { # locate polarized words and set weights to their polarity or keep at zero
-#     lexWords <- lexicons[[lexicon]]$x
-#     lexScores <- lexicons[[lexicon]]$y
-#     names(lexScores) <- lexWords
-#     allScores <- rep(0, length(allWords))
-#     polInd <- allWords %in% lexWords
-#     allScores[polInd] <- lexScores[allWords[polInd]]
-#     names(allScores) <- allWords
-#     if (how == "counts") {
-#       scores <- quanteda::rowSums(quanteda::t(fdm * allScores))
-#     } else if (how == "proportional") {
-#       scores <- quanteda::rowSums(quanteda::t(fdm * allScores)) / wCounts
-#     } else if (how == "proportionalPol") {
-#       wordScores <- quanteda::t(fdm * allScores) # every row is a document
-#       scores <- quanteda::rowSums(wordScores) / quanteda::rowSums(wordScores != 0)
-#     } else scores <- quanteda::rowSums(quanteda::t(fdmWeighted * allScores))
-#     scores[is.na(scores)] <-
-#     s[, (lexicon) := scores]
-#   }
-#   s
-# }
-
 compute_sentiment_lexicons <- function(tok, lexicons, how, nCore = 2) {
   threads <- min(RcppParallel::defaultNumThreads(), nCore)
   RcppParallel::setThreadOptions(numThreads = threads)
-  if ("valence" %in% names(lexicons)) {
-    s <- as.data.table(compute_sentiment_bigrams(tok, lexicons, how))
-  } else {
+  if (is.null(lexicons[["valence"]])) {
     s <- as.data.table(compute_sentiment_onegrams(tok, lexicons, how))
+  } else {
+    s <- as.data.table(compute_sentiment_valence(tok, lexicons, how))
   }
   s
 }
@@ -71,33 +32,42 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, nCore = 2) {
 #' @author Samuel Borms
 #'
 #' @description Given a corpus of texts, computes (net) sentiment per document using the bag-of-words approach
-#' based on the lexicons provided and a choice of aggregation across words per document. If the \code{lexicons} argument
-#' has no \code{"valence"} element, the sentiment computed corresponds to simple unigram matching with the lexicons. If
-#' valence shifters are included in \code{lexicons}, these have the effect of modifying the polarity of a word detected from
-#' the lexicon if appearing right before such word (examples: not good, very bad or can't defend).
+#' based on the lexicons provided and a choice of aggregation across words per document.
 #'
-#' @details
-#' For a separate calculation of positive (resp. negative) sentiment, one has to provide distinct positive (resp. negative)
-#' lexicons. This can be done using the \code{do.split} option in the \code{\link{setup_lexicons}} function, which splits out
-#' the lexicons into a positive and a negative polarity counterpart. All \code{NA}s are converted to 0, under the assumption
-#' that this is equivalent to no sentiment. If \code{tokens = NULL} (as per default), texts are tokenised as unigrams using
-#' the \code{\link[tokenizers]{tokenize_words}} function. Punctuation and numbers are removed, but not stopwords. The number
-#' of words for each document is computed based on that same tokenisation. All tokens are converted to lowercase, in line
-#' with what the \code{\link{setup_lexicons}} function does for the lexicons and valence shifters.
+#' @details For a separate calculation of positive (resp. negative) sentiment, one has to provide distinct positive (resp.
+#' negative) lexicons. This can be done using the \code{do.split} option in the \code{\link{setup_lexicons}} function, which
+#' splits out the lexicons into a positive and a negative polarity counterpart. All \code{NA}s are converted to 0, under the
+#' assumption that this is equivalent to no sentiment. If \code{tokens = NULL} (as per default), texts are tokenised as
+#' unigrams using the \code{\link[tokenizers]{tokenize_words}} function. Punctuation and numbers are removed, but not
+#' stopwords. The number of words for each document is computed based on that same tokenisation. All tokens are converted
+#' to lowercase, in line with what the \code{\link{setup_lexicons}} function does for the lexicons and valence shifters.
+#'
+#' @section Calculation:
+#' If the \code{lexicons} argument has no \code{"valence"} element, the sentiment computed corresponds to simple unigram
+#' matching with the lexicons [\emph{unigram} approach]. If valence shifters are included in \code{lexicons} with a
+#' corresponding \code{"y"} column, these have the effect of modifying the polarity of a word detected from the lexicon if
+#' appearing right before such word (examples: not good, very bad or can't defend) [\emph{bigram} approach]. If these valence
+#' shifters contain a \code{"t"} column, they are searched for in a cluster centered around a detected polarity word
+#' [\emph{cluster} approach]. The latter approach is similar along the one utilized by the \pkg{sentimentr} package, but
+#' simplified. A cluster amounts to four words before and two words after a polarity word. A cluster never overlaps with a
+#' preceding one. The polarity of a cluster is calculated as \eqn{n(1 + 0.80d)S + \sum s}. The polarity score of the detected
+#' word is \eqn{S}, \eqn{s} represents polarities of eventual other sentiment words, and \eqn{d} is the difference between
+#' the number of amplifiers (\code{t = 2}) and the number of deamplifiers (\code{t = 3}). If there is an odd number of
+#' negators (\code{t = 1}), \eqn{n = -1} and amplifiers are counted as deamplifiers, else \eqn{n = 1}.
 #'
 #' @param x either a \code{sentocorpus} object created with \code{\link{sento_corpus}}, a \pkg{quanteda}
 #' \code{\link[quanteda]{corpus}} object, or a \code{character} vector. The latter two do not incorporate a
 #' date dimension. In case of a \code{\link[quanteda]{corpus}} object, the \code{numeric} columns from the
 #' \code{\link[quanteda]{docvars}} are considered as features over which sentiment will be computed. In
 #' case of a \code{character} vector, sentiment is only computed across lexicons.
-#' @param lexicons output from a \code{\link{setup_lexicons}} call, i.e., a named \code{list} of lexicons.
+#' @param lexicons a \code{sentolexicons} object created with \code{\link{setup_lexicons}}.
 #' @param how a single \code{character} vector defining how aggregation within documents should be performed. For currently
 #' available options on how aggregation can occur, see \code{\link{get_hows}()$words}.
 #' @param tokens a \code{list} of tokenized documents, to specify your own tokenisation scheme. Can result from the
 #' \pkg{quanteda}'s \code{\link[quanteda]{tokens}} function, the \pkg{tokenizers} package, or other. Make sure the tokens are
 #' constructed from (the texts from) the input corpus, are unigrams, and preferably set to lowercase, otherwise, results
 #' will be spurious or errors may occur. By default set to \code{NULL}.
-#' @param nCore a positive \code{numeric} passed on to the \code{numThreads} argument of the
+#' @param nCore a positive \code{numeric} that will be passed on to the \code{numThreads} argument of the
 #' \code{\link[RcppParallel]{setThreadOptions}} function, to parallelize the sentiment computation across texts. A
 #' value of 1 implies no parallelisation. Parallelisation is expected to improve speed of the sentiment computation
 #' only for sufficiently large corpora, say, in the order of having at least 100,000 documents.
@@ -119,21 +89,23 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, nCore = 2) {
 #' data("list_lexicons", package = "sentometrics")
 #' data("list_valence_shifters", package = "sentometrics")
 #'
-#' l1 <- list_lexicons[c("LM_en", "HENRY_en")]
+#' l1 <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")])
 #' l2 <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+#' l3 <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")],
+#'                      list_valence_shifters[["en"]][, c("x", "t")])
 #'
-#' # from a sentocorpus object
+#' # from a sentocorpus object, unigram approach
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 200)
 #' sent <- compute_sentiment(corpusSample, l1, how = "proportionalPol")
 #'
-#' # from a character vector
-#' sent <- compute_sentiment(usnews[["texts"]][1:200], l1, how = "counts")
+#' # from a character vector, bigram approach
+#' sent <- compute_sentiment(usnews[["texts"]][1:200], l2, how = "counts")
 #'
-#' \dontrun{
-#' # from a corpus object, parallelized
+#' # from a corpus object, cluster approach
 #' corpusQ <- quanteda::corpus(usnews, text_field = "texts")
-#' sent <- compute_sentiment(corpusQ, l2, how = "counts", nCore = 2)}
+#' corpusQSample <- quanteda::corpus_sample(corpusQ, size = 200)
+#' sent <- compute_sentiment(corpusQSample, l3, how = "counts", nCore = 2)
 #'
 #' @importFrom compiler cmpfun
 #' @export
@@ -145,6 +117,7 @@ compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, 
   if (length(nCore) != 1 || !is.numeric(nCore))
     stop("The 'nCore' argument should be a numeric vector of size one.")
   if (!is.null(tokens)) stopifnot(is.list(tokens))
+  check_class(lexicons, "sentolexicons")
 
   UseMethod("compute_sentiment", x)
 }

@@ -14,7 +14,7 @@
 #' @param fill an element of \code{c("zero", "latest")}; the first assumes missing dates represent zero sentiment,
 #' the second assumes missing dates represent constant sentiment.
 #' @param dateBefore a date as \code{"yyyy-mm-dd"}, to stretch the sentiment time series from up to the first date. Should
-#' be earlier than \code{get_dates(sentomeasures)[1]} to take effect. The values for these dates are set to the values at
+#' be earlier than \code{get_dates(sentomeasures)[1]} to take effect. The values for these dates are set to those at
 #' \code{get_dates(sentomeasures)[1]}. If \code{NULL}, then ignored.
 #' @param dateAfter a date as \code{"yyyy-mm-dd"}, to stretch the sentiment time series up to this date. Should be
 #' later than \code{tail(get_dates(sentomeasures), 1)} to take effect. If \code{NULL}, then ignored.

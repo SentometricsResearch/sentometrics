@@ -20,11 +20,6 @@ datesNew <- paste0(paste0(unlist(months), "/"), paste0(unlist(days), "/"), unlis
 datesNew <- as.character(as.Date(datesNew, format = "%m/%d/%Y")) # character date is input requirement
 useconomy$dateNew <- datesNew
 
-freqDays <- plyr::count(datesNew)
-freqMonths <- plyr::count(unlist(lapply(stringi::stri_split(datesNew, regex = "-"),
-                                        function(x) return(paste0(x[1:2], collapse = "/")))))
-freqYears <- plyr::count(unlist(lapply(stringi::stri_split(datesNew, regex = "-"), "[", 1)))
-
 USECONOMYNEWS <- useconomy
 USECONOMYNEWS$date <- USECONOMYNEWS$dateNew
 
@@ -246,13 +241,14 @@ valShifters <- lapply(valShifters, function(v) {
   v <- v[t != 4]
   v$y <- -1
   v$t <- as.numeric(v$t)
-  v[t == 2, "y"] <- 2
-  v[t == 3, "y"] <- 0.5
+  v[t == 2, "y"] <- 1.8
+  v[t == 3, "y"] <- 0.2
   v$x <- as.character(v$x)
   Encoding(v$x) <- "latin1"
   v$x <- iconv(v$x, "latin1", "UTF-8")
-  v$t <- NULL
+  # v$t <- NULL
   v <- v[!stringi::stri_detect(v$x, regex = "\\s+"), ]
+  setcolorder(v, c("x", "y", "t"))
   return(v)
 })
 list_valence_shifters <- valShifters
