@@ -1,6 +1,4 @@
 
-###
-
 ###########################################
 #### COMPARISON SENTIMENT COMPUTATIONS ####
 ###########################################
@@ -55,12 +53,14 @@ nTexts <- c(1, 5, 10, 25, 50, 75, 100) * 1000
 
 lexPure <- setup_lexicons(lexiconsIn = lexiconsIn)
 lexHul <- setup_lexicons(lex["huliu"])
+lexClust <- setup_lexicons(lexiconsIn = lexiconsIn, valenceIn = list_valence_shifters[["en"]][, c("x", "t")])
 
 sentoSimpleFunc <- function(texts) compute_sentiment(texts, lexicons = lexHul, how = "counts")
 sentoSimpleAllFunc <- function(texts) compute_sentiment(texts, lexicons = lexPure, how = "counts")
-sentoValenceFunc <- function(texts) compute_sentiment(texts, lexicons = lex, how = "counts")
+sentoValenceFunc <- function(texts) compute_sentiment(texts, lexicons = lex, how = "counts") # bigrams approach
 sentoValenceAllFunc <- function(texts) compute_sentiment(texts, lexicons = lex, how = "counts")
 sentoValenceAllParFunc <- function(texts) compute_sentiment(texts, lexicons = lex, how = "counts", nCore = 8)
+sentoValenceClustAllFunc <- function(texts) compute_sentiment(texts, lexicons = lexClust, how = "counts") # clusters approach
 
 meanrFunc <- function(texts) meanr::score(texts, nthreads = 2)
 
@@ -132,6 +132,7 @@ timingsFull <- lapply(nTexts, function(n) {
     sentoValenceFunc(texts),
     sentoValenceAllFunc(texts),
     # sentoValenceAllParFunc(texts),
+    sentoValenceClustAllFunc(texts),
     meanrFunc(texts),
     tidytextFuncHuliu(texts),
     tidytextFuncSenticNet(texts),
@@ -147,7 +148,7 @@ timingsAll <- do.call(rbind,
                       lapply(timingsFull, function(timing) summary(timing)[, "mean"])
 )
 colnames(timingsAll) <- c("sentometrics", "sentometrics_valence", "sentometrics_valence_all_lexicons",
-                          "meanr", "tidytext_huliu", "tidytext_senticnet", "syuzhet")
+                          "sentometrics_clusters_all_lexicons", "meanr", "tidytext_huliu", "tidytext_senticnet", "syuzhet")
 timings <- data.table(texts = nTexts, timingsAll)
 timings
 

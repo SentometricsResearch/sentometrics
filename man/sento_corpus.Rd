@@ -10,9 +10,9 @@ sento_corpus(corpusdf, do.clean = FALSE)
 \item{corpusdf}{a \code{data.frame} (or a \code{data.table}, or a \code{tbl}) with as named columns: a document \code{"id"}
 column (in \code{character} mode), a \code{"date"} column (as \code{"yyyy-mm-dd"}), a \code{"texts"} column (in
 \code{character} mode), and a series of feature columns of type \code{numeric}, with values between 0 and 1 to specify the
-degree of connectedness of a feature to a document. Features could be topics (e.g., legal, political, or economic),
-article sources (e.g., online or printed press), amongst many more options. In the case of no feature column provided, a
-feature named \code{"dummy"} is added. All spaces in the names of the features are replaced by underscores. Feature
+degree of connectedness of a feature to a document. Features could be topics (e.g., legal or economic),
+article sources (e.g., online or print), amongst many more options. When no feature column is provided, a
+feature named \code{"dummy"} is added. All spaces in the names of the features are replaced by \code{'_'}. Feature
 columns with values not between 0 and 1 are rescaled column-wise.}
 
 \item{do.clean}{a \code{logical}, if \code{TRUE} all texts undergo a cleaning routine to eliminate common textual garbage.
@@ -26,10 +26,10 @@ represented as a \code{data.frame}.
 }
 \description{
 Formalizes a collection of texts into a well-defined corpus object derived from the
-\code{\link[quanteda]{corpus}} object. The \pkg{quanteda} package provides a fast text mining infrastructure,
-see \href{http://quanteda.io/index.html}{quanteda}. Their formal corpus structure brings better memory management and a
-handy corpus manipulation toolset. This function mainly performs a set of checks on the input data and prepares the
-corpus for further sentiment analysis.
+\code{\link[quanteda]{corpus}} object. The \pkg{quanteda} package provides a robust text mining infrastructure,
+see \href{http://quanteda.io/index.html}{quanteda}. Their corpus structure brings better memory management and a
+handy corpus manipulation toolset. This function performs a set of checks on the input data and prepares the
+corpus for further analysis.
 }
 \details{
 A \code{sentocorpus} object is a specialized instance of a \pkg{quanteda} corpus. In theory, all

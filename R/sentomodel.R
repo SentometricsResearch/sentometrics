@@ -32,7 +32,7 @@
 #' @param oos a non-negative \code{integer} to indicate the number of periods to skip from the end of the training sample
 #' up to the out-of-sample prediction(s). This is either used in the cross-validation based calibration approach
 #' (if \code{type = } "\code{cv}"), or for the iterative out-of-sample prediction analysis (if \code{do.iter = TRUE}). For
-#' instance, given \eqn{t}, the (first) out-of-sample prediction is computed at \eqn{t + oos + 1}.
+#' instance, given \eqn{t}, the (first) out-of-sample prediction is computed at \eqn{t +} \code{oos} \eqn{+ 1}.
 #' @param do.iter a \code{logical}, \code{TRUE} induces an iterative estimation of models at the given \code{nSample} size and
 #' performs the associated out-of-sample prediction exercise through time.
 #' @param do.progress a \code{logical}, if \code{TRUE} progress statements are displayed during model calibration.
@@ -53,8 +53,8 @@
 #' will be of \eqn{y_(t + 2) - y_t} on \eqn{X_t}. If \code{h = -2}, the regression fitted is \eqn{y_(t + 2) - y_t} on
 #' \eqn{X_{t+2}}. The argument is always kept at \code{FALSE} if the \code{model} argument is one of
 #' \code{c("binomial", "multinomial")}.
-#' @param do.regularize.x a \code{logical}, if \code{TRUE} the variables provided through the \code{x} argument of
-#' the \code{\link{sento_model}} function are subject to regularization, else not.
+#' @param do.shrinkage.x a \code{logical}, if \code{TRUE} all other regressors provided through the \code{x} argument of
+#' the \code{\link{sento_model}} function are subject to shrinkage, else not.
 #'
 #' @return A \code{list} encapsulating the control parameters.
 #'
@@ -81,7 +81,7 @@
 ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c("BIC", "AIC", "Cp", "cv"),
                       do.intercept = TRUE, do.iter = FALSE, h = 0, oos = 0, do.difference = FALSE,
                       alphas = seq(0, 1, by = 0.20), lambdas = NULL, nSample = NULL, trainWindow = NULL,
-                      testWindow = NULL, start = 1, do.regularize.x = FALSE, do.progress = TRUE, nCore = 1) {
+                      testWindow = NULL, start = 1, do.shrinkage.x = FALSE, do.progress = TRUE, nCore = 1) {
 
   if (length(model) > 1) model <- model[1]
   if (length(type) > 1) type <- type[1]
@@ -96,8 +96,8 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
   if (length(do.intercept) != 1 || !is.logical(do.intercept)) {
     err <- c(err, "The 'do.intercept' argument should be a logical of size one.")
   }
-  if (length(do.regularize.x) != 1 || !is.logical(do.regularize.x)) {
-    err <- c(err, "The 'do.regularize.x' argument should be a logical of size one.")
+  if (length(do.shrinkage.x) != 1 || !is.logical(do.shrinkage.x)) {
+    err <- c(err, "The 'do.shrinkage.x' argument should be a logical of size one.")
   }
   if (model %in% c("binomial", "multinomial") && type != "cv") {
     err <- c(err, "Information criteria are currently only supported for linear models, opt for cross-validation instead.")
@@ -160,7 +160,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
                     h = h,
                     oos = oos,
                     do.difference = do.difference,
-                    do.regularize.x = do.regularize.x,
+                    do.shrinkage.x = do.shrinkage.x,
                     nSample = nSample,
                     start = start,
                     alphas = unique(alphas),
@@ -327,7 +327,7 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
   h <- ctr$h
   oos <- ctr$oos # used when type is "cv" or when do.iter is TRUE
   do.difference <- ctr$do.difference
-  do.regularize.x <- ctr$do.regularize.x
+  do.shrinkage.x <- ctr$do.shrinkage.x
   alphas <- ctr$alphas
   lambdas <- ctr$lambdas
   do.progress <- ctr$do.progress
@@ -342,19 +342,19 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
                                 alphas = alphas, lambdas = lambdas, type = type, nSample = nSample,
                                 start = start, oos = oos, trainWindow = trainWindow, testWindow = testWindow,
                                 do.progress = do.progress, nCore = nCore, do.iter = do.iter,
-                                do.difference = do.difference, do.regularize.x = do.regularize.x)
+                                do.difference = do.difference, do.shrinkage.x = do.shrinkage.x)
   } else {
     out <- run_sento_model(sentomeasures, y = y, x = x, h = h, family = family, intercept = intercept,
                            alphas = alphas, lambdas = lambdas, type = type, trainWindow = trainWindow,
                            testWindow = testWindow, oos = oos, do.progress = do.progress,
-                           do.difference = do.difference, do.regularize.x = do.regularize.x, do.iter = do.iter)
+                           do.difference = do.difference, do.shrinkage.x = do.shrinkage.x, do.iter = do.iter)
   }
 
   return(out)
 }
 
 .run_sento_model <- function(sentomeasures, y, x, h, alphas, lambdas, intercept, trainWindow, testWindow,
-                             oos, type, do.progress, family, do.difference, do.regularize.x, ...) {
+                             oos, type, do.progress, family, do.difference, do.shrinkage.x, ...) {
   # inputs i and nSample are NULL if one-shot model (not iterative)
   dots <- list(...)
   i <- dots$i
@@ -369,7 +369,7 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
   xx <- cleaned$xNew
   discarded <- cleaned$discarded
   sampleDates <- c(alignedVars$datesX[1], alignedVars$datesX[nrow(xx)])
-  if (do.regularize.x) {
+  if (do.shrinkage.x) {
     penalty <- rep(1, ncol(xx))
   } else {
     penalty <- c(rep(1, ncol(xx) - nx), rep(0, nx)) # no shrinkage for original x variables
@@ -492,7 +492,7 @@ run_sento_model <- compiler::cmpfun(.run_sento_model)
 #' @importFrom foreach %dopar%
 .run_sento_model_iter <- function(sentomeasures, y, x, h, family, intercept, alphas, lambdas,
                                   type, nSample, start, trainWindow, testWindow, oos, do.progress,
-                                  nCore, do.iter, do.difference, do.regularize.x) {
+                                  nCore, do.iter, do.difference, do.shrinkage.x) {
 
   nIter <- ifelse(is.null(nrow(y)), length(y), nrow(y)) - nSample - abs(h) - oos
   if (nIter <= 0 || start > nIter)
@@ -506,7 +506,7 @@ run_sento_model <- compiler::cmpfun(.run_sento_model)
       out <- run_sento_model(
         sentomeasures, y, x, h, alphas = alphas, lambdas = lambdas, intercept = intercept,
         trainWindow = trainWindow, testWindow = testWindow, oos = oos, type = type, do.progress = FALSE,
-        family = family, do.iter = do.iter, do.difference = do.difference, do.regularize.x = do.regularize.x,
+        family = family, do.iter = do.iter, do.difference = do.difference, do.shrinkage.x = do.shrinkage.x,
         nSample = nSample, i = i
       )
       return(out)
@@ -519,7 +519,7 @@ run_sento_model <- compiler::cmpfun(.run_sento_model)
       out <- run_sento_model(
         sentomeasures, y, x, h, alphas = alphas, lambdas = lambdas, intercept = intercept,
         trainWindow = trainWindow, testWindow = testWindow, oos = oos, type = type, do.progress = do.progress,
-        family = family, do.iter = do.iter, do.difference = do.difference, do.regularize.x = do.regularize.x,
+        family = family, do.iter = do.iter, do.difference = do.difference, do.shrinkage.x = do.shrinkage.x,
         nSample = nSample, i = i
       )
       return(out)

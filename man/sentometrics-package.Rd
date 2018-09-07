@@ -9,8 +9,8 @@
 The \pkg{sentometrics} package is designed to do time series analysis based on textual sentiment. It accounts
 for the intrinsic challenge that, for a given text, sentiment can be computed in many ways, as well as the large
 number of possibilities to pool sentiment across text and time. This additional layer of manipulation does not exist
-in standard time series analysis and text mining packages. The package also provides an interface to model
-model the impact of sentiment in texts on a given variable, by first computing a wide range of textual
+in standard text mining and time series analysis packages. The package provides an interface to model
+the impact of sentiment in texts on a given variable, by first computing a wide range of textual
 sentiment time series and then selecting those that are most informative. Altogether, \pkg{sentometrics} integrates the
 fast \emph{qualification} of sentiment from texts, the \emph{aggregation} into different sentiment measures and the optimized
 \emph{prediction} based on these measures.

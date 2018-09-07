@@ -15,12 +15,8 @@ Outputs the supported aggregation arguments. Call for information purposes only.
 \code{\link{ctr_agg}} to check if supplied aggregation hows are supported.
 }
 \details{
-The \code{howWithin = "counts"} option multiplies the frequency of detected words
-with their associated polarity scores, then takes the sum of these values as sentiment per document, without any
-normalisation. The \code{howWithin = "proportionalPol"} option divides each document's initial sentiment score by the
-number of polarized words found in the document (counting each word only once would it appear multiple times), instead
-of the total number of words which the \code{howWithin = "proportional"} option gives. See the package's
-\href{https://ssrn.com/abstract=3067734}{vignette} for further explanation of all aggregation options.
+See the package's \href{https://ssrn.com/abstract=3067734}{vignette} for a detailed explanation of all
+aggregation options.
 }
 \seealso{
 \code{\link{ctr_agg}}
