@@ -37,7 +37,7 @@ out1 <- sento_model(sentomeasures, y, x = x, ctr = ctrM1)
 ctrM2 <- ctr_model(model = "gaussian", type = "AIC", h = -1, alphas = c(0.2, 0.7))
 out2 <- sento_model(sentomeasures, y, x = x, ctr = ctrM2)
 
-ctrM3 <- ctr_model(model = "gaussian", type = "BIC", h = 0, do.regularize.x = TRUE, alphas = c(0.2, 0.7))
+ctrM3 <- ctr_model(model = "gaussian", type = "BIC", h = 0, do.shrinkage.x = TRUE, alphas = c(0.2, 0.7))
 out3 <- sento_model(sentomeasures, y, x = x, ctr = ctrM3)
 
 ctrM4 <- ctr_model(model = "gaussian", type = "cv", h = 3, trainWindow = nrow(x) - 30, testWindow = 7, alphas = c(0.2, 0.7))

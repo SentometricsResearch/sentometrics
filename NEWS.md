@@ -2,20 +2,20 @@
 ## sentometrics 0.5.0
 
 - new functions: `betas()`, `get_dates()`, `get_dimensions()`, and `get_measures()`
-- defunct the `ctr_merge()` function, so that all merge parameters are to be passed on directly to the `measures_merge()` function
+- defunct the `ctr_merge()` function, so that all merge parameters have to be passed on directly to the `measures_merge()` function
 - expanded the use of the `center` and `scale` arguments in the `scale()` function
 - renamed the function `to_global()` to `measures_global()` for consistency
 - added the `dateBefore` and `dateAfter` arguments to the `measures_fill()` function
 - added a `"beta"` time aggregation option and an associated `betas()` function
 - corrected update of `attribWeights` element of output `sentomeasures` object in required `measures_xyz()` functions
 - added a new attribution dimension (`"lags"`) to the `retrieve_attributions()` function, and corrected some edge cases
-- dropped `NA` option in `fill` argument of `measures_fill()` function
+- dropped `NA` option of the `fill` argument in the `measures_fill()` function
 - made a slight correction to the information criterion estimators
 - added a `lambdas` argument to the `ctr_model()` function, directly passed on to the `glmnet::glmnet()` function if used
 - omitted `do.combine` argument in `measures_delete()` and `measures_select()` functions to simplify
 - expanded set of unit tests, included a coverage badge, and added **`covr`** to Suggests
-- reimplementation of the sentiment calculation in the `compute_sentiment()` function, by writing part of the code in **`Rcpp`** relying on **`RcppParallel`** (added to Imports), and removing now abundant manipulations and documentation related to the integration of valence shifters in for example the `setup_lexicons()` function; there are now three approaches to computing sentiment (unigram, bigram and cluster)
-- replaced the `dfm` argument from the `compute_sentiment()` and `ctr_agg()` functions by a `tokens` argument, and altered the input and behaviour of the `nCore` argument of these same two functions
+- reimplementation (and improved documentation) of the sentiment calculation in the `compute_sentiment()` function, by writing part of the code in **`Rcpp`** relying on **`RcppParallel`** (added to Imports); there are now three approaches to computing sentiment (unigrams, bigrams and clusters)
+- replaced the `dfm` argument from the `compute_sentiment()` and `ctr_agg()` functions by a `tokens` argument, and altered the input and behaviour of the `nCore` argument in these same two functions
 - switched from the **`quanteda`** package to the **`stringi`** package for more direct tokenisation
 - trimmed the `list_lexicons` and `list_valence_shifters` built-in word lists by keeping only unigrams, and included same trimming procedure in the `setup_lexicons()` function
 - added a type column `"t"` to the `list_valence_shifters` built-in word list, and reset values of the `"y"` column from 2 to 1.8 and from 0.5 to 0.2

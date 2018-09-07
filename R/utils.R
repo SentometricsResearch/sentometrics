@@ -204,12 +204,8 @@ setup_time_weights <- function(lag, how, ...) {
 #' @description Outputs the supported aggregation arguments. Call for information purposes only. Used within
 #' \code{\link{ctr_agg}} to check if supplied aggregation hows are supported.
 #'
-#' @details The \code{howWithin = "counts"} option multiplies the frequency of detected words
-#' with their associated polarity scores, then takes the sum of these values as sentiment per document, without any
-#' normalisation. The \code{howWithin = "proportionalPol"} option divides each document's initial sentiment score by the
-#' number of polarized words found in the document (counting each word only once would it appear multiple times), instead
-#' of the total number of words which the \code{howWithin = "proportional"} option gives. See the package's
-#' \href{https://ssrn.com/abstract=3067734}{vignette} for further explanation of all aggregation options.
+#' @details See the package's \href{https://ssrn.com/abstract=3067734}{vignette} for a detailed explanation of all
+#' aggregation options.
 #'
 #' @return A list with the supported aggregation hows for arguments \code{howWithin} (\code{"words"}), \code{howDows}
 #' (\code{"docs"}) and \code{howTime} (\code{"time"}), to be supplied to \code{\link{ctr_agg}}.

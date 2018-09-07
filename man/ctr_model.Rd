@@ -8,7 +8,7 @@ ctr_model(model = c("gaussian", "binomial", "multinomial"), type = c("BIC",
   "AIC", "Cp", "cv"), do.intercept = TRUE, do.iter = FALSE, h = 0,
   oos = 0, do.difference = FALSE, alphas = seq(0, 1, by = 0.2),
   lambdas = NULL, nSample = NULL, trainWindow = NULL, testWindow = NULL,
-  start = 1, do.regularize.x = FALSE, do.progress = TRUE, nCore = 1)
+  start = 1, do.shrinkage.x = FALSE, do.progress = TRUE, nCore = 1)
 }
 \arguments{
 \item{model}{a \code{character} vector with one of the following: \code{"gaussian"} (linear regression), \code{"binomial"}
@@ -33,7 +33,7 @@ periods.}
 \item{oos}{a non-negative \code{integer} to indicate the number of periods to skip from the end of the training sample
 up to the out-of-sample prediction(s). This is either used in the cross-validation based calibration approach
 (if \code{type = } "\code{cv}"), or for the iterative out-of-sample prediction analysis (if \code{do.iter = TRUE}). For
-instance, given \eqn{t}, the (first) out-of-sample prediction is computed at \eqn{t + oos + 1}.}
+instance, given \eqn{t}, the (first) out-of-sample prediction is computed at \eqn{t +} \code{oos} \eqn{+ 1}.}
 
 \item{do.difference}{a \code{logical}, \code{TRUE} will difference the target variable \code{y} supplied in the
 \code{\link{sento_model}} function with as lag the absolute value of the \code{h} argument, but
@@ -64,8 +64,8 @@ or set to \code{10^seq(2, -2, length.out = 100)} in case of cross-validation.}
 \code{do.iter = FALSE}). For example, given 100 possible iterations, \code{start = 70} leads to model estimations
 only for the last 31 samples.}
 
-\item{do.regularize.x}{a \code{logical}, if \code{TRUE} the variables provided through the \code{x} argument of
-the \code{\link{sento_model}} function are subject to regularization, else not.}
+\item{do.shrinkage.x}{a \code{logical}, if \code{TRUE} all other regressors provided through the \code{x} argument of
+the \code{\link{sento_model}} function are subject to shrinkage, else not.}
 
 \item{do.progress}{a \code{logical}, if \code{TRUE} progress statements are displayed during model calibration.}
 

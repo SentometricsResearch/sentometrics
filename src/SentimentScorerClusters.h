@@ -30,12 +30,12 @@ struct SentimentScorerClusters : public RcppParallel::Worker {
       std::vector<double> scores(nL, 0.0);
       std::vector<double> nPolarized(nL, 0.0);
       int nTokens = tokens.size();
-      int lB = 0, nB = 4, nA = 2; // allowed starting position, deduct (add) from (to) current position cluster boundary
+      int lB = 0, nB = 4, nA = 2; // polarity cluster: [max(lB, hit - nB); min(hit + nA, nTokens)]
 
       for (int j = 0; j < nTokens; j++) {
         std::string token = tokens[j];
 
-        if (lexiconMap.find(token) != lexiconMap.end()) {
+        if (lexiconMap.find(token) != lexiconMap.end()) { // hit
 
           std::vector<double> lexScores = lexiconMap.at(token);
           std::vector<int> shifters(3);

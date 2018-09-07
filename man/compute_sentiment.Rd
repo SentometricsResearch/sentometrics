@@ -58,16 +58,21 @@ to lowercase, in line with what the \code{\link{setup_lexicons}} function does f
 \section{Calculation}{
 
 If the \code{lexicons} argument has no \code{"valence"} element, the sentiment computed corresponds to simple unigram
-matching with the lexicons [\emph{unigram} approach]. If valence shifters are included in \code{lexicons} with a
+matching with the lexicons [\emph{unigrams} approach]. If valence shifters are included in \code{lexicons} with a
 corresponding \code{"y"} column, these have the effect of modifying the polarity of a word detected from the lexicon if
-appearing right before such word (examples: not good, very bad or can't defend) [\emph{bigram} approach]. If these valence
+appearing right before such word (examples: not good, very bad or can't defend) [\emph{bigrams} approach]. If these valence
 shifters contain a \code{"t"} column, they are searched for in a cluster centered around a detected polarity word
-[\emph{cluster} approach]. The latter approach is similar along the one utilized by the \pkg{sentimentr} package, but
+[\emph{clusters} approach]. The latter approach is similar along the one utilized by the \pkg{sentimentr} package, but
 simplified. A cluster amounts to four words before and two words after a polarity word. A cluster never overlaps with a
 preceding one. The polarity of a cluster is calculated as \eqn{n(1 + 0.80d)S + \sum s}. The polarity score of the detected
 word is \eqn{S}, \eqn{s} represents polarities of eventual other sentiment words, and \eqn{d} is the difference between
 the number of amplifiers (\code{t = 2}) and the number of deamplifiers (\code{t = 3}). If there is an odd number of
-negators (\code{t = 1}), \eqn{n = -1} and amplifiers are counted as deamplifiers, else \eqn{n = 1}.
+negators (\code{t = 1}), \eqn{n = -1} and amplifiers are counted as deamplifiers, else \eqn{n = 1}. All scores, whether
+per unigram, per bigram or per cluster, are summed within a document, before the scaling defined by the \code{how}
+argument is applied. The \code{how = "proportionalPol"} option divides each document's sentiment score by the
+number of detected polarized words (counting words that appear multiple times by their frequency), instead
+of the total number of words which the \code{how = "proportional"} option gives. The \code{how = "counts"} option
+does no normalisation.
 }
 
 \examples{
