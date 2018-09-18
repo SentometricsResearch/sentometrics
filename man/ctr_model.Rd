@@ -71,8 +71,8 @@ the \code{\link{sento_model}} function are subject to shrinkage, else not.}
 
 \item{nCore}{a positive \code{integer} to indicate the number of cores to use for a parallel iterative model
 estimation (\code{do.iter = TRUE}). We use the \code{\%dopar\%} construct from the \pkg{foreach} package. By default,
-\code{nCore = 1}, which implies no parallelization. No progress statements are displayed whatsoever when \code{nCore > 1}.
-For cross-validation models, parallelization can also be carried out for a single-shot model (\code{do.iter = FALSE}),
+\code{nCore = 1}, which implies no parallelisation. No progress statements are displayed whatsoever when \code{nCore > 1}.
+For cross-validation models, parallelisation can also be carried out for a single-shot model (\code{do.iter = FALSE}),
 whenever a parallel backend is set up. See the examples in \code{\link{sento_model}}.}
 }
 \value{

@@ -19,13 +19,13 @@ case of a \code{character} vector, sentiment is only computed across lexicons.}
 \item{how}{a single \code{character} vector defining how aggregation within documents should be performed. For currently
 available options on how aggregation can occur, see \code{\link{get_hows}()$words}.}
 
-\item{tokens}{a \code{list} of tokenized documents, to specify your own tokenisation scheme. Can result from the
+\item{tokens}{a \code{list} of tokenised documents, to specify your own tokenisation scheme. Can result from the
 \pkg{quanteda}'s \code{\link[quanteda]{tokens}} function, the \pkg{tokenizers} package, or other. Make sure the tokens are
 constructed from (the texts from) the \code{x} argument, are unigrams, and preferably set to lowercase, otherwise, results
 may be spurious and errors could occur. By default set to \code{NULL}.}
 
 \item{nCore}{a positive \code{numeric} that will be passed on to the \code{numThreads} argument of the
-\code{\link[RcppParallel]{setThreadOptions}} function, to parallelize the sentiment computation across texts. A
+\code{\link[RcppParallel]{setThreadOptions}} function, to parallelise the sentiment computation across texts. A
 value of 1 implies no parallelisation. Parallelisation is expected to improve speed of the sentiment computation
 only for sufficiently large corpora, say, in the order of having at least 100,000 documents.}
 }
@@ -97,7 +97,7 @@ corpusQ <- quanteda::corpus(usnews, text_field = "texts")
 corpusQSample <- quanteda::corpus_sample(corpusQ, size = 200)
 sent3 <- compute_sentiment(corpusQSample, l3, how = "counts", nCore = 2)
 
-# from an already tokenized corpus, using the 'tokens' argument
+# from an already tokenised corpus, using the 'tokens' argument
 toks <- as.list(quanteda::tokens(corpusQSample, what = "fastestword"))
 sent4 <- compute_sentiment(corpusQSample, l1[1], how = "counts",
                            tokens = toks)

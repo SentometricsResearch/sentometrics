@@ -42,8 +42,8 @@
 #' only for the last 31 samples.
 #' @param nCore a positive \code{integer} to indicate the number of cores to use for a parallel iterative model
 #' estimation (\code{do.iter = TRUE}). We use the \code{\%dopar\%} construct from the \pkg{foreach} package. By default,
-#' \code{nCore = 1}, which implies no parallelization. No progress statements are displayed whatsoever when \code{nCore > 1}.
-#' For cross-validation models, parallelization can also be carried out for a single-shot model (\code{do.iter = FALSE}),
+#' \code{nCore = 1}, which implies no parallelisation. No progress statements are displayed whatsoever when \code{nCore > 1}.
+#' For cross-validation models, parallelisation can also be carried out for a single-shot model (\code{do.iter = FALSE}),
 #' whenever a parallel backend is set up. See the examples in \code{\link{sento_model}}.
 #' @param do.difference a \code{logical}, \code{TRUE} will difference the target variable \code{y} supplied in the
 #' \code{\link{sento_model}} function with as lag the absolute value of the \code{h} argument, but
@@ -279,7 +279,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' newx <- runif(nx) * cbind(get_measures(sentomeasures)[, -1], x)[30:40, ]
 #' preds <- predict(out1, newx = as.matrix(newx), type = "link")
 #'
-#' # an iterative out-of-sample analysis, parallelized
+#' # an iterative out-of-sample analysis, parallelised
 #' ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE, h = 3,
 #'                      oos = 2, alphas = c(0.25, 0.75), nSample = 75, nCore = 2)
 #' out2 <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)

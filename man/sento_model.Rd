@@ -109,7 +109,7 @@ nx <- nmeasures(sentomeasures) + ncol(x)
 newx <- runif(nx) * cbind(get_measures(sentomeasures)[, -1], x)[30:40, ]
 preds <- predict(out1, newx = as.matrix(newx), type = "link")
 
-# an iterative out-of-sample analysis, parallelized
+# an iterative out-of-sample analysis, parallelised
 ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE, h = 3,
                      oos = 2, alphas = c(0.25, 0.75), nSample = 75, nCore = 2)
 out2 <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
