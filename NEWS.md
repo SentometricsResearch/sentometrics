@@ -35,7 +35,7 @@
 - new functions: `measures_delete()`, `nmeasures()`, `nobs()`, and `to_sentocorpus()`
 - renamed following functions: any `xyz_measures()` to `measures_xyz()`, `extract_peakdocs()` to `peakdocs()`
 - dropped `do.normalizeAlm` argument in the `ctr_agg()` function, but kept in the `almons()` function
-- inverted order of rows in output of `almons()` function to be consistent with Ardia et al. (2017) paper
+- inverted order of rows in output of the `almons()` function to be consistent with Ardia et al. (2017) paper
 - renamed `lexicons` to `list_lexicons`, and `valence` to `list_valence_shifters` 
 - the `stats` element of a `sentomeasures` object is now also updated in `measures_fill()`
 - changed `"_eng"` to `"_en"`' in `list_lexicons` and `list_valence_shifters` objects, to be in accordance with two-letter ISO language naming
