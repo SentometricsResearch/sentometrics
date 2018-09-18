@@ -11,16 +11,16 @@ data("usnews")
 corpus <- sento_corpus(corpusdf = usnews[1:250, ])
 
 data("list_lexicons")
-lex <- setup_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")], list_valence_shifters[["en"]])
-lexSimple <- setup_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")])
-lexSplit <- setup_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")], do.split = TRUE)
-lexClust <- setup_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")], list_valence_shifters[["en"]][, c("x", "t")])
+lex <- sento_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+# lexSimple <- sento_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")]) # same as lex[1:3]
+lexSplit <- sento_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")], do.split = TRUE)
+lexClust <- sento_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")], list_valence_shifters[["en"]][, c("x", "t")])
 
 ### tests from here ###
 
 sentimentList <- list(
   s1 = compute_sentiment(quanteda::texts(corpus), lex, how = "counts"),
-  s2 = compute_sentiment(quanteda::texts(corpus), lexSimple, how = "counts"),
+  s2 = compute_sentiment(quanteda::texts(corpus), lex[1:3], how = "counts"),
   s3 = compute_sentiment(quanteda::texts(corpus), lex, how = "proportional"),
   s4 = compute_sentiment(quanteda::texts(corpus), lex, how = "proportionalPol", nCore = 2),
   s5 = compute_sentiment(quanteda::corpus(usnews[1:250, "texts"]), lex, how = "counts"),
@@ -43,19 +43,19 @@ test_that("Agreement between sentiment scores across input objects", {
   expect_true(all(sentimentList$s8[, c("GI_en_NEG", "LM_en_NEG", "HENRY_en_NEG")] <= 0))
   expect_true(all(sentimentList$s4 == sentimentList$s9))
   expect_equivalent(sentimentList$s1[, c("GI_en", "LM_en", "HENRY_en")],
-                    sentimentList$s5$sentiment[, c("GI_en", "LM_en", "HENRY_en")])
-  expect_equivalent(sentimentList$s6$sentiment[, -c(1:2)],
-                    sentimentList$s7$sentiment[, colnames(sentimentList$s6$sentiment)[-c(1:2)], with = FALSE])
+                    sentimentList$s5[, c("GI_en", "LM_en", "HENRY_en")])
+  expect_equivalent(sentimentList$s6[, -c(1:2)],
+                    sentimentList$s7$sentiment[, colnames(sentimentList$s6)[-c(1:2)], with = FALSE])
   expect_error(compute_sentiment(quanteda::texts(corpus), lex, how = "notAnOption"))
   expect_warning(compute_sentiment(quanteda::texts(corpus), lex, how = "counts", nCore = -1))
   expect_error(compute_sentiment(quanteda::texts(corpus), list_lexicons))
 })
 
-# setup_lexicons
+# sento_lexicons
 test_that("Proper fails when issues with lexicons and valence shifters input", {
-  expect_error(setup_lexicons(list("heart--break--hotel" = list_lexicons[["LM_en"]], "good" = list_lexicons[["GI_en"]])))
-  expect_error(setup_lexicons(list_lexicons["GI_en"], valenceIn = data.table(x = rep("w", 10))))
-  expect_error(setup_lexicons(list_lexicons["GI_en"], valenceIn = data.table(x = "w", wrong = 1:3)))
-  expect_error(setup_lexicons(list_lexicons["GI_en"], valenceIn = data.table(x = "w", t = 2:4)))
+  expect_error(sento_lexicons(list("heart--break--hotel" = list_lexicons[["LM_en"]], "good" = list_lexicons[["GI_en"]])))
+  expect_error(sento_lexicons(list_lexicons["GI_en"], valenceIn = data.table(x = rep("w", 10))))
+  expect_error(sento_lexicons(list_lexicons["GI_en"], valenceIn = data.table(x = "w", wrong = 1:3)))
+  expect_error(sento_lexicons(list_lexicons["GI_en"], valenceIn = data.table(x = "w", t = 2:4)))
 })
 

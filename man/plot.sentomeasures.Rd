@@ -17,13 +17,13 @@ in a separate color, but this may look visually overwhelming very fast, and can 
 }
 \value{
 Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using
-the \code{+} operator (see examples). By default, a legend is positioned at the top if there are at maximum twelve line
+the \code{+} operator (see example). By default, a legend is positioned at the top if there are at maximum twelve line
 graphs plotted and \code{group} is different from \code{"all"}.
 }
 \description{
 Plotting method that shows all sentiment measures from the provided \code{sentomeasures}
 object in one plot, or the average along one of the lexicons, features and time weighting dimensions. We suggest to make
-use of the \code{\link{measures_select}} function when you desire to plot only a subset of the sentiment measures.
+use of the \code{\link{measures_select}} function when you want to plot only a subset of the sentiment measures.
 }
 \examples{
 data("usnews", package = "sentometrics")
@@ -33,7 +33,7 @@ data("list_valence_shifters", package = "sentometrics")
 # construct a sentomeasures object to start with
 corpus <- sento_corpus(corpusdf = usnews)
 corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-l <- setup_lexicons(list_lexicons[c("LM_en")], list_valence_shifters[["en"]])
+l <- sento_lexicons(list_lexicons[c("LM_en")], list_valence_shifters[["en"]])
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 sentomeasures <- sento_measures(corpusSample, l, ctr)
 
@@ -44,7 +44,6 @@ plot(sentomeasures, group = "features")
 # adjust appearance of plot
 p <- plot(sentomeasures)
 p <- p +
-  ggthemes::theme_base() +
   scale_x_date(name = "month-year") +
   scale_y_continuous(name = "newName")
 p}

@@ -11,7 +11,7 @@ data("usnews")
 corpus <- quanteda::corpus_sample(sento_corpus(corpusdf = usnews), size = 1000)
 
 data("list_lexicons")
-lex <- setup_lexicons(list_lexicons[c("GI_en", "LM_en")])
+lex <- sento_lexicons(list_lexicons[c("GI_en", "LM_en")])
 ctr <- ctr_agg(howWithin = "proportionalPol", howDocs = "proportional", by = "week", lag = 21, do.ignoreZeros = TRUE,
                howTime = c("almon", "beta", "linear"), ordersAlm = 1:3, do.inverseAlm = TRUE, aBeta = 1:3, bBeta = 1:2)
 

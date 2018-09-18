@@ -11,7 +11,7 @@ data("usnews")
 corpus <- quanteda::corpus_sample(quanteda::corpus_subset(sento_corpus(corpusdf = usnews)), 750)
 
 data("list_lexicons")
-lex <- setup_lexicons(list_lexicons[c("GI_en", "LM_en")])
+lex <- sento_lexicons(list_lexicons[c("GI_en", "LM_en")])
 ctrA <- ctr_agg(howWithin = "proportional", howDocs = "proportional", howTime = "almon", by = "month",
                 lag = 7, ordersAlm = 1:3, do.inverseAlm = TRUE, do.ignoreZeros = FALSE, fill = "latest")
 
@@ -92,15 +92,13 @@ test_that("Different model specifications give specified output", {
   expect_null(summary(out10))
 })
 
-# perform_MCS
+# get_loss_data
 models <- list(elnet = out8, ridgeGI = out10, lassoLM = out11)
-test_that("Model confidence set procedure works and fails if needed", {
-  expect_true(inherits(suppressWarnings(perform_MCS(models, loss = "DA")), "SSM"))
-  expect_true(inherits(suppressWarnings(perform_MCS(models, loss = "errorSq")), "SSM"))
-  expect_true(inherits(suppressWarnings(perform_MCS(models, loss = "AD")), "SSM"))
-  expect_error(perform_MCS(models, loss = "accuracy"))
-  expect_error(perform_MCS(list(wrong = out1, elnet = out8), loss = "errorSq"))
-  expect_error(perform_MCS(list(same1 = out8, same2 = out8, different = out11), loss = "errorSq"))
+test_that("Getting loss data works and fails if needed", {
+  expect_true(inherits(get_loss_data(models, loss = "errorSq"), "matrix"))
+  expect_error(get_loss_data(models, loss = "accuracy"))
+  expect_error(get_loss_data(list(wrong = out1, elnet = out8), loss = "errorSq"))
+  expect_warning(get_loss_data(list(same1 = out8, same2 = out8, different = out11), loss = "errorSq"))
 })
 
 # summary.sentomodel, summary.sentomodeliter, print.sentomodel, print.sentomodeliter

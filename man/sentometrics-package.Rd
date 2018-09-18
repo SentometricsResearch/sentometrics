@@ -6,9 +6,9 @@
 \alias{sentometrics-package}
 \title{sentometrics: An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction}
 \description{
-The \pkg{sentometrics} package is designed to do time series analysis based on textual sentiment. It accounts
-for the intrinsic challenge that, for a given text, sentiment can be computed in many ways, as well as the large
-number of possibilities to pool sentiment across text and time. This additional layer of manipulation does not exist
+The \pkg{sentometrics} package is designed to perform time series analysis based on textual sentiment. It
+accounts for the intrinsic challenge that, for a given text, sentiment can be computed in many ways, as well as the large
+number of possibilities to pool sentiment across texts and time. This additional layer of manipulation does not exist
 in standard text mining and time series analysis packages. The package provides an interface to model
 the impact of sentiment in texts on a given variable, by first computing a wide range of textual
 sentiment time series and then selecting those that are most informative. Altogether, \pkg{sentometrics} integrates the
@@ -16,25 +16,18 @@ fast \emph{qualification} of sentiment from texts, the \emph{aggregation} into d
 \emph{prediction} based on these measures.
 }
 \note{
-The methodology behind the sentiment aggregation framework can be consulted in the working paper ``Questioning
-the news about economic growth: Sparse forecasting using thousands of news-based sentiment values'' (Ardia, Bluteau and
-Boudt, 2017) at \url{https://ssrn.com/abstract=2976084}. The vignette ``The R package sentometrics
-to compute, aggregate and predict with textual sentiment'' (Ardia, Bluteau, Borms and Boudt, 2017) at
-\url{https://ssrn.com/abstract=3067734} provides a hands-on introduction to the methodology and
-the package's functionalities.
-
 Please cite the package in publications. Use \code{citation("sentometrics")}.
 }
 \section{Main functions}{
 
 \itemize{
 \item Corpus features generation: \code{\link{sento_corpus}}, \code{\link{add_features}}
-\item Sentiment computation and aggregation into sentiment measures: \code{\link{ctr_agg}},
+\item Sentiment computation and aggregation into sentiment measures: \code{\link{ctr_agg}}, \code{\link{sento_lexicons}},
 \code{\link{compute_sentiment}}, \code{\link{sento_measures}}, \code{\link{peakdocs}}, and a series of
 \code{measures_xyz}, generic and extractor functions
 \item Sparse modelling: \code{\link{ctr_model}}, \code{\link{sento_model}}
-\item Prediction and post-modelling analysis: \code{\link{predict.sentomodel}}, \code{\link{retrieve_attributions}},
-\code{\link{plot_attributions}}, \code{\link{perform_MCS}}
+\item Prediction and post-modelling analysis: \code{\link{predict.sentomodel}}, \code{\link{attributions}},
+\code{\link{get_loss_data}}
 }
 }
 
@@ -43,6 +36,13 @@ Please cite the package in publications. Use \code{citation("sentometrics")}.
 The development version of the package resides at \url{https://github.com/sborms/sentometrics}.
 }
 
+\references{
+Ardia, Bluteau and Boudt (2018). ``Questioning the news about economic growth: Sparse forecasting using
+thousands of news-based sentiment values''. \emph{Working paper}, \url{http://dx.doi.org/10.2139/ssrn.2976084}.
+
+Ardia, Bluteau, Borms and Boudt (2018). ``The R package sentometrics to compute, aggregate and
+predict with textual sentiment''. \emph{Working paper}, \url{http://dx.doi.org/10.2139/ssrn.3067734}.
+}
 \seealso{
 Useful links:
 \itemize{

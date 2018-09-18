@@ -10,10 +10,9 @@
 #' @param model a \code{character} vector with one of the following: \code{"gaussian"} (linear regression), \code{"binomial"}
 #' (binomial logistic regression), or \code{"multinomial"} (multinomial logistic regression).
 #' @param type a \code{character} vector indicating which model calibration approach to use. Supports "\code{BIC}",
-#' "\code{AIC}" and "\code{Cp}" (Mallows's Cp) as sparse regression adapted information criteria (cf., ``On the `degrees of
-#' freedom' of the LASSO'' (Zou, Hastie and Tibshirani, 2007); and ``Degrees of freedom in LASSO problems''
-#' (Tibshirani and Taylor, 2012)), and "\code{cv}" (cross-validation based on the \code{\link[caret]{train}} function
-#' from the \pkg{caret} package). The adapted information criteria are only available for a linear regression.
+#' "\code{AIC}" and "\code{Cp}" (Mallows's Cp) as sparse regression adapted information criteria (Tibshirani and Taylor,
+#' 2012; Zou, Hastie and Tibshirani, 2007), and "\code{cv}" (cross-validation based on the \code{\link[caret]{train}}
+#' function from the \pkg{caret} package). The adapted information criteria are only available for a linear regression.
 #' @param do.intercept a \code{logical}, \code{TRUE} by default fits an intercept.
 #' @param h an \code{integer} value that shifts the time series to have the desired prediction setup; \code{h = 0} means
 #' no change to the input data (nowcasting assuming data is aligned properly), \code{h > 0} shifts the dependent variable by
@@ -50,15 +49,20 @@
 #' \code{\link{sento_model}} function with as lag the absolute value of the \code{h} argument, but
 #' \code{abs(h) > 0} is required. For example, if \code{h = 2}, and assuming the \code{y} variable is properly aligned
 #' date-wise with the explanatory variables denoted by \eqn{X} (the sentiment measures and other in \code{x}), the regression
-#' will be of \eqn{y_(t + 2) - y_t} on \eqn{X_t}. If \code{h = -2}, the regression fitted is \eqn{y_(t + 2) - y_t} on
+#' will be of \eqn{y_{t + 2} - y_t} on \eqn{X_t}. If \code{h = -2}, the regression fitted is \eqn{y_{t + 2} - y_t} on
 #' \eqn{X_{t+2}}. The argument is always kept at \code{FALSE} if the \code{model} argument is one of
 #' \code{c("binomial", "multinomial")}.
-#' @param do.shrinkage.x a \code{logical}, if \code{TRUE} all other regressors provided through the \code{x} argument of
+#' @param do.shrinkage.x a \code{logical}, if \code{TRUE} other regressors provided through the \code{x} argument of
 #' the \code{\link{sento_model}} function are subject to shrinkage, else not.
 #'
 #' @return A \code{list} encapsulating the control parameters.
 #'
 #' @seealso \code{\link{sento_model}}
+#'
+#' @references Tibshirani and Taylor (2012). ``Degrees of freedom in LASSO problems''.
+#' \emph{Annals of Statistics 40, 1198-12}, \url{http://dx.doi.org/10.1214/12-AOS1003}.
+#' @references Zou, Hastie and Tibshirani (2007). ``On the `degrees of freedom' of the LASSO''.
+#' \emph{Annals of Statistics 35, 2173-2192},  \url{http://dx.doi.org/10.1214/009053607000000127}.
 #'
 #' @examples
 #' # information criterion based model control functions
@@ -182,9 +186,8 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' regressions sequentially for a given sample size over a longer time horizon, with associated prediction performance metrics.
 #'
 #' @details Models are computed using the elastic net regularization as implemented in the \pkg{glmnet} package, to account for
-#' the multidimensionality of the sentiment measures. Additional explanatory variables are not subject to shrinkage. Independent
-#' variables are normalized in the regression process, but coefficients are returned in their original space. For a helpful
-#' introduction to \pkg{glmnet}, we refer to their
+#' the multidimensionality of the sentiment measures. Independent variables are normalized in the regression process, but
+#' coefficients are returned in their original space. For a helpful introduction to \pkg{glmnet}, we refer to their
 #' \href{https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html#lin}{vignette}. The optimal elastic net parameters
 #' \code{lambda} and \code{alpha} are calibrated either through a to specify information criterion or through
 #' cross-validation (based on the "rolling forecasting origin" principle, using the \code{\link[caret]{train}} function).
@@ -192,8 +195,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' for a logistic model. We suppress many of the details that can be supplied to the \code{\link[glmnet]{glmnet}} and
 #' \code{\link[caret]{train}} functions we rely on, for the sake of user-friendliness.
 #'
-#' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}. There should be at least
-#' two explanatory variables including the ones provided through the \code{x} argument.
+#' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
 #' @param y a one-column \code{data.frame} or a \code{numeric} vector capturing the dependent (response) variable. In case of
 #' a logistic regression, the response variable is either a \code{factor} or a \code{matrix} with the factors represented by
 #' the columns as binary indicators, with the second factor level or column as the reference class in case of a binomial
@@ -205,18 +207,19 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' @return If \code{ctr$do.iter = FALSE}, a \code{sentomodel} object which is a \code{list} containing:
 #' \item{reg}{optimized regression, i.e. a model-specific \code{glmnet} object.}
 #' \item{model}{the input argument \code{ctr$model}, to indicate the type of model estimated.}
-#' \item{x}{a \code{matrix} of the values used in the regression for all explanatory variables.}
+#' \item{x}{a \code{matrix} of the values for all explanatory variables used in the regression.}
 #' \item{alpha}{calibrated alpha.}
 #' \item{lambda}{calibrated lambda.}
 #' \item{trained}{output from \code{\link[caret]{train}} call (if \code{ctr$type =} "\code{cv}"). There is no such
-#' output if the control parameters \code{alphas} and \code{lambdas} both specified one value.}
+#' output if the control parameters \code{alphas} and \code{lambdas} both specify one value.}
 #' \item{ic}{a \code{list} composed of two elements: under \code{"criterion"}, the type of information criterion used in the
 #' calibration, and under \code{"matrix"}, a \code{matrix} of all information criterion values for \code{alphas} as rows
 #' and the respective lambda values as columns (if \code{ctr$type !=} "\code{cv}"). Any \code{NA} value in the latter
 #' element means the specific information criterion could not be computed.}
 #' \item{dates}{sample reference dates as a two-element \code{character} vector, being the earliest and most recent date from
 #' the \code{sentomeasures} object accounted for in the estimation window.}
-#' \item{nVar}{the sum of the number of sentiment measures and other explanatory variables inputted.}
+#' \item{nVar}{a vector of size two, with respectively the number of sentiment measures, and the number of other explanatory
+#' variables inputted.}
 #' \item{discarded}{a named \code{logical} vector of length equal to the number of sentiment measures, in which \code{TRUE}
 #' indicates that the particular sentiment measure has not been considered in the regression process. A sentiment measure is
 #' not considered when it is a duplicate of another, or when at least 50\% of the observations are equal to zero.}
@@ -233,11 +236,10 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' of a logistic regression; in percentage points), and each's respective individual values in the sample. Directional accuracy
 #' is measured by comparing the change in the realized response with the change in the prediction between two consecutive time
 #' points (omitting the very first prediction, resulting in \code{NA}). Only the relevant performance statistics are given
-#' depending on the type of regression. Dates are as in the \code{"models"} output element, i.e. from the perspective of the
+#' depending on the type of regression. Dates are as in the \code{"models"} output element, i.e., from the perspective of the
 #' sentiment measures.}
 #'
-#' @seealso \code{\link{ctr_model}}, \code{\link[glmnet]{glmnet}}, \code{\link[caret]{train}},
-#' \code{\link{retrieve_attributions}}
+#' @seealso \code{\link{ctr_model}}, \code{\link[glmnet]{glmnet}}, \code{\link[caret]{train}}, \code{\link{attributions}}
 #'
 #' @examples
 #' \dontrun{
@@ -246,10 +248,12 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' data("list_valence_shifters", package = "sentometrics")
 #' data("epu", package = "sentometrics")
 #'
+#' set.seed(505)
+#'
 #' # construct a sentomeasures object to start with
 #' corpusAll <- sento_corpus(corpusdf = usnews)
 #' corpus <- quanteda::corpus_subset(corpusAll, date >= "2004-01-01")
-#' l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")])
+#' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")])
 #' ctr <- ctr_agg(howWithin = "counts", howDocs = "proportional",
 #'                howTime = c("equal_weight", "linear"),
 #'                by = "month", lag = 3)
@@ -267,9 +271,9 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' out1 <- sento_model(sentomeasures, y, x = x, ctr = ctrIC)
 #'
 #' # attribution and prediction as post-analysis
-#' attributions1 <- retrieve_attributions(out1, sentomeasures,
-#'                                        refDates = get_dates(sentomeasures)[20:25])
-#' plot_attributions(attributions1, "features")
+#' attributions1 <- attributions(out1, sentomeasures,
+#'                               refDates = get_dates(sentomeasures)[20:25])
+#' plot(attributions1, "features")
 #'
 #' nx <- nmeasures(sentomeasures) + ncol(x)
 #' newx <- runif(nx) * cbind(get_measures(sentomeasures)[, -1], x)[30:40, ]
@@ -280,6 +284,10 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #'                      oos = 2, alphas = c(0.25, 0.75), nSample = 75, nCore = 2)
 #' out2 <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
 #' summary(out2)
+#'
+#' # plot predicted vs. realized values
+#' p <- plot(out2)
+#' p
 #'
 #' # a cross-validation based model, parallelised
 #' cl <- parallel::makeCluster(2)
@@ -313,8 +321,6 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
   if (any(is.na(y))) stop("No NA values are allowed in y.")
   if (length(unique(c(nobs(sentomeasures), ifelse(is.null(nrow(y)), length(y), nrow(y)), nrow(x)))) != 1)
     stop("Number of rows or length for y, x and measures in sentomeasures must be equal.")
-  if (sum(nmeasures(sentomeasures) + ifelse(is.null(x), 0, ncol(x))) < 2)
-    stop("There should be at least two explanatory variables out of sentomeasures and x combined.")
   if (ctr$model == "binomial" && ifelse(is.factor(y), nlevels(y), NCOL(y)) > 2)
     stop("At maximum two classes allowed in 'y' for a binomial model.")
   if (ctr$model == "multinomial" && !(ifelse(is.factor(y), nlevels(y), NCOL(y)) > 2))
@@ -360,16 +366,16 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
   i <- dots$i
   nSample <- dots$nSample
 
+  nVar <- c(nmeasures(sentomeasures), ifelse(is.null(x), 0, ncol(x))) # number of explanatory variables (before cleaning)
   alignedVars <- align_variables(y, sentomeasures, x, h, difference = do.difference, i = i, nSample = nSample)
   yy <- alignedVars$y
-  xx <- alignedVars$x # changed x to include sentiment measures
-  nVar <- ncol(xx) # original number of explanatory variables (i.e. before cleaning)
-  nx <- ifelse(is.null(x), 0, ncol(x))
-  cleaned <- clean_panel(xx, nx = nx) # get rid of duplicated or too sparse sentiment measures
+  xx <- alignedVars$x # xx includes sentiment measures and other variables
+  nx <- ifelse(do.shrinkage.x == TRUE, 0, ifelse(is.null(x), 0, ncol(x)))
+  cleaned <- clean_panel(xx, nx = nx) # get rid of duplicated or too sparse explanatory variables
   xx <- cleaned$xNew
   discarded <- cleaned$discarded
   sampleDates <- c(alignedVars$datesX[1], alignedVars$datesX[nrow(xx)])
-  if (do.shrinkage.x) {
+  if (do.shrinkage.x == TRUE) {
     penalty <- rep(1, ncol(xx))
   } else {
     penalty <- c(rep(1, ncol(xx) - nx), rep(0, nx)) # no shrinkage for original x variables
@@ -500,6 +506,9 @@ run_sento_model <- compiler::cmpfun(.run_sento_model)
 
   # perform all regressions
   if (nCore > 1) {
+    if (!all(sapply(c("parallel", "doParallel"), requireNamespace, quietly = TRUE))) {
+      stop("Packages 'parallel' and 'doParallel' needed for parallel iterative model estimation. Please install.")
+    }
     cl <- parallel::makeCluster(min(parallel::detectCores(), nCore))
     doParallel::registerDoParallel(cl)
     regsOpt <- foreach::foreach(i = start:nIter, .export = c("run_sento_model")) %dopar% {
@@ -701,43 +710,14 @@ print.sentomodeliter <- function(x, ...) {
 #' @description Displays a plot of all predictions made through the iterative model computation as incorporated in the
 #' input \code{sentomodeliter} object, as well as the corresponding true values.
 #'
+#' @details See \code{\link{sento_model}} for an elaborate modelling example including the plotting of out-of-sample
+#' performance.
+#'
 #' @param x a \code{sentomodeliter} object created using \code{\link{sento_model}}.
 #' @param ... not used.
 #'
 #' @return Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using
-#' the \code{+} operator (see examples).
-#'
-#' @examples
-#' \dontrun{
-#' data("usnews", package = "sentometrics")
-#' data("list_lexicons", package = "sentometrics")
-#' data("list_valence_shifters", package = "sentometrics")
-#' data("epu", package = "sentometrics")
-#'
-#' # construct a sentomeasures object to start with
-#' corpusAll <- sento_corpus(corpusdf = usnews)
-#' corpus <- quanteda::corpus_subset(corpusAll, date >= "2007-01-01" & date < "2014-10-01")
-#' l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
-#' ctr <- ctr_agg(howWithin = "proportional", howDocs = "proportional",
-#'                howTime = c("equal_weight", "linear"),
-#'                by = "month", lag = 3)
-#' sentomeasures <- sento_measures(corpus, l, ctr)
-#'
-#' # prepare y variable
-#' y <- epu[epu$date %in% get_dates(sentomeasures), "index"]
-#' length(y) == nobs(sentomeasures) # TRUE
-#'
-#' # estimate regression iteratively based on a sample of 60, skipping first 25 iterations
-#' ctr <- ctr_model(model = "gaussian", type = "AIC", do.iter = TRUE,
-#'                  h = 0, nSample = 60, start = 26)
-#' out <- sento_model(sentomeasures, y, ctr = ctr)
-#' summary(out)
-#'
-#' # plotting
-#' p <- plot(out)
-#' p <- p +
-#'   ggthemes::theme_few()
-#' p}
+#' the \code{+} operator.
 #'
 #' @import ggplot2
 #' @export
@@ -760,10 +740,9 @@ plot.sentomodeliter <- function(x, ...) {
     plotter +
     scale_x_date(name = "Date", date_labels = "%m-%Y") +
     scaleY +
-    ggthemes::theme_tufte(base_size = 12) +
-    theme(legend.title = element_blank(), legend.position = "top")
-
-  return(p)
+    theme_bw() +
+    plot_theme(legendPos = "top")
+  p
 }
 
 #' Make predictions from a sentomodel object
@@ -771,16 +750,16 @@ plot.sentomodeliter <- function(x, ...) {
 #' @author Samuel Borms
 #'
 #' @description Prediction method for \code{sentomodel} class, with usage along the lines of
-#' \code{predict.glmnet}, but simplified in terms of allowed parameters.
+#' \code{predict.glmnet}, but simplified in terms of parameters.
 #'
 #' @param object a \code{sentomodel} object created with \code{\link{sento_model}}.
 #' @param newx a \code{matrix} of \code{numeric} values with all explanatory variables to be used for the prediction(s),
 #' structured row-by-row; see documentation for \code{\link{predict.glmnet}}. The number of variables should be equal to
-#' \code{sentomodel$nVar}, being the sum of the number of original sentiment measures and the number of additional explanatory
-#' variables. Variables discarded in the regression process are discarded again here, based on \code{sentomodel$discarded}.
+#' \code{sum(sentomodel$nVar)}, being the number of original explanatory variables (sentiment measures and other).
+#' Variables discarded in the regression process are discarded again here, based on \code{sentomodel$discarded}.
 #' @param type type of prediction required, a value from \code{c("link", "response", "class")}, see documentation for
 #' \code{\link{predict.glmnet}}.
-#' @param offset not used. Any values here will be ignored.
+#' @param offset not used.
 #' @param ... not used.
 #'
 #' @return A prediction output depending on the \code{type} argument.
@@ -792,9 +771,9 @@ predict.sentomodel <- function(object, newx, type, offset = NULL, ...) {
   sentomodel <- object
   reg <- sentomodel$reg
   discarded <- sentomodel$discarded
-  idx <- c(!discarded, rep(TRUE, (sentomodel$nVar - length(discarded)))) # TRUE means variable to be kept for prediction
+  idx <- c(!discarded, rep(TRUE, (sum(sentomodel$nVar) - length(discarded)))) # TRUE means variable to keep for prediction
   newx <- newx[, idx, drop = FALSE]
-  pred <- stats::predict(reg, newx = newx, type = type, offset = offset)
+  pred <- stats::predict(reg, newx = newx, type = type, offset = NULL)
   return(pred)
 }
 
@@ -802,8 +781,9 @@ predict.sentomodel <- function(object, newx, type, offset = NULL, ...) {
 #'
 #' @author Samuel Borms
 #'
-#' @description Calculates the model confidence set (see ``The Model Confidence Set''; Hansen, Lunde and Nason, 2011) as
-#' implemented in the \pkg{MCS} package, for a set of different \code{sentomodeliter} objects.
+#' @description Structures specific performance data for a set of different \code{sentomodeliter} objects as loss data. Can
+#' then be used, for instance, as an input to create a model confidence set (Hansen, Lunde and Nason, 2011) with
+#' the \pkg{MCS} package.
 #'
 #' @param models a named \code{list} of \code{sentomodeliter} objects. All models should be of the same family, being either
 #' \code{"gaussian"}, \code{"binomial"} or \code{"multinomial"}, and have performance data of the same dimensions.
@@ -811,12 +791,13 @@ predict.sentomodel <- function(object, newx, type, offset = NULL, ...) {
 #' (squared errors), \code{"AD"} (absolute errors) or \code{"accuracy"} (\emph{in}accurate class predictions). This argument
 #' defines on what basis the model confidence set is calculated. The first three options are available for \code{"gaussian"}
 #' models, the last option applies only to \code{"binomial"} and \code{"multinomial"} models.
-#' @param ... other parameters that can be supplied to the \code{\link[MCS]{MCSprocedure}} function. If empty, its default
-#' values are used.
 #'
-#' @return An object as returned by the \code{\link[MCS]{MCSprocedure}} function.
+#' @return A \code{matrix} of loss data.
 #'
 #' @seealso \code{\link{sento_model}}, \code{\link[MCS]{MCSprocedure}}
+#'
+#' @references Hansen, Lunde and Nason (2011). ``The model confidence set''. \emph{Econometrica 79, 453-497},
+#' \url{https://doi.org/10.3982/ECTA5771}.
 #'
 #' @examples
 #' \dontrun{
@@ -825,50 +806,39 @@ predict.sentomodel <- function(object, newx, type, offset = NULL, ...) {
 #' data("list_valence_shifters", package = "sentometrics")
 #' data("epu", package = "sentometrics")
 #'
+#' set.seed(505)
+#'
 #' # construct two sentomeasures objects
 #' corpusAll <- sento_corpus(corpusdf = usnews)
 #' corpus <- quanteda::corpus_subset(corpusAll, date >= "1997-01-01" & date < "2014-10-01")
-#' l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+#' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 #'
-#' ctr1 <- ctr_agg(howWithin = "proportionalPol", howDocs = "proportional",
+#' ctrA <- ctr_agg(howWithin = "proportionalPol", howDocs = "proportional",
 #'                 howTime = c("equal_weight", "linear"), by = "month", lag = 3)
-#' sentMeas1 <- sento_measures(corpus, l, ctr1)
-#'
-#' ctr2 <- ctr_agg(howWithin = "counts", howDocs = "equal_weight",
-#'                 howTime = c("equal_weight", "linear"), by = "month", lag = 3)
-#' sentMeas2 <- sento_measures(corpus, l, ctr2)
+#' sentMeas <- sento_measures(corpus, l, ctrA)
 #'
 #' # prepare y and other x variables
-#' y <- epu[epu$date %in% get_dates(sentMeas1), "index"]
+#' y <- epu[epu$date %in% get_dates(sentMeas), "index"]
 #' length(y) == nobs(sentMeas1) # TRUE
 #' x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
 #' colnames(x) <- c("x1", "x2")
 #'
 #' # estimate different type of regressions
-#' ctr1 <- ctr_model(model = "gaussian", type = "AIC", do.iter = TRUE,
-#'                   h = 0, nSample = 120, start = 50)
-#' out1 <- sento_model(sentMeas1, y, x = x, ctr = ctr1)
+#' ctrM <- ctr_model(model = "gaussian", type = "AIC", do.iter = TRUE,
+#'                  h = 0, nSample = 120, start = 50)
+#' out1 <- sento_model(sentMeas, y, x = x, ctr = ctrM)
+#' out2 <- sento_model(sentMeas, y, x = NULL, ctr = ctrM)
+#' out3 <- sento_model(measures_select(sentMeas, "linear"), y, x = x, ctr = ctrM)
+#' out4 <- sento_model(measures_select(sentMeas, "linear"), y, x = NULL, ctr = ctrM)
 #'
-#' ctr2 <- ctr_model(model = "gaussian", type = "AIC", do.iter = TRUE,
-#'                   h = 0, nSample = 120, start = 50)
-#' out2 <- sento_model(sentMeas1, y, x = NULL, ctr = ctr2)
-#'
-#' ctr3 <- ctr_model(model = "gaussian", type = "AIC", do.iter = TRUE,
-#'                   h = 0, nSample = 120, start = 50)
-#' out3 <- sento_model(sentMeas2, y, x = x, ctr = ctr3)
-#'
-#' ctr4 <- ctr_model(model = "gaussian", type = "AIC", do.iter = TRUE,
-#'                   h = 0, nSample = 120, start = 50)
-#' out4 <- sento_model(sentMeas2, y, x = NULL, ctr = ctr4)
-#'
-#' mcs <- perform_MCS(models = list(m1 = out1, m2 = out2, m3 = out3, m4 = out4),
-#'                    loss = "errorSq")}
+#' lossData <- get_loss_data(models = list(m1 = out1, m2 = out2, m3 = out3, m4 = out4),
+#'                           loss = "errorSq")}
 #'
 #' @export
-perform_MCS <- function(models, loss = c("DA", "errorSq", "AD", "accuracy"), ...) {
+get_loss_data <- function(models, loss = c("DA", "errorSq", "AD", "accuracy")) {
 
   # check if input is consistent
-  if (!is.list(models) || length(models) < 2) stop("Please provide a list of at least two models.")
+  stopifnot(is.list(models))
   checkClass <- sapply(models, function(m) return(!inherits(m, "sentomodeliter")))
   if (any(checkClass)) stop("Not all elements of the 'models' list are sentomodeliter objects.")
   modelFamilies <- unlist(lapply(models, function(m) return(m$models[[1]]$model)))
@@ -880,32 +850,15 @@ perform_MCS <- function(models, loss = c("DA", "errorSq", "AD", "accuracy"), ...
   checkGaussian <- (mF == "gaussian" & (loss %in% c("DA", "errorSq", "AD")))
   checkLogistic <- (mF %in% c("binomial", "multinomial") & (loss == "accuracy"))
   if (!(checkGaussian | checkLogistic))
-    stop("The 'loss' argument is not in line with the model families.")
+    stop("The 'loss' argument is not in line with the model family.")
 
   # extract loss data
   lossData <- matrix(unlist(lapply(models, function(m) m$performance$raw[[loss]]), use.names = FALSE), ncol = length(models))
   colnames(lossData) <- names(models)
   if (loss %in% c("DA", "accuracy")) lossData <- abs(lossData - 1) # from accuracy to inaccuracy
   if (loss == "DA") lossData <- lossData[-1, ] # get rid of first NA values
-  # get parameters for MCS calculation, plug in package's default values if nothing provided
-  if (any(duplicated(t(lossData)))) stop("Loss data across some of the models is duplicated.")
-  dots <- list(...)
-  alpha <- ifelse(is.null(dots$alpha), 0.15, dots$alpha)
-  B <- ifelse(is.null(dots$B), 5000, dots$B)
-  if (is.null(dots$cl)) {
-    cl <- NULL
-  } else cl <- dots$cl
-  ram.allocation <- ifelse(is.null(dots$ram.allocation), TRUE, dots$ram.allocation)
-  statistic <- ifelse(is.null(dots$statistic), "Tmax", dots$statistic)
-  if (is.null(dots$k)) {
-    k <- NULL
-  } else k <- dots$k
-  min.k <- ifelse(is.null(dots$min.k), 3, dots$min.k)
-  verbose <- ifelse(is.null(dots$verbose), TRUE, dots$verbose)
+  if (any(duplicated(t(lossData)))) warning("Loss data across some of the models is duplicated.")
 
-  outMCS <- MCS::MCSprocedure(Loss = lossData, alpha = alpha, B = B, cl = cl, ram.allocation = ram.allocation,
-                              statistic = statistic, k = k, min.k = min.k, verbose = verbose)
-
-  return(outMCS)
+  return(lossData)
 }
 

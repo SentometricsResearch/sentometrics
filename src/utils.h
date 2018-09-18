@@ -94,13 +94,13 @@ inline void rescale_scores_proportionalPol(std::vector<double>& scores,
 inline void update_primary_shifters(std::vector<int>& shifters,
                                     double valType) {
   if (valType == 1) shifters[0] += 1; // negators
-  if (valType == 2) shifters[1] += 1; // amplifiers
-  if (valType == 3) shifters[2] += 1; // deamplifiers
+  else if (valType == 2) shifters[1] += 1; // amplifiers
+  else if (valType == 3) shifters[2] += 1; // deamplifiers
 }
 
 inline double compute_cluster_impact(std::vector<int> shifters) {
-  double z = 0.80;
   int n = shifters[0] % 2; // 0 if even number of negators, 1 if odd number of negators
+  double z = 0.80;
   double wA = z * (1 - n) * shifters[1]; // amplification impact
   double wD = z * (n * shifters[1] + shifters[2]); // deamplification impact
   double impact = (1 + std::max(wA - wD, -1.0)) * pow(-1, 2 + n);

@@ -14,3 +14,4 @@ The dataset \code{lexicons} is defunct, use \code{list_lexicons} instead.
 
 The dataset \code{valence} is defunct, use \code{list_valence_shifters} instead.
 }
+\keyword{internal}

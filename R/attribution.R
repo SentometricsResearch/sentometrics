@@ -106,7 +106,7 @@ attribution_dims <- function(sentomeasures, measures, cols, refDates, loc, coeff
   return(attribsDim)
 }
 
-.retrieve_attributions.sentomodel <- function(model, sentomeasures, do.normalize = FALSE,
+.attributions.sentomodel <- function(model, sentomeasures, do.normalize = FALSE,
                                               refDates = NULL, factor = NULL) {
   check_class(sentomeasures, "sentomeasures")
   stopifnot(is.logical(do.normalize))
@@ -114,12 +114,16 @@ attribution_dims <- function(sentomeasures, measures, cols, refDates, loc, coeff
   sentomodel <- model
 
   # check if sentiment measures sample used for sentomodel estimation coincides with measures in input sentomeasures
-  xSent <- sentomodel$x[, 1:sum(!sentomodel$discarded)] # get sentiment variables
-  measures <- get_measures(sentomeasures)[, c(TRUE, !sentomodel$discarded), with = FALSE]
+  discarded <- sentomodel$discarded[1:sentomodel$nVar[1]] # we drop other x variables (present if do.shrinkage.x = TRUE)
+  xSent <- sentomodel$x[, 1:sum(!discarded)] # get sentiment variables
+  n <- nmeasures(sentomeasures)
+  measures <- get_measures(sentomeasures)[, c(TRUE, !discarded), with = FALSE]
   sampleDates <- sentomodel$dates
   measuresSample <- measures[date >= sampleDates[1] & date <= sampleDates[2], ]
+  if (nrow(measuresSample) != nrow(xSent))
+    stop("The input 'sentomeasures' object does not coincide with the sentiment measures used in the sentomodel object.")
   if (!all(xSent == measuresSample[, -1]))
-    stop("The input sentomeasures object does not coincide with the sentiment measures used in sentomodel.")
+    stop("The input 'sentomeasures' object does not coincide with the sentiment measures used in the sentomodel object.")
   if (is.null(refDates)) {
     refDates <- measuresSample$date # take in-sample dates
   } else {
@@ -181,10 +185,12 @@ attribution_dims <- function(sentomeasures, measures, cols, refDates, loc, coeff
   attribsAll[["time"]] <- attribution_dims(sentomeasures, measures, cols, refDates, loc, coeffs, do.normalize,
                                            tNames, tDel, "time")
 
+  class(attribsAll) <- c("attributions", class(attribsAll))
+
   return(attribsAll)
 }
 
-.retrieve_attributions.sentomodeliter <- function(model, sentomeasures, do.normalize = FALSE,
+.attributions.sentomodeliter <- function(model, sentomeasures, do.normalize = FALSE,
                                                   refDates = NULL, factor = NULL) {
   stopifnot(is.logical(do.normalize))
 
@@ -194,7 +200,7 @@ attribution_dims <- function(sentomeasures, measures, cols, refDates, loc, coeff
   attribsFull <- lapply(1:length(refDates), function(i) {
     date <- refDates[i]
     model <- sentomodeliter$models[[i]]
-    attribs <- retrieve_attributions(model, sentomeasures, do.normalize = do.normalize, refDates = date, factor = factor)
+    attribs <- attributions(model, sentomeasures, do.normalize = do.normalize, refDates = date, factor = factor)
     return(attribs)
   })
 
@@ -205,16 +211,18 @@ attribution_dims <- function(sentomeasures, measures, cols, refDates, loc, coeff
   attribsAll[["features"]] <- rbindlist(lapply(attribsFull, function(x) return(x[["features"]])))
   attribsAll[["time"]] <- rbindlist(lapply(attribsFull, function(x) return(x[["time"]])))
 
+  class(attribsAll) <- c("attributions", class(attribsAll))
+
   return(attribsAll)
 }
 
 #' @importFrom compiler cmpfun
 #' @export
-retrieve_attributions.sentomodel <- compiler::cmpfun(.retrieve_attributions.sentomodel)
+attributions.sentomodel <- compiler::cmpfun(.attributions.sentomodel)
 
 #' @importFrom compiler cmpfun
 #' @export
-retrieve_attributions.sentomodeliter <- compiler::cmpfun(.retrieve_attributions.sentomodeliter)
+attributions.sentomodeliter <- compiler::cmpfun(.attributions.sentomodeliter)
 
 #' Retrieve top-down model sentiment attributions
 #'
@@ -241,17 +249,17 @@ retrieve_attributions.sentomodeliter <- compiler::cmpfun(.retrieve_attributions.
 #' @param factor the factor level as a single \code{character} vector for which attribution has to be calculated in
 #' case of (a) multinomial model(s). Ignored for linear and binomial models.
 #'
-#' @return A \code{list} with all dimensions for which aggregation is computed, being \code{"documents"}, \code{"lags"},
-#' \code{"lexicons"}, \code{"features"} and \code{"time"}. The last four dimensions are \code{data.table}s having a
-#' \code{"date"} column and the other columns the different components of the dimension, with the attributions as values.
-#' Document-level attribution is further decomposed into a \code{data.table} per date, with \code{"id"}, \code{"date"} and
-#' \code{"attrib"} columns.
+#' @return A \code{list} of class \code{attributions}, with \code{"documents"}, \code{"lags"}, \code{"lexicons"},
+#' \code{"features"} and \code{"time"} as dimensions for which aggregation is computed. The last four dimensions are
+#' \code{data.table}s having a \code{"date"} column and the other columns the different components of the dimension, with the
+#' attributions as values. Document-level attribution is further decomposed into a \code{data.table} per date, with
+#' \code{"id"}, \code{"date"} and \code{"attrib"} columns.
 #'
 #' @seealso \code{\link{sento_model}}
 #'
 #' @export
-retrieve_attributions <- function(model, sentomeasures, do.normalize = FALSE, refDates = NULL, factor = NULL) {
-  UseMethod("retrieve_attributions", model)
+attributions <- function(model, sentomeasures, do.normalize = FALSE, refDates = NULL, factor = NULL) {
+  UseMethod("attributions", model)
 }
 
 #' Plot prediction attributions at specified level
@@ -265,20 +273,20 @@ retrieve_attributions <- function(model, sentomeasures, do.normalize = FALSE, re
 #' often a lot of documents involved and they appear only once at one date (even though a document may contribute to
 #' predictions at several dates, depending on the number of lags in the time aggregation).
 #'
-#' @param attributions an output from a \code{\link{retrieve_attributions}} call.
+#' @param x an \code{attributions} object created with \code{\link{attributions}}.
 #' @param group a value from \code{c("lags", "lexicons", "features", "time")}.
+#' @param ... not used.
 #'
 #' @return Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using
-#' the \code{+} operator (see examples). By default, a legend is positioned at the top if the number of components of the
-#' dimension (thus, individual line graphs) is at maximum twelve.
+#' the \code{+} operator. By default, a legend is positioned at the top if the number of components of the
+#' dimension is at maximum twelve.
 #'
 #' @import ggplot2
 #' @export
-plot_attributions <- function(attributions, group = "features") {
-
+plot.attributions <- function(x, group = "features", ...) {
   if (!(group %in% c("lags", "lexicons", "features", "time")))
-    stop("The 'group' argument should be either 'lexicons', 'features' or 'time'.")
-  # melt attributions for plotting
+    stop("The 'group' argument should be either 'lags', 'lexicons', 'features' or 'time'.")
+  attributions <- x
   attributions <- attributions[[group]]
   attributionsMelt <- melt(attributions, id.vars = "date", variable.factor = FALSE)
   attributionsMelt <- attributionsMelt[order(rank(as.character(variable)))]
@@ -289,9 +297,8 @@ plot_attributions <- function(attributions, group = "features") {
     scale_fill_grey(start = 0, end = 1) +
     scale_x_date(name = "Date", date_labels = "%m-%Y") +
     scale_y_continuous(name = "Attribution") +
-    ggthemes::theme_tufte(base_size = 12) +
-    theme(legend.title = element_blank(), legend.position = legendPos)
-
-  return(p)
+    theme_bw() +
+    plot_theme(legendPos)
+  p
 }
 

@@ -14,7 +14,7 @@ corpus <- quanteda::corpus_sample(
 )
 
 data("list_lexicons")
-lex <- setup_lexicons(list_lexicons[c("GI_en", "LM_en")])
+lex <- sento_lexicons(list_lexicons[c("GI_en", "LM_en")])
 ctrA <- ctr_agg(howWithin = "counts", howDocs = "proportional", howTime = "almon", by = "month",
                 lag = 7, ordersAlm = 1:3, do.inverseAlm = TRUE, do.ignoreZeros = FALSE, fill = "latest")
 
@@ -28,12 +28,12 @@ colnames(x) <- c("x1", "x2")
 
 # model run
 ctrM <- ctr_model(model = "gaussian", type = "Cp", do.iter = TRUE, h = 3, lambdas = NULL,
-                  nSample = floor(0.90 * (length(y) - 3)), alphas = c(0.2, 0.7))
+                  nSample = floor(0.90 * (length(y) - 3)), do.shrinkage.x = TRUE, alphas = c(0.2, 0.7))
 out <- sento_model(sentomeasures, y, x = x, ctr = ctrM)
 
 ### tests from here ###
 
-attributions <- retrieve_attributions(out, sentomeasures, do.normalize = FALSE)
+attributions <- attributions(out, sentomeasures, do.normalize = FALSE)
 
 l <- rowSums(attributions$lexicons[, -1], na.rm = TRUE)
 f <- rowSums(attributions$features[, -1], na.rm = TRUE)
@@ -43,7 +43,7 @@ la <- rowSums(attributions$lags[, -1], na.rm = TRUE)
 
 TOL <- 1e-04
 
-# retrieve_attributions
+# attributions
 test_that("Attributions across all dimensions should be the same across rows", {
   expect_equal(l, f)
   expect_equal(l, t)
@@ -57,8 +57,13 @@ test_that("Attributions across all dimensions should be the same across rows", {
   # expect_equal(la, d)
 })
 
-# plot_attributions
-p <- plot_attributions(attributions, group = sample(c("features", "lexicons", "time", "lags"), 1))
+test_that("Error if sentomeasures object has not all dates needed for attribution", {
+  expect_error(attributions(out, measures_subset(sentomeasures, date %in% sample(get_dates(sentomeasures), 10))))
+  expect_error(attributions(out, measures_subset(sentomeasures, date %in% as.Date(names(out$models)))))
+})
+
+# plot.attributions
+p <- plot(attributions, group = sample(c("features", "lexicons", "time", "lags"), 1))
 test_that("Plot is a ggplot object", {
   expect_true(inherits(p, "ggplot"))
 })

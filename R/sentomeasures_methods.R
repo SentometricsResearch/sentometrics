@@ -7,7 +7,7 @@
 #'
 #' @description Plotting method that shows all sentiment measures from the provided \code{sentomeasures}
 #' object in one plot, or the average along one of the lexicons, features and time weighting dimensions. We suggest to make
-#' use of the \code{\link{measures_select}} function when you desire to plot only a subset of the sentiment measures.
+#' use of the \code{\link{measures_select}} function when you want to plot only a subset of the sentiment measures.
 #'
 #' @param x a \code{sentomeasures} object created using \code{\link{sento_measures}}.
 #' @param group a value from \code{c("lexicons", "features", "time", "all")}. The first three choices display the average of
@@ -16,7 +16,7 @@
 #' @param ... not used.
 #'
 #' @return Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using
-#' the \code{+} operator (see examples). By default, a legend is positioned at the top if there are at maximum twelve line
+#' the \code{+} operator (see example). By default, a legend is positioned at the top if there are at maximum twelve line
 #' graphs plotted and \code{group} is different from \code{"all"}.
 #'
 #' @examples
@@ -27,7 +27,7 @@
 #' # construct a sentomeasures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-#' l <- setup_lexicons(list_lexicons[c("LM_en")], list_valence_shifters[["en"]])
+#' l <- sento_lexicons(list_lexicons[c("LM_en")], list_valence_shifters[["en"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sentomeasures <- sento_measures(corpusSample, l, ctr)
 #'
@@ -38,7 +38,6 @@
 #' # adjust appearance of plot
 #' p <- plot(sentomeasures)
 #' p <- p +
-#'   ggthemes::theme_base() +
 #'   scale_x_date(name = "month-year") +
 #'   scale_y_continuous(name = "newName")
 #' p}
@@ -46,10 +45,8 @@
 #' @import ggplot2
 #' @export
 plot.sentomeasures <- function(x, group = "all", ...) {
-
   if (!(group %in% c("lexicons", "features", "time", "all")))
     stop("The 'group' argument should be either 'lexicons', 'features', 'time' or 'all'.")
-  # melt sentiment measures for plotting
   sentomeasures <- x
   measures <- get_measures(sentomeasures)
   if (group == "all") {
@@ -66,10 +63,9 @@ plot.sentomeasures <- function(x, group = "all", ...) {
     geom_hline(yintercept = 0, size = 0.50, linetype = "dotted") +
     scale_x_date(name = "Date", date_labels = "%m-%Y") +
     scale_y_continuous(name = "Sentiment") +
-    ggthemes::theme_tufte(base_size = 12) +
-    theme(legend.title = element_blank(), legend.position = legendPos)
-
-  return(p)
+    theme_bw() +
+    plot_theme(legendPos)
+  p
 }
 
 #' Differencing of sentiment measures
@@ -94,7 +90,7 @@ plot.sentomeasures <- function(x, group = "all", ...) {
 #' # construct a sentomeasures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-#' l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+#' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sentomeasures <- sento_measures(corpusSample, l, ctr)
 #'
@@ -132,24 +128,23 @@ nmeasures <- function(sentomeasures) {
   UseMethod("nmeasures", sentomeasures)
 }
 
-#' @export
-nobs.sentomeasures <- function(sentomeasures) {
-  NROW(sentomeasures[["measures"]])
-}
-
 #' Get number of observations in the sentiment measures
 #'
 #' @author Samuel Borms
 #'
-#' @description Returns the number of data points available for the sentiment measures.
+#' @description Returns the number of data points available in the sentiment measures.
 #'
-#' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
+#' @param object a \code{sentomeasures} object created using \code{\link{sento_measures}}.
+#' @param ... not used.
 #'
 #' @return The number of rows (observations/data points) in \code{sentomeasures[["measures"]]}.
 #'
+#' @keywords internal
+#'
+#' @importFrom stats nobs
 #' @export
-nobs <- function(sentomeasures) {
-  UseMethod("nobs", sentomeasures)
+nobs.sentomeasures <- function(object, ...) {
+  NROW(object[["measures"]])
 }
 
 #' Scaling and centering of sentiment measures
@@ -178,10 +173,12 @@ nobs <- function(sentomeasures) {
 #' data("list_lexicons", package = "sentometrics")
 #' data("list_valence_shifters", package = "sentometrics")
 #'
+#' set.seed(505)
+#'
 #' # construct a sentomeasures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-#' l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+#' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sentomeasures <- sento_measures(corpusSample, l, ctr)
 #'
@@ -250,7 +247,7 @@ print.sentomeasures <- function(x, ...) {
 #'
 #' @author Samuel Borms
 #'
-#' @description Convenience function. Returns the dates of the sentiment time series.
+#' @description Returns the dates of the sentiment time series.
 #'
 #' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
 #'
@@ -266,7 +263,7 @@ get_dates <- function(sentomeasures) {
 #'
 #' @author Samuel Borms
 #'
-#' @description Convenience function. Returns the components across all three dimensions of the sentiment measures.
+#' @description Returns the components across all three dimensions of the sentiment measures.
 #'
 #' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
 #'
@@ -282,7 +279,7 @@ get_dimensions <- function(sentomeasures) {
 #'
 #' @author Samuel Borms
 #'
-#' @description Convenience function. Returns the sentiment measures in either wide (by default) or long format.
+#' @description Returns the sentiment measures in either wide (by default) or long format.
 #'
 #' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
 #' @param format a single \code{character} vector, one of \code{c("wide", "long")}.

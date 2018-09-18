@@ -29,7 +29,7 @@
 #' # construct a sentomeasures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-#' l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+#' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "day", lag = 7, fill = "none")
 #' sentomeasures <- sento_measures(corpusSample, l, ctr)
 #'
@@ -103,7 +103,7 @@ measures_fill <- function(sentomeasures, fill = "zero", dateBefore = NULL, dateA
 #' # construct a sentomeasures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-#' l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+#' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sentomeasures <- sento_measures(corpusSample, l, ctr)
 #'
@@ -164,7 +164,7 @@ measures_select <- function(sentomeasures, toSelect) {
 #' # construct a sentomeasures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-#' l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+#' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sentomeasures <- sento_measures(corpusSample, l, ctr)
 #'
@@ -198,26 +198,26 @@ measures_subset <- function(sentomeasures, subset) {
   return(sentomeasures)
 }
 
-check_merge_dimensions <- function(sentomeasures, features = NA, lexicons = NA, time = NA) {
+check_merge_dimensions <- function(sentomeasures, features = NULL, lexicons = NULL, time = NULL) {
   check_class(sentomeasures, "sentomeasures")
 
   # check if columns to merge exist (missings), and if merges have at least two columns to combine and are unique (tooFew)
   missings <- tooFew <- NULL
-  if (all(!is.na(features))) {
+  if (!is.null(features)) {
     missings <- c(missings, unlist(features)[!(unlist(features) %in% sentomeasures$features)])
     for (i in seq_along(features)) {
       if (length(features[[i]]) <= 1 | length(unique(features[[i]])) != length(features[[i]]))
         tooFew <- c(tooFew, names(features)[i])
     }
   }
-  if (all(!is.na(lexicons))) {
+  if (!is.null(lexicons)) {
     missings <- c(missings, unlist(lexicons)[!(unlist(lexicons) %in% sentomeasures$lexicons)])
     for (i in seq_along(lexicons)) {
       if (length(lexicons[[i]]) <= 1 | length(unique(lexicons[[i]])) != length(lexicons[[i]]))
         tooFew <- c(tooFew, names(lexicons)[i])
     }
   }
-  if (all(!is.na(time))) {
+  if (!is.null(time)) {
     missings <- c(missings, unlist(time)[!(unlist(time) %in% sentomeasures$time)])
     for (i in seq_along(time)) {
       if (length(time[[i]]) <= 1 | length(unique(time[[i]])) != length(time[[i]]))
@@ -250,14 +250,14 @@ check_merge_dimensions <- function(sentomeasures, features = NA, lexicons = NA, 
 #' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}. This is necessary to check
 #' whether the other input arguments make sense.
 #' @param lexicons a \code{list} with unique lexicons to merge at given name, e.g., \cr
-#' \code{list(lex12 = c("lex1", "lex2"))}. See \code{sentomeasures$lexicons} for the exact names to use. Use \code{NA}
+#' \code{list(lex12 = c("lex1", "lex2"))}. See \code{sentomeasures$lexicons} for the exact names to use. Use \code{NULL}
 #' (default) to apply no merging across this dimension.
 #' @param features a \code{list} with unique features to merge at given name, e.g., \cr
-#' \code{list(feat12 = c("feat1", "feat2"))}. See \code{sentomeasures$features} for the exact names to use. Use \code{NA}
+#' \code{list(feat12 = c("feat1", "feat2"))}. See \code{sentomeasures$features} for the exact names to use. Use \code{NULL}
 #' (default) to apply no merging across this dimension.
 #' @param time a \code{list} with unique time weighting schemes to merge at given name, e.g., \cr
-#' \code{list(tw12 = c("tw1", "tw2"))}. See \code{sentomeasures$time} for the exact names to use. Use \code{NA} (default) to
-#' apply no merging across this dimension.
+#' \code{list(tw12 = c("tw1", "tw2"))}. See \code{sentomeasures$time} for the exact names to use. Use \code{NULL} (default)
+#' to apply no merging across this dimension.
 #' @param do.keep a \code{logical} indicating if the original sentiment measures should be kept (i.e., the merged
 #' sentiment measures will be added to the current sentiment measures as additional indices if \code{do.keep = TRUE}).
 #'
@@ -272,7 +272,7 @@ check_merge_dimensions <- function(sentomeasures, features = NA, lexicons = NA, 
 #' # construct a sentomeasures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-#' l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+#' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sentomeasures <- sento_measures(corpusSample, l, ctr)
 #'
@@ -289,7 +289,7 @@ check_merge_dimensions <- function(sentomeasures, features = NA, lexicons = NA, 
 #'                lexicons = list(LEX = c("LM_en")),
 #'                features = list(journals = c("notInHere", "wapo")))}
 #' @export
-measures_merge <- function(sentomeasures, features = NA, lexicons = NA, time = NA, do.keep = FALSE) {
+measures_merge <- function(sentomeasures, features = NULL, lexicons = NULL, time = NULL, do.keep = FALSE) {
 
   check <- check_merge_dimensions(sentomeasures, features = features, lexicons = lexicons, time = time) # check inputs
   if (check$stop == TRUE)
@@ -303,7 +303,7 @@ measures_merge <- function(sentomeasures, features = NA, lexicons = NA, time = N
     namesOld <- colnames(measures)
   }
   # loop over lex(icon), feat(ure) and time lists
-  for (across in toMerge[!is.na(toMerge)]) {
+  for (across in toMerge) {
     # loop over set of aggregation levels to merge (combine) into given name (e.g., lex12 = c("lex1", "lex2"))
     for (i in seq_along(across)) {
       name <- names(across)[i] # e.g. "lex12"
@@ -335,7 +335,7 @@ measures_merge <- function(sentomeasures, features = NA, lexicons = NA, time = N
   if (do.keep == TRUE) measures <- cbind(measures, measuresOld[, !(namesOld %in% colnames(measures)), with = FALSE])
 
   sentomeasures <- update_info(sentomeasures, measures,
-                               merges = toMerge[!is.na(toMerge)]) # update information in sentomeasures object
+                               merges = toMerge) # update information in sentomeasures object
 
   return(sentomeasures)
 }
@@ -365,7 +365,7 @@ measures_merge <- function(sentomeasures, features = NA, lexicons = NA, time = N
 #' # construct a sentomeasures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-#' l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+#' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sentomeasures <- sento_measures(corpusSample, l, ctr)
 #'
@@ -444,7 +444,7 @@ measures_delete <- function(sentomeasures, toDelete) {
 #' # construct a sentomeasures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-#' l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+#' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sentomeasures <- sento_measures(corpusSample, l, ctr)
 #'

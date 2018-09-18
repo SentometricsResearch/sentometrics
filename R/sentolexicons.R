@@ -23,9 +23,10 @@
 #' @param do.split a \code{logical} that if \code{TRUE} splits every lexicon into a separate positive polarity and negative
 #' polarity lexicon.
 #'
-#' @return A \code{list} with each lexicon as a separate element according to its name, as a \code{data.table}, and optionally
-#' an element named \code{valence} that comprises the valence words. Every \code{x} column contains the words, every \code{y}
-#' column contains the polarity score.
+#' @return A \code{list} of class \code{sentolexicons} with each lexicon as a separate element according to its name, as a
+#' \code{data.table}, and optionally an element named \code{valence} that comprises the valence words. Every \code{"x"} column
+#' contains the words, every \code{"y"} column contains the polarity scores. The \code{"t"} column for valence shifters
+#' contains the valence shifting types.
 #'
 #' @examples
 #' data("list_lexicons", package = "sentometrics")
@@ -38,18 +39,18 @@
 #' lexIn <- c(list(myLexicon = data.table(w = c("nice", "boring"), s = c(2, -1))),
 #'            list_lexicons[c("GI_en")])
 #' valIn <- list_valence_shifters[["en"]]
-#' l2 <- setup_lexicons(lexIn)
-#' l3 <- setup_lexicons(lexIn, valIn)
-#' l4 <- setup_lexicons(lexIn, valIn[, c("x", "y")], do.split = TRUE)
-#' l5 <- setup_lexicons(lexIn, valIn[, c("x", "t")], do.split = TRUE)
+#' l2 <- sento_lexicons(lexIn)
+#' l3 <- sento_lexicons(lexIn, valIn)
+#' l4 <- sento_lexicons(lexIn, valIn[, c("x", "y")], do.split = TRUE)
+#' l5 <- sento_lexicons(lexIn, valIn[, c("x", "t")], do.split = TRUE)
 #'
 #' \dontrun{
 #' # include lexicons from lexicon package
 #' lexIn2 <- list(hul = lexicon::hash_sentiment_huliu, joc = lexicon::hash_sentiment_jockers)
-#' l6 <- setup_lexicons(c(lexIn, lexIn2), valIn)}
+#' l6 <- sento_lexicons(c(lexIn, lexIn2), valIn)}
 #'
 #' @export
-setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
+sento_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 
   if (!("list" %in% class(lexiconsIn)))
     stop("The 'lexiconsIn' input should be a named list.")
@@ -94,5 +95,14 @@ setup_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
   class(lexicons) <- c("sentolexicons", class(lexicons))
 
   return(lexicons)
+}
+
+#' @export
+`[.sentolexicons` <- function(x, i, ...) {
+  xx <- NextMethod("[")
+  if (length(xx) == 0 || length(xx) > length(x) || any(is.na(names(xx)))) stop("Indexing out of bounds.")
+  if (all(names(xx) == "valence")) stop("Keep at least one lexicon (on top of a table of valence shifters).")
+  class(xx) <- class(x)
+  xx
 }
 

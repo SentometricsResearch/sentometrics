@@ -20,9 +20,9 @@ This includes a brute force replacement of HTML tags and non-alphanumeric charac
 if the text is meant to have non-alphanumeric characters! Preferably, cleaning is done outside of this function call.}
 }
 \value{
-A \code{sentocorpus} object, derived from a \pkg{quanteda} corpus classed \code{list} with the elements
-\code{"documents"}, \code{"metadata"}, and \code{"settings"} kept. The first element incorporates the corpus
-represented as a \code{data.frame}.
+A \code{sentocorpus} object, derived from a \pkg{quanteda} \code{\link[quanteda]{corpus}} classed \code{list}
+with elements \code{"documents"}, \code{"metadata"}, and \code{"settings"} kept. The first element incorporates
+the corpus represented as a \code{data.frame}.
 }
 \description{
 Formalizes a collection of texts into a well-defined corpus object derived from the
@@ -32,16 +32,16 @@ handy corpus manipulation toolset. This function performs a set of checks on the
 corpus for further analysis.
 }
 \details{
-A \code{sentocorpus} object is a specialized instance of a \pkg{quanteda} corpus. In theory, all
-\pkg{quanteda} functions applicable to its corpus object can also be applied to a \code{sentocorpus} object. However,
-changing a given \code{sentocorpus} object too drastically using some of \pkg{quanteda}'s functions might alter the very
-structure the corpus is meant to have (as defined in the \code{corpusdf} argument) to be able to be used as an input
-in other functions of the \pkg{sentometrics} package. There are functions, including \code{\link[quanteda]{corpus_sample}}
-or \code{\link[quanteda]{corpus_subset}}, that do not change the actual corpus structure and may come in handy. To add
-additional features, use \code{\link{add_features}}. Binary features are useful as a mechanism to select the
-texts which have to be integrated in the respective feature-based sentiment measure(s), but applies only when
-\code{do.ignoreZeros = TRUE}. Because of this (implicit) selection that can be performed, having complementary
-features (e.g., \code{"economy"} and \code{"noneconomy"}) makes sense.
+A \code{sentocorpus} object is a specialized instance of a \pkg{quanteda} \code{\link[quanteda]{corpus}}. Any
+\pkg{quanteda} function applicable to its \code{\link[quanteda]{corpus}} object can also be applied to a \code{sentocorpus}
+object. However, changing a given \code{sentocorpus} object too drastically using some of \pkg{quanteda}'s functions might
+alter the very structure the corpus is meant to have (as defined in the \code{corpusdf} argument) to be able to be used as
+an input in other functions of the \pkg{sentometrics} package. There are functions, including
+\code{\link[quanteda]{corpus_sample}} or \code{\link[quanteda]{corpus_subset}}, that do not change the actual corpus
+structure and may come in handy. To add additional features, use \code{\link{add_features}}. Binary features are useful as
+a mechanism to select the texts which have to be integrated in the respective feature-based sentiment measure(s), but
+applies only when \code{do.ignoreZeros = TRUE}. Because of this (implicit) selection that can be performed, having
+complementary features (e.g., \code{"economy"} and \code{"noneconomy"}) makes sense.
 }
 \examples{
 data("usnews", package = "sentometrics")

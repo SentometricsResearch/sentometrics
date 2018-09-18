@@ -11,7 +11,7 @@ data("usnews")
 corpus <- quanteda::corpus_sample(sento_corpus(corpusdf = usnews), size = 1000)
 
 data("list_lexicons")
-lex <- setup_lexicons(list_lexicons[c("GI_en", "LM_en")])
+lex <- sento_lexicons(list_lexicons[c("GI_en", "LM_en")])
 
 ### tests from here ###
 
@@ -20,7 +20,7 @@ ctr1 <- ctr_agg(howWithin = "proportionalPol", howDocs = "equal_weight", howTime
 sentMeas1 <- sento_measures(corpus, lex, ctr1)
 
 ctr2 <- ctr_agg(howWithin = "counts", howDocs = "proportional", howTime = c("equal_weight", "linear", "own"), by = "year",
-               lag = 2, weights = data.frame(q1 = c(0.25, 0.75), q3 = c(0.75, 0.25)))
+               lag = 2, weights = data.frame(q1 = c(0.25, 0.75), q3 = c(0.75, 0.25)), do.ignoreZeros = FALSE)
 sentMeas2 <- sento_measures(corpus, lex, ctr2)
 
 # sento_measures
@@ -37,6 +37,14 @@ test_that("Aggregation control function breaks when wrong inputs supplied", {
                        ordersAlm = -1:2, aBeta = -2, bBeta = -3, alphasExp = c(-1, -3)))
   expect_warning(ctr_agg(howTime = "linear", lag = 4, weights = data.frame(a = c(1/2, 1/2))))
   expect_error(ctr_agg(howTime = "own", lag = 12, weights = data.frame("dot--hacker" = rep(1/12, 12), check.names = FALSE)))
+})
+
+# aggregate
+s1 <- compute_sentiment(corpus, lex, how = "proportional")
+s2 <- compute_sentiment(quanteda::texts(corpus), lex, how = "counts")
+test_that("Test input format of sentiment aggregation function", {
+  expect_true(inherits(aggregate(s1, ctr1), "sentomeasures"))
+  expect_error(aggregate(s2, ctr2))
 })
 
 # peakdocs

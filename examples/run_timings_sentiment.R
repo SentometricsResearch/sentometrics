@@ -14,8 +14,8 @@ cat(info$locale, "\n \n")
 
 ###########################################
 
-# library("sentometrics")
-devtools::load_all()
+library("sentometrics")
+# devtools::load_all()
 library("lexicon")
 library("dplyr")
 library("tibble")
@@ -61,6 +61,9 @@ sentoValenceFunc <- function(texts) compute_sentiment(texts, lexicons = lex, how
 sentoValenceAllFunc <- function(texts) compute_sentiment(texts, lexicons = lex, how = "counts")
 sentoValenceAllParFunc <- function(texts) compute_sentiment(texts, lexicons = lex, how = "counts", nCore = 8)
 sentoValenceClustAllFunc <- function(texts) compute_sentiment(texts, lexicons = lexClust, how = "counts") # clusters approach
+
+### TODO: add quanteda (dfm_lookup) and tm (term_score) for comparison
+### TODO: make two tables ==> with 1 lexicon, and with multiple lexicons
 
 meanrFunc <- function(texts) meanr::score(texts, nthreads = 2)
 

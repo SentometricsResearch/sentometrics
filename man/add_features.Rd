@@ -4,8 +4,8 @@
 \alias{add_features}
 \title{Add feature columns to a (sento)corpus object}
 \usage{
-add_features(corpus, featuresdf = NULL, keywords = NULL, do.binary = TRUE,
-  do.regex = FALSE)
+add_features(corpus, featuresdf = NULL, keywords = NULL,
+  do.binary = TRUE, do.regex = FALSE)
 }
 \arguments{
 \item{corpus}{a \code{sentocorpus} object created with \code{\link{sento_corpus}}, or a \pkg{quanteda}
@@ -22,7 +22,7 @@ keyword, no column is added. The \code{list} names are used as the names of the 
 instead of keywords, one can also directly use a single regex expression to define a new feature (cf. the details section).}
 
 \item{do.binary}{a \code{logical}, cf. argument \code{keywords}. If \code{do.binary = FALSE}, the counts are normalized
-between 0 and 1,}
+between 0 and 1.}
 
 \item{do.regex}{a \code{logical} vector equal in length to the number of elements in the \code{keywords} argument
 \code{list}, or a single value if it applies to all. It should be set to \code{TRUE} at those positions where a single
@@ -48,8 +48,10 @@ and 1 is performed via min-max normalization, per column.
 \examples{
 data("usnews", package = "sentometrics")
 
+set.seed(505)
+
 # construct a corpus and add (a) feature(s) to it
-corpus <- sento_corpus(corpusdf = usnews)
+corpus <- quanteda::corpus_sample(sento_corpus(corpusdf = usnews), 500)
 corpus1 <- add_features(corpus,
                         featuresdf = data.frame(random = runif(quanteda::ndoc(corpus))))
 corpus2 <- add_features(corpus,
