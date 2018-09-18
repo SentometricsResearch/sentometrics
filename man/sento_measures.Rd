@@ -9,7 +9,7 @@ sento_measures(sentocorpus, lexicons, ctr)
 \arguments{
 \item{sentocorpus}{a \code{sentocorpus} object created with \code{\link{sento_corpus}}.}
 
-\item{lexicons}{a \code{sentolexicons} object created with \code{\link{setup_lexicons}}.}
+\item{lexicons}{a \code{sentolexicons} object created with \code{\link{sento_lexicons}}.}
 
 \item{ctr}{output from a \code{\link{ctr_agg}} call.}
 }
@@ -35,7 +35,7 @@ have been ignored in the within-document aggregation.}
 Serves further no direct purpose.}
 }
 \description{
-Wrapper function which assembles calls to \code{\link{compute_sentiment}} and \code{\link{perform_agg}}, and
+Wrapper function which assembles calls to \code{\link{compute_sentiment}} and \code{\link{aggregate}}, and
 includes the input \code{sentocorpus} and computed sentiment scores in its output. Serves as the most direct way towards a
 panel of textual sentiment measures as a \code{sentomeasures} object.
 }
@@ -51,7 +51,7 @@ data("list_valence_shifters", package = "sentometrics")
 # construct a sentomeasures object to start with
 corpus <- sento_corpus(corpusdf = usnews)
 corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 ctr <- ctr_agg(howWithin = "counts",
                howDocs = "proportional",
                howTime = c("equal_weight", "linear", "almon"),
@@ -64,7 +64,7 @@ summary(sentomeasures)
 
 }
 \seealso{
-\code{\link{compute_sentiment}}, \code{\link{perform_agg}}
+\code{\link{compute_sentiment}}, \code{\link{aggregate}}
 }
 \author{
 Samuel Borms, Keven Bluteau

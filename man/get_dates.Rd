@@ -13,7 +13,7 @@ get_dates(sentomeasures)
 The \code{"date"} column in \code{sentomeasures[["measures"]]} as a \code{character} vector.
 }
 \description{
-Convenience function. Returns the dates of the sentiment time series.
+Returns the dates of the sentiment time series.
 }
 \author{
 Samuel Borms

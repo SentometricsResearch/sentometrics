@@ -62,7 +62,7 @@
 #' Compute exponential weighting curves
 #'
 #' @description Computes exponential weighting curves. Handy to self-select specific time aggregation weighting schemes
-#' for input in \code{\link{ctr_agg}}.
+#' for input in \code{\link{ctr_agg}} using the \code{weights} argument.
 #'
 #' @param n a single \code{numeric} to indicate the lag length.
 #' @param alphas a \code{numeric} vector of decay factors.
@@ -72,12 +72,12 @@
 #' @seealso \code{\link{ctr_agg}}
 #'
 #' @export
-exponentials <- function(n, alphas = seq(0.1, 0.5, by = 0.1)) {
+weights_exponential <- function(n, alphas = seq(0.1, 0.5, by = 0.1)) {
   if (max(alphas) >= 1 || min(alphas) <= 0)
     stop("Values in 'alphas' should be between 0 and 1 (both excluded).")
   vals <- 1:n
   exponentials <- data.frame(matrix(nrow = n, ncol = length(alphas)))
-  colnames(exponentials) <- paste0("exp_smoothing_", alphas)
+  colnames(exponentials) <- paste0("exponential_", alphas)
   for (i in 1:length(alphas)) {
     alpha <- alphas[i]
     exponential <- ((alpha * (1 - alpha)^(1 - vals))) / sum((alpha * (1 - alpha)^(1 - vals)))
@@ -89,7 +89,7 @@ exponentials <- function(n, alphas = seq(0.1, 0.5, by = 0.1)) {
 #' Compute Almon polynomials
 #'
 #' @description Computes Almon polynomial weighting curves. Handy to self-select specific time aggregation weighting schemes
-#' for input in \code{\link{ctr_agg}}.
+#' for input in \code{\link{ctr_agg}} using the \code{weights} argument.
 #'
 #' @details The Almon polynomial formula implemented is:
 #' \eqn{(1 - (1 - i/n)^{b})(1 - i/n)^{B - b}}{(1 - (1 - i/n)^b) * (1 - i/n)^(B - b)}, where \eqn{i} is the lag index ordered from
@@ -107,7 +107,7 @@ exponentials <- function(n, alphas = seq(0.1, 0.5, by = 0.1)) {
 #' @seealso \code{\link{ctr_agg}}
 #'
 #' @export
-almons <- function(n, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE) {
+weights_almon <- function(n, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE) {
   vals <- (1:n) / n
   inv <- ifelse(do.inverse, 2, 1)
   almons <- data.frame(matrix(nrow = n, ncol = length(orders) * inv))
@@ -134,9 +134,8 @@ almons <- function(n, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE) {
 
 #' Compute beta weighting curves
 #'
-#' @description Computes Beta weighting curves as in ``MIDAS regressions: Further results and new directions''
-#' (Ghysels, Sinko and Valkanov, 2007). Handy to self-select specific time aggregation weighting schemes for
-#' input in \code{\link{ctr_agg}}.
+#' @description Computes Beta weighting curves as in Ghysels, Sinko and Valkanov (2007). Handy to self-select specific
+#' time aggregation weighting schemes for input in \code{\link{ctr_agg}} using the \code{weights} argument.
 #'
 #' @details The Beta weighting abides by following formula:
 #' \eqn{f(i/n; a, b) / \sum_{i}(i/n; a, b)}{f(i/n; a, b) / \sum(i/n; a, b)}, where \eqn{i} is the lag index ordered
@@ -153,8 +152,11 @@ almons <- function(n, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE) {
 #'
 #' @seealso \code{\link{ctr_agg}}
 #'
+#' @references Ghysels, Sinko and Valkanov (2007). ``MIDAS regressions: Further results and new directions''.
+#' \emph{Econometric Reviews 26, 53-90}, \url{https://doi.org/10.1080/07474930600972467}.
+#'
 #' @export
-betas <- function(n, a = 1:4, b = 1:4) {
+weights_beta <- function(n, a = 1:4, b = 1:4) {
   if (any(c(a, b) <= 0))
     stop("Values in 'a' and 'b' should be positive.")
   vals <- (1:n) / n
@@ -185,13 +187,13 @@ setup_time_weights <- function(lag, how, ...) {
     weights <- cbind(weights, data.frame(linear = matrix((1:lag)/sum(1:lag), nrow = lag, ncol = 1)))
   }
   if ("exponential" %in% how) {
-    weights <- cbind(weights, exponentials(lag, dots$alphasExp))
+    weights <- cbind(weights, weights_exponential(lag, dots$alphasExp))
   }
   if ("almon" %in% how) {
-    weights <- cbind(weights, almons(lag, dots$ordersAlm, dots$do.inverseAlm, TRUE)) # always normalize
+    weights <- cbind(weights, weights_almon(lag, dots$ordersAlm, dots$do.inverseAlm, TRUE)) # always normalize
   }
   if ("beta" %in% how) {
-    weights <- cbind(weights, betas(lag, dots$aBeta, dots$bBeta))
+    weights <- cbind(weights, weights_beta(lag, dots$aBeta, dots$bBeta))
   }
   if ("own" %in% how) {
     weights <- cbind(weights, dots$weights)
@@ -286,24 +288,25 @@ align_variables <- function(y, sentomeasures, x, h, difference, i = 1, nSample =
 
 clean_panel <- function(x, nx, threshold = 0.50) {
 
-  # discards columns only from panel of sentiment measures based on a few simple rules
+  # discards columns from panel of explanatory variables based on a few simple rules
   # useful to simplify (to some extent) the penalized variables regression (cf. 'exclude')
 
-  start <- ncol(x) - nx + 1
-  end <- ncol(x)
-  if (nx != 0) xSent <- x[, -(start:end)] # drop non-sentiment variables
-  else xSent <- x
-  xSent[is.na(xSent)] <- 0 # check
-  duplics <- duplicated(as.matrix(xSent), MARGIN = 2) # duplicated columns
-  manyZeros <- (colSums(as.matrix(xSent) == 0, na.rm = TRUE) / nrow(xSent)) > threshold # columns with too many zeros
+  if (nx != 0) { # do not perform cleaning on last nx variables
+    start <- ncol(x) - nx + 1
+    end <- ncol(x)
+    xx <- x[, -(start:end)] # drop non-sentiment variables if no shrinkage imposed on these variables
+  } else xx <- x
+  xx[is.na(xx)] <- 0 # check
+  duplics <- duplicated(as.matrix(xx), MARGIN = 2) # duplicated columns
+  manyZeros <- (colSums(as.matrix(xx) == 0, na.rm = TRUE) / nrow(xx)) > threshold # columns with too many zeros
   toDiscard <- duplics | manyZeros
-  if (ncol(xSent) == 1) stop("No sentiment measures retained after cleaning: too many duplicated columns and/or zeros.")
+  if (ncol(xx) == 1) stop("No explanatory variables retained after cleaning: too many duplicated columns and/or zeros.")
   else {
     if (nx != 0) {
-      xNew <- cbind(xSent[, !toDiscard], x[, start:end])
+      xNew <- cbind(xx[, !toDiscard], x[, start:end])
       colnames(xNew) <- c(names(which(!toDiscard)), colnames(x[, start:end, drop = FALSE]))
     }
-    else xNew <- xSent[, !toDiscard]
+    else xNew <- xx[, !toDiscard]
   }
 
   return(list(xNew = xNew, discarded = toDiscard))
@@ -372,7 +375,7 @@ update_attribweights <- function(sentomeasures, ...) {
 
 check_class <- function(x, class) {
   if (!inherits(x, class))
-    stop("Please provide a ", class, " object as first argument.")
+    stop("Please provide a ", class, " object as one of the arguments.")
 }
 
 compute_stats <- function(sentomeasures) {
@@ -574,5 +577,36 @@ get_names_lags <- function(nLags) {
          sapply((nLags - 1):0, function(n) ifelse(nchar(n) == k,
                                                   as.character(n),
                                                   paste0(c(rep("0", k - nchar(n)), n), collapse = ""))))
+}
+
+check_sentiment_format <- function(sentiment) {
+  errMessage <- "The 'sentiment' input is not appropriate. It should be computed from a 'sentocorpus' object."
+  if (!is.list(sentiment)) {
+    stop(errMessage)
+  } else if (!all(names(sentiment) %in% c("sentiment", "features", "lexicons", "howWithin"))) {
+      stop(errMessage)
+  } else {
+    s <- sentiment[["sentiment"]]
+    if (!all(colnames(s)[1:3] %in% c("id", "date", "word_count")))
+      stop(errMessage)
+    else if (ncol(s) != 3 + length(sentiment$features) * length(sentiment$lexicons))
+      stop(errMessage)
+    else if (!inherits(s[["id"]], "character"))
+      stop(errMessage)
+    else if (!inherits(s[["date"]], "Date"))
+      stop(errMessage)
+    else if (!all(sapply(3:ncol(s), function(i) inherits(s[[i]], "numeric"))))
+      stop(errMessage)
+  }
+}
+
+plot_theme <- function(legendPos) { # plotting specifications (border and grid)
+  theme(
+    legend.title = element_blank(),
+    legend.position = legendPos,
+    panel.background = element_rect(colour = "black", size = 0.35),
+    panel.grid.major = element_line(colour = "grey95", size = 0.10),
+    panel.grid.minor = element_line(colour = "grey95", size = 0.10)
+  )
 }
 

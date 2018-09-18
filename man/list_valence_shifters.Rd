@@ -17,9 +17,8 @@ the words, a \code{y} column with the values associated to each word, and a \cod
 shifter (\code{1} = negators, \code{2} = amplifiers, \code{3} = deamplifiers). The \code{list} element names indicate the
 language (based on the two-letter ISO code convention as in \code{\link[stopwords]{stopwords}}) of the valence word list.
 All non-English word lists are translated via Microsoft Translator through Microsoft Word. Only the entries whose
-translation differs from the original entry are kept. The valence word lists are in the form required for further
-sentiment analysis. All words are unigrams and in lowercase. The built-in valence word lists are available in following
-languages:
+translation differs from the original entry are kept. All words are unigrams and in lowercase. The built-in valence word
+lists are available in following languages:
 
 \itemize{
   \item English (\code{"en"})

@@ -13,44 +13,15 @@
 }
 \value{
 Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using
-the \code{+} operator (see examples).
+the \code{+} operator.
 }
 \description{
 Displays a plot of all predictions made through the iterative model computation as incorporated in the
 input \code{sentomodeliter} object, as well as the corresponding true values.
 }
-\examples{
-\dontrun{
-data("usnews", package = "sentometrics")
-data("list_lexicons", package = "sentometrics")
-data("list_valence_shifters", package = "sentometrics")
-data("epu", package = "sentometrics")
-
-# construct a sentomeasures object to start with
-corpusAll <- sento_corpus(corpusdf = usnews)
-corpus <- quanteda::corpus_subset(corpusAll, date >= "2007-01-01" & date < "2014-10-01")
-l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
-ctr <- ctr_agg(howWithin = "proportional", howDocs = "proportional",
-               howTime = c("equal_weight", "linear"),
-               by = "month", lag = 3)
-sentomeasures <- sento_measures(corpus, l, ctr)
-
-# prepare y variable
-y <- epu[epu$date \%in\% get_dates(sentomeasures), "index"]
-length(y) == nobs(sentomeasures) # TRUE
-
-# estimate regression iteratively based on a sample of 60, skipping first 25 iterations
-ctr <- ctr_model(model = "gaussian", type = "AIC", do.iter = TRUE,
-                 h = 0, nSample = 60, start = 26)
-out <- sento_model(sentomeasures, y, ctr = ctr)
-summary(out)
-
-# plotting
-p <- plot(out)
-p <- p +
-  ggthemes::theme_few()
-p}
-
+\details{
+See \code{\link{sento_model}} for an elaborate modelling example including the plotting of out-of-sample
+performance.
 }
 \author{
 Samuel Borms

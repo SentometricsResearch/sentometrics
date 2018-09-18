@@ -7,8 +7,7 @@
 sento_model(sentomeasures, y, x = NULL, ctr)
 }
 \arguments{
-\item{sentomeasures}{a \code{sentomeasures} object created using \code{\link{sento_measures}}. There should be at least
-two explanatory variables including the ones provided through the \code{x} argument.}
+\item{sentomeasures}{a \code{sentomeasures} object created using \code{\link{sento_measures}}.}
 
 \item{y}{a one-column \code{data.frame} or a \code{numeric} vector capturing the dependent (response) variable. In case of
 a logistic regression, the response variable is either a \code{factor} or a \code{matrix} with the factors represented by
@@ -24,18 +23,19 @@ default set to \code{NULL}.}
 If \code{ctr$do.iter = FALSE}, a \code{sentomodel} object which is a \code{list} containing:
 \item{reg}{optimized regression, i.e. a model-specific \code{glmnet} object.}
 \item{model}{the input argument \code{ctr$model}, to indicate the type of model estimated.}
-\item{x}{a \code{matrix} of the values used in the regression for all explanatory variables.}
+\item{x}{a \code{matrix} of the values for all explanatory variables used in the regression.}
 \item{alpha}{calibrated alpha.}
 \item{lambda}{calibrated lambda.}
 \item{trained}{output from \code{\link[caret]{train}} call (if \code{ctr$type =} "\code{cv}"). There is no such
-output if the control parameters \code{alphas} and \code{lambdas} both specified one value.}
+output if the control parameters \code{alphas} and \code{lambdas} both specify one value.}
 \item{ic}{a \code{list} composed of two elements: under \code{"criterion"}, the type of information criterion used in the
 calibration, and under \code{"matrix"}, a \code{matrix} of all information criterion values for \code{alphas} as rows
 and the respective lambda values as columns (if \code{ctr$type !=} "\code{cv}"). Any \code{NA} value in the latter
 element means the specific information criterion could not be computed.}
 \item{dates}{sample reference dates as a two-element \code{character} vector, being the earliest and most recent date from
 the \code{sentomeasures} object accounted for in the estimation window.}
-\item{nVar}{the sum of the number of sentiment measures and other explanatory variables inputted.}
+\item{nVar}{a vector of size two, with respectively the number of sentiment measures, and the number of other explanatory
+variables inputted.}
 \item{discarded}{a named \code{logical} vector of length equal to the number of sentiment measures, in which \code{TRUE}
 indicates that the particular sentiment measure has not been considered in the regression process. A sentiment measure is
 not considered when it is a duplicate of another, or when at least 50\% of the observations are equal to zero.}
@@ -52,7 +52,7 @@ zero is considered as a positive; in percentage points), "\code{accuracy}" (prop
 of a logistic regression; in percentage points), and each's respective individual values in the sample. Directional accuracy
 is measured by comparing the change in the realized response with the change in the prediction between two consecutive time
 points (omitting the very first prediction, resulting in \code{NA}). Only the relevant performance statistics are given
-depending on the type of regression. Dates are as in the \code{"models"} output element, i.e. from the perspective of the
+depending on the type of regression. Dates are as in the \code{"models"} output element, i.e., from the perspective of the
 sentiment measures.}
 }
 \description{
@@ -62,9 +62,8 @@ regressions sequentially for a given sample size over a longer time horizon, wit
 }
 \details{
 Models are computed using the elastic net regularization as implemented in the \pkg{glmnet} package, to account for
-the multidimensionality of the sentiment measures. Additional explanatory variables are not subject to shrinkage. Independent
-variables are normalized in the regression process, but coefficients are returned in their original space. For a helpful
-introduction to \pkg{glmnet}, we refer to their
+the multidimensionality of the sentiment measures. Independent variables are normalized in the regression process, but
+coefficients are returned in their original space. For a helpful introduction to \pkg{glmnet}, we refer to their
 \href{https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html#lin}{vignette}. The optimal elastic net parameters
 \code{lambda} and \code{alpha} are calibrated either through a to specify information criterion or through
 cross-validation (based on the "rolling forecasting origin" principle, using the \code{\link[caret]{train}} function).
@@ -79,10 +78,12 @@ data("list_lexicons", package = "sentometrics")
 data("list_valence_shifters", package = "sentometrics")
 data("epu", package = "sentometrics")
 
+set.seed(505)
+
 # construct a sentomeasures object to start with
 corpusAll <- sento_corpus(corpusdf = usnews)
 corpus <- quanteda::corpus_subset(corpusAll, date >= "2004-01-01")
-l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")])
+l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")])
 ctr <- ctr_agg(howWithin = "counts", howDocs = "proportional",
                howTime = c("equal_weight", "linear"),
                by = "month", lag = 3)
@@ -100,9 +101,9 @@ ctrIC <- ctr_model(model = "gaussian", type = "AIC", do.iter = FALSE, h = 4,
 out1 <- sento_model(sentomeasures, y, x = x, ctr = ctrIC)
 
 # attribution and prediction as post-analysis
-attributions1 <- retrieve_attributions(out1, sentomeasures,
-                                       refDates = get_dates(sentomeasures)[20:25])
-plot_attributions(attributions1, "features")
+attributions1 <- attributions(out1, sentomeasures,
+                              refDates = get_dates(sentomeasures)[20:25])
+plot(attributions1, "features")
 
 nx <- nmeasures(sentomeasures) + ncol(x)
 newx <- runif(nx) * cbind(get_measures(sentomeasures)[, -1], x)[30:40, ]
@@ -113,6 +114,10 @@ ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE, h = 3,
                      oos = 2, alphas = c(0.25, 0.75), nSample = 75, nCore = 2)
 out2 <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
 summary(out2)
+
+# plot predicted vs. realized values
+p <- plot(out2)
+p
 
 # a cross-validation based model, parallelised
 cl <- parallel::makeCluster(2)
@@ -135,8 +140,7 @@ summary(out4)}
 
 }
 \seealso{
-\code{\link{ctr_model}}, \code{\link[glmnet]{glmnet}}, \code{\link[caret]{train}},
-\code{\link{retrieve_attributions}}
+\code{\link{ctr_model}}, \code{\link[glmnet]{glmnet}}, \code{\link[caret]{train}}, \code{\link{attributions}}
 }
 \author{
 Samuel Borms, Keven Bluteau

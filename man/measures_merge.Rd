@@ -4,24 +4,24 @@
 \alias{measures_merge}
 \title{Merge sentiment measures}
 \usage{
-measures_merge(sentomeasures, features = NA, lexicons = NA, time = NA,
-  do.keep = FALSE)
+measures_merge(sentomeasures, features = NULL, lexicons = NULL,
+  time = NULL, do.keep = FALSE)
 }
 \arguments{
 \item{sentomeasures}{a \code{sentomeasures} object created using \code{\link{sento_measures}}. This is necessary to check
 whether the other input arguments make sense.}
 
 \item{features}{a \code{list} with unique features to merge at given name, e.g., \cr
-\code{list(feat12 = c("feat1", "feat2"))}. See \code{sentomeasures$features} for the exact names to use. Use \code{NA}
+\code{list(feat12 = c("feat1", "feat2"))}. See \code{sentomeasures$features} for the exact names to use. Use \code{NULL}
 (default) to apply no merging across this dimension.}
 
 \item{lexicons}{a \code{list} with unique lexicons to merge at given name, e.g., \cr
-\code{list(lex12 = c("lex1", "lex2"))}. See \code{sentomeasures$lexicons} for the exact names to use. Use \code{NA}
+\code{list(lex12 = c("lex1", "lex2"))}. See \code{sentomeasures$lexicons} for the exact names to use. Use \code{NULL}
 (default) to apply no merging across this dimension.}
 
 \item{time}{a \code{list} with unique time weighting schemes to merge at given name, e.g., \cr
-\code{list(tw12 = c("tw1", "tw2"))}. See \code{sentomeasures$time} for the exact names to use. Use \code{NA} (default) to
-apply no merging across this dimension.}
+\code{list(tw12 = c("tw1", "tw2"))}. See \code{sentomeasures$time} for the exact names to use. Use \code{NULL} (default)
+to apply no merging across this dimension.}
 
 \item{do.keep}{a \code{logical} indicating if the original sentiment measures should be kept (i.e., the merged
 sentiment measures will be added to the current sentiment measures as additional indices if \code{do.keep = TRUE}).}
@@ -42,7 +42,7 @@ data("list_valence_shifters", package = "sentometrics")
 # construct a sentomeasures object to start with
 corpus <- sento_corpus(corpusdf = usnews)
 corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 sentomeasures <- sento_measures(corpusSample, l, ctr)
 

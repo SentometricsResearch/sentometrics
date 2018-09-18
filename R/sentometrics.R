@@ -1,9 +1,9 @@
 
 #' @title sentometrics: An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction
 #'
-#' @description The \pkg{sentometrics} package is designed to do time series analysis based on textual sentiment. It accounts
-#' for the intrinsic challenge that, for a given text, sentiment can be computed in many ways, as well as the large
-#' number of possibilities to pool sentiment across text and time. This additional layer of manipulation does not exist
+#' @description The \pkg{sentometrics} package is designed to perform time series analysis based on textual sentiment. It
+#' accounts for the intrinsic challenge that, for a given text, sentiment can be computed in many ways, as well as the large
+#' number of possibilities to pool sentiment across texts and time. This additional layer of manipulation does not exist
 #' in standard text mining and time series analysis packages. The package provides an interface to model
 #' the impact of sentiment in texts on a given variable, by first computing a wide range of textual
 #' sentiment time series and then selecting those that are most informative. Altogether, \pkg{sentometrics} integrates the
@@ -13,25 +13,23 @@
 #' @section Main functions:
 #' \itemize{
 #' \item Corpus features generation: \code{\link{sento_corpus}}, \code{\link{add_features}}
-#' \item Sentiment computation and aggregation into sentiment measures: \code{\link{ctr_agg}},
+#' \item Sentiment computation and aggregation into sentiment measures: \code{\link{ctr_agg}}, \code{\link{sento_lexicons}},
 #' \code{\link{compute_sentiment}}, \code{\link{sento_measures}}, \code{\link{peakdocs}}, and a series of
 #' \code{measures_xyz}, generic and extractor functions
 #' \item Sparse modelling: \code{\link{ctr_model}}, \code{\link{sento_model}}
-#' \item Prediction and post-modelling analysis: \code{\link{predict.sentomodel}}, \code{\link{retrieve_attributions}},
-#' \code{\link{plot_attributions}}, \code{\link{perform_MCS}}
+#' \item Prediction and post-modelling analysis: \code{\link{predict.sentomodel}}, \code{\link{attributions}},
+#' \code{\link{get_loss_data}}
 #' }
 #'
 #' @section Update:
 #' The development version of the package resides at \url{https://github.com/sborms/sentometrics}.
 #'
-#' @note The methodology behind the sentiment aggregation framework can be consulted in the working paper ``Questioning
-#' the news about economic growth: Sparse forecasting using thousands of news-based sentiment values'' (Ardia, Bluteau and
-#' Boudt, 2017) at \url{https://ssrn.com/abstract=2976084}. The vignette ``The R package sentometrics
-#' to compute, aggregate and predict with textual sentiment'' (Ardia, Bluteau, Borms and Boudt, 2017) at
-#' \url{https://ssrn.com/abstract=3067734} provides a hands-on introduction to the methodology and
-#' the package's functionalities.
-#'
 #' @note Please cite the package in publications. Use \code{citation("sentometrics")}.
+#'
+#' @references Ardia, Bluteau and Boudt (2018). ``Questioning the news about economic growth: Sparse forecasting using
+#' thousands of news-based sentiment values''. \emph{Working paper}, \url{http://dx.doi.org/10.2139/ssrn.2976084}.
+#' @references Ardia, Bluteau, Borms and Boudt (2018). ``The R package sentometrics to compute, aggregate and
+#' predict with textual sentiment''. \emph{Working paper}, \url{http://dx.doi.org/10.2139/ssrn.3067734}.
 "_PACKAGE"
 
 #' Built-in lexicons
@@ -45,20 +43,19 @@
 #' suffix if the lexicon is translated. The translation was done via Microsoft Translator through Microsoft
 #' Word. Only the entries that conform to the original language entry after retranslation, and those that have actually been
 #' translated, are kept. The last condition is assumed to be fulfilled when the translation differs from the original entry.
-#' All words are unigrams and in lowercase. The lexicons are in the format required for further sentiment analysis. The built-in
-#' lexicons are the following:
+#' All words are unigrams and in lowercase. The built-in lexicons are the following:
 #'
 #' \itemize{
-#'   \item FEEL_en_tr (French Expanded Emotion Lexicon)
-#'   \item FEEL_fr
+#'   \item FEEL_en_tr
+#'   \item FEEL_fr (Abdaoui, \enc{Azé}{Aze}, Bringay and Poncelet, 2017)
 #'   \item FEEL_nl_tr
 #'   \item GI_en (General Inquirer, i.e. Harvard IV-4 combined with Laswell)
 #'   \item GI_fr_tr
 #'   \item GI_nl_tr
-#'   \item HENRY_en (Henry)
+#'   \item HENRY_en (Henry, 2008)
 #'   \item HENRY_fr_tr
 #'   \item HENRY_nl_tr
-#'   \item LM_en (Loughran and McDonald)
+#'   \item LM_en (Loughran and McDonald, 2011)
 #'   \item LM_fr_tr
 #'   \item LM_nl_tr
 #' }
@@ -74,11 +71,19 @@
 #'
 #' @format A \code{list} with all built-in lexicons, appropriately named as \code{"NAME_language(_tr)"} .
 #'
+#' @references Abdaoui, \enc{Azé}{Aze}, Bringay and Poncelet (2017). ``FEEL: French Expanded Emotion Lexicon''.
+#' \emph{Language Resources & Evaluation 51, 833-855}, \url{https://doi.org/10.1007/s10579-016-9364-5}.
+#' @references Henry (2008). ``Are  investors  influenced  by  how  earnings  press  releases  are  written?''.
+#' \emph{Journal  of  Business Communication 45, 363-407}, \url{https://doi.org/10.1177/0021943608319388}.
+#' @references Loughran and McDonald (2011). ``When is a liability not a liability? Textual analysis, dictionaries, and 10-Ks''.
+#' \emph{Journal of Finance 66, 35-65}, \url{https://doi.org/10.1111/j.1540-6261.2010.01625.x}.
+#'
 #' @source \href{http://www.lirmm.fr/~abdaoui/FEEL}{FEEL lexicon}. Retrieved November 1, 2017.
 #' @source \href{http://www.wjh.harvard.edu/~inquirer/spreadsheet_guide.htm}{GI lexicon}. Retrieved November 1, 2017.
 #' @source \href{https://study.sagepub.com/sites/default/files/1\%20Henry\%202008_0.pdf}{HENRY lexicon}. Retrieved
 #' November 1, 2017.
-#' @source \href{https://www3.nd.edu/~mcdonald/Word_Lists.html}{LM lexicon}. Retrieved November 1, 2017.
+#' @source \href{https://sraf.nd.edu/textual-analysis/resources}{LM lexicon}. Retrieved
+#' November 1, 2017.
 "list_lexicons"
 
 #' Built-in valence word lists
@@ -91,9 +96,8 @@
 #' shifter (\code{1} = negators, \code{2} = amplifiers, \code{3} = deamplifiers). The \code{list} element names indicate the
 #' language (based on the two-letter ISO code convention as in \code{\link[stopwords]{stopwords}}) of the valence word list.
 #' All non-English word lists are translated via Microsoft Translator through Microsoft Word. Only the entries whose
-#' translation differs from the original entry are kept. The valence word lists are in the form required for further
-#' sentiment analysis. All words are unigrams and in lowercase. The built-in valence word lists are available in following
-#' languages:
+#' translation differs from the original entry are kept. All words are unigrams and in lowercase. The built-in valence word
+#' lists are available in following languages:
 #'
 #' \itemize{
 #'   \item English (\code{"en"})
@@ -149,9 +153,8 @@
 #' @docType data
 #'
 #' @description
-#' Monthly values of the well-known news-based index of U.S. Economic Policy Uncertainty (EPU) between January 1985 and July
-#' 2018, including a binomial and a multinomial example series. For more information on its calculation, see
-#' \href{http://www.policyuncertainty.com/methodology.html}{here}. Following columns are present:
+#' Monthly news-based U.S. Economic Policy Uncertainty (EPU) index (Baker, Bloom and Davis, 2015). Goes from January 1985
+#' to July 2018, and includes a binomial and a multinomial example series. Following columns are present:
 #'
 #' \itemize{
 #'   \item date. Date as \code{"yyyy-mm-01"}.
@@ -171,8 +174,11 @@
 #'
 #' @format A \code{data.frame} with 403 rows and 4 columns.
 #'
-#' @source \href{http://www.policyuncertainty.com/us_monthly.html}{Measuring Economic Policy Uncertainty} (by Scott Baker,
-#' Nicholas Bloom and Steven J. Davis). Retrieved August 24, 2018.
+#' @references Baker, Bloom and Davis (2015). ``Measuring Economic Policy Uncertainty''.
+#' \emph{NBER Working Paper No. 21633}, \url{http://www.nber.org/papers/w21633}.
+#'
+#' @source \href{http://www.policyuncertainty.com/us_monthly.html}{Measuring Economic Policy Uncertainty}. Retrieved
+#' August 24, 2018.
 "epu"
 
 #' @useDynLib sentometrics,.registration = TRUE

@@ -4,21 +4,21 @@
 \alias{ctr_model}
 \title{Set up control for sentiment-based sparse regression modelling}
 \usage{
-ctr_model(model = c("gaussian", "binomial", "multinomial"), type = c("BIC",
-  "AIC", "Cp", "cv"), do.intercept = TRUE, do.iter = FALSE, h = 0,
-  oos = 0, do.difference = FALSE, alphas = seq(0, 1, by = 0.2),
-  lambdas = NULL, nSample = NULL, trainWindow = NULL, testWindow = NULL,
-  start = 1, do.shrinkage.x = FALSE, do.progress = TRUE, nCore = 1)
+ctr_model(model = c("gaussian", "binomial", "multinomial"),
+  type = c("BIC", "AIC", "Cp", "cv"), do.intercept = TRUE,
+  do.iter = FALSE, h = 0, oos = 0, do.difference = FALSE,
+  alphas = seq(0, 1, by = 0.2), lambdas = NULL, nSample = NULL,
+  trainWindow = NULL, testWindow = NULL, start = 1,
+  do.shrinkage.x = FALSE, do.progress = TRUE, nCore = 1)
 }
 \arguments{
 \item{model}{a \code{character} vector with one of the following: \code{"gaussian"} (linear regression), \code{"binomial"}
 (binomial logistic regression), or \code{"multinomial"} (multinomial logistic regression).}
 
 \item{type}{a \code{character} vector indicating which model calibration approach to use. Supports "\code{BIC}",
-"\code{AIC}" and "\code{Cp}" (Mallows's Cp) as sparse regression adapted information criteria (cf., ``On the `degrees of
-freedom' of the LASSO'' (Zou, Hastie and Tibshirani, 2007); and ``Degrees of freedom in LASSO problems''
-(Tibshirani and Taylor, 2012)), and "\code{cv}" (cross-validation based on the \code{\link[caret]{train}} function
-from the \pkg{caret} package). The adapted information criteria are only available for a linear regression.}
+"\code{AIC}" and "\code{Cp}" (Mallows's Cp) as sparse regression adapted information criteria (Tibshirani and Taylor,
+2012; Zou, Hastie and Tibshirani, 2007), and "\code{cv}" (cross-validation based on the \code{\link[caret]{train}}
+function from the \pkg{caret} package). The adapted information criteria are only available for a linear regression.}
 
 \item{do.intercept}{a \code{logical}, \code{TRUE} by default fits an intercept.}
 
@@ -39,7 +39,7 @@ instance, given \eqn{t}, the (first) out-of-sample prediction is computed at \eq
 \code{\link{sento_model}} function with as lag the absolute value of the \code{h} argument, but
 \code{abs(h) > 0} is required. For example, if \code{h = 2}, and assuming the \code{y} variable is properly aligned
 date-wise with the explanatory variables denoted by \eqn{X} (the sentiment measures and other in \code{x}), the regression
-will be of \eqn{y_(t + 2) - y_t} on \eqn{X_t}. If \code{h = -2}, the regression fitted is \eqn{y_(t + 2) - y_t} on
+will be of \eqn{y_{t + 2} - y_t} on \eqn{X_t}. If \code{h = -2}, the regression fitted is \eqn{y_{t + 2} - y_t} on
 \eqn{X_{t+2}}. The argument is always kept at \code{FALSE} if the \code{model} argument is one of
 \code{c("binomial", "multinomial")}.}
 
@@ -64,7 +64,7 @@ or set to \code{10^seq(2, -2, length.out = 100)} in case of cross-validation.}
 \code{do.iter = FALSE}). For example, given 100 possible iterations, \code{start = 70} leads to model estimations
 only for the last 31 samples.}
 
-\item{do.shrinkage.x}{a \code{logical}, if \code{TRUE} all other regressors provided through the \code{x} argument of
+\item{do.shrinkage.x}{a \code{logical}, if \code{TRUE} other regressors provided through the \code{x} argument of
 the \code{\link{sento_model}} function are subject to shrinkage, else not.}
 
 \item{do.progress}{a \code{logical}, if \code{TRUE} progress statements are displayed during model calibration.}
@@ -100,6 +100,13 @@ ctrCV3 <- ctr_model(model = "multinomial", type = "cv", h = 2, trainWindow = 250
 ctrCV4 <- ctr_model(model = "gaussian", type = "cv", do.iter = TRUE, h = 0, trainWindow = 45,
                     testWindow = 4, oos = 0, nSample = 70, do.progress = TRUE)
 
+}
+\references{
+Tibshirani and Taylor (2012). ``Degrees of freedom in LASSO problems''.
+\emph{Annals of Statistics 40, 1198-12}, \url{http://dx.doi.org/10.1214/12-AOS1003}.
+
+Zou, Hastie and Tibshirani (2007). ``On the `degrees of freedom' of the LASSO''.
+\emph{Annals of Statistics 35, 2173-2192},  \url{http://dx.doi.org/10.1214/009053607000000127}.
 }
 \seealso{
 \code{\link{sento_model}}

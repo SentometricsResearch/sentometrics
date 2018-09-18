@@ -1,13 +1,13 @@
 
 ## sentometrics 0.5.0
 
-- new functions: `betas()`, `get_dates()`, `get_dimensions()`, and `get_measures()`
+- new functions: `weights_beta()`, `get_dates()`, `get_dimensions()`, `get_measures()`, and `get_loss_data()`
+- renamed following functions: `to_global()` to `measures_global()`, `perform_agg()` to `aggregate()`, `almons()` to `weights_almon()`, `exponentials()` to `weights_exponential()`, `setup_lexicons()` to `sento_lexicons()`, `retrieve_attributions()` to `attributions()`, `plot_attributions()` to `plot.attributions()`
 - defunct the `ctr_merge()` function, so that all merge parameters have to be passed on directly to the `measures_merge()` function
 - expanded the use of the `center` and `scale` arguments in the `scale()` function
-- renamed the function `to_global()` to `measures_global()` for consistency
 - added the `dateBefore` and `dateAfter` arguments to the `measures_fill()` function
-- added a `"beta"` time aggregation option and an associated `betas()` function
-- corrected update of `attribWeights` element of output `sentomeasures` object in required `measures_xyz()` functions
+- added a `"beta"` time aggregation option (see associated `weights_beta()` function)
+- corrected update of `"attribWeights"` element of output `sentomeasures` object in required `measures_xyz()` functions
 - added a new attribution dimension (`"lags"`) to the `retrieve_attributions()` function, and corrected some edge cases
 - dropped `NA` option of the `fill` argument in the `measures_fill()` function
 - made a slight correction to the information criterion estimators
@@ -24,17 +24,19 @@
 - further shortened project page to the bare essence
 - omitted statement printed ('Compute sentiment... Done.') in the `compute_sentiment()` function
 - slightly modified `print()` generic for a `sentomeasures` object 
-- dropped the `tf-idf` option for within-document aggregation in the `ctr_agg()` function
-- the `setup_lexicons()` function now outputs a `sentolexicons` object, which the `compute_sentiment()` function 
-specifically requires as an input
+- dropped the `"tf-idf"` option for within-document aggregation in the `ctr_agg()` function
+- the `sento_lexicons()` function outputs a `sentolexicons` object, which the `compute_sentiment()` function specifically requires as an input; a `sentolexicons` object also includes a `"["` class-preserving extractor function
+- the `attributions()` function and it now outputs an `attributions` object; the `plot_attribtutions()` function is therefore replaced by the `plot()` generic
+- defunct the `perform_MCS()` function, but the output of the `get_loss_data()` function can easily be used as an input to the `MCSprocedure()` function from the **`MCS`** package (discarded from Imports)
+- moved the **`parallel`** and **`doParallel`** packages to Suggests, as only needed (if enacted) in the `sento_model()` function
+- sligthly modified appearance of plotting functions, to drop **`ggthemes`** from Imports
 
 ## sentometrics 0.4.0
 
 - new functions: `measures_delete()`, `nmeasures()`, `nobs()`, and `to_sentocorpus()`
+- renamed following functions: any `xyz_measures()` to `measures_xyz()`, `extract_peakdocs()` to `peakdocs()`
 - dropped `do.normalizeAlm` argument in `ctr_agg()`, but kept in the `almons()` function
 - inverted order of rows in output of `almons()` function to be consistent with Ardia et al. (2017) paper
-- renamed the functions `subset_measures()`, `select_measures()`, `merge_measures()`, and `fill_measures()` to `measures_xyz()`
-- renamed the function `extract_peakdocs()` to `peakdocs()` for brevity
 - renamed `lexicons` to `list_lexicons`, and `valence` to `list_valence_shifters` 
 - the `stats` element of a `sentomeasures` object is now also updated in `measures_fill()`
 - changed `"_eng"` to `"_en"`' in `list_lexicons` and `list_valence_shifters` objects, to be in accordance with two-letter ISO language naming

@@ -30,26 +30,28 @@
 #' applying the \code{\link{measures_fill}} function before aggregating, except if \code{fill = "none"}. By default equal to
 #' \code{"zero"}, which sets the scores (and thus also the weights) of the added dates to zero in the time aggregation.
 #' @param alphasExp a \code{numeric} vector of all exponential smoothing factors to calculate weights for, used if
-#' \code{"exponential" \%in\% howTime}. Values should be between 0 and 1 (both excluded); see \code{\link{exponentials}}.
+#' \code{"exponential" \%in\% howTime}. Values should be between 0 and 1 (both excluded); see
+#' \code{\link{weights_exponential}}.
 #' @param ordersAlm a \code{numeric} vector of all Almon polynomial orders (positive) to calculate weights for, used if
-#' \code{"almon" \%in\% howTime}; see \code{\link{almons}}.
+#' \code{"almon" \%in\% howTime}; see \code{\link{weights_almon}}.
 #' @param do.inverseAlm a \code{logical} indicating if for every Almon polynomial its inverse has to be added, used
-#' if \code{"almon" \%in\% howTime}; see \code{\link{almons}}.
+#' if \code{"almon" \%in\% howTime}; see \code{\link{weights_almon}}.
 #' @param aBeta a \code{numeric} vector of positive values as first Beta weighting decay parameter; see
-#' \code{\link{betas}}.
+#' \code{\link{weights_beta}}.
 #' @param bBeta a \code{numeric} vector of positive values as second Beta weighting decay parameter; see
-#' \code{\link{betas}}.
+#' \code{\link{weights_beta}}.
 #' @param weights optional own weighting scheme(s), used if provided as a \code{data.frame} with the number of rows
 #' equal to the desired \code{lag}.
 #' @param tokens see \code{\link{compute_sentiment}}.
 #' @param nCore see \code{\link{compute_sentiment}}.
-#' @param ... not used.
 #
 #' @return A \code{list} encapsulating the control parameters.
 #'
 #' @seealso \code{\link{measures_fill}}, \code{\link{almons}}, \code{\link{compute_sentiment}}
 #'
 #' @examples
+#' set.seed(505)
+#'
 #' # simple control function
 #' ctr1 <- ctr_agg(howTime = "linear", by = "year", lag = 3)
 #'
@@ -68,7 +70,7 @@
 #'                 weights = data.frame(myWeights = runif(20)))
 #'
 #' # set up control function with one linear and two chosen Almon weighting schemes
-#' a <- almons(n = 70, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE)
+#' a <- weights_almon(n = 70, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE)
 #' ctr3 <- ctr_agg(howTime = c("linear", "own"), by = "year", lag = 70,
 #'                 weights = data.frame(a1 = a[, 1], a2 = a[, 3]))
 #'
@@ -76,7 +78,7 @@
 ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTime = "equal_weight",
                     do.ignoreZeros = TRUE, by = "day", lag = 1L, fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1),
                     ordersAlm = 1:3, do.inverseAlm = TRUE, aBeta = 1:4, bBeta = 1:4, weights = NULL,
-                    tokens = NULL, nCore = 2, ...) {
+                    tokens = NULL, nCore = 2) {
 
   if (length(howWithin) > 1) howWithin <- howWithin[1]
   if (length(howDocs) > 1) howDocs <- howDocs[1]
@@ -156,7 +158,7 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #'
 #' @author Samuel Borms, Keven Bluteau
 #'
-#' @description Wrapper function which assembles calls to \code{\link{compute_sentiment}} and \code{\link{perform_agg}}, and
+#' @description Wrapper function which assembles calls to \code{\link{compute_sentiment}} and \code{\link{aggregate}}, and
 #' includes the input \code{sentocorpus} and computed sentiment scores in its output. Serves as the most direct way towards a
 #' panel of textual sentiment measures as a \code{sentomeasures} object.
 #'
@@ -164,7 +166,7 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #' any '-' symbol.
 #'
 #' @param sentocorpus a \code{sentocorpus} object created with \code{\link{sento_corpus}}.
-#' @param lexicons a \code{sentolexicons} object created with \code{\link{setup_lexicons}}.
+#' @param lexicons a \code{sentolexicons} object created with \code{\link{sento_lexicons}}.
 #' @param ctr output from a \code{\link{ctr_agg}} call.
 #'
 #' @return A \code{sentomeasures} object, which is a \code{list} containing:
@@ -187,7 +189,7 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #' \item{attribWeights}{a \code{list} of document and time weights used in the \code{\link{retrieve_attributions}} function.
 #' Serves further no direct purpose.}
 #'
-#' @seealso \code{\link{compute_sentiment}}, \code{\link{perform_agg}}
+#' @seealso \code{\link{compute_sentiment}}, \code{\link{aggregate}}
 #'
 #' @examples
 #' data("usnews", package = "sentometrics")
@@ -197,7 +199,7 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #' # construct a sentomeasures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-#' l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+#' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 #' ctr <- ctr_agg(howWithin = "counts",
 #'                howDocs = "proportional",
 #'                howTime = c("equal_weight", "linear", "almon"),
@@ -212,8 +214,8 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #' @export
 sento_measures <- function(sentocorpus, lexicons, ctr) {
   check_class(sentocorpus, "sentocorpus")
-  toAgg <- compute_sentiment(sentocorpus, lexicons, how = ctr$howWithin, tokens = ctr$tokens, nCore = ctr$nCore)
-  sentomeasures <- perform_agg(toAgg, ctr)
+  sentiment <- compute_sentiment(sentocorpus, lexicons, how = ctr$howWithin, tokens = ctr$tokens, nCore = ctr$nCore)
+  sentomeasures <- aggregate(sentiment, ctr)
   return(sentomeasures)
 }
 
@@ -226,7 +228,7 @@ sento_measures <- function(sentocorpus, lexicons, ctr) {
 #' applied on the output of \code{\link{compute_sentiment}}.
 #'
 #' @param sentiment output from a \code{\link{compute_sentiment}} call, computed from a \code{sentocorpus} object.
-#' @param ctr output from a \code{\link{ctr_agg}} call. The \code{howWithin} and \code{nCore} arguments are ignored.
+#' @param ctr output from a \code{\link{ctr_agg}} call. The \code{howWithin} and \code{nCore} elements are ignored.
 #'
 #' @return A \code{sentomeasures} object.
 #'
@@ -240,16 +242,14 @@ sento_measures <- function(sentocorpus, lexicons, ctr) {
 #' # computation of sentiment and aggregation into sentiment measures
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-#' l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+#' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 #' sent <- compute_sentiment(corpusSample, l, how = "counts")
 #' ctr <- ctr_agg(howTime = c("linear"), by = "year", lag = 3)
-#' sentomeasures <- perform_agg(sent, ctr)
+#' sentomeasures <- aggregate(sent, ctr)
 #'
 #' @export
-perform_agg <- function(sentiment, ctr) {
-  toAgg <- sentiment
-  if (!inherits(toAgg[["corpus"]], "sentocorpus"))
-    stop("The 'sentiment' argument should be computed from a sentocorpus object, i.e., include a date dimension.")
+aggregate <- function(sentiment, ctr) {
+  check_sentiment_format(sentiment)
   howDocs <- ctr$howDocs
   howTime <- ctr$howTime
   do.ignoreZeros <- ctr$do.ignoreZeros
@@ -257,16 +257,16 @@ perform_agg <- function(sentiment, ctr) {
   lag <- ctr$lag
   fill <- ctr$fill
   otherVars <- ctr$other # list or empty
-  aggDocs <- aggregate_docs(toAgg, by = by, how = howDocs, do.ignoreZeros = do.ignoreZeros)
+  aggDocs <- aggregate_docs(sentiment, by = by, how = howDocs, do.ignoreZeros = do.ignoreZeros)
   sentomeasures <- aggregate_time(aggDocs, lag = lag, fill = fill, how = howTime, otherVars)
   return(sentomeasures)
 }
 
-aggregate_docs <- function(toAgg, by, how = get_hows()$docs, do.ignoreZeros = TRUE) {
+aggregate_docs <- function(sentiment, by, how = get_hows()$docs, do.ignoreZeros = TRUE) {
 
-  features <- toAgg$features
-  lexNames <- toAgg$lexicons
-  sent <- toAgg$sentiment
+  features <- sentiment$features
+  lexNames <- sentiment$lexicons
+  sent <- sentiment[["sentiment"]]
   attribWeights <- list(W = NA, B = NA) # list with weights useful in later attribution analysis
 
   # reformat dates so they can be aggregated at the specified 'by' level, and cast to Date format
@@ -316,10 +316,10 @@ aggregate_docs <- function(toAgg, by, how = get_hows()$docs, do.ignoreZeros = TR
                         features = features,
                         lexicons = lexNames,
                         time = NA,
-                        by = by,
-                        stats = NA,
                         sentiment = sent, # zeros replaced by NAs if do.ignoreZeros = TRUE
-                        howWithin = toAgg$howWithin,
+                        stats = NA,
+                        by = by,
+                        howWithin = sentiment$howWithin,
                         howDocs = how,
                         fill = NA,
                         do.ignoreZeros = do.ignoreZeros,
@@ -404,7 +404,7 @@ aggregate_time <- function(sentomeasures, lag, fill, how = get_hows()$time, ...)
 #' # construct a sentomeasures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-#' l <- setup_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+#' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "month", lag = 3)
 #' sentomeasures <- sento_measures(corpusSample, l, ctr)
 #'

@@ -11,13 +11,13 @@
 
 \item{newx}{a \code{matrix} of \code{numeric} values with all explanatory variables to be used for the prediction(s),
 structured row-by-row; see documentation for \code{\link{predict.glmnet}}. The number of variables should be equal to
-\code{sentomodel$nVar}, being the sum of the number of original sentiment measures and the number of additional explanatory
-variables. Variables discarded in the regression process are discarded again here, based on \code{sentomodel$discarded}.}
+\code{sum(sentomodel$nVar)}, being the number of original explanatory variables (sentiment measures and other).
+Variables discarded in the regression process are discarded again here, based on \code{sentomodel$discarded}.}
 
 \item{type}{type of prediction required, a value from \code{c("link", "response", "class")}, see documentation for
 \code{\link{predict.glmnet}}.}
 
-\item{offset}{not used. Any values here will be ignored.}
+\item{offset}{not used.}
 
 \item{...}{not used.}
 }
@@ -26,7 +26,7 @@ A prediction output depending on the \code{type} argument.
 }
 \description{
 Prediction method for \code{sentomodel} class, with usage along the lines of
-\code{predict.glmnet}, but simplified in terms of allowed parameters.
+\code{predict.glmnet}, but simplified in terms of parameters.
 }
 \seealso{
 \code{\link{predict.glmnet}}, \code{\link{sento_model}}

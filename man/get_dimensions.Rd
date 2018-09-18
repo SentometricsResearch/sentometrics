@@ -13,7 +13,7 @@ get_dimensions(sentomeasures)
 The \code{"features"}, \code{"lexicons"} and \code{"time"} elements in \code{sentomeasures}.
 }
 \description{
-Convenience function. Returns the components across all three dimensions of the sentiment measures.
+Returns the components across all three dimensions of the sentiment measures.
 }
 \author{
 Samuel Borms

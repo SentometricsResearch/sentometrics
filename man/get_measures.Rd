@@ -15,7 +15,7 @@ get_measures(sentomeasures, format = "wide")
 The panel of sentiment measures under \code{sentomeasures[["measures"]]}, in wide or long format.
 }
 \description{
-Convenience function. Returns the sentiment measures in either wide (by default) or long format.
+Returns the sentiment measures in either wide (by default) or long format.
 }
 \author{
 Samuel Borms

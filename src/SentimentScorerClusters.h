@@ -57,7 +57,7 @@ struct SentimentScorerClusters : public RcppParallel::Worker {
           double valShifter = compute_cluster_impact(shifters);
           update_scores(scores, lexScores, nPolarized, valShifter);
 
-          lB = en + 1; // reset indices such that polarity clusters are not overlapping
+          lB = en + 1; // reset index such that polarity clusters are not overlapping
           j = en; // updated to j + 1 immediately after
 
         }

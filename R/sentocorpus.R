@@ -9,16 +9,16 @@
 #' handy corpus manipulation toolset. This function performs a set of checks on the input data and prepares the
 #' corpus for further analysis.
 #'
-#' @details A \code{sentocorpus} object is a specialized instance of a \pkg{quanteda} corpus. In theory, all
-#' \pkg{quanteda} functions applicable to its corpus object can also be applied to a \code{sentocorpus} object. However,
-#' changing a given \code{sentocorpus} object too drastically using some of \pkg{quanteda}'s functions might alter the very
-#' structure the corpus is meant to have (as defined in the \code{corpusdf} argument) to be able to be used as an input
-#' in other functions of the \pkg{sentometrics} package. There are functions, including \code{\link[quanteda]{corpus_sample}}
-#' or \code{\link[quanteda]{corpus_subset}}, that do not change the actual corpus structure and may come in handy. To add
-#' additional features, use \code{\link{add_features}}. Binary features are useful as a mechanism to select the
-#' texts which have to be integrated in the respective feature-based sentiment measure(s), but applies only when
-#' \code{do.ignoreZeros = TRUE}. Because of this (implicit) selection that can be performed, having complementary
-#' features (e.g., \code{"economy"} and \code{"noneconomy"}) makes sense.
+#' @details A \code{sentocorpus} object is a specialized instance of a \pkg{quanteda} \code{\link[quanteda]{corpus}}. Any
+#' \pkg{quanteda} function applicable to its \code{\link[quanteda]{corpus}} object can also be applied to a \code{sentocorpus}
+#' object. However, changing a given \code{sentocorpus} object too drastically using some of \pkg{quanteda}'s functions might
+#' alter the very structure the corpus is meant to have (as defined in the \code{corpusdf} argument) to be able to be used as
+#' an input in other functions of the \pkg{sentometrics} package. There are functions, including
+#' \code{\link[quanteda]{corpus_sample}} or \code{\link[quanteda]{corpus_subset}}, that do not change the actual corpus
+#' structure and may come in handy. To add additional features, use \code{\link{add_features}}. Binary features are useful as
+#' a mechanism to select the texts which have to be integrated in the respective feature-based sentiment measure(s), but
+#' applies only when \code{do.ignoreZeros = TRUE}. Because of this (implicit) selection that can be performed, having
+#' complementary features (e.g., \code{"economy"} and \code{"noneconomy"}) makes sense.
 #'
 #' @param corpusdf a \code{data.frame} (or a \code{data.table}, or a \code{tbl}) with as named columns: a document \code{"id"}
 #' column (in \code{character} mode), a \code{"date"} column (as \code{"yyyy-mm-dd"}), a \code{"texts"} column (in
@@ -31,9 +31,9 @@
 #' This includes a brute force replacement of HTML tags and non-alphanumeric characters by an empty string. To use with care
 #' if the text is meant to have non-alphanumeric characters! Preferably, cleaning is done outside of this function call.
 #'
-#' @return A \code{sentocorpus} object, derived from a \pkg{quanteda} corpus classed \code{list} with the elements
-#' \code{"documents"}, \code{"metadata"}, and \code{"settings"} kept. The first element incorporates the corpus
-#' represented as a \code{data.frame}.
+#' @return A \code{sentocorpus} object, derived from a \pkg{quanteda} \code{\link[quanteda]{corpus}} classed \code{list}
+#' with elements \code{"documents"}, \code{"metadata"}, and \code{"settings"} kept. The first element incorporates
+#' the corpus represented as a \code{data.frame}.
 #'
 #' @seealso \code{\link[quanteda]{corpus}}, \code{\link{add_features}}
 #'
@@ -197,7 +197,7 @@ to_sentocorpus <- function(corpus, dates, do.clean = FALSE) {
 #' keyword, no column is added. The \code{list} names are used as the names of the new features. For more complex searching,
 #' instead of keywords, one can also directly use a single regex expression to define a new feature (cf. the details section).
 #' @param do.binary a \code{logical}, cf. argument \code{keywords}. If \code{do.binary = FALSE}, the counts are normalized
-#' between 0 and 1,
+#' between 0 and 1.
 #' @param do.regex a \code{logical} vector equal in length to the number of elements in the \code{keywords} argument
 #' \code{list}, or a single value if it applies to all. It should be set to \code{TRUE} at those positions where a single
 #' regex expression is used to identify the particular feature.
@@ -207,8 +207,10 @@ to_sentocorpus <- function(corpus, dates, do.clean = FALSE) {
 #' @examples
 #' data("usnews", package = "sentometrics")
 #'
+#' set.seed(505)
+#'
 #' # construct a corpus and add (a) feature(s) to it
-#' corpus <- sento_corpus(corpusdf = usnews)
+#' corpus <- quanteda::corpus_sample(sento_corpus(corpusdf = usnews), 500)
 #' corpus1 <- add_features(corpus,
 #'                         featuresdf = data.frame(random = runif(quanteda::ndoc(corpus))))
 #' corpus2 <- add_features(corpus,

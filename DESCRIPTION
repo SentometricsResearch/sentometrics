@@ -11,17 +11,35 @@ Author: David Ardia [aut],
   Samuel Borms [aut, cre],
   Kris Boudt [aut]
 Maintainer: Samuel Borms <samuel.borms@unine.ch>
-Description: Optimized prediction based on textual sentiment, accounting for the intrinsic challenge that sentiment can be computed and pooled across texts and time in various ways. See Ardia et al. (2017) <https://ssrn.com/abstract=3067734>.
-Depends: R (>= 3.3.0), data.table
+Description: Optimized prediction based on textual sentiment, accounting for the intrinsic challenge that sentiment can be computed and pooled across texts and time in various ways. See Ardia et al. (2017) <doi:10.2139/ssrn.3067734>.
+Depends: R (>= 3.3.0), 
+  data.table
 License: GPL (>= 2)
 BugReports: https://github.com/sborms/sentometrics/issues
 URL: https://github.com/sborms/sentometrics
 Encoding: UTF-8
 LazyData: true
-Suggests: covr, testthat, e1071, randomForest
-Imports: utils, stats, compiler, quanteda, stringi, glmnet, caret,
-    Rcpp (>= 0.12.13), RcppRoll, RcppParallel, ggplot2, MCS,
-    ggthemes, ISOweek, zoo, abind, parallel, foreach, doParallel
+Suggests: covr, 
+  doParallel, 
+  e1071, 
+  parallel, 
+  randomForest, 
+  testthat
+Imports: abind,
+  caret,
+  compiler,
+  foreach,
+  ggplot2, 
+  glmnet,
+  ISOweek,
+  quanteda,
+  Rcpp (>= 0.12.13), 
+  RcppRoll, 
+  RcppParallel, 
+  stats, 
+  stringi,
+  utils,
+  zoo
 LinkingTo: Rcpp, RcppArmadillo, RcppParallel
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
 SystemRequirements: GNU make

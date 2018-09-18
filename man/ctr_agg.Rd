@@ -5,10 +5,10 @@
 \title{Set up control for aggregation into sentiment measures}
 \usage{
 ctr_agg(howWithin = "proportional", howDocs = "equal_weight",
-  howTime = "equal_weight", do.ignoreZeros = TRUE, by = "day", lag = 1L,
-  fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1), ordersAlm = 1:3,
-  do.inverseAlm = TRUE, aBeta = 1:4, bBeta = 1:4, weights = NULL,
-  tokens = NULL, nCore = 2, ...)
+  howTime = "equal_weight", do.ignoreZeros = TRUE, by = "day",
+  lag = 1L, fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1),
+  ordersAlm = 1:3, do.inverseAlm = TRUE, aBeta = 1:4, bBeta = 1:4,
+  weights = NULL, tokens = NULL, nCore = 2)
 }
 \arguments{
 \item{howWithin}{a single \code{character} vector defining how aggregation within documents will be performed. Should
@@ -39,19 +39,20 @@ applying the \code{\link{measures_fill}} function before aggregating, except if 
 \code{"zero"}, which sets the scores (and thus also the weights) of the added dates to zero in the time aggregation.}
 
 \item{alphasExp}{a \code{numeric} vector of all exponential smoothing factors to calculate weights for, used if
-\code{"exponential" \%in\% howTime}. Values should be between 0 and 1 (both excluded); see \code{\link{exponentials}}.}
+\code{"exponential" \%in\% howTime}. Values should be between 0 and 1 (both excluded); see
+\code{\link{weights_exponential}}.}
 
 \item{ordersAlm}{a \code{numeric} vector of all Almon polynomial orders (positive) to calculate weights for, used if
-\code{"almon" \%in\% howTime}; see \code{\link{almons}}.}
+\code{"almon" \%in\% howTime}; see \code{\link{weights_almon}}.}
 
 \item{do.inverseAlm}{a \code{logical} indicating if for every Almon polynomial its inverse has to be added, used
-if \code{"almon" \%in\% howTime}; see \code{\link{almons}}.}
+if \code{"almon" \%in\% howTime}; see \code{\link{weights_almon}}.}
 
 \item{aBeta}{a \code{numeric} vector of positive values as first Beta weighting decay parameter; see
-\code{\link{betas}}.}
+\code{\link{weights_beta}}.}
 
 \item{bBeta}{a \code{numeric} vector of positive values as second Beta weighting decay parameter; see
-\code{\link{betas}}.}
+\code{\link{weights_beta}}.}
 
 \item{weights}{optional own weighting scheme(s), used if provided as a \code{data.frame} with the number of rows
 equal to the desired \code{lag}.}
@@ -59,8 +60,6 @@ equal to the desired \code{lag}.}
 \item{tokens}{see \code{\link{compute_sentiment}}.}
 
 \item{nCore}{see \code{\link{compute_sentiment}}.}
-
-\item{...}{not used.}
 }
 \value{
 A \code{list} encapsulating the control parameters.
@@ -74,6 +73,8 @@ For currently available options on how aggregation can occur (via the \code{howW
 \code{howDocs} and \code{howTime} arguments), call \code{\link{get_hows}}.
 }
 \examples{
+set.seed(505)
+
 # simple control function
 ctr1 <- ctr_agg(howTime = "linear", by = "year", lag = 3)
 
@@ -92,7 +93,7 @@ ctr2 <- ctr_agg(howWithin = "proportionalPol",
                 weights = data.frame(myWeights = runif(20)))
 
 # set up control function with one linear and two chosen Almon weighting schemes
-a <- almons(n = 70, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE)
+a <- weights_almon(n = 70, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE)
 ctr3 <- ctr_agg(howTime = c("linear", "own"), by = "year", lag = 70,
                 weights = data.frame(a1 = a[, 1], a2 = a[, 3]))
 
