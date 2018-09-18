@@ -1,7 +1,7 @@
 
 ## submission (version 0.5) [18/09/2018]
 
-**new**: reimplementation of sentiment code in C++, final set of API changes for overall clarity, small bug and documentation fixes
+**new**: reimplementation of sentiment calculation code in C++, final set of API changes for better overall clarity, small bug and documentation fixes
 
 - installed size > 5Mb, due to more compiled code
 - examples now run significantly faster because of speed improvements

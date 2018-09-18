@@ -5,11 +5,10 @@
 - renamed following functions: `to_global()` to `measures_global()`, `perform_agg()` to `aggregate()`, `almons()` to `weights_almon()`, `exponentials()` to `weights_exponential()`, `setup_lexicons()` to `sento_lexicons()`, `retrieve_attributions()` to `attributions()`, `plot_attributions()` to `plot.attributions()`
 - defunct the `ctr_merge()` function, so that all merge parameters have to be passed on directly to the `measures_merge()` function
 - expanded the use of the `center` and `scale` arguments in the `scale()` function
-- added the `dateBefore` and `dateAfter` arguments to the `measures_fill()` function
+- added the `dateBefore` and `dateAfter` arguments to the `measures_fill()` function, and dropped `NA` option of its `fill` argument
 - added a `"beta"` time aggregation option (see associated `weights_beta()` function)
 - corrected update of `"attribWeights"` element of output `sentomeasures` object in required `measures_xyz()` functions
-- added a new attribution dimension (`"lags"`) to the `retrieve_attributions()` function, and corrected some edge cases
-- dropped `NA` option of the `fill` argument in the `measures_fill()` function
+- added a new attribution dimension (`"lags"`) to the `attributions()` function, and corrected some edge cases
 - made a slight correction to the information criterion estimators
 - added a `lambdas` argument to the `ctr_model()` function, directly passed on to the `glmnet::glmnet()` function if used
 - omitted `do.combine` argument in `measures_delete()` and `measures_select()` functions to simplify
@@ -17,7 +16,7 @@
 - reimplementation (and improved documentation) of the sentiment calculation in the `compute_sentiment()` function, by writing part of the code in **`Rcpp`** relying on **`RcppParallel`** (added to Imports); there are now three approaches to computing sentiment (unigrams, bigrams and clusters)
 - replaced the `dfm` argument from the `compute_sentiment()` and `ctr_agg()` functions by a `tokens` argument, and altered the input and behaviour of the `nCore` argument in these same two functions
 - switched from the **`quanteda`** package to the **`stringi`** package for more direct tokenisation
-- trimmed the `list_lexicons` and `list_valence_shifters` built-in word lists by keeping only unigrams, and included same trimming procedure in the `setup_lexicons()` function
+- trimmed the `list_lexicons` and `list_valence_shifters` built-in word lists by keeping only unigrams, and included same trimming procedure in the `sento_lexicons()` function
 - added a type column `"t"` to the `list_valence_shifters` built-in word list, and reset values of the `"y"` column from 2 to 1.8 and from 0.5 to 0.2
 - updated the `epu` built-in dataset with the newest available series, up to July 2018
 - corrected the word 'sparesly' to 'sparsely' in `list_valence_shifters[["en"]]`
@@ -26,7 +25,7 @@
 - slightly modified `print()` generic for a `sentomeasures` object 
 - dropped the `"tf-idf"` option for within-document aggregation in the `ctr_agg()` function
 - the `sento_lexicons()` function outputs a `sentolexicons` object, which the `compute_sentiment()` function specifically requires as an input; a `sentolexicons` object also includes a `"["` class-preserving extractor function
-- the `attributions()` function and it now outputs an `attributions` object; the `plot_attribtutions()` function is therefore replaced by the `plot()` generic
+- the `attributions()` function outputs an `attributions` object; the `plot_attribtutions()` function is therefore replaced by the `plot()` generic
 - defunct the `perform_MCS()` function, but the output of the `get_loss_data()` function can easily be used as an input to the `MCSprocedure()` function from the **`MCS`** package (discarded from Imports)
 - moved the **`parallel`** and **`doParallel`** packages to Suggests, as only needed (if enacted) in the `sento_model()` function
 - sligthly modified appearance of plotting functions, to drop **`ggthemes`** from Imports
