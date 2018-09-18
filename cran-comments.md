@@ -1,7 +1,14 @@
 
-## resubmission (version 0.4) [28/05/2018]
+## submission (version 0.5) [18/09/2018]
 
-- modified example that took to long (to pass pre-test)
+**new**: reimplementation of sentiment code in C++, final set of API changes for overall clarity, small bug and documentation fixes
+
+- installed size > 5Mb, due to more compiled code
+- examples now run significantly faster because of speed improvements
+
+<!--- ## resubmission (version 0.4) [28/05/2018]
+
+- modified example that took to long (to pass pre-test) --->
 
 <!--- ## submission (version 0.4) [28/05/2018]
 
