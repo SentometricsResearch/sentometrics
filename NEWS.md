@@ -34,7 +34,7 @@
 
 - new functions: `measures_delete()`, `nmeasures()`, `nobs()`, and `to_sentocorpus()`
 - renamed following functions: any `xyz_measures()` to `measures_xyz()`, `extract_peakdocs()` to `peakdocs()`
-- dropped `do.normalizeAlm` argument in `ctr_agg()`, but kept in the `almons()` function
+- dropped `do.normalizeAlm` argument in the `ctr_agg()` function, but kept in the `almons()` function
 - inverted order of rows in output of `almons()` function to be consistent with Ardia et al. (2017) paper
 - renamed `lexicons` to `list_lexicons`, and `valence` to `list_valence_shifters` 
 - the `stats` element of a `sentomeasures` object is now also updated in `measures_fill()`
@@ -49,7 +49,7 @@
 ## sentometrics 0.3.5
 
 - faster `to_global()`
-- set `tolower = FALSE` of `dfm()` constructor in `compute_sentiment()`
+- set `tolower = FALSE` of `quanteda::dfm()` constructor in `compute_sentiment()`
 - changed `intercept` argument in `ctr_model()` to `do.intercept` for consistency
 - proper checks on values of feature columns in `sento_corpus()` and `add_features()`
 
