@@ -104,7 +104,7 @@ inline double compute_cluster_impact(std::vector<int> shifters) {
   double wA = z * (1 - n) * shifters[1]; // amplification impact
   double wD = z * (n * shifters[1] + shifters[2]); // deamplification impact
   double impact = 1 + std::max(wA - wD, -1.0);
-  if (n == 1) impact = -1.0 * impact; // apply negation
+  if (n == 1) impact *= -1.0; // apply negation
   return(impact);
 }
 
