@@ -43,6 +43,7 @@ test_that("Aggregation control function breaks when wrong inputs supplied", {
 s1 <- compute_sentiment(corpus, lex, how = "proportional")
 s2 <- compute_sentiment(quanteda::texts(corpus), lex, how = "counts")
 test_that("Test input format of sentiment aggregation function", {
+  expect_true(inherits(s1, "sentosentiment"))
   expect_true(inherits(aggregate(s1, ctr1), "sentomeasures"))
   expect_error(aggregate(s2, ctr2))
 })

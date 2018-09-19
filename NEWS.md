@@ -1,4 +1,10 @@
 
+## sentometrics 0.5.1
+
+- minor modifications to resolve few CRAN issues
+- set default value of `nCore` argument from the `compute_sentiment()` and `ctr_agg()` functions to 1
+- classed the output of the `compute_sentiment.sentocorpus()` function as a `sentiment` object, and modified the `aggregate()` function to `aggregate.sentiment()`
+
 ## sentometrics 0.5.0
 
 - new functions: `weights_beta()`, `get_dates()`, `get_dimensions()`, `get_measures()`, and `get_loss_data()`

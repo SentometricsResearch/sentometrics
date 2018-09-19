@@ -27,7 +27,7 @@ the corpus represented as a \code{data.frame}.
 \description{
 Formalizes a collection of texts into a well-defined corpus object derived from the
 \code{\link[quanteda]{corpus}} object. The \pkg{quanteda} package provides a robust text mining infrastructure,
-see \href{http://quanteda.io/index.html}{quanteda}. Their corpus structure brings better memory management and a
+see \href{http://quanteda.io/index.html}{quanteda}. Their corpus structure brings for example a
 handy corpus manipulation toolset. This function performs a set of checks on the input data and prepares the
 corpus for further analysis.
 }

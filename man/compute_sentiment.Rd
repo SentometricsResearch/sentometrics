@@ -5,7 +5,7 @@
 \title{Compute document-level sentiment across features and lexicons}
 \usage{
 compute_sentiment(x, lexicons, how = "proportional", tokens = NULL,
-  nCore = 2)
+  nCore = 1)
 }
 \arguments{
 \item{x}{either a \code{sentocorpus} object created with \code{\link{sento_corpus}}, a \pkg{quanteda}
@@ -26,20 +26,26 @@ may be spurious and errors could occur. By default set to \code{NULL}.}
 
 \item{nCore}{a positive \code{numeric} that will be passed on to the \code{numThreads} argument of the
 \code{\link[RcppParallel]{setThreadOptions}} function, to parallelise the sentiment computation across texts. A
-value of 1 implies no parallelisation. Parallelisation is expected to improve speed of the sentiment computation
-only for sufficiently large corpora, say, in the order of having at least 100,000 documents.}
+value of 1 (default) implies no parallelisation. Parallelisation is expected to improve speed of the sentiment
+computation only for sufficiently large corpora, say, in the order of having at least 100,000 documents.}
 }
 \value{
-A \code{list} containing:
-\item{sentiment}{the sentiment scores \code{data.table} with a \code{"word_count"} column and all
-lexicon--feature sentiment scores columns.}
+If \code{x} is a \code{sentocorpus} object, a \code{sentiment} object, i.e., a \code{list} containing:
+\item{sentiment}{the sentiment scores \code{data.table} with an \code{"id"}, a \code{"date"} and a
+\code{"word_count"} column, and all lexicon--feature sentiment scores columns.}
 \item{features}{a \code{character} vector of the different features.}
 \item{lexicons}{a \code{character} vector of the different lexicons used.}
 \item{howWithin}{the supplied \code{how} argument.}
 
-The last three elements are only present if \code{x} is a \code{sentocorpus} object. In that case, the
-\code{"sentiment"} \code{data.table} also has a \code{"date"} column, meaning it can be used for further
-aggregation into sentiment time series with the \code{\link{perform_agg}} function.
+A \code{sentiment} object can be used for aggregation into time series with the
+\code{\link{aggregate.sentiment}} function.
+
+If \code{x} is a \pkg{quanteda} \code{\link[quanteda]{corpus}} object, a sentiment scores
+\code{data.table} with an \code{"id"} and a \code{"word_count"} column, and all lexicon--feature
+sentiment scores columns.
+
+If \code{x} is a \code{character} vector, a sentiment scores
+\code{data.table} with a \code{"word_count"} column, and all lexicon--feature sentiment scores columns.
 }
 \description{
 Given a corpus of texts, computes (net) sentiment per document using the bag-of-words approach
@@ -84,18 +90,18 @@ l2 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifter
 l3 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")],
                      list_valence_shifters[["en"]][, c("x", "t")])
 
-# from a sentocorpus object, unigram approach
+# from a sentocorpus object, unigrams approach
 corpus <- sento_corpus(corpusdf = usnews)
 corpusSample <- quanteda::corpus_sample(corpus, size = 200)
 sent1 <- compute_sentiment(corpusSample, l1, how = "proportionalPol")
 
-# from a character vector, bigram approach
+# from a character vector, bigrams approach
 sent2 <- compute_sentiment(usnews[["texts"]][1:200], l2, how = "counts")
 
-# from a corpus object, cluster approach
+# from a corpus object, clusters approach
 corpusQ <- quanteda::corpus(usnews, text_field = "texts")
 corpusQSample <- quanteda::corpus_sample(corpusQ, size = 200)
-sent3 <- compute_sentiment(corpusQSample, l3, how = "counts", nCore = 2)
+sent3 <- compute_sentiment(corpusQSample, l3, how = "counts")
 
 # from an already tokenised corpus, using the 'tokens' argument
 toks <- as.list(quanteda::tokens(corpusQSample, what = "fastestword"))
