@@ -1,5 +1,5 @@
 
-## submission (version 0.5.1) [19/09/2018]
+## submission (version 0.5.1) [20/09/2018]
 
 **new**: minor modifications, mainly to resolve CRAN check issues
 
