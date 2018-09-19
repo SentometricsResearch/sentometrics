@@ -1,10 +1,17 @@
 
-## submission (version 0.5) [18/09/2018]
+## submission (version 0.5.1) [19/09/2018]
+
+**new**: minor modifications, mainly to resolve CRAN check issues
+
+- set number of default threads used to 1, to avoid UBSAN warnings coming from usage of RcppParallel
+- modified C++ code to avoid Solaris error
+
+<!--- ## submission (version 0.5) [18/09/2018]
 
 **new**: reimplementation of sentiment calculation code in C++, final set of API changes for better overall clarity, small bug and documentation fixes
 
 - installed size > 5Mb, due to more compiled code
-- examples now run significantly faster because of speed improvements
+- examples now run significantly faster because of speed improvements --->
 
 <!--- ## resubmission (version 0.4) [28/05/2018]
 
@@ -29,9 +36,9 @@
 
 - marked UTF-8 strings will remain; this is intentional and comes from the built--in French (mostly) and Dutch word lists --->
 
-<!--- ## Re-submission (version 0.2) [comments received 8-11-2017]
+<!--- ## Re-submission (version 0.2) [comments received 08/11/2017]
 
 - added reference to vignette paper in 'Description' field of DESCRIPTION file
 - we relocated the code to the GitHub repo 'sborms/sentometrics' 
-- changed quanteda::tokenize to quanteda::tokens due to errors in automatic checks by CRAN on 12-11-2017 --->
+- changed quanteda::tokenize() to quanteda::tokens() due to errors in automatic checks by CRAN on 12-11-2017 --->
 

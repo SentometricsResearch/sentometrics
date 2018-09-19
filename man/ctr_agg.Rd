@@ -8,7 +8,7 @@ ctr_agg(howWithin = "proportional", howDocs = "equal_weight",
   howTime = "equal_weight", do.ignoreZeros = TRUE, by = "day",
   lag = 1L, fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1),
   ordersAlm = 1:3, do.inverseAlm = TRUE, aBeta = 1:4, bBeta = 1:4,
-  weights = NULL, tokens = NULL, nCore = 2)
+  weights = NULL, tokens = NULL, nCore = 1)
 }
 \arguments{
 \item{howWithin}{a single \code{character} vector defining how aggregation within documents will be performed. Should

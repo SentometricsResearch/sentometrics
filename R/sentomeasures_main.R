@@ -78,7 +78,7 @@
 ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTime = "equal_weight",
                     do.ignoreZeros = TRUE, by = "day", lag = 1L, fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1),
                     ordersAlm = 1:3, do.inverseAlm = TRUE, aBeta = 1:4, bBeta = 1:4, weights = NULL,
-                    tokens = NULL, nCore = 2) {
+                    tokens = NULL, nCore = 1) {
 
   if (length(howWithin) > 1) howWithin <- howWithin[1]
   if (length(howDocs) > 1) howDocs <- howDocs[1]
@@ -227,8 +227,10 @@ sento_measures <- function(sentocorpus, lexicons, ctr) {
 #' measures by aggregating across documents and time. This function is called within \code{\link{sento_measures}},
 #' applied on the output of \code{\link{compute_sentiment}}.
 #'
-#' @param sentiment output from a \code{\link{compute_sentiment}} call, computed from a \code{sentocorpus} object.
+#' @param x a \code{sentiment} object created using \code{\link{compute_sentiment}}, computed from a
+#' \code{sentocorpus} object.
 #' @param ctr output from a \code{\link{ctr_agg}} call. The \code{howWithin} and \code{nCore} elements are ignored.
+#' @param ... not used.
 #'
 #' @return A \code{sentomeasures} object.
 #'
@@ -247,9 +249,9 @@ sento_measures <- function(sentocorpus, lexicons, ctr) {
 #' ctr <- ctr_agg(howTime = c("linear"), by = "year", lag = 3)
 #' sentomeasures <- aggregate(sent, ctr)
 #'
+#' @importFrom stats aggregate
 #' @export
-aggregate <- function(sentiment, ctr) {
-  check_sentiment_format(sentiment)
+aggregate.sentiment <- function(x, ctr, ...) {
   howDocs <- ctr$howDocs
   howTime <- ctr$howTime
   do.ignoreZeros <- ctr$do.ignoreZeros
@@ -257,7 +259,7 @@ aggregate <- function(sentiment, ctr) {
   lag <- ctr$lag
   fill <- ctr$fill
   otherVars <- ctr$other # list or empty
-  aggDocs <- aggregate_docs(sentiment, by = by, how = howDocs, do.ignoreZeros = do.ignoreZeros)
+  aggDocs <- aggregate_docs(x, by = by, how = howDocs, do.ignoreZeros = do.ignoreZeros)
   sentomeasures <- aggregate_time(aggDocs, lag = lag, fill = fill, how = howTime, otherVars)
   return(sentomeasures)
 }

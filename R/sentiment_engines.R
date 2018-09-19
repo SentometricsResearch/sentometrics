@@ -16,7 +16,7 @@ tokenise_texts <- function(x, tokens = NULL) { # x is a (sento)corpus object or 
   tok
 }
 
-compute_sentiment_lexicons <- function(tok, lexicons, how, nCore = 2) {
+compute_sentiment_lexicons <- function(tok, lexicons, how, nCore = 1) {
   threads <- min(RcppParallel::defaultNumThreads(), nCore)
   RcppParallel::setThreadOptions(numThreads = threads)
   if (is.null(lexicons[["valence"]])) {
@@ -74,19 +74,25 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, nCore = 2) {
 #' may be spurious and errors could occur. By default set to \code{NULL}.
 #' @param nCore a positive \code{numeric} that will be passed on to the \code{numThreads} argument of the
 #' \code{\link[RcppParallel]{setThreadOptions}} function, to parallelise the sentiment computation across texts. A
-#' value of 1 implies no parallelisation. Parallelisation is expected to improve speed of the sentiment computation
-#' only for sufficiently large corpora, say, in the order of having at least 100,000 documents.
+#' value of 1 (default) implies no parallelisation. Parallelisation is expected to improve speed of the sentiment
+#' computation only for sufficiently large corpora, say, in the order of having at least 100,000 documents.
 #'
-#' @return A \code{list} containing:
-#' \item{sentiment}{the sentiment scores \code{data.table} with a \code{"word_count"} column and all
-#' lexicon--feature sentiment scores columns.}
+#' @return If \code{x} is a \code{sentocorpus} object, a \code{sentiment} object, i.e., a \code{list} containing:
+#' \item{sentiment}{the sentiment scores \code{data.table} with an \code{"id"}, a \code{"date"} and a
+#' \code{"word_count"} column, and all lexicon--feature sentiment scores columns.}
 #' \item{features}{a \code{character} vector of the different features.}
 #' \item{lexicons}{a \code{character} vector of the different lexicons used.}
 #' \item{howWithin}{the supplied \code{how} argument.}
 #'
-#' The last three elements are only present if \code{x} is a \code{sentocorpus} object. In that case, the
-#' \code{"sentiment"} \code{data.table} also has a \code{"date"} column, meaning it can be used for further
-#' aggregation into sentiment time series with the \code{\link{perform_agg}} function.
+#' A \code{sentiment} object can be used for aggregation into time series with the
+#' \code{\link{aggregate.sentiment}} function.
+#'
+#' @return If \code{x} is a \pkg{quanteda} \code{\link[quanteda]{corpus}} object, a sentiment scores
+#' \code{data.table} with an \code{"id"} and a \code{"word_count"} column, and all lexicon--feature
+#' sentiment scores columns.
+#'
+#' @return If \code{x} is a \code{character} vector, a sentiment scores
+#' \code{data.table} with a \code{"word_count"} column, and all lexicon--feature sentiment scores columns.
 #'
 #' @examples
 #' data("usnews", package = "sentometrics")
@@ -98,18 +104,18 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, nCore = 2) {
 #' l3 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")],
 #'                      list_valence_shifters[["en"]][, c("x", "t")])
 #'
-#' # from a sentocorpus object, unigram approach
+#' # from a sentocorpus object, unigrams approach
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 200)
 #' sent1 <- compute_sentiment(corpusSample, l1, how = "proportionalPol")
 #'
-#' # from a character vector, bigram approach
+#' # from a character vector, bigrams approach
 #' sent2 <- compute_sentiment(usnews[["texts"]][1:200], l2, how = "counts")
 #'
-#' # from a corpus object, cluster approach
+#' # from a corpus object, clusters approach
 #' corpusQ <- quanteda::corpus(usnews, text_field = "texts")
 #' corpusQSample <- quanteda::corpus_sample(corpusQ, size = 200)
-#' sent3 <- compute_sentiment(corpusQSample, l3, how = "counts", nCore = 2)
+#' sent3 <- compute_sentiment(corpusQSample, l3, how = "counts")
 #'
 #' # from an already tokenised corpus, using the 'tokens' argument
 #' toks <- as.list(quanteda::tokens(corpusQSample, what = "fastestword"))
@@ -118,7 +124,7 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, nCore = 2) {
 #'
 #' @importFrom compiler cmpfun
 #' @export
-compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, nCore = 2) {
+compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, nCore = 1) {
   if (!is_names_correct(names(lexicons)))
     stop("At least one lexicon's name contains '-'. Please provide proper names.")
   if (!(how %in% get_hows()[["words"]]))
@@ -131,7 +137,7 @@ compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, 
   UseMethod("compute_sentiment", x)
 }
 
-.compute_sentiment.sentocorpus <- function(x, lexicons, how, tokens = NULL, nCore = 2) {
+.compute_sentiment.sentocorpus <- function(x, lexicons, how, tokens = NULL, nCore = 1) {
   nCore <- check_nCore(nCore)
   features <- names(quanteda::docvars(x))[-1] # drop date column
   tok <- tokenise_texts(quanteda::texts(x), tokens)
@@ -141,6 +147,7 @@ compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, 
   sent <- spread_sentiment_features(s, features, lexNames) # compute feature-sentiment
   sent <- sent[order(date)] # order by date
   sentOut <- list(sentiment = sent, features = features, lexicons = lexNames, howWithin = how)
+  class(sentOut) <- c("sentiment", class(sentOut))
   sentOut
 }
 
@@ -148,7 +155,7 @@ compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, 
 #' @export
 compute_sentiment.sentocorpus <- compiler::cmpfun(.compute_sentiment.sentocorpus)
 
-.compute_sentiment.corpus <- function(x, lexicons, how, tokens = NULL, nCore = 2) {
+.compute_sentiment.corpus <- function(x, lexicons, how, tokens = NULL, nCore = 1) {
   nCore <- check_nCore(nCore)
   isNumeric <- sapply(quanteda::docvars(x), is.numeric)
   if (length(isNumeric) == 0) features <- NULL else features <- names(isNumeric[isNumeric])
@@ -168,7 +175,7 @@ compute_sentiment.sentocorpus <- compiler::cmpfun(.compute_sentiment.sentocorpus
 #' @export
 compute_sentiment.corpus <- compiler::cmpfun(.compute_sentiment.corpus)
 
-.compute_sentiment.character <- function(x, lexicons, how, tokens = NULL, nCore = 2) {
+.compute_sentiment.character <- function(x, lexicons, how, tokens = NULL, nCore = 1) {
   nCore <- check_nCore(nCore)
   tok <- tokenise_texts(x, tokens)
   s <- compute_sentiment_lexicons(tok, lexicons, how, nCore) # compute sentiment per document for all lexicons

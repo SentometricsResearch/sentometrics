@@ -64,6 +64,7 @@ sentoValenceClustAllFunc <- function(texts) compute_sentiment(texts, lexicons = 
 
 ### TODO: add quanteda (dfm_lookup) and tm (term_score) for comparison
 ### TODO: make two tables ==> with 1 lexicon, and with multiple lexicons
+### TODO: default is now 1 core, change to 2 for this testing
 
 meanrFunc <- function(texts) meanr::score(texts, nthreads = 2)
 
