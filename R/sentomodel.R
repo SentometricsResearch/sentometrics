@@ -777,7 +777,7 @@ predict.sentomodel <- function(object, newx, type, offset = NULL, ...) {
   return(pred)
 }
 
-#' Apply model confidence set (MCS) procedure to a selection of models
+#' Retrieve loss data from a selection of models
 #'
 #' @author Samuel Borms
 #'
@@ -832,7 +832,9 @@ predict.sentomodel <- function(object, newx, type, offset = NULL, ...) {
 #' out4 <- sento_model(measures_select(sentMeas, "linear"), y, x = NULL, ctr = ctrM)
 #'
 #' lossData <- get_loss_data(models = list(m1 = out1, m2 = out2, m3 = out3, m4 = out4),
-#'                           loss = "errorSq")}
+#'                           loss = "errorSq")
+#'
+#' mcs <- MCS::MCSprocedure(lossData)}
 #'
 #' @export
 get_loss_data <- function(models, loss = c("DA", "errorSq", "AD", "accuracy")) {

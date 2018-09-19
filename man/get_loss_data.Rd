@@ -2,7 +2,7 @@
 % Please edit documentation in R/sentomodel.R
 \name{get_loss_data}
 \alias{get_loss_data}
-\title{Apply model confidence set (MCS) procedure to a selection of models}
+\title{Retrieve loss data from a selection of models}
 \usage{
 get_loss_data(models, loss = c("DA", "errorSq", "AD", "accuracy"))
 }
@@ -56,7 +56,9 @@ out3 <- sento_model(measures_select(sentMeas, "linear"), y, x = x, ctr = ctrM)
 out4 <- sento_model(measures_select(sentMeas, "linear"), y, x = NULL, ctr = ctrM)
 
 lossData <- get_loss_data(models = list(m1 = out1, m2 = out2, m3 = out3, m4 = out4),
-                          loss = "errorSq")}
+                          loss = "errorSq")
+
+mcs <- MCS::MCSprocedure(lossData)}
 
 }
 \references{
