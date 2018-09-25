@@ -105,8 +105,7 @@ sent3 <- compute_sentiment(corpusQSample, l3, how = "counts")
 
 # from an already tokenised corpus, using the 'tokens' argument
 toks <- as.list(quanteda::tokens(corpusQSample, what = "fastestword"))
-sent4 <- compute_sentiment(corpusQSample, l1[1], how = "counts",
-                           tokens = toks)
+sent4 <- compute_sentiment(corpusQSample, l1[1], how = "counts", tokens = toks)
 
 }
 \author{

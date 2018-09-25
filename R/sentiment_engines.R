@@ -119,8 +119,7 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, nCore = 1) {
 #'
 #' # from an already tokenised corpus, using the 'tokens' argument
 #' toks <- as.list(quanteda::tokens(corpusQSample, what = "fastestword"))
-#' sent4 <- compute_sentiment(corpusQSample, l1[1], how = "counts",
-#'                            tokens = toks)
+#' sent4 <- compute_sentiment(corpusQSample, l1[1], how = "counts", tokens = toks)
 #'
 #' @importFrom compiler cmpfun
 #' @export

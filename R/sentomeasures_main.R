@@ -158,12 +158,11 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #'
 #' @author Samuel Borms, Keven Bluteau
 #'
-#' @description Wrapper function which assembles calls to \code{\link{compute_sentiment}} and \code{\link{aggregate}}, and
-#' includes the input \code{sentocorpus} and computed sentiment scores in its output. Serves as the most direct way towards a
-#' panel of textual sentiment measures as a \code{sentomeasures} object.
+#' @description Wrapper function which assembles calls to \code{\link{compute_sentiment}} and \code{\link{aggregate}}.
+#' Serves as the most direct way towards a panel of textual sentiment measures as a \code{sentomeasures} object.
 #'
 #' @details As a general rule, neither the names of the features, lexicons or time weighting schemes may contain
-#' any '-' symbol.
+#' any `-' symbol.
 #'
 #' @param sentocorpus a \code{sentocorpus} object created with \code{\link{sento_corpus}}.
 #' @param lexicons a \code{sentolexicons} object created with \code{\link{sento_lexicons}}.
@@ -186,7 +185,7 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #' aggregation across time was carried out.}
 #' \item{do.ignoreZeros}{a single \code{character} vector to remind if documents with a zero feature-sentiment score
 #' have been ignored in the within-document aggregation.}
-#' \item{attribWeights}{a \code{list} of document and time weights used in the \code{\link{retrieve_attributions}} function.
+#' \item{attribWeights}{a \code{list} of document and time weights used in the \code{\link{attributions}} function.
 #' Serves further no direct purpose.}
 #'
 #' @seealso \code{\link{compute_sentiment}}, \code{\link{aggregate}}

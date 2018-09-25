@@ -22,9 +22,9 @@ contains following information:
   \item date. Date as \code{"yyyy-mm-dd"}.
   \item texts. Texts in \code{character} format.
   \item wsj. Equals 1 if the article comes from The Wall Street Journal.
-  \item wapo. Equals 1 if the article comes from The Washington Post (complementary to 'wsj').
+  \item wapo. Equals 1 if the article comes from The Washington Post (complementary to `wsj').
   \item economy. Equals 1 if the article is relevant to the U.S. economy.
-  \item noneconomy. Equals 1 if the article is not relevant to the U.S. economy (complementary to 'economy').
+  \item noneconomy. Equals 1 if the article is not relevant to the U.S. economy (complementary to `economy').
 }
 }
 \examples{

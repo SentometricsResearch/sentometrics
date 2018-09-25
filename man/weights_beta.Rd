@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{weights_beta}
 \alias{weights_beta}
-\title{Compute beta weighting curves}
+\title{Compute Beta weighting curves}
 \usage{
 weights_beta(n, a = 1:4, b = 1:4)
 }

@@ -44,23 +44,23 @@ lexiconsIn <- c(
   )
 )
 
-lex <- setup_lexicons(lexiconsIn = lexiconsIn, valenceIn = list_valence_shifters[["en"]])
+lex <- sento_lexicons(lexiconsIn = lexiconsIn, valenceIn = list_valence_shifters[["en"]])
 
 usnewsLarge <- sample(rep(usnews$texts, 25), 100000)
 nTexts <- c(1, 5, 10, 25, 50, 75, 100) * 1000
 
 ########################################### definition of sentiment functions
 
-lexPure <- setup_lexicons(lexiconsIn = lexiconsIn)
-lexHul <- setup_lexicons(lex["huliu"])
-lexClust <- setup_lexicons(lexiconsIn = lexiconsIn, valenceIn = list_valence_shifters[["en"]][, c("x", "t")])
+lexPure <-lex[-9]
+lexHul <- lex["huliu"]
+lexClust <- sento_lexicons(lexiconsIn = lexiconsIn, valenceIn = list_valence_shifters[["en"]][, c("x", "t")])
 
-sentoSimpleFunc <- function(texts) compute_sentiment(texts, lexicons = lexHul, how = "counts")
-sentoSimpleAllFunc <- function(texts) compute_sentiment(texts, lexicons = lexPure, how = "counts")
-sentoValenceFunc <- function(texts) compute_sentiment(texts, lexicons = lex, how = "counts") # bigrams approach
-sentoValenceAllFunc <- function(texts) compute_sentiment(texts, lexicons = lex, how = "counts")
-sentoValenceAllParFunc <- function(texts) compute_sentiment(texts, lexicons = lex, how = "counts", nCore = 8)
-sentoValenceClustAllFunc <- function(texts) compute_sentiment(texts, lexicons = lexClust, how = "counts") # clusters approach
+sentoUnigramsFunc <- function(texts) compute_sentiment(texts, lexicons = lexHul, how = "counts")
+sentoUnigramsAllFunc <- function(texts) compute_sentiment(texts, lexicons = lexPure, how = "counts")
+sentoBigramsFunc <- function(texts) compute_sentiment(texts, lexicons = lex, how = "counts") # bigrams approach
+sentoBigramsAllFunc <- function(texts) compute_sentiment(texts, lexicons = lex, how = "counts")
+sentoBigramsAllParFunc <- function(texts) compute_sentiment(texts, lexicons = lex, how = "counts", nCore = 8)
+sentoClustersAllFunc <- function(texts) compute_sentiment(texts, lexicons = lexClust, how = "counts") # clusters approach
 
 ### TODO: add quanteda (dfm_lookup) and tm (term_score) for comparison
 ### TODO: make two tables ==> with 1 lexicon, and with multiple lexicons
@@ -107,15 +107,15 @@ syuzhetFunc <- function(texts) syuzhet::get_sentiment(texts, method = "syuzhet")
 
 # K <- tail(nTexts, 1)
 #
-# system.time(s1 <- sentoSimpleFunc(usnewsLarge[1:K]))
+# system.time(s1 <- sentoUnigramsFunc(usnewsLarge[1:K]))
 # system.time(s2 <- tidytextFuncHuliu(usnewsLarge[1:K]))
 # sum(s1$word_count == s2$word_count) == K & sum(s1$huliu == s2$sentiment) == K
 #
-# system.time(s3 <- sentoSimpleAllFunc(usnewsLarge[1:K]))
+# system.time(s3 <- sentoUnigramsAllFunc(usnewsLarge[1:K]))
 # sum(s1$word_count == s3$word_count) == K & sum(s1$huliu == s3$huliu) == K
 #
-# system.time(s4 <- sentoValenceFunc(usnewsLarge[1:K]))
-# system.time(s5 <- sentoValenceAllFunc(usnewsLarge[1:K]))
+# system.time(s4 <- sentoBigramsFunc(usnewsLarge[1:K]))
+# system.time(s5 <- sentoBigramsAllFunc(usnewsLarge[1:K]))
 # sum(s4$word_count == s5$word_count) == K & sum(s4$huliu == s5$huliu) == K
 #
 # system.time(s6 <- compute_sentiment(usnewsLarge[1:K], lexicons = lex[c("huliu")], how = "proportional"))
@@ -132,11 +132,11 @@ timingsFull <- lapply(nTexts, function(n) {
   cat("Run timings for texts size of", n, "\n")
   texts <- usnewsLarge[1:n]
   out <- microbenchmark(
-    sentoSimpleFunc(texts),
-    sentoValenceFunc(texts),
-    sentoValenceAllFunc(texts),
-    # sentoValenceAllParFunc(texts),
-    sentoValenceClustAllFunc(texts),
+    sentoUnigramsFunc(texts),
+    sentoBigramsFunc(texts),
+    sentoBigramsAllFunc(texts),
+    # sentoBigramsAllParFunc(texts),
+    sentoClustersAllFunc(texts),
     meanrFunc(texts),
     tidytextFuncHuliu(texts),
     tidytextFuncSenticNet(texts),

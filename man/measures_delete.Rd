@@ -35,9 +35,9 @@ sentomeasures <- sento_measures(corpusSample, l, ctr)
 
 # different deletions
 del1 <- measures_delete(sentomeasures, c("equal_weight"))
-del2 <- measures_delete(sentomeasures, c("equal_weight", "linear"))
-del3 <- measures_delete(sentomeasures, c("linear", "LM_en"))
-del4 <- measures_delete(sentomeasures, list(c("linear", "wsj"), c("linear", "economy")))
+del2 <- measures_delete(sentomeasures, c("linear", "LM_en"))
+del3 <- measures_delete(sentomeasures, list(c("linear", "wsj"), c("linear", "economy")))
+del4 <- measures_delete(sentomeasures, c("equal_weight", "linear")) # warning and input returned
 
 }
 \seealso{
