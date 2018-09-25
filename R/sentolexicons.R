@@ -117,17 +117,17 @@ sento_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 }
 
 #' @export
-`[<-.sentolexicons` <- function(x, i, ...) {
+`[<-.sentolexicons` <- function(x, i, value, ...) {
   stop("Replacement not allowed.")
 }
 
 #' @export
-`[[<-.sentolexicons` <- function(x, i, ...) {
+`[[<-.sentolexicons` <- function(x, i, value, ...) {
   stop("Replacement not allowed.")
 }
 
 #' @export
-`$<-.sentolexicons` <- function(x, i, ...) {
+`$<-.sentolexicons` <- function(x, i, value, ...) {
   stop("Replacement not allowed.")
 }
 
