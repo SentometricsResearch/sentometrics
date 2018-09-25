@@ -21,6 +21,8 @@ Outputs a _`sentocorpus`_ object.
 
 Functions: `sento_lexicons()`, and `compute_sentiment()`.
 
+Outputs a _`sentolexicons`_ object, and a _`sentiment`_ object or a sentiment scores `data.table`.
+
 **Step 3**: Aggregate the sentiment into multiple textual sentiment time series
 
 Functions: `ctr_agg()`, `sento_measures()`, `plot()`, `aggregate()`, `peakdocs()`, `diff()`, `scale()`, and `summary()`.
@@ -51,7 +53,7 @@ To install the package from CRAN, simply do:
 install.packages("sentometrics")
 ```
 
-The latest development version of **`sentometrics`** resides on the GitHub repository. To install this version (which may still contain bugs!), execute:
+The current version is **0.5.1**. The latest development version of **`sentometrics`** resides on the GitHub repository. To install this version (which may still contain bugs!), execute:
 
 ```R
 devtools::install_github("sborms/sentometrics")
