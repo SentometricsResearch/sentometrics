@@ -132,7 +132,7 @@ weights_almon <- function(n, orders = 1:3, do.inverse = TRUE, do.normalize = TRU
   return(as.data.frame(almons)) # first row is most lagged value
 }
 
-#' Compute beta weighting curves
+#' Compute Beta weighting curves
 #'
 #' @description Computes Beta weighting curves as in Ghysels, Sinko and Valkanov (2007). Handy to self-select specific
 #' time aggregation weighting schemes for input in \code{\link{ctr_agg}} using the \code{weights} argument.

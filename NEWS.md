@@ -1,4 +1,8 @@
 
+## sentometrics 0.5.5 (development)
+
+- defined replacement for a `sentolexicons` object
+
 ## sentometrics 0.5.1
 
 - minor modifications to resolve few CRAN issues

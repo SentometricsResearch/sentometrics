@@ -8,17 +8,17 @@ sento_lexicons(lexiconsIn, valenceIn = NULL, do.split = FALSE)
 }
 \arguments{
 \item{lexiconsIn}{a named \code{list} of (raw) lexicons, each element as a \code{data.table} or a \code{data.frame} with
-respectively a words column and a polarity score column. A subset of the already formatted built-in lexicons
-accessible via \code{list_lexicons} should be passed here first.}
+respectively a words column and a polarity score column. The built-in lexicons
+accessible via \code{list_lexicons} should be passed here first as well.}
 
 \item{valenceIn}{a single valence word list as a \code{data.table} or a \code{data.frame} with respectively a \code{"x"}
 and a \code{"y"} or \code{"t"} column. The first column has the words, \code{"y"} has the values for bigram
 shifting, and \code{"t"} has the types of the valence shifter for a clustered approach to sentiment calculation
 (supported types: \code{1} = negators, \code{2} = amplifiers, \code{3} = deamplifiers). If three columns
-are provided, the first two will be considered only. This argument can be one of the already formatted
-built-in valence word lists accessible via \code{list_valence_shifters}. A word that appears in both a lexicon
-and the valence word list is prioritized as a lexical entry during sentiment calculation. If \code{NULL}, no valence word
-list is part of this function's output, and is thus not applied in the sentiment analysis.}
+are provided, the first two will be considered only. This argument can be one of the built-in
+valence word lists accessible via \code{list_valence_shifters}. A word that appears in both a lexicon
+and the valence word list is prioritized as a lexical entry during sentiment calculation. If \code{NULL}, valence
+shifting is not applied in the sentiment analysis.}
 
 \item{do.split}{a \code{logical} that if \code{TRUE} splits every lexicon into a separate positive polarity and negative
 polarity lexicon.}
@@ -41,7 +41,7 @@ data("list_lexicons", package = "sentometrics")
 data("list_valence_shifters", package = "sentometrics")
 
 # lexicons straight from built-in word lists
-l1 <- list_lexicons[c("LM_en", "HENRY_en")]
+l1 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")])
 
 # including a self-made lexicon, with and without valence shifters
 lexIn <- c(list(myLexicon = data.table(w = c("nice", "boring"), s = c(2, -1))),
@@ -51,11 +51,21 @@ l2 <- sento_lexicons(lexIn)
 l3 <- sento_lexicons(lexIn, valIn)
 l4 <- sento_lexicons(lexIn, valIn[, c("x", "y")], do.split = TRUE)
 l5 <- sento_lexicons(lexIn, valIn[, c("x", "t")], do.split = TRUE)
+l6 <- l5[c("GI_en_POS", "valence")] # preserves sentolexicons class
 
 \dontrun{
 # include lexicons from lexicon package
 lexIn2 <- list(hul = lexicon::hash_sentiment_huliu, joc = lexicon::hash_sentiment_jockers)
-l6 <- sento_lexicons(c(lexIn, lexIn2), valIn)}
+l7 <- sento_lexicons(c(lexIn, lexIn2), valIn)}
+
+\dontrun{
+# faulty extraction, no replacement allowed
+l5["valence"]
+l2[0]
+l3[22]
+l4[1] <- l2[1]
+l4[[1]] <- l2[[1]]
+l4$GI_en_NEG <- l2$myLexicon}
 
 }
 \author{
