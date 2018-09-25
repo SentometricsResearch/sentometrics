@@ -211,7 +211,7 @@ scale.sentomeasures <- function(x, center = TRUE, scale = TRUE) {
     measures <- measures / scale
     scale <- FALSE
   }
-  measuresNorm <- scale(measures, center, scale)
+  measuresNorm <- scale(measures, center = center, scale = scale)
   sentomeasures$measures <- data.table(date = dates, measuresNorm)
   sentomeasures$stats <- compute_stats(sentomeasures)
   return(sentomeasures)
