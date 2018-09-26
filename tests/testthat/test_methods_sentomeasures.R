@@ -32,8 +32,8 @@ s1 <- scale(sentMeas)
 s2 <- suppressWarnings(scale(sentMeas, center = -as.matrix(get_measures(sentMeas)[, -1]), scale = FALSE))
 s3 <- scale(sentMeas, center = sentMeas$stats["mean", ], scale = sentMeas$stats["sd", ])
 s4 <- scale(sentMeas,
-            center = -matrix(sentMeas$stats["mean", ], nrow = N, ncol = M, byrow = TRUE),
-            scale = matrix(sentMeas$stats["sd", ], nrow = N, ncol = M, byrow = TRUE))
+            center = -matrix(as.numeric(sentMeas$stats["mean", ]), nrow = N, ncol = M, byrow = TRUE),
+            scale = matrix(as.numeric(sentMeas$stats["sd", ]), nrow = N, ncol = M, byrow = TRUE))
 test_that("Scaling is properly done", {
   expect_equal(rowMeans(s1$stats["mean", ], na.rm = TRUE), c(mean = 0))
   expect_equal(rowMeans(s1$stats["sd", ], na.rm = TRUE), c(sd = 1))

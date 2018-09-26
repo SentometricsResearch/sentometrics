@@ -28,9 +28,9 @@
 #' @note Please cite the package in publications. Use \code{citation("sentometrics")}.
 #'
 #' @references Ardia, Bluteau and Boudt (2018). ``Questioning the news about economic growth: Sparse forecasting using
-#' thousands of news-based sentiment values''. \emph{Working paper}, \url{http://dx.doi.org/10.2139/ssrn.2976084}.
+#' thousands of news-based sentiment values''. \emph{Working paper}, \url{https://doi.org/10.2139/ssrn.2976084}.
 #' @references Ardia, Bluteau, Borms and Boudt (2018). ``The R package sentometrics to compute, aggregate and
-#' predict with textual sentiment''. \emph{Working paper}, \url{http://dx.doi.org/10.2139/ssrn.3067734}.
+#' predict with textual sentiment''. \emph{Working paper}, \url{https://doi.org/10.2139/ssrn.3067734}.
 "_PACKAGE"
 
 #' Built-in lexicons
