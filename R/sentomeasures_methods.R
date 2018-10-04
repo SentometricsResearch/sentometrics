@@ -212,35 +212,8 @@ scale.sentomeasures <- function(x, center = TRUE, scale = TRUE) {
     scale <- FALSE
   }
 
-  x <- measures
-  x <- as.matrix(x)
-  nc <- ncol(x)
-
-  print(nc)
-  print(class(nc))
-  print(class(x))
-
-  if (is.logical(center)) {
-    if (center) {
-      center <- colMeans(x, na.rm = TRUE)
-      x <- sweep(x, 2L, center, check.margin = FALSE)
-    }
-  }
-  else {
-
-    length(center)
-
-    if (!is.numeric(center)) {
-      center <- as.numeric(center)
-
-      print(center)
-      print(length(center))
-
-    }
-    if (length(center) == nc)
-      x <- sweep(x, 2L, center, check.margin = FALSE)
-    else stop("length of 'center' must equal the number of columns of 'x'")
-  }
+  print(class(center))
+  print(class(scale))
 
   measuresNorm <- scale(measures, center = center, scale = scale)
   sentomeasures$measures <- data.table(date = dates, measuresNorm)
