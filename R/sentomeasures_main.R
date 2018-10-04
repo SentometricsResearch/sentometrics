@@ -91,7 +91,7 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
     err <- c(err, paste0(howWithin, " is no current option for aggregation across words."))
   }
   if (!(howDocs %in% hows[["docs"]])) {
-    err <- c(err, paste0(howDocs, " is no current option for aggregation across docs."))
+    err <- c(err, paste0(howDocs, " is no current option for aggregation across documents."))
   }
   if (lag == 1) {
     warning("The argument choice 'lag = 1' implies no time aggregation. We have kept a dummy weighting scheme 'dummyTime'.")

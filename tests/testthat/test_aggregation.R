@@ -32,7 +32,7 @@ test_that("Number of columns coincide with provided dimensions", {
 # ctr_agg
 test_that("Aggregation control function breaks when wrong inputs supplied", {
   expect_error(ctr_agg(howWithin = c("oops", "again"), howDocs = c("mistake", "forYou"), howTime = "bad",
-                       by = "infinitely", fill = "theMartiniPolice", nCore = c("yes", "man")))
+                       lag = 42, by = "infinitely", fill = "theMartiniPolice", nCore = c("yes", "man")))
   expect_error(ctr_agg(howTime = c("almon", "beta", "exponential"), lag = 0,
                        ordersAlm = -1:2, aBeta = -2, bBeta = -3, alphasExp = c(-1, -3)))
   expect_warning(ctr_agg(howTime = "linear", lag = 4, weights = data.frame(a = c(1/2, 1/2))))
