@@ -24,7 +24,8 @@
 #' level the dates should be aggregated. Dates are displayed as the first day of the period, if applicable (e.g.,
 #' \code{"2017-03-01"} for March 2017).
 #' @param lag a single \code{integer} vector, being the time lag to be specified for aggregation across time. By default
-#' equal to \code{1L}, meaning no aggregation across time.
+#' equal to \code{1}, meaning no aggregation across time; a time weighting scheme named \code{"dummyTime"} is used in
+#' this case.
 #' @param fill a single \code{character} vector, one of \code{c("zero", "latest", "none")}, to control how missing
 #' sentiment values across the continuum of dates considered are added. This impacts the aggregation across time,
 #' applying the \code{\link{measures_fill}} function before aggregating, except if \code{fill = "none"}. By default equal to
@@ -76,7 +77,7 @@
 #'
 #' @export
 ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTime = "equal_weight",
-                    do.ignoreZeros = TRUE, by = "day", lag = 1L, fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1),
+                    do.ignoreZeros = TRUE, by = "day", lag = 1, fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1),
                     ordersAlm = 1:3, do.inverseAlm = TRUE, aBeta = 1:4, bBeta = 1:4, weights = NULL,
                     tokens = NULL, nCore = 1) {
 
@@ -91,6 +92,11 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
   }
   if (!(howDocs %in% hows[["docs"]])) {
     err <- c(err, paste0(howDocs, " is no current option for aggregation across docs."))
+  }
+  if (lag == 1) {
+    warning("The argument choice 'lag = 1' implies no time aggregation. We have kept a dummy weighting scheme 'dummyTime'.")
+    howTime <- "own"
+    weights <- data.frame(dummyTime = 1)
   }
   if (!all(howTime %in% hows[["time"]])) {
     err <- c(err, paste0(howTime[!(howTime %in% hows[["time"]])], " is no current option for aggregation across time. "))
@@ -342,7 +348,7 @@ aggregate_time <- function(sentomeasures, lag, fill, how = get_hows()$time, ...)
   if (sum(duplicated(colnames(weights))) > 0) {
     duplics <- unique(colnames(weights)[duplicated(colnames(weights))])
     stop(paste0("Names of weighting schemes are not unique. Following names occur at least twice: ",
-                paste0(duplics, collapse = ", ")))
+                paste0(duplics, collapse = ", "), "."))
   }
   sentomeasures$attribWeights[["B"]] <- copy(weights)
 

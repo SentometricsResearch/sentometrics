@@ -37,6 +37,7 @@ test_that("Aggregation control function breaks when wrong inputs supplied", {
                        ordersAlm = -1:2, aBeta = -2, bBeta = -3, alphasExp = c(-1, -3)))
   expect_warning(ctr_agg(howTime = "linear", lag = 4, weights = data.frame(a = c(1/2, 1/2))))
   expect_error(ctr_agg(howTime = "own", lag = 12, weights = data.frame("dot--hacker" = rep(1/12, 12), check.names = FALSE)))
+  expect_warning(ctr_agg(howTime = c("linear", "beta"), lag = 1))
 })
 
 # aggregate

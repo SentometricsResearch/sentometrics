@@ -1,7 +1,9 @@
 
 ## sentometrics 0.5.5 (development)
 
-- defined replacement for a `sentolexicons` object
+- defined replacement (of lexicons and names) for a `sentolexicons` object
+- properly handled `lag = 1` in the `ctr_agg()` function, and set weights to 1 by default for `n = 1` in the `weights_beta()` function
+- solved single failing test for older R version (3.4.4)
 
 ## sentometrics 0.5.1
 

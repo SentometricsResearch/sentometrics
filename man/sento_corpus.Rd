@@ -12,7 +12,7 @@ column (in \code{character} mode), a \code{"date"} column (as \code{"yyyy-mm-dd"
 \code{character} mode), and a series of feature columns of type \code{numeric}, with values between 0 and 1 to specify the
 degree of connectedness of a feature to a document. Features could be topics (e.g., legal or economic),
 article sources (e.g., online or print), amongst many more options. When no feature column is provided, a
-feature named \code{"dummy"} is added. All spaces in the names of the features are replaced by \code{'_'}. Feature
+feature named \code{"dummyFeature"} is added. All spaces in the names of the features are replaced by \code{'_'}. Feature
 columns with values not between 0 and 1 are rescaled column-wise.}
 
 \item{do.clean}{a \code{logical}, if \code{TRUE} all texts undergo a cleaning routine to eliminate common textual garbage.

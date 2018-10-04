@@ -75,7 +75,7 @@ sento_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
   if (sum(duplicated(names(lexiconsIn))) > 0) { # check for duplicated lexicon names
     duplics <- unique(names(lexiconsIn[duplicated(names(lexiconsIn))]))
     stop(paste0("Names of lexicons are not unique. Following names occur at least twice: ",
-                paste0(duplics, collapse = ", ")))
+                paste0(duplics, collapse = ", "), "."))
   }
 
   lexNames <- names(lexiconsIn)
@@ -129,5 +129,10 @@ sento_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 #' @export
 `$<-.sentolexicons` <- function(x, i, value) {
   stop("Replacement not allowed.")
+}
+
+`names<-.sentolexicons` <- function(x, value) {
+  if (any(duplicated(value))) stop("No duplicated names allowed.")
+  NextMethod("names<-")
 }
 

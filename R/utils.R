@@ -148,7 +148,8 @@ weights_almon <- function(n, orders = 1:3, do.inverse = TRUE, do.normalize = TRU
 #' @param a a \code{numeric} as the first parameter (cf., \emph{a}).
 #' @param b a \code{numeric} as the second parameter (cf., \emph{b}).
 #'
-#' @return A \code{data.frame} of beta weighting curves per combination of \code{a} and \code{b}.
+#' @return A \code{data.frame} of beta weighting curves per combination of \code{a} and \code{b}. If \code{n = 1},
+#' all weights are set to 1.
 #'
 #' @seealso \code{\link{ctr_agg}}
 #'
@@ -162,21 +163,24 @@ weights_beta <- function(n, a = 1:4, b = 1:4) {
   vals <- (1:n) / n
   betas <- data.frame(matrix(nrow = n, ncol = length(a) * length(b)))
   colnames(betas) <- paste0("beta", paste0(rep(a, rep(length(b), length(a))), b))
-  k <- 1
-  for (i in 1:length(a)) {
-    for(j in 1:length(b)) {
-      aa <- a[i]
-      bb <- b[j]
-      beta <- (vals^(aa - 1) * (1 - vals)^(bb - 1) * gamma(aa + bb)) / (gamma(aa) * gamma(bb))
-      betas[, k] <- beta/sum(beta)
-      k <- k + 1
+  if (n == 1) betas[, ] <- 1
+  else {
+    k <- 1
+    for (i in 1:length(a)) {
+      for(j in 1:length(b)) {
+        aa <- a[i]
+        bb <- b[j]
+        beta <- (vals^(aa - 1) * (1 - vals)^(bb - 1) * gamma(aa + bb)) / (gamma(aa) * gamma(bb))
+        betas[, k] <- beta/sum(beta)
+        k <- k + 1
+      }
     }
   }
   return(as.data.frame(betas))
 }
 
 setup_time_weights <- function(lag, how, ...) {
-  dots <- tryCatch(list(...)[[1]], # extract list from list of list (... a list to match with functions in sentomeasures.R)
+  dots <- tryCatch(list(...)[[1]], # extract list from list of list (if ... is a list)
                    error = function(x) list(...)) # if ... is empty
   if (!all(how %in% get_hows()$time)) stop("Please select an appropriate aggregation 'how'.")
   weights <- data.frame(row.names = 1:lag)

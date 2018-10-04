@@ -14,7 +14,7 @@ corpus <- sento_corpus(corpusdf = usnews, do.clean = TRUE)
 test_that("Corpus building works and fails when appropriate", {
   expect_equal(c("texts", "date", "wsj", "wapo", "economy", "noneconomy"), colnames(corpus$documents))
   expect_warning(corpusDummy <- sento_corpus(corpusdf = usnews[, 1:3]))
-  expect_equal(colnames(quanteda::docvars(corpusDummy)), c("date", "dummy"))
+  expect_equal(colnames(quanteda::docvars(corpusDummy)), c("date", "dummyFeature"))
   expect_warning(sento_corpus(corpusdf = cbind(usnews, "notNumeric")))
   expect_warning(sento_corpus(corpusdf = cbind(usnews[, 1:3], usnews[, -c(1:3)] * 100)))
   expect_error(sento_corpus(corpusdf = cbind(usnews[, 1:3], same = 0.5, same = 0.5, unique = 1.2)))

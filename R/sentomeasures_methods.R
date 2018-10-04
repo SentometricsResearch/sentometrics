@@ -6,8 +6,8 @@
 #' @method plot sentomeasures
 #'
 #' @description Plotting method that shows all sentiment measures from the provided \code{sentomeasures}
-#' object in one plot, or the average along one of the lexicons, features and time weighting dimensions. We suggest to make
-#' use of the \code{\link{measures_select}} function when you want to plot only a subset of the sentiment measures.
+#' object in one plot, or the average along one of the lexicons, features and time weighting dimensions. We suggest to
+#' make use of a \code{measures_xyz} function when you want to plot only a subset of the sentiment measures.
 #'
 #' @param x a \code{sentomeasures} object created using \code{\link{sento_measures}}.
 #' @param group a value from \code{c("lexicons", "features", "time", "all")}. The first three choices display the average of
@@ -211,6 +211,30 @@ scale.sentomeasures <- function(x, center = TRUE, scale = TRUE) {
     measures <- measures / scale
     scale <- FALSE
   }
+
+  x <- measures
+  x <- as.matrix(x)
+  nc <- ncol(x)
+  print(nc)
+  print(class(x))
+  print(x)
+  if (is.logical(center)) {
+    if (center) {
+      center <- colMeans(x, na.rm = TRUE)
+      x <- sweep(x, 2L, center, check.margin = FALSE)
+    }
+  }
+  else {
+    if (!is.numeric(center)) {
+      center <- as.numeric(center)
+      print(center)
+      print(length(center))
+    }
+    if (length(center) == nc)
+      x <- sweep(x, 2L, center, check.margin = FALSE)
+    else stop("length of 'center' must equal the number of columns of 'x'")
+  }
+
   measuresNorm <- scale(measures, center = center, scale = scale)
   sentomeasures$measures <- data.table(date = dates, measuresNorm)
   sentomeasures$stats <- compute_stats(sentomeasures)
