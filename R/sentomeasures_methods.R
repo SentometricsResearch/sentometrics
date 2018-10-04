@@ -215,9 +215,11 @@ scale.sentomeasures <- function(x, center = TRUE, scale = TRUE) {
   x <- measures
   x <- as.matrix(x)
   nc <- ncol(x)
+
   print(nc)
+  print(class(nc))
   print(class(x))
-  print(x)
+
   if (is.logical(center)) {
     if (center) {
       center <- colMeans(x, na.rm = TRUE)
@@ -225,10 +227,15 @@ scale.sentomeasures <- function(x, center = TRUE, scale = TRUE) {
     }
   }
   else {
+
+    length(center)
+
     if (!is.numeric(center)) {
       center <- as.numeric(center)
+
       print(center)
       print(length(center))
+
     }
     if (length(center) == nc)
       x <- sweep(x, 2L, center, check.margin = FALSE)
