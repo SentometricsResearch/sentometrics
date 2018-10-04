@@ -5,10 +5,7 @@ cache: packages
 os:
   - linux
 
-# r_packages:
-#  - devtools # needed (temporarily) for 'release' R version
-
-r_binary_packages:
+r_packages:
   - devtools
   - roxygen2
 

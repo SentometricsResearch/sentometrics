@@ -30,7 +30,7 @@ test_that("Differencing is properly done", {
 # scale
 s1 <- scale(sentMeas)
 s2 <- suppressWarnings(scale(sentMeas, center = -as.matrix(get_measures(sentMeas)[, -1]), scale = FALSE))
-s3 <- scale(sentMeas, center = as.numeric(sentMeas$stats["mean", ]), scale = sentMeas$stats["sd", ])
+s3 <- scale(sentMeas, center = as.numeric(sentMeas$stats["mean", ]), scale = as.numeric(sentMeas$stats["sd", ]))
 s4 <- scale(sentMeas,
             center = -matrix(as.numeric(sentMeas$stats["mean", ]), nrow = N, ncol = M, byrow = TRUE),
             scale = matrix(as.numeric(sentMeas$stats["sd", ]), nrow = N, ncol = M, byrow = TRUE))
