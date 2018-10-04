@@ -5,8 +5,12 @@ cache: packages
 os:
   - linux
 
-r_packages:
-  - devtools # needed (temporarily) for 'release' R version
+# r_packages:
+#  - devtools # needed (temporarily) for 'release' R version
+
+r_binary_packages:
+  - devtools
+  - roxygen2
 
 script:
   - |
@@ -14,9 +18,10 @@ script:
     travis_wait 180 R CMD check --no-build-vignettes --no-manual --as-cran sentometrics*tar.gz
 
 r:
-  - devel
-  - release
+  # - devel
+  # - release
   - oldrel
 
 after_success:
 - Rscript -e 'covr::codecov()'
+- Rscript -e 'devtools::install(); devtools::test()'
