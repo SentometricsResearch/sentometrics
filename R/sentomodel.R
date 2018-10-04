@@ -545,7 +545,6 @@ run_sento_model <- compiler::cmpfun(.run_sento_model)
   xPred <- alignedVarsAll$x[oosRun, , drop = FALSE]
   yReal <- alignedVarsAll$y[oosRun, , drop = FALSE]
   datesX <- alignedVarsAll$datesX[oosRun] # dates from perspective of x at which forecasts are made
-  remove(oosRun)
   names(regsOpt) <- datesX
   if (family %in% c("binomial", "multinomial")) {
     n <- length(colnames(yReal)) # number of factor levels

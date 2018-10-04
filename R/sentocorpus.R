@@ -25,7 +25,7 @@
 #' \code{character} mode), and a series of feature columns of type \code{numeric}, with values between 0 and 1 to specify the
 #' degree of connectedness of a feature to a document. Features could be topics (e.g., legal or economic),
 #' article sources (e.g., online or print), amongst many more options. When no feature column is provided, a
-#' feature named \code{"dummy"} is added. All spaces in the names of the features are replaced by \code{'_'}. Feature
+#' feature named \code{"dummyFeature"} is added. All spaces in the names of the features are replaced by \code{'_'}. Feature
 #' columns with values not between 0 and 1 are rescaled column-wise.
 #' @param do.clean a \code{logical}, if \code{TRUE} all texts undergo a cleaning routine to eliminate common textual garbage.
 #' This includes a brute force replacement of HTML tags and non-alphanumeric characters by an empty string. To use with care
@@ -76,8 +76,8 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
   info <- "This is a sentocorpus object derived from a quanteda corpus object."
 
   if (length(features) == 0) {
-    corpusdf[["dummy"]] <- 1
-    warning("No features detected. A 'dummy' feature valued at 1 throughout is added.")
+    corpusdf[["dummyFeature"]] <- 1
+    warning("No features detected. A 'dummyFeature' feature valued at 1 throughout is added.")
   } else {
     if (sum(duplicated(features)) > 0) {
       duplics <- unique(features[duplicated(features)])
@@ -90,8 +90,8 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
       corpusdf[, toDrop] <- NULL
       warning(paste0("Following feature columns were dropped as they are not numeric: ", paste0(toDrop, collapse = ", "), "."))
       if (length(toDrop) == length(isNumeric)) {
-        corpusdf[["dummy"]] <- 1
-        warning("No remaining feature columns. A 'dummy' feature valued at 1 throughout is added.")
+        corpusdf[["dummyFeature"]] <- 1
+        warning("No remaining feature columns. A 'dummyFeature' feature valued at 1 throughout is added.")
         if (do.clean) corpusdf <- clean_texts(corpusdf)
         corp <- quanteda::corpus(x = corpusdf, docid_field = "id", text_field = "texts", metacorpus = list(info = info))
         corp$tokens <- NULL

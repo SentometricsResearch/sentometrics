@@ -22,8 +22,8 @@ graphs plotted and \code{group} is different from \code{"all"}.
 }
 \description{
 Plotting method that shows all sentiment measures from the provided \code{sentomeasures}
-object in one plot, or the average along one of the lexicons, features and time weighting dimensions. We suggest to make
-use of the \code{\link{measures_select}} function when you want to plot only a subset of the sentiment measures.
+object in one plot, or the average along one of the lexicons, features and time weighting dimensions. We suggest to
+make use of a \code{measures_xyz} function when you want to plot only a subset of the sentiment measures.
 }
 \examples{
 data("usnews", package = "sentometrics")

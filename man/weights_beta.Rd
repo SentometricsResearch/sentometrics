@@ -14,7 +14,8 @@ weights_beta(n, a = 1:4, b = 1:4)
 \item{b}{a \code{numeric} as the second parameter (cf., \emph{b}).}
 }
 \value{
-A \code{data.frame} of beta weighting curves per combination of \code{a} and \code{b}.
+A \code{data.frame} of beta weighting curves per combination of \code{a} and \code{b}. If \code{n = 1},
+all weights are set to 1.
 }
 \description{
 Computes Beta weighting curves as in Ghysels, Sinko and Valkanov (2007). Handy to self-select specific

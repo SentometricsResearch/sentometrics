@@ -6,7 +6,7 @@
 \usage{
 ctr_agg(howWithin = "proportional", howDocs = "equal_weight",
   howTime = "equal_weight", do.ignoreZeros = TRUE, by = "day",
-  lag = 1L, fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1),
+  lag = 1, fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1),
   ordersAlm = 1:3, do.inverseAlm = TRUE, aBeta = 1:4, bBeta = 1:4,
   weights = NULL, tokens = NULL, nCore = 1)
 }
@@ -31,7 +31,8 @@ level the dates should be aggregated. Dates are displayed as the first day of th
 \code{"2017-03-01"} for March 2017).}
 
 \item{lag}{a single \code{integer} vector, being the time lag to be specified for aggregation across time. By default
-equal to \code{1L}, meaning no aggregation across time.}
+equal to \code{1}, meaning no aggregation across time; a time weighting scheme named \code{"dummyTime"} is used in
+this case.}
 
 \item{fill}{a single \code{character} vector, one of \code{c("zero", "latest", "none")}, to control how missing
 sentiment values across the continuum of dates considered are added. This impacts the aggregation across time,
