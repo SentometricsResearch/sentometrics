@@ -46,8 +46,8 @@ sentomeasures <- sento_measures(corpusSample, l, ctr)
 # scale sentiment measures to zero mean and unit standard deviation
 sc1 <- scale(sentomeasures)
 
-n <- nobs(sentomeasures) # row dimension
-m <- nmeasures(sentomeasures) # column dimension
+n <- nobs(sentomeasures)
+m <- nmeasures(sentomeasures)
 
 # add a matrix
 sc2 <- scale(sentomeasures, center = matrix(runif(n * m), n, m), scale = FALSE)

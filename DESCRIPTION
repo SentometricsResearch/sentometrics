@@ -25,8 +25,7 @@ Suggests: covr,
   parallel, 
   randomForest, 
   testthat
-Imports: abind,
-  caret,
+Imports: caret,
   compiler,
   foreach,
   ggplot2, 
@@ -38,8 +37,7 @@ Imports: abind,
   RcppParallel, 
   stats, 
   stringi,
-  utils,
-  zoo
+  utils
 LinkingTo: Rcpp, RcppArmadillo, RcppParallel
 RoxygenNote: 6.1.0
 SystemRequirements: GNU make

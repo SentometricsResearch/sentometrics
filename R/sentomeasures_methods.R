@@ -185,8 +185,8 @@ nobs.sentomeasures <- function(object, ...) {
 #' # scale sentiment measures to zero mean and unit standard deviation
 #' sc1 <- scale(sentomeasures)
 #'
-#' n <- nobs(sentomeasures) # row dimension
-#' m <- nmeasures(sentomeasures) # column dimension
+#' n <- nobs(sentomeasures)
+#' m <- nmeasures(sentomeasures)
 #'
 #' # add a matrix
 #' sc2 <- scale(sentomeasures, center = matrix(runif(n * m), n, m), scale = FALSE)
@@ -241,7 +241,7 @@ print.sentomeasures <- function(x, ...) {
   sentomeasures <- x
   cat("A sentomeasures object (", nmeasures(sentomeasures),
       " textual sentiment time series, ", nobs(sentomeasures),
-      " observations).", sep = "")
+      " observations).", "\n", sep = "")
 }
 
 #' Get the dates of the sentiment measures/time series

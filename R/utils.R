@@ -1,63 +1,7 @@
 
-############################################################
-################# UTILITY/HELPER FUNCTIONS #################
-############################################################
-
-# #' @importFrom foreach %dopar%
-# include_valence <- function(corpus, val, valId, nCore = 1) {
-#   modify_texts <- function(texts, val, valId = c("NOT_", "VERY_", "HARDLY_")) {
-#     val[, identifier := sapply(t, function(j) if (j == 1) valId[1] else if (j == 2) valId[2] else valId[3])]
-#     all <- val[, c("x", "identifier")]
-#     texts <- lapply(1:nrow(all), function(i) {
-#       texts <<- stringi::stri_replace_all(texts, all[i, identifier], regex = paste0("\\b", all[i, x], " \\b"))
-#     })[[nrow(all)]]
-#     return(texts)
-#   }
-#   cat("Modify corpus to account for valence words... ") # replaces valence words in texts and combines into bigrams
-#   texts <- quanteda::texts(corpus)
-#   if (nCore > 1) {
-#     cl <- parallel::makeCluster(min(parallel::detectCores() - 1, nCore))
-#     doParallel::registerDoParallel(cl)
-#     N <- length(texts)
-#     blocks <- seq(0, N + 1, by = floor(N/nCore))
-#     blocks[length(blocks)] <- N
-#     textsNew <- foreach::foreach(i = 1:(length(blocks) - 1), .combine = c, .export = c(":=")) %dopar% {
-#       modify_texts(texts = texts[(blocks[i] + 1):blocks[i + 1]], val = val)
-#     }
-#     quanteda::texts(corpus) <- textsNew
-#     parallel::stopCluster(cl)
-#     foreach::registerDoSEQ()
-#   } else {
-#     quanteda::texts(corpus) <- modify_texts(texts, val)
-#   }
-#   cat("Done.", "\n")
-#   return(corpus)
-# }
-
-# negate <- function(lexicon, s = -1) {
-#   lexicon$x <- paste0("NOT_", lexicon$x); lexicon$y <- s * (lexicon$y)
-#   return(lexicon)
-# }
-# amplify <- function(lexicon, s = 2) {
-#   lexicon$x <- paste0("VERY_", lexicon$x); lexicon$y <- s * (lexicon$y)
-#   return(lexicon)
-# }
-# deamplify <- function(lexicon, s = 0.5) {
-#   lexicon$x <- paste0("HARDLY_", lexicon$x); lexicon$y <- s * (lexicon$y)
-#   return(lexicon)
-# }
-#
-# expand_lexicons <- function(lexicons, types = c(1, 2, 3), scores = c(-1, 2, 0.5)) {
-#   funcs <- list(negate, amplify, deamplify) # types: 1, 2, 3
-#   lexiconsExp <- lapply(lexicons, function(l) {
-#     out <- lapply(c(0, types), function(x) {
-#       if (x == 0) return(l)
-#       else {f = funcs[[x]]; return(f(l, scores[[x]]))}
-#     })
-#     return(rbindlist(out))
-#   })
-#   return(lexiconsExp) # expanded lexicons (original + copied and negated/amplified/deamplified words and scores)
-# }
+###########################################################
+#################### UTILITY FUNCTIONS ####################
+###########################################################
 
 #' Compute exponential weighting curves
 #'
@@ -400,45 +344,6 @@ compute_stats <- function(sentomeasures) {
   return(stats)
 }
 
-# compute_df_R <- function(alpha, beta, lambda, x) {
-#
-#   # elastic net degrees-of-freedom estimator (Tibshirani and Taylor, 2012)
-#
-#   x <- scale(x) # scale x first
-#   dfA <- lapply(1:length(lambda), function(df) {
-#     A <- which(beta[, df] != 0)
-#     if (alpha == 1) {return(length(A))} # df equal to non-zero parameters if LASSO (alpha = 1)
-#     if (length(A) == 0) {return(NA)}
-#     I <- diag(1, ncol = length(A), nrow = length(A))
-#     xA <- as.matrix(x[, A])
-#     estimate <- tryCatch(sum(diag(xA %*% solve((t(xA) %*% xA + (1 - alpha) * lambda[df] * I)) %*% t(xA))),
-#                          error = function(x) {NA}) # to handle rare matrix inversion problems
-#     return(estimate)
-#   })
-#   return(unlist(dfA))
-# }
-
-# compute_IC <- function(reg, y, x, alpha, ic, family) {
-#   beta <- reg$beta
-#   lambda <- reg$lambda
-#   if (family == "gaussian") type <- "link"
-#   else stop("Calibration via information criteria to implement for 'binomial' and 'multinomial'.")
-#   yEst <- stats::predict(reg, newx = x, type = type)
-#   # dfA <- compute_df_R(alpha, beta, lambda, x)
-#   xScaled <- scale(x)
-#   xA <- lapply(1:length(lambda), function(i) return(as.matrix(xScaled[, which(beta[, i] != 0)])))
-#   dfA <- compute_df(alpha, lambda, xA)
-#   RSS <- apply(yEst, 2, function(est) return(sum((y - est)^2)))
-#   # sigma2 <- RSS[length(RSS)] / (nrow(y) - dfA[length(RSS)])
-#   sigma2 <- mean(RSS, na.rm = TRUE) / (nrow(y) - mean(dfA, na.rm = TRUE)) # mean, else bias towards high lambda and alpha
-#   if (ic == "BIC")
-#     return(compute_BIC(y, dfA, RSS, sigma2))
-#   else if (ic == "AIC")
-#     return(compute_AIC(y, dfA, RSS, sigma2))
-#   else if (ic == "Cp")
-#     return(compute_Cp(y, dfA, RSS, sigma2))
-# }
-
 compute_BIC <- function(y, dfA, RSS, sigma2) { # BIC-like criterion
   BIC <- RSS/(nrow(y) * sigma2) + (log(nrow(y))/nrow(y)) * dfA
   return(BIC)
@@ -485,25 +390,6 @@ check_nCore <- function(nCore) {
   nCore
 }
 
-# #' @importFrom foreach %dopar%
-# tokenise_texts_parallel <- function(x, nCore) {
-#   cl <- parallel::makeCluster(min(parallel::detectCores(), nCore))
-#   doParallel::registerDoParallel(cl)
-#   N <- ifelse(inherits(x, "corpus"), quanteda::ndoc(x), length(x))
-#   blocks <- seq(0, N + 1, by = floor(N/nCore))
-#   blocks[length(blocks)] <- N
-#   tok <- foreach::foreach(i = 1:(length(blocks) - 1), .combine = '+') %dopar% {
-#     tokBit <- quanteda::tokens(
-#       x[(blocks[i] + 1):blocks[i + 1]], what = "fasterword", ngrams = 1,
-#       remove_numbers = TRUE, remove_punct = TRUE, remove_symbols = TRUE
-#     )
-#     return(tokBit)
-#   }
-#   parallel::stopCluster(cl)
-#   foreach::registerDoSEQ()
-#   tok
-# }
-
 nonzero_coeffs <- function(reg) {
   coeffs <- stats::coef(reg)
   df <- as.data.frame(as.matrix(coeffs))
@@ -514,12 +400,6 @@ nonzero_coeffs <- function(reg) {
   colnames(nz) <- NULL
   return(nz)
 }
-
-# pdf_manual <- function(wd) {
-#   setwd(wd)
-#   shell('R CMD Rd2pdf --encoding=UTF-8 sentometrics')
-#   setwd(paste0(wd, "/sentometrics"))
-# }
 
 # this function is directly taken from the sentimentr package
 # (the as_key() function) but copied to bring R version
