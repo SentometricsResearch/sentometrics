@@ -67,8 +67,8 @@ measures_fill <- function(sentomeasures, fill = "zero", dateBefore = NULL, dateA
     measuresFill[is.na(measuresFill)] <- 0
   } else if (fill == "latest") {
     if (!is.null(dateBefore)) measuresFill[1, 2:ncol(measures)] <- measures[1, -1]
-    measuresFill <- zoo::na.locf(measuresFill)
-  } else stop("Input variable 'fill' should be either 'zero', 'latest' or NA.")
+    measuresFill <- cbind(dt, as.data.table(fill_NAs(as.matrix(measuresFill[, -1]))))
+  } else stop("Input variable 'fill' should be either 'zero' or 'latest'.")
   measuresFill <- data.table(date = ts, measuresFill[, lapply(.SD, as.numeric), .SDcols = colnames(measures)[-1]])
 
   sentomeasures$fill <- fill # might become uninformative, if measures manipulated multiple times with different fill
@@ -302,7 +302,7 @@ measures_merge <- function(sentomeasures, features = NULL, lexicons = NULL, time
     measuresOld <- measures
     namesOld <- colnames(measures)
   }
-  # loop over lex(icon), feat(ure) and time lists
+  # loop over lexicons, features and time lists
   for (across in toMerge) {
     # loop over set of aggregation levels to merge (combine) into given name (e.g., lex12 = c("lex1", "lex2"))
     for (i in seq_along(across)) {
@@ -316,10 +316,12 @@ measures_merge <- function(sentomeasures, features = NULL, lexicons = NULL, time
         measures <- measures[, !sel, with = FALSE, drop = FALSE]
       }
       # take element-wise average for every row/column combination across columns to merge
-      if (ncol(ls[[1]] >= 2)) { # ncol across elements of ls is the same
-        all <- abind::abind(ls, along = 3)
+      if (ncol(ls[[1]]) >= 2) { # ncol across elements of ls is the same
+        all <- array(NA, dim = c(nrow(ls[[1]]), ncol(ls[[2]]), length(ls)))
+        for (k in 1:length(ls)) all[, , k] <- as.matrix(ls[[k]])
         merged <- apply(all, c(1, 2), mean, na.rm = TRUE)
-      } else merged <- rowSums(abind::abind(ls, along = 2))
+        colnames(merged) <- colnames(ls[[length(ls)]])
+      } else merged <- rowSums(do.call(cbind, ls))
       # insert new name at name location of aggregation level (e.g. "lex1--top1" + "lex2--top1" = "lex12--top1")
       nms <- stringi::stri_split(colnames(merged), regex = "--") # list
       loc <- which(stringi::stri_detect(nms[[1]], regex = elem))[1]

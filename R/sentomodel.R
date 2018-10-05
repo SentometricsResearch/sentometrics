@@ -657,7 +657,7 @@ summary.sentomodel <- function(object, ...) {
 
 #' @export
 print.sentomodel <- function(x, ...) {
-  cat("A sentomodel object.")
+  cat("A sentomodel object.", "\n")
 }
 
 #' @export
@@ -697,7 +697,7 @@ summary.sentomodeliter <- function(object, ...) {
 
 #' @export
 print.sentomodeliter <- function(x, ...) {
-  cat("A sentomodeliter object.")
+  cat("A sentomodeliter object.", "\n")
 }
 
 #' Plot iterative predictions versus realized values

@@ -45,11 +45,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// fill_NAs
+Rcpp::NumericMatrix fill_NAs(Rcpp::NumericMatrix x);
+RcppExport SEXP _sentometrics_fill_NAs(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(fill_NAs(x));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_sentometrics_compute_df", (DL_FUNC) &_sentometrics_compute_df, 3},
     {"_sentometrics_compute_sentiment_onegrams", (DL_FUNC) &_sentometrics_compute_sentiment_onegrams, 3},
     {"_sentometrics_compute_sentiment_valence", (DL_FUNC) &_sentometrics_compute_sentiment_valence, 3},
+    {"_sentometrics_fill_NAs", (DL_FUNC) &_sentometrics_fill_NAs, 1},
     {NULL, NULL, 0}
 };
 

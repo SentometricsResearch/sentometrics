@@ -13,3 +13,7 @@ compute_sentiment_valence <- function(texts, lexicons, how) {
     .Call(`_sentometrics_compute_sentiment_valence`, texts, lexicons, how)
 }
 
+fill_NAs <- function(x) {
+    .Call(`_sentometrics_fill_NAs`, x)
+}
+
