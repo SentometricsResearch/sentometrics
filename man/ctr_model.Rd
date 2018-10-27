@@ -27,7 +27,7 @@ performs the associated out-of-sample prediction exercise through time.}
 
 \item{h}{an \code{integer} value that shifts the time series to have the desired prediction setup; \code{h = 0} means
 no change to the input data (nowcasting assuming data is aligned properly), \code{h > 0} shifts the dependent variable by
-\code{h} periods (i.e. rows) further in time (forecasting), \code{h < 0} shifts the independent variables by \code{h}
+\code{h} periods (i.e., rows) further in time (forecasting), \code{h < 0} shifts the independent variables by \code{h}
 periods.}
 
 \item{oos}{a non-negative \code{integer} to indicate the number of periods to skip from the end of the training sample

@@ -11,7 +11,7 @@
 - modified information criterion estimators for edge cases to avoid them turning negative 
 - dropped the `"x"` output element from a `sentomodel` object (for large samples, this became too memory consuming)
 - dropped the `"howWithin"` output element from a `sentomeasures` object
-- expanded the `"do.shrinkage.x"` argument in the `ctr_model()` function to a vector argument
+- expanded the `do.shrinkage.x` argument in the `ctr_model()` function to a vector argument
 
 ## sentometrics 0.5.1
 
