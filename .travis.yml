@@ -16,7 +16,7 @@ script:
   # - Rscript -e 'devtools::install(); devtools::test()'
 
 r:
-  - devel
+  # - devel
   - release
   - oldrel
 
