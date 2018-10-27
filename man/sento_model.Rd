@@ -23,7 +23,6 @@ default set to \code{NULL}.}
 If \code{ctr$do.iter = FALSE}, a \code{sentomodel} object which is a \code{list} containing:
 \item{reg}{optimized regression, i.e. a model-specific \code{glmnet} object.}
 \item{model}{the input argument \code{ctr$model}, to indicate the type of model estimated.}
-\item{x}{a \code{matrix} of the values for all explanatory variables used in the regression.}
 \item{alpha}{calibrated alpha.}
 \item{lambda}{calibrated lambda.}
 \item{trained}{output from \code{\link[caret]{train}} call (if \code{ctr$type =} "\code{cv}"). There is no such

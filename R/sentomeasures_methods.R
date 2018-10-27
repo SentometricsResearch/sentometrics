@@ -231,7 +231,7 @@ summary.sentomeasures <- function(object, ...) {
   cat("Following scheme is applied for aggregation across documents:", sentomeasures$howDocs, "\n")
   cat("Following schemes are applied for aggregation across time:", sentomeasures$time, "\n")
   cat("\n")
-  cat("Aggregate statistics:", "\n")
+  cat("Aggregate average statistics:", "\n")
   print(round(rowMeans(sentomeasures$stats), 5))
   cat()
 }

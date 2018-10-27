@@ -64,8 +64,9 @@ or set to \code{10^seq(2, -2, length.out = 100)} in case of cross-validation.}
 \code{do.iter = FALSE}). For example, given 100 possible iterations, \code{start = 70} leads to model estimations
 only for the last 31 samples.}
 
-\item{do.shrinkage.x}{a \code{logical}, if \code{TRUE} other regressors provided through the \code{x} argument of
-the \code{\link{sento_model}} function are subject to shrinkage, else not.}
+\item{do.shrinkage.x}{a \code{logical} vector to indicate which of the other regressors provided through the \code{x}
+argument of the \code{\link{sento_model}} function should be subject to shrinkage (\code{TRUE}). If argument is of
+length one, it applies to all external regressors.}
 
 \item{do.progress}{a \code{logical}, if \code{TRUE} progress statements are displayed during model calibration.}
 

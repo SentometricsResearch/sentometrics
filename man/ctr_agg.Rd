@@ -12,15 +12,15 @@ ctr_agg(howWithin = "proportional", howDocs = "equal_weight",
 }
 \arguments{
 \item{howWithin}{a single \code{character} vector defining how aggregation within documents will be performed. Should
-\code{length(howWithin) > 1}, the first element is used. For currently available options on how aggregation can occur; see
-\code{\link{get_hows}()$words}.}
+\code{length(howWithin) > 1}, the first element is used. For currently available options on how this aggregation can
+occur; see \code{\link{get_hows}()$words}.}
 
 \item{howDocs}{a single \code{character} vector defining how aggregation across documents per date will be performed.
-Should \code{length(howDocs) > 1}, the first element is used. For currently available options on how aggregation can occur;
-see \code{\link{get_hows}()$docs}.}
+Should \code{length(howDocs) > 1}, the first element is used. For currently available options on how this aggregation
+can occur; see \code{\link{get_hows}()$docs}.}
 
 \item{howTime}{a \code{character} vector defining how aggregation across dates will be performed. More than one choice
-is possible. For currently available options on how aggregation can occur; see \code{\link{get_hows}()$time}.}
+is possible. For currently available options on how this aggregation can occur; see \code{\link{get_hows}()$time}.}
 
 \item{do.ignoreZeros}{a \code{logical} indicating whether zero sentiment values have to be ignored in the determination of
 the document weights while aggregating across documents. By default \code{do.ignoreZeros = TRUE}, such that documents with

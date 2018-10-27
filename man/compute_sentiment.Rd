@@ -30,12 +30,9 @@ value of 1 (default) implies no parallelisation. Parallelisation is expected to 
 computation only for sufficiently large corpora, say, in the order of having at least 100,000 documents.}
 }
 \value{
-If \code{x} is a \code{sentocorpus} object, a \code{sentiment} object, i.e., a \code{list} containing:
-\item{sentiment}{the sentiment scores \code{data.table} with an \code{"id"}, a \code{"date"} and a
-\code{"word_count"} column, and all lexicon--feature sentiment scores columns.}
-\item{features}{a \code{character} vector of the different features.}
-\item{lexicons}{a \code{character} vector of the different lexicons used.}
-\item{howWithin}{the supplied \code{how} argument.}
+If \code{x} is a \code{sentocorpus} object, a \code{sentiment} object, i.e., a \code{data.table} containing
+the sentiment scores \code{data.table} with an \code{"id"}, a \code{"date"} and a \code{"word_count"} column,
+and all lexicon--feature sentiment scores columns.
 
 A \code{sentiment} object can be used for aggregation into time series with the
 \code{\link{aggregate.sentiment}} function.

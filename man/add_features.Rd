@@ -55,10 +55,10 @@ corpus <- quanteda::corpus_sample(sento_corpus(corpusdf = usnews), 500)
 corpus1 <- add_features(corpus,
                         featuresdf = data.frame(random = runif(quanteda::ndoc(corpus))))
 corpus2 <- add_features(corpus,
-                        keywords = list(pres = "president", war = "war"))
-corpus3 <- add_features(corpus,
-                        keywords = list(pres = c("Obama", "US president")),
+                        keywords = list(pres = "president", war = "war"),
                         do.binary = FALSE)
+corpus3 <- add_features(corpus,
+                        keywords = list(pres = c("Obama", "US president")))
 corpus4 <- add_features(corpus,
                         featuresdf = data.frame(all = 1),
                         keywords = list(pres1 = "Obama|US [p|P]resident",
@@ -69,8 +69,8 @@ corpus4 <- add_features(corpus,
 sum(corpus3$documents$pres) == sum(corpus4$documents$pres2) # TRUE
 
 # adding a complementary feature
-nonpres <- data.frame(nonpres = as.numeric(!quanteda::docvars(corpus2)[["pres"]]))
-corpus2 <- add_features(corpus2,
+nonpres <- data.frame(nonpres = as.numeric(!quanteda::docvars(corpus3)[["pres"]]))
+corpus3 <- add_features(corpus3,
                         featuresdf = nonpres)
 
 }

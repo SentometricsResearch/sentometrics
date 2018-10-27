@@ -100,10 +100,9 @@ inline void update_primary_shifters(std::vector<int>& shifters,
 
 inline double compute_cluster_impact(std::vector<int> shifters) {
   int n = shifters[0] % 2; // 0 if even number of negators, 1 if odd number of negators
-  double z = 0.8;
-  double wA = z * (1 - n) * shifters[1]; // amplification impact
-  double wD = z * (n * shifters[1] + shifters[2]); // deamplification impact
-  double impact = 1 + std::max(wA - wD, -1.0);
+  double wA = (1 - n) * shifters[1]; // amplification impact
+  double wD = n * shifters[1] + shifters[2]; // deamplification impact
+  double impact = 1 + std::max(0.8 * (wA - wD), -1.0);
   if (n == 1) impact *= -1.0; // apply negation
   return(impact);
 }

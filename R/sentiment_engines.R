@@ -77,12 +77,9 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, nCore = 1) {
 #' value of 1 (default) implies no parallelisation. Parallelisation is expected to improve speed of the sentiment
 #' computation only for sufficiently large corpora, say, in the order of having at least 100,000 documents.
 #'
-#' @return If \code{x} is a \code{sentocorpus} object, a \code{sentiment} object, i.e., a \code{list} containing:
-#' \item{sentiment}{the sentiment scores \code{data.table} with an \code{"id"}, a \code{"date"} and a
-#' \code{"word_count"} column, and all lexicon--feature sentiment scores columns.}
-#' \item{features}{a \code{character} vector of the different features.}
-#' \item{lexicons}{a \code{character} vector of the different lexicons used.}
-#' \item{howWithin}{the supplied \code{how} argument.}
+#' @return If \code{x} is a \code{sentocorpus} object, a \code{sentiment} object, i.e., a \code{data.table} containing
+#' the sentiment scores \code{data.table} with an \code{"id"}, a \code{"date"} and a \code{"word_count"} column,
+#' and all lexicon--feature sentiment scores columns.
 #'
 #' A \code{sentiment} object can be used for aggregation into time series with the
 #' \code{\link{aggregate.sentiment}} function.
@@ -145,9 +142,8 @@ compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, 
   s <- cbind(id = quanteda::docnames(x), quanteda::docvars(x), s) # id - date - features - word_count - lexicons/sentiment
   sent <- spread_sentiment_features(s, features, lexNames) # compute feature-sentiment
   sent <- sent[order(date)] # order by date
-  sentOut <- list(sentiment = sent, features = features, lexicons = lexNames, howWithin = how)
-  class(sentOut) <- c("sentiment", class(sentOut))
-  sentOut
+  class(sent) <- c("sentiment", class(sent))
+  sent
 }
 
 #' @importFrom compiler cmpfun
@@ -156,11 +152,15 @@ compute_sentiment.sentocorpus <- compiler::cmpfun(.compute_sentiment.sentocorpus
 
 .compute_sentiment.corpus <- function(x, lexicons, how, tokens = NULL, nCore = 1) {
   nCore <- check_nCore(nCore)
-  isNumeric <- sapply(quanteda::docvars(x), is.numeric)
-  if (length(isNumeric) == 0) features <- NULL else features <- names(isNumeric[isNumeric])
+  if (ncol(quanteda::docvars(x)) == 0) {
+    features <- NULL
+  } else {
+    isNumeric <- sapply(quanteda::docvars(x), is.numeric)
+    if (sum(isNumeric) == 0) features <- NULL else features <- names(isNumeric[isNumeric])
+  }
   tok <- tokenise_texts(quanteda::texts(x), tokens)
   s <- compute_sentiment_lexicons(tok, lexicons, how, nCore) # compute sentiment per document for all lexicons
-  if (!is.null(features)) { # spread sentiment across features if present and reformat
+  if (!is.null(features)) { # spread sentiment across numeric features if present and reformat
       lexNames <- colnames(s)[-1]
       s <- cbind(id = quanteda::docnames(x), quanteda::docvars(x)[features], s)
       sent <- spread_sentiment_features(s, features, lexNames)[] # compute feature-sentiment per document for all lexicons
@@ -184,4 +184,107 @@ compute_sentiment.corpus <- compiler::cmpfun(.compute_sentiment.corpus)
 #' @importFrom compiler cmpfun
 #' @export
 compute_sentiment.character <- compiler::cmpfun(.compute_sentiment.character)
+
+#' Bind sentiment objects row-wise
+#'
+#' @author Samuel Borms
+#'
+#' @description Combines multiple sentiment objects with the same column names into a new sentiment object. Duplicates
+#' in terms of document identifiers across input objects are removed.
+#'
+#' @param ... \code{sentiment} objects to combine in the order given.
+#'
+#' @return A new, larger, \code{sentiment} object.
+#'
+#' @examples
+#' data("usnews", package = "sentometrics")
+#' data("list_lexicons", package = "sentometrics")
+#' data("list_valence_shifters", package = "sentometrics")
+#'
+#' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")])
+#'
+#' corp1 <- sento_corpus(corpusdf = usnews[1:200, ])
+#' corp2 <- sento_corpus(corpusdf = usnews[201:450, ])
+#' corp3 <- sento_corpus(corpusdf = usnews[401:700, ])
+#'
+#' sent1 <- compute_sentiment(corp1, l, how = "proportionalPol")
+#' sent2 <- compute_sentiment(corp2, l, how = "counts")
+#' sent3 <- compute_sentiment(corp3, l, how = "proportional")
+#'
+#' sent <- sentiment_bind(sent1, sent2, sent3)
+#' nrow(sent) # 700
+#'
+#' @export
+sentiment_bind <- function(...) {
+  all <- list(...)
+  if (!all(sapply(all, inherits, "sentiment")))
+    stop("Not all inputs are sentiment objects.")
+  if (!length(unique(sapply(all, ncol))) == 1)
+    stop("Column dimensions of sentiment objects are not all the same.")
+  if (!all(duplicated(t(sapply(all, colnames)))[2:length(all)]))
+    stop("Column names of sentiment objects are not all the same.")
+  s <- data.table::rbindlist(all)[order(date)]
+  s <- unique(s, by = "id")
+  class(s) <- c("sentiment", class(s))
+  s
+}
+
+#' Convert a sentiment table to a sentiment object
+#'
+#' @author Samuel Borms
+#'
+#' @description Converts a properly structured sentiment table into a \code{sentiment} object, that can be used
+#' for further aggregation with the \code{\link{aggregate.sentiment}} function. This allows to start from document-level
+#' sentiment scores not necessarily computed with \code{\link{compute_sentiment}}.
+#'
+#' @param s a \code{data.table} that can be converted into a \code{sentiment} object. It should have an \code{"id"},
+#' a \code{"date"} and a \code{"word_count"} column. If other column names are provided with a separating \code{"--"},
+#' the first part is considered the lexicon (or more generally, the sentiment computation method), and the second part
+#' the feature. For sentiment column names without any \code{"--"}, a \code{"dummyFeature"} component is added.
+#'
+#' @return A \code{sentiment} object.
+#'
+#' @examples
+#' set.seed(505)
+#'
+#' ids <- paste0("id", 1:200)
+#' date <- sample(seq(as.Date("2015-01-01"), as.Date("2018-01-01"), by = "day"), 200, replace = TRUE)
+#' word_count <- sample(150:850, 200, replace = TRUE)
+#' sent <- matrix(rnorm(200 * 8), nrow =  200)
+#' s1 <- s2 <- s3 <- data.table(id = ids, date = date, word_count = word_count, sent)
+#' m <- "method"
+#'
+#' colnames(s1)[-c(1:3)] <- paste0(m, 1:8)
+#' sent1 <- to_sentiment(s1)
+#'
+#' colnames(s2)[-c(1:3)] <- c(paste0(m, 1:4, "--", "feat1"), paste0(m, 1:4, "--", "feat2"))
+#' sent2 <- to_sentiment(s2)
+#'
+#' colnames(s3)[-c(1:3)] <- c(paste0(m, 1:3, "--", "feat1"), paste0(m, 1:3, "--", "feat2"),
+#'                            paste0(m, 4:5))
+#' sent3 <- to_sentiment(s3)
+#'
+#' @export
+to_sentiment <- function(s) {
+  stopifnot(is.data.table(s))
+  colNames <- colnames(s)
+  if (any(duplicated(colNames)))
+    stop("No duplicated column names allowed.")
+  if (!all(colNames[1:3] == c("id", "date", "word_count")))
+    stop("The input object 's' should have an 'id', a 'date' and a 'word_count' column, in that order.")
+  if (!inherits(s[["id"]], "character"))
+    stop("The 'id' column should be of type character.")
+  if (!inherits(s[["date"]], "Date"))
+    stop("The 'date' column should be of type Date.")
+  if (!all(sapply(4:ncol(s), function(i) inherits(s[[i]], "numeric"))))
+    stop("All sentiment value columns should be of type numeric.")
+  newNames <- sapply(stringi::stri_split(colNames[4:ncol(s)], regex = "--"), function(name) {
+    if (length(name) == 1) return(paste0(name, "--", "dummyFeature"))
+    else if (length(name) >= 2) return(paste0(name[1], "--", name[2]))
+  })
+  setnames(s, c("id", "date", "word_count", newNames))
+  s <- s[order(date)]
+  class(s) <- c("sentiment", class(s))
+  s
+}
 

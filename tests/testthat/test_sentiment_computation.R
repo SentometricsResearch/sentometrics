@@ -36,16 +36,15 @@ sentimentList <- list(
 
 # compute_sentiment
 test_that("Agreement between sentiment scores across input objects", {
-  expect_true(all(unlist(lapply(sentimentList, function(s) nrow(s$sentiment) == 250))))
-  expect_true(all(unlist(lapply(sentimentList, function(s) all(s$sentiment$word_count
-                                                               == sentimentList$s1$sentiment$word_count)))))
+  expect_true(all(unlist(lapply(sentimentList, function(s) nrow(s) == 250))))
+  expect_true(all(unlist(lapply(sentimentList, function(s) all(s$word_count == sentimentList$s1$word_count)))))
   expect_true(all(sentimentList$s8[, c("GI_en_POS", "LM_en_POS", "HENRY_en_POS")] >= 0))
   expect_true(all(sentimentList$s8[, c("GI_en_NEG", "LM_en_NEG", "HENRY_en_NEG")] <= 0))
   # expect_true(all(sentimentList$s4 == sentimentList$s9))
   expect_equivalent(sentimentList$s1[, c("GI_en", "LM_en", "HENRY_en")],
                     sentimentList$s5[, c("GI_en", "LM_en", "HENRY_en")])
   expect_equivalent(sentimentList$s6[, -c(1:2)],
-                    sentimentList$s7$sentiment[, colnames(sentimentList$s6)[-c(1:2)], with = FALSE])
+                    sentimentList$s7[, colnames(sentimentList$s6)[-c(1:2)], with = FALSE])
   expect_error(compute_sentiment(quanteda::texts(corpus), lex, how = "notAnOption"))
   expect_warning(compute_sentiment(quanteda::texts(corpus), lex, how = "counts", nCore = -1))
   expect_error(compute_sentiment(quanteda::texts(corpus), list_lexicons))
@@ -57,5 +56,26 @@ test_that("Proper fails when issues with lexicons and valence shifters input", {
   expect_error(sento_lexicons(list_lexicons["GI_en"], valenceIn = data.table(x = rep("w", 10))))
   expect_error(sento_lexicons(list_lexicons["GI_en"], valenceIn = data.table(x = "w", wrong = 1:3)))
   expect_error(sento_lexicons(list_lexicons["GI_en"], valenceIn = data.table(x = "w", t = 2:4)))
+})
+
+# to_sentiment
+sA <- sAw1 <- sAw2 <- sAw3 <- sentimentList[["s7"]]
+colnames(sAw1)[1:3] <- letters[1:3]
+colnames(sAw2)[5:6] <- letters[1]
+sAw3[[7]] <- "notNumeric"
+test_that("Correct or failed conversion to a sentiment object", {
+  expect_true(inherits(to_sentiment(sA), "sentiment"))
+  expect_error(to_sentiment(sAw1))
+  expect_error(to_sentiment(sAw2))
+  expect_error(to_sentiment(sAw3))
+})
+
+# sentiment_bind
+sB <- sA
+sB$id <- paste0("idNew", 1:nrow(sB))
+test_that("Correct binding of several sentiment objects", {
+  expect_true(nrow(sentiment_bind(sA, sB, sA)) == (2 * nrow(sA)))
+  expect_true(ncol(sentiment_bind(sentimentList$s7, sentimentList$s11)) == ncol(sentimentList$s7))
+  expect_error(sentiment_bind(sentimentList$s1, sentimentList$s2))
 })
 

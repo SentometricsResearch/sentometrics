@@ -10,13 +10,13 @@
 #' \code{howDocs} and \code{howTime} arguments), call \code{\link{get_hows}}.
 #'
 #' @param howWithin a single \code{character} vector defining how aggregation within documents will be performed. Should
-#' \code{length(howWithin) > 1}, the first element is used. For currently available options on how aggregation can occur; see
-#' \code{\link{get_hows}()$words}.
+#' \code{length(howWithin) > 1}, the first element is used. For currently available options on how this aggregation can
+#' occur; see \code{\link{get_hows}()$words}.
 #' @param howDocs a single \code{character} vector defining how aggregation across documents per date will be performed.
-#' Should \code{length(howDocs) > 1}, the first element is used. For currently available options on how aggregation can occur;
-#' see \code{\link{get_hows}()$docs}.
+#' Should \code{length(howDocs) > 1}, the first element is used. For currently available options on how this aggregation
+#' can occur; see \code{\link{get_hows}()$docs}.
 #' @param howTime a \code{character} vector defining how aggregation across dates will be performed. More than one choice
-#' is possible. For currently available options on how aggregation can occur; see \code{\link{get_hows}()$time}.
+#' is possible. For currently available options on how this aggregation can occur; see \code{\link{get_hows}()$time}.
 #' @param do.ignoreZeros a \code{logical} indicating whether zero sentiment values have to be ignored in the determination of
 #' the document weights while aggregating across documents. By default \code{do.ignoreZeros = TRUE}, such that documents with
 #' a raw sentiment score of zero or for which a given feature indicator is equal to zero are considered irrelevant.
@@ -185,7 +185,6 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #' \item{sentiment}{the sentiment scores \code{data.table} with \code{"date"}, \code{"word_count"} and lexicon--feature
 #' sentiment scores columns.
 #' If \code{ctr$do.ignoreZeros = TRUE}, all zeros are replaced by \code{NA}.}
-#' \item{howWithin}{a single \code{character} vector to remind how sentiment within documents was aggregated.}
 #' \item{howDocs}{a single \code{character} vector to remind how sentiment across documents was aggregated.}
 #' \item{fill}{a single \code{character} vector that specifies if and how missing dates have been added before
 #' aggregation across time was carried out.}
@@ -271,9 +270,11 @@ aggregate.sentiment <- function(x, ctr, ...) {
 
 aggregate_docs <- function(sentiment, by, how = get_hows()$docs, do.ignoreZeros = TRUE) {
 
-  features <- sentiment$features
-  lexNames <- sentiment$lexicons
-  sent <- sentiment[["sentiment"]]
+  names <- stringi::stri_split(colnames(sentiment)[4:ncol(sentiment)], regex = "--")
+  lexNames <- unique(sapply(names, "[", 1))
+  features <- unique(sapply(names, "[", 2))
+
+  sent <- sentiment
   attribWeights <- list(W = NA, B = NA) # list with weights useful in later attribution analysis
 
   # reformat dates so they can be aggregated at the specified 'by' level, and cast to Date format
@@ -326,7 +327,6 @@ aggregate_docs <- function(sentiment, by, how = get_hows()$docs, do.ignoreZeros 
                         sentiment = sent, # zeros replaced by NAs if do.ignoreZeros = TRUE
                         stats = NA,
                         by = by,
-                        howWithin = sentiment$howWithin,
                         howDocs = how,
                         fill = NA,
                         do.ignoreZeros = do.ignoreZeros,
@@ -423,6 +423,7 @@ aggregate_time <- function(sentomeasures, lag, fill, how = get_hows()$time, ...)
 #' @export
 peakdocs <- function(sentomeasures, sentocorpus, n = 10, type = "both", do.average = FALSE) {
   check_class(sentomeasures, "sentomeasures")
+  stopifnot(type %in% c("both", "neg", "pos"))
 
   measures <- get_measures(sentomeasures)[, -1] # drop dates
   m <- nmeasures(sentomeasures)

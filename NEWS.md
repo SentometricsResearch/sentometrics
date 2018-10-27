@@ -1,16 +1,22 @@
 
 ## sentometrics 0.5.5 (development)
 
+- new functions: `sentiment_bind()`, and `to_sentiment()`
 - defined replacement (of lexicons and names) for a `sentolexicons` object
 - properly handled `lag = 1` in the `ctr_agg()` function, and set weights to 1 by default for `n = 1` in the `weights_beta()` function
 - solved single failing test for older R version (3.4.4)
 - removed the **`abind`** package from Imports
 - removed the **`zoo`** package from Imports, by replacing the single occurrence of the `zoo::na.locf()` function by the `fill_NAs()` helper function (written in **`Rcpp`**)
+- extended the `quanteda::docvars()` replacement method to a `sentocorpus` object
+- modified information criterion estimators for edge cases to avoid them turning negative 
+- dropped the `"x"` output element from a `sentomodel` object (for large samples, this became too memory consuming)
+- dropped the `"howWithin"` output element from a `sentomeasures` object
+- expanded the `"do.shrinkage.x"` argument in the `ctr_model()` function to a vector argument
 
 ## sentometrics 0.5.1
 
 - minor modifications to resolve few CRAN issues
-- set default value of `nCore` argument from the `compute_sentiment()` and `ctr_agg()` functions to 1
+- set default value of `nCore` argument in the `compute_sentiment()` and `ctr_agg()` functions to 1
 - classed the output of the `compute_sentiment.sentocorpus()` function as a `sentiment` object, and modified the `aggregate()` function to `aggregate.sentiment()`
 
 ## sentometrics 0.5.0
@@ -28,7 +34,7 @@
 - omitted `do.combine` argument in `measures_delete()` and `measures_select()` functions to simplify
 - expanded set of unit tests, included a coverage badge, and added **`covr`** to Suggests
 - reimplementation (and improved documentation) of the sentiment calculation in the `compute_sentiment()` function, by writing part of the code in **`Rcpp`** relying on **`RcppParallel`** (added to Imports); there are now three approaches to computing sentiment (unigrams, bigrams and clusters)
-- replaced the `dfm` argument from the `compute_sentiment()` and `ctr_agg()` functions by a `tokens` argument, and altered the input and behaviour of the `nCore` argument in these same two functions
+- replaced the `dfm` argument in the `compute_sentiment()` and `ctr_agg()` functions by a `tokens` argument, and altered the input and behaviour of the `nCore` argument in these same two functions
 - switched from the **`quanteda`** package to the **`stringi`** package for more direct tokenisation
 - trimmed the `list_lexicons` and `list_valence_shifters` built-in word lists by keeping only unigrams, and included same trimming procedure in the `sento_lexicons()` function
 - added a type column `"t"` to the `list_valence_shifters` built-in word list, and reset values of the `"y"` column from 2 to 1.8 and from 0.5 to 0.2

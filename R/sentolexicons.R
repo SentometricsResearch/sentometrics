@@ -109,11 +109,11 @@ sento_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 
 #' @export
 `[.sentolexicons` <- function(x, i, ...) {
-  xx <- NextMethod("[")
-  if (length(xx) == 0 || length(xx) > length(x) || any(is.na(names(xx)))) stop("Indexing out of bounds.")
-  if (all(names(xx) == "valence")) stop("Keep at least one lexicon (on top of a table of valence shifters).")
-  class(xx) <- class(x)
-  xx
+  xNew <- NextMethod("[")
+  if (length(xNew) == 0 || length(xNew) > length(x) || any(is.na(names(xNew)))) stop("Indexing out of bounds.")
+  if (all(names(xNew) == "valence")) stop("Keep at least one lexicon (on top of a table of valence shifters).")
+  class(xNew) <- class(x)
+  xNew
 }
 
 #' @export
@@ -131,6 +131,7 @@ sento_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
   stop("Replacement not allowed.")
 }
 
+#' @export
 `names<-.sentolexicons` <- function(x, value) {
   if (any(duplicated(value))) stop("No duplicated names allowed.")
   NextMethod("names<-")

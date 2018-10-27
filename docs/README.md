@@ -27,7 +27,7 @@ Outputs a _`sentolexicons`_ object, and a _`sentiment`_ object or a sentiment sc
 
 Functions: `ctr_agg()`, `sento_measures()`, `plot()`, `aggregate()`, `peakdocs()`, `diff()`, `scale()`, and `summary()`.
 
-A bunch of functions to manipulate the sentiment measures are available (`measures_merge()`, `measures_global()`, `measures_subset()`, `measures_select()`, `measures_delete()`, and `measures_fill()`), as well as a number of convenient extractor functions (`nobs()`, `nmeasures()`, `get_dimensions()`, and `get_dates()`). Make use of them to facilitate your analysis!
+A bunch of functions to manipulate the sentiment measures are available (`measures_merge()`, `measures_global()`, `measures_subset()`, `measures_select()`, `measures_delete()`, and `measures_fill()`), as well as a number of convenient extractor functions (`nobs()`, `nmeasures()`, `get_dimensions()`, `get_dates()` and `get_measures()`). Make use of them to facilitate your analysis!
 
 Outputs a _`sentomeasures`_ object.
 
@@ -39,7 +39,7 @@ Outputs a _`sentomodel`_ or a _`sentomodeliter`_ object.
 
 **Step 5**: Evaluate prediction performance and retrieve sentiment attributions
 
-Functions: `predict()`, `attributions()`, `get_loss_data()`, `summary()`, and `plot()`.
+Functions: `predict()`, `attributions()` (which outputs a _`attributions`_ object), `get_loss_data()`, `summary()`, and `plot()`.
 
 ## For you to read
 

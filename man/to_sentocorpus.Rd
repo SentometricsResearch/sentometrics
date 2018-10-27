@@ -18,8 +18,8 @@ in the input \code{corpus}.}
 A \code{sentocorpus} object, as returned by the \code{\link{sento_corpus}} function.
 }
 \description{
-Converts a \code{\link[quanteda]{corpus}} object into a \code{sentocorpus} object, by adding
-user-supplied dates and doing proper rearranging.
+Converts a \pkg{quanteda} \code{\link[quanteda]{corpus}} object into a \code{sentocorpus} object, by
+adding user-supplied dates and doing proper rearranging.
 }
 \examples{
 data("usnews", package = "sentometrics")

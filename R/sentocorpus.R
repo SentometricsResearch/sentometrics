@@ -49,6 +49,13 @@
 #' # deleting a feature
 #' quanteda::docvars(corpus, field = "wapo") <- NULL
 #'
+#' # deleting all features results in the addition of a dummy feature
+#' quanteda::docvars(corpus, field = c("economy", "noneconomy", "wsj")) <- NULL
+#'
+#' \dontrun{
+#' # to add or replace features, use the add_features() function...
+#' quanteda::docvars(corpus, field = c("wsj", "new")) <- 1}
+#'
 #' # corpus creation when no features are present
 #' corpusDummy <- sento_corpus(corpusdf = usnews[, 1:3])
 #'
@@ -132,8 +139,8 @@ clean_texts <- function(corpusdf) {
 #'
 #' @author Samuel Borms
 #'
-#' @description Converts a \code{\link[quanteda]{corpus}} object into a \code{sentocorpus} object, by adding
-#' user-supplied dates and doing proper rearranging.
+#' @description Converts a \pkg{quanteda} \code{\link[quanteda]{corpus}} object into a \code{sentocorpus} object, by
+#' adding user-supplied dates and doing proper rearranging.
 #'
 #' @param corpus a quanteda \code{\link[quanteda]{corpus}} object.
 #' @param dates a sequence of dates as \code{"yyyy-mm-dd"}, of the same length as the number of documents
@@ -214,10 +221,10 @@ to_sentocorpus <- function(corpus, dates, do.clean = FALSE) {
 #' corpus1 <- add_features(corpus,
 #'                         featuresdf = data.frame(random = runif(quanteda::ndoc(corpus))))
 #' corpus2 <- add_features(corpus,
-#'                         keywords = list(pres = "president", war = "war"))
-#' corpus3 <- add_features(corpus,
-#'                         keywords = list(pres = c("Obama", "US president")),
+#'                         keywords = list(pres = "president", war = "war"),
 #'                         do.binary = FALSE)
+#' corpus3 <- add_features(corpus,
+#'                         keywords = list(pres = c("Obama", "US president")))
 #' corpus4 <- add_features(corpus,
 #'                         featuresdf = data.frame(all = 1),
 #'                         keywords = list(pres1 = "Obama|US [p|P]resident",
@@ -228,13 +235,16 @@ to_sentocorpus <- function(corpus, dates, do.clean = FALSE) {
 #' sum(corpus3$documents$pres) == sum(corpus4$documents$pres2) # TRUE
 #'
 #' # adding a complementary feature
-#' nonpres <- data.frame(nonpres = as.numeric(!quanteda::docvars(corpus2)[["pres"]]))
-#' corpus2 <- add_features(corpus2,
+#' nonpres <- data.frame(nonpres = as.numeric(!quanteda::docvars(corpus3)[["pres"]]))
+#' corpus3 <- add_features(corpus3,
 #'                         featuresdf = nonpres)
 #'
 #' @export
 add_features <- function(corpus, featuresdf = NULL, keywords = NULL, do.binary = TRUE, do.regex = FALSE) {
   check_class(corpus, "corpus")
+
+  classIn <- class(corpus)
+  class(corpus) <- c("corpus", "list") # needed to avoid use of `docvars<-.sentocorpus`() function
 
   if (!is.null(featuresdf)) {
     stopifnot(is.data.frame(featuresdf))
@@ -242,8 +252,8 @@ add_features <- function(corpus, featuresdf = NULL, keywords = NULL, do.binary =
       stop("At least one feature's name in 'featuresdf' contains '-'. Please provide proper names.")
     features <- stringi::stri_replace_all(colnames(featuresdf), "_", regex = " ")
     isNumeric <- sapply(featuresdf, is.numeric)
-    mins <- sapply(featuresdf, min, na.rm = TRUE) >= 0
-    maxs <- sapply(featuresdf, max, na.rm = TRUE) <= 1
+    mins <- sapply(featuresdf, function(col) tryCatch(min(col, na.rm = TRUE) >= 0, error = function(e) FALSE))
+    maxs <- sapply(featuresdf, function(col) tryCatch(max(col, na.rm = TRUE) <= 1, error = function(e) FALSE))
     check <- sapply(1:length(features), function(j) return(all(c(isNumeric[j], mins[j], maxs[j]))))
     toAdd <- which(check) # logical vector
     for (i in toAdd) {
@@ -251,7 +261,7 @@ add_features <- function(corpus, featuresdf = NULL, keywords = NULL, do.binary =
     }
     if (length(toAdd) != length(check))
         warning(paste0("Following columns are not added as they are not of type numeric or have values outside [0, 1]: ",
-                       paste0(colnames(featuresdf)[which(!check)], collapse = ", ")))
+                       paste0(colnames(featuresdf)[which(!check)], collapse = ", ")), call. = FALSE)
   }
   if (!is.null(keywords)) {
     stopifnot(is.logical(do.binary) && is.logical(do.regex))
@@ -286,6 +296,28 @@ add_features <- function(corpus, featuresdf = NULL, keywords = NULL, do.binary =
       }
     }
   }
-  return(corpus)
+  class(corpus) <- classIn
+  corpus
+}
+
+#' @importFrom quanteda docvars<-
+#' @export
+`docvars<-.sentocorpus` <- function(x, field, value) {
+  if (!is.null(value)) {
+    stop("To add or replace features, use the add_features() function.", call. = FALSE)
+  } else {
+    # xNew <- NextMethod("docvars<-")
+    xNew <- x
+    class(xNew) <- c("corpus", "list")
+    quanteda::docvars(xNew, field = field) <- value
+    vars <- colnames(quanteda::docvars(xNew))
+    if (!("date" %in% vars)) stop("You cannot remove the 'date' column from a sentocorpus object.", call. = FALSE)
+    if (length(vars) == 1) {
+      xNew <- add_features(xNew, featuresdf = data.frame(dummyFeature = 1))
+      warning("No remaining features. A 'dummyFeature' feature valued at 1 throughout is added.", call. = FALSE)
+    }
+  }
+  class(xNew) <- class(x)
+  xNew
 }
 

@@ -25,7 +25,6 @@ average correlation with all other measures) for each individual sentiment measu
 \item{sentiment}{the sentiment scores \code{data.table} with \code{"date"}, \code{"word_count"} and lexicon--feature
 sentiment scores columns.
 If \code{ctr$do.ignoreZeros = TRUE}, all zeros are replaced by \code{NA}.}
-\item{howWithin}{a single \code{character} vector to remind how sentiment within documents was aggregated.}
 \item{howDocs}{a single \code{character} vector to remind how sentiment across documents was aggregated.}
 \item{fill}{a single \code{character} vector that specifies if and how missing dates have been added before
 aggregation across time was carried out.}
