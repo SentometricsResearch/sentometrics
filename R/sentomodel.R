@@ -16,7 +16,7 @@
 #' @param do.intercept a \code{logical}, \code{TRUE} by default fits an intercept.
 #' @param h an \code{integer} value that shifts the time series to have the desired prediction setup; \code{h = 0} means
 #' no change to the input data (nowcasting assuming data is aligned properly), \code{h > 0} shifts the dependent variable by
-#' \code{h} periods (i.e. rows) further in time (forecasting), \code{h < 0} shifts the independent variables by \code{h}
+#' \code{h} periods (i.e., rows) further in time (forecasting), \code{h < 0} shifts the independent variables by \code{h}
 #' periods.
 #' @param alphas a \code{numeric} vector of the alphas to test for during calibration, between 0 and 1. A value of
 #' 0 pertains to Ridge regression, a value of 1 to LASSO regression; values in between are pure elastic net.
@@ -206,7 +206,8 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' @param ctr output from a \code{\link{ctr_model}} call.
 #'
 #' @return If \code{ctr$do.iter = FALSE}, a \code{sentomodel} object which is a \code{list} containing:
-#' \item{reg}{optimized regression, i.e. a model-specific \code{glmnet} object.}
+#' \item{reg}{optimized regression, i.e., a model-specific \code{glmnet} object, including for example the estimated
+#' coefficients.}
 #' \item{model}{the input argument \code{ctr$model}, to indicate the type of model estimated.}
 #' \item{alpha}{calibrated alpha.}
 #' \item{lambda}{calibrated lambda.}
@@ -214,7 +215,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' output if the control parameters \code{alphas} and \code{lambdas} both specify one value.}
 #' \item{ic}{a \code{list} composed of two elements: under \code{"criterion"}, the type of information criterion used in the
 #' calibration, and under \code{"matrix"}, a \code{matrix} of all information criterion values for \code{alphas} as rows
-#' and the respective lambda values as columns (if \code{ctr$type !=} "\code{cv}"). Any \code{NA} value in the latter
+#' and the respective lambda values as columns (if \code{ctr$type != } "\code{cv}"). Any \code{NA} value in the latter
 #' element means the specific information criterion could not be computed.}
 #' \item{dates}{sample reference dates as a two-element \code{character} vector, being the earliest and most recent date from
 #' the \code{sentomeasures} object accounted for in the estimation window.}
@@ -225,9 +226,8 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' not considered when it is a duplicate of another, or when at least 50\% of the observations are equal to zero.}
 #'
 #' @return If \code{ctr$do.iter = TRUE}, a \code{sentomodeliter} object which is a \code{list} containing:
-#' \item{models}{all sparse regressions, i.e. separate \code{sentomodel} objects as above, as a \code{list} with as names the
-#' dates from the perspective of the sentiment measures at which predictions for performance measurement are carried out (i.e.
-#' one date step beyond the date \code{sentomodel$dates[2]}).}
+#' \item{models}{all sparse regressions, i.e., separate \code{sentomodel} objects as above, as a \code{list} with as names the
+#' dates from the perspective of the sentiment measures at which predictions for performance measurement are carried out.}
 #' \item{alphas}{calibrated alphas.}
 #' \item{lambdas}{calibrated lambdas.}
 #' \item{performance}{a \code{data.frame} with performance-related measures, being "\code{RMSFE}" (root mean squared
@@ -758,10 +758,10 @@ plot.sentomodeliter <- function(x, ...) {
 #' \code{predict.glmnet}, but simplified in terms of parameters.
 #'
 #' @param object a \code{sentomodel} object created with \code{\link{sento_model}}.
-#' @param newx a \code{matrix} of \code{numeric} values with all explanatory variables to be used for the prediction(s),
-#' structured row-by-row; see documentation for \code{\link{predict.glmnet}}. The number of variables should be equal to
-#' \code{sum(sentomodel$nVar)}, being the number of original explanatory variables (sentiment measures and other).
-#' Variables discarded in the regression process are discarded again here, based on \code{sentomodel$discarded}.
+#' @param newx a data \code{matrix} to be used for the prediction(s), structured row-by-row; see
+#' \code{\link{predict.glmnet}}. The number of variables should be equal to \code{sum(sentomodel$nVar)}, being the
+#' number of original sentiment measures and other variables. The variables discarded in the regression process are
+#' dealt with within this function, based on \code{sentomodel$discarded}.
 #' @param type type of prediction required, a value from \code{c("link", "response", "class")}, see documentation for
 #' \code{\link{predict.glmnet}}.
 #' @param offset not used.
@@ -773,10 +773,13 @@ plot.sentomodeliter <- function(x, ...) {
 #'
 #' @export
 predict.sentomodel <- function(object, newx, type, offset = NULL, ...) {
+  stopifnot(is.matrix(newx))
   sentomodel <- object
   reg <- sentomodel$reg
   discarded <- sentomodel$discarded
-  idx <- c(!discarded, rep(TRUE, (sum(sentomodel$nVar) - length(discarded)))) # TRUE means variable to keep for prediction
+  n <- sum(sentomodel$nVar)
+  if (n != ncol(newx)) stop("Number of columns in 'newx' not equal to the required number of input variables.")
+  idx <- c(!discarded, rep(TRUE, (n - length(discarded)))) # TRUE means variable to keep for prediction
   newx <- newx[, idx, drop = FALSE]
   pred <- stats::predict(reg, newx = newx, type = type, offset = NULL)
   return(pred)

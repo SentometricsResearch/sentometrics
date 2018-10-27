@@ -21,7 +21,8 @@ default set to \code{NULL}.}
 }
 \value{
 If \code{ctr$do.iter = FALSE}, a \code{sentomodel} object which is a \code{list} containing:
-\item{reg}{optimized regression, i.e. a model-specific \code{glmnet} object.}
+\item{reg}{optimized regression, i.e., a model-specific \code{glmnet} object, including for example the estimated
+coefficients.}
 \item{model}{the input argument \code{ctr$model}, to indicate the type of model estimated.}
 \item{alpha}{calibrated alpha.}
 \item{lambda}{calibrated lambda.}
@@ -29,7 +30,7 @@ If \code{ctr$do.iter = FALSE}, a \code{sentomodel} object which is a \code{list}
 output if the control parameters \code{alphas} and \code{lambdas} both specify one value.}
 \item{ic}{a \code{list} composed of two elements: under \code{"criterion"}, the type of information criterion used in the
 calibration, and under \code{"matrix"}, a \code{matrix} of all information criterion values for \code{alphas} as rows
-and the respective lambda values as columns (if \code{ctr$type !=} "\code{cv}"). Any \code{NA} value in the latter
+and the respective lambda values as columns (if \code{ctr$type != } "\code{cv}"). Any \code{NA} value in the latter
 element means the specific information criterion could not be computed.}
 \item{dates}{sample reference dates as a two-element \code{character} vector, being the earliest and most recent date from
 the \code{sentomeasures} object accounted for in the estimation window.}
@@ -40,9 +41,8 @@ indicates that the particular sentiment measure has not been considered in the r
 not considered when it is a duplicate of another, or when at least 50\% of the observations are equal to zero.}
 
 If \code{ctr$do.iter = TRUE}, a \code{sentomodeliter} object which is a \code{list} containing:
-\item{models}{all sparse regressions, i.e. separate \code{sentomodel} objects as above, as a \code{list} with as names the
-dates from the perspective of the sentiment measures at which predictions for performance measurement are carried out (i.e.
-one date step beyond the date \code{sentomodel$dates[2]}).}
+\item{models}{all sparse regressions, i.e., separate \code{sentomodel} objects as above, as a \code{list} with as names the
+dates from the perspective of the sentiment measures at which predictions for performance measurement are carried out.}
 \item{alphas}{calibrated alphas.}
 \item{lambdas}{calibrated lambdas.}
 \item{performance}{a \code{data.frame} with performance-related measures, being "\code{RMSFE}" (root mean squared
