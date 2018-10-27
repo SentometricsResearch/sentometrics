@@ -236,20 +236,21 @@ align_variables <- function(y, sentomeasures, x, h, difference, i = 1, nSample =
 
 clean_panel <- function(x, nx, threshold = 0.50) {
 
-  # discards columns from panel of explanatory variables based on a few simple rules
+  # discards columns from panel of sentiment variables based on a few simple rules
   # useful to simplify (to some extent) the penalized variables regression (cf. 'exclude')
 
-  if (nx != 0) { # do not perform cleaning on last nx variables
+  if (nx != 0) { # do not perform cleaning on non-sentiment variables not to shrink
     start <- ncol(x) - nx + 1
     end <- ncol(x)
-    xx <- x[, -(start:end)] # drop non-sentiment variables if no shrinkage imposed on these variables
+    xx <- x[, -(start:end)]
   } else xx <- x
   xx[is.na(xx)] <- 0 # check
   duplics <- duplicated(as.matrix(xx), MARGIN = 2) # duplicated columns
   manyZeros <- (colSums(as.matrix(xx) == 0, na.rm = TRUE) / nrow(xx)) > threshold # columns with too many zeros
   toDiscard <- duplics | manyZeros
-  if (ncol(xx) == 1) stop("No explanatory variables retained after cleaning: too many duplicated columns and/or zeros.")
-  else {
+  if (ncol(xx) == 1) {
+    stop("No explanatory variables retained after cleaning: too many duplicated columns and/or zeros.")
+  } else {
     if (nx != 0) {
       xNew <- cbind(xx[, !toDiscard], x[, start:end])
       colnames(xNew) <- c(names(which(!toDiscard)), colnames(x[, start:end, drop = FALSE]))
@@ -431,6 +432,7 @@ sento_as_key <- function (x, ...) {
     stop("Column 1 must be character.")
   if (!is.numeric(x[[2]]))
     stop("Column 2 must be numeric.")
+  x[[2]] <- as.numeric(x[[2]])
   colnames(x) <- c("x", "y")
   data.table::setDT(x)
   x <- x[order(x), ]
@@ -463,34 +465,14 @@ get_names_lags <- function(nLags) {
                                                   paste0(c(rep("0", k - nchar(n)), n), collapse = ""))))
 }
 
-check_sentiment_format <- function(sentiment) {
-  errMessage <- "The 'sentiment' input is not appropriate. It should be computed from a 'sentocorpus' object."
-  if (!is.list(sentiment)) {
-    stop(errMessage)
-  } else if (!all(names(sentiment) %in% c("sentiment", "features", "lexicons", "howWithin"))) {
-      stop(errMessage)
-  } else {
-    s <- sentiment[["sentiment"]]
-    if (!all(colnames(s)[1:3] %in% c("id", "date", "word_count")))
-      stop(errMessage)
-    else if (ncol(s) != 3 + length(sentiment$features) * length(sentiment$lexicons))
-      stop(errMessage)
-    else if (!inherits(s[["id"]], "character"))
-      stop(errMessage)
-    else if (!inherits(s[["date"]], "Date"))
-      stop(errMessage)
-    else if (!all(sapply(3:ncol(s), function(i) inherits(s[[i]], "numeric"))))
-      stop(errMessage)
-  }
-}
-
 plot_theme <- function(legendPos) { # plotting specifications (border and grid)
   theme(
     legend.title = element_blank(),
     legend.position = legendPos,
     panel.background = element_rect(colour = "black", size = 0.35),
     panel.grid.major = element_line(colour = "grey95", size = 0.10),
-    panel.grid.minor = element_line(colour = "grey95", size = 0.10)
+    panel.grid.minor = element_line(colour = "grey95", size = 0.10),
+    plot.margin = unit(c(0.20, 0.35, 0.20, 0.20), "cm")
   )
 }
 

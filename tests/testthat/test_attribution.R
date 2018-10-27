@@ -9,26 +9,26 @@ set.seed(123)
 # corpus, lexicon and aggregation control creation
 data("usnews")
 corpus <- quanteda::corpus_sample(
-  quanteda::corpus_subset(sento_corpus(corpusdf = usnews), date >= "1990-01-01" & date < "2000-10-01"),
-  1000
+  quanteda::corpus_subset(sento_corpus(corpusdf = usnews), date >= "1997-01-01" & date <= "2000-12-01"),
+  500
 )
 
 data("list_lexicons")
 lex <- sento_lexicons(list_lexicons[c("GI_en", "LM_en")])
-ctrA <- ctr_agg(howWithin = "counts", howDocs = "proportional", howTime = "almon", by = "month",
-                lag = 7, ordersAlm = 1:3, do.inverseAlm = TRUE, do.ignoreZeros = FALSE, fill = "latest")
+ctrA <- ctr_agg(howWithin = "counts", howDocs = "proportional", howTime = "almon", by = "day",
+                lag = 365, ordersAlm = 1:3, do.inverseAlm = TRUE, do.ignoreZeros = FALSE, fill = "latest")
 
 sentomeasures <- sento_measures(corpus, lex, ctrA)
 
 # preparation of estimation data
-data("epu")
-y <- epu[epu$date %in% get_dates(sentomeasures), "index"]
-x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
+N <- nobs(sentomeasures)
+y <- rnorm(N) # random y variable
+x <- data.frame(runif(N), rnorm(N)) # two additional random x variables
 colnames(x) <- c("x1", "x2")
 
 # model run
 ctrM <- ctr_model(model = "gaussian", type = "Cp", do.iter = TRUE, h = 3, lambdas = NULL,
-                  nSample = floor(0.90 * (length(y) - 3)), do.shrinkage.x = TRUE, alphas = c(0.2, 0.7))
+                  nSample = N - 12, do.shrinkage.x = TRUE, alphas = 0)
 out <- sento_model(sentomeasures, y, x = x, ctr = ctrM)
 
 ### tests from here ###
@@ -48,18 +48,13 @@ test_that("Attributions across all dimensions should be the same across rows", {
   expect_equal(l, f)
   expect_equal(l, t)
   expect_equal(l, la, tolerance = TOL)
-  # expect_equal(l, d)
+  # expect_equal(l, d) # does not hold because fill = "latest"
   expect_equal(f, t)
   expect_equal(f, la, tolerance = TOL)
   # expect_equal(f, d)
   expect_equal(t, la, tolerance = TOL)
   # expect_equal(t, d)
   # expect_equal(la, d)
-})
-
-test_that("Error if sentomeasures object has not all dates needed for attribution", {
-  expect_error(attributions(out, measures_subset(sentomeasures, date %in% sample(get_dates(sentomeasures), 10))))
-  expect_error(attributions(out, measures_subset(sentomeasures, date %in% as.Date(names(out$models)))))
 })
 
 # plot.attributions

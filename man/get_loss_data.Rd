@@ -4,23 +4,25 @@
 \alias{get_loss_data}
 \title{Retrieve loss data from a selection of models}
 \usage{
-get_loss_data(models, loss = c("DA", "errorSq", "AD", "accuracy"))
+get_loss_data(models, loss = c("DA", "error", "errorSq", "AD",
+  "accuracy"))
 }
 \arguments{
-\item{models}{a named \code{list} of \code{sentomodeliter} objects. All models should be of the same family, being either
-\code{"gaussian"}, \code{"binomial"} or \code{"multinomial"}, and have performance data of the same dimensions.}
+\item{models}{a named \code{list} of \code{sentomodeliter} objects. All models should be of the same family, being
+either \code{"gaussian"}, \code{"binomial"} or \code{"multinomial"}, and have performance data of the same dimensions.}
 
-\item{loss}{a single \code{character} vector, either \code{"DA"} (directional \emph{in}accuracy), \code{"errorSq"}
-(squared errors), \code{"AD"} (absolute errors) or \code{"accuracy"} (\emph{in}accurate class predictions). This argument
-defines on what basis the model confidence set is calculated. The first three options are available for \code{"gaussian"}
-models, the last option applies only to \code{"binomial"} and \code{"multinomial"} models.}
+\item{loss}{a single \code{character} vector, either \code{"DA"} (directional \emph{in}accuracy), \code{"error"}
+(prediction minus realized response variable), \code{"errorSq"} (squared errors), \code{"AD"} (absolute errors) or
+\code{"accuracy"} (\emph{in}accurate class predictions). This argument defines on what basis the model confidence set
+is calculated. The first four options are available for \code{"gaussian"} models, the last option applies only to
+\code{"binomial"} and \code{"multinomial"} models.}
 }
 \value{
 A \code{matrix} of loss data.
 }
 \description{
-Structures specific performance data for a set of different \code{sentomodeliter} objects as loss data. Can
-then be used, for instance, as an input to create a model confidence set (Hansen, Lunde and Nason, 2011) with
+Structures specific performance data for a set of different \code{sentomodeliter} objects as loss data.
+Can then be used, for instance, as an input to create a model confidence set (Hansen, Lunde and Nason, 2011) with
 the \pkg{MCS} package.
 }
 \examples{

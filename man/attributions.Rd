@@ -11,7 +11,7 @@ attributions(model, sentomeasures, do.normalize = FALSE,
 \item{model}{a \code{sentomodel} or \code{sentomodeliter} object created with \code{\link{sento_model}}.}
 
 \item{sentomeasures}{the \code{sentomeasures} object, as created with \code{\link{sento_measures}}, used to estimate
-the model from the first argument.}
+the model from the first argument (make sure this is the case!).}
 
 \item{do.normalize}{a \code{logical}, \code{TRUE} divides each element of every attribution vector at a given date by its
 L2-norm at that date, normalizing the values between -1 and 1. The document attributions are not normalized.}

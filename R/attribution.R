@@ -1,5 +1,5 @@
 
-attribution_docs <- function(sentomeasures, s, sentDates, seqDates, W, cols, refDates, coeffs, timeNames) {
+attributions_docs <- function(sentomeasures, s, sentDates, seqDates, W, cols, refDates, coeffs, timeNames) {
   B <- sentomeasures$attribWeights[["B"]]
   nLags <- nrow(B)
   attribsDocs <- lapply(refDates, function(t) {
@@ -26,8 +26,8 @@ attribution_docs <- function(sentomeasures, s, sentDates, seqDates, W, cols, ref
   return(attribsDocs)
 }
 
-attribution_lags <- function(s, sentDates, seqDates, W, cols, sentomeasures, measures, coeffs,
-                             attribsDocs, timeNames, do.normalize) {
+attributions_lags <- function(s, sentDates, seqDates, W, cols, sentomeasures, measures, coeffs,
+                              attribsDocs, timeNames, do.normalize) {
   B <- sentomeasures$attribWeights$B
   nLags <- nrow(B)
   namesLags <- get_names_lags(nLags)
@@ -85,8 +85,8 @@ attribution_lags <- function(s, sentDates, seqDates, W, cols, sentomeasures, mea
   return(attribsLag)
 }
 
-attribution_dims <- function(sentomeasures, measures, cols, refDates, loc, coeffs,
-                             do.normalize, dimNames, missingNames, type) {
+attributions_dims <- function(sentomeasures, measures, cols, refDates, loc, coeffs,
+                              do.normalize, dimNames, missingNames, type) {
   attribsDim <- lapply(dimNames, function(x) {
     sel <- cols[stringi::stri_detect(cols, regex = paste0("\\b", x, "\\b"))]
     coeffsIn <- data.table(matrix(coeffs[sel], nrow = length(loc), ncol = length(coeffs[sel]), byrow = TRUE))
@@ -106,35 +106,29 @@ attribution_dims <- function(sentomeasures, measures, cols, refDates, loc, coeff
   return(attribsDim)
 }
 
-.attributions.sentomodel <- function(model, sentomeasures, do.normalize = FALSE,
-                                              refDates = NULL, factor = NULL) {
+.attributions.sentomodel <- function(model, sentomeasures, do.normalize = FALSE, refDates = NULL, factor = NULL) {
   check_class(sentomeasures, "sentomeasures")
   stopifnot(is.logical(do.normalize))
 
   sentomodel <- model
 
-  # check if sentiment measures sample used for sentomodel estimation coincides with measures in input sentomeasures
-  discarded <- sentomodel$discarded[1:sentomodel$nVar[1]] # we drop other x variables (present if do.shrinkage.x = TRUE)
-  xSent <- sentomodel$x[, 1:sum(!discarded)] # get sentiment variables
-  n <- nmeasures(sentomeasures)
+  # get appropriate sentiment measures from sentomeasures input object
+  discarded <- sentomodel$discarded
   measures <- get_measures(sentomeasures)[, c(TRUE, !discarded), with = FALSE]
+
+  # set dates at which to do attribution
   sampleDates <- sentomodel$dates
-  measuresSample <- measures[date >= sampleDates[1] & date <= sampleDates[2], ]
-  if (nrow(measuresSample) != nrow(xSent))
-    stop("The input 'sentomeasures' object does not coincide with the sentiment measures used in the sentomodel object.")
-  if (!all(xSent == measuresSample[, -1]))
-    stop("The input 'sentomeasures' object does not coincide with the sentiment measures used in the sentomodel object.")
   if (is.null(refDates)) {
-    refDates <- measuresSample$date # take in-sample dates
+    refDates <- measures[date >= sampleDates[1] & date <= sampleDates[2], ][["date"]] # take in-sample dates
   } else {
     refDates <- sort(as.Date(refDates))
     if (min(refDates) < sampleDates[1])
       stop("The earliest date in 'refDates' is earlier than the first estimation sample date.")
-    if (!all(refDates %in% measures$date))
+    if (!all(refDates %in% measures[["date"]]))
       stop("Not all 'refDates' are available in the textual sentiment time series.")
   }
 
-  # retrieve remaining necessary information from input objects
+  # retrieve remaining required information from input objects
   s <- sentomeasures$sentiment
   W <- sentomeasures$attribWeights[["W"]]
   loc <- which(measures$date %in% refDates)
@@ -174,29 +168,28 @@ attribution_dims <- function(sentomeasures, measures, cols, refDates, loc, coeff
 
   # calculate and assemble attributions
   attribsAll <- list(documents = NULL, lags = NULL, lexicons = NULL, features = NULL, time = NULL)
-  attribsDocs <- attribution_docs(sentomeasures, s, sentDates, seqDates, W, cols, refDates, coeffs, tNames)
+  attribsDocs <- attributions_docs(sentomeasures, s, sentDates, seqDates, W, cols, refDates, coeffs, tNames)
   attribsAll[["documents"]] <- attribsDocs
-  attribsAll[["lags"]] <- attribution_lags(s, sentDates, seqDates, W, cols, sentomeasures, measures, coeffs,
-                                           attribsDocs, tNames, do.normalize)
-  attribsAll[["lexicons"]] <- attribution_dims(sentomeasures, measures, cols, refDates, loc, coeffs, do.normalize,
-                                               lNames, lDel, "lexicons")
-  attribsAll[["features"]] <- attribution_dims(sentomeasures, measures, cols, refDates, loc, coeffs, do.normalize,
-                                               fNames, fDel, "features")
-  attribsAll[["time"]] <- attribution_dims(sentomeasures, measures, cols, refDates, loc, coeffs, do.normalize,
-                                           tNames, tDel, "time")
+  attribsAll[["lags"]] <- attributions_lags(s, sentDates, seqDates, W, cols, sentomeasures, measures, coeffs,
+                                            attribsDocs, tNames, do.normalize)
+  attribsAll[["lexicons"]] <- attributions_dims(sentomeasures, measures, cols, refDates, loc, coeffs, do.normalize,
+                                                lNames, lDel, "lexicons")
+  attribsAll[["features"]] <- attributions_dims(sentomeasures, measures, cols, refDates, loc, coeffs, do.normalize,
+                                                fNames, fDel, "features")
+  attribsAll[["time"]] <- attributions_dims(sentomeasures, measures, cols, refDates, loc, coeffs, do.normalize,
+                                            tNames, tDel, "time")
 
   class(attribsAll) <- c("attributions", class(attribsAll))
 
   return(attribsAll)
 }
 
-.attributions.sentomodeliter <- function(model, sentomeasures, do.normalize = FALSE,
-                                                  refDates = NULL, factor = NULL) {
+.attributions.sentomodeliter <- function(model, sentomeasures, do.normalize = FALSE, refDates = NULL, factor = NULL) {
   stopifnot(is.logical(do.normalize))
 
   sentomodeliter <- model
 
-  refDates <- as.Date(names(sentomodeliter$models))
+  if (is.null(refDates)) refDates <- as.Date(names(sentomodeliter$models))
   attribsFull <- lapply(1:length(refDates), function(i) {
     date <- refDates[i]
     model <- sentomodeliter$models[[i]]
@@ -238,7 +231,7 @@ attributions.sentomodeliter <- compiler::cmpfun(.attributions.sentomodeliter)
 #'
 #' @param model a \code{sentomodel} or \code{sentomodeliter} object created with \code{\link{sento_model}}.
 #' @param sentomeasures the \code{sentomeasures} object, as created with \code{\link{sento_measures}}, used to estimate
-#' the model from the first argument.
+#' the model from the first argument (make sure this is the case!).
 #' @param do.normalize a \code{logical}, \code{TRUE} divides each element of every attribution vector at a given date by its
 #' L2-norm at that date, normalizing the values between -1 and 1. The document attributions are not normalized.
 #' @param refDates the dates (as \code{"yyyy-mm-dd"}) at which attribution is to be performed. These should be between the latest
@@ -292,7 +285,7 @@ plot.attributions <- function(x, group = "features", ...) {
   attributionsMelt <- attributionsMelt[order(rank(as.character(variable)))]
   legendPos <- ifelse(length(unique(attributionsMelt[["variable"]])) <= 12, "top", "none")
   p <- ggplot(data = attributionsMelt, aes(x = date, y = value, group = variable, color = variable)) +
-    geom_area(aes(colour = variable, fill = variable), alpha = 1) +
+    geom_area(aes(fill = variable), alpha = 1) +
     geom_hline(yintercept = 0, size = 0.50, linetype = "dotted") +
     scale_fill_grey(start = 0, end = 1) +
     scale_x_date(name = "Date", date_labels = "%m-%Y") +
