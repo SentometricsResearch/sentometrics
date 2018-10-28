@@ -88,7 +88,7 @@ measures_fill <- function(sentomeasures, fill = "zero", dateBefore = NULL, dateA
 #' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
 #' @param toSelect a \code{character} vector of the lexicon, feature and time weighting scheme names, to indicate which
 #' measures need to be selected, or as a \code{list} of \code{character} vectors, possibly with separately specified
-#' combinations (only consisting of one lexicon, one feature, and one time weighting scheme at maximum).
+#' combinations (consisting of one unique lexicon, one unique feature, and one unique time weighting scheme at maximum).
 #'
 #' @return A modified \code{sentomeasures} object, with only the sentiment measures required, including updated information
 #' and statistics, but the original sentiment scores \code{data.table} untouched.
@@ -120,8 +120,8 @@ measures_select <- function(sentomeasures, toSelect) {
   allOpts <- unlist(get_dimensions(sentomeasures))
   valid <- unlist(toSelect) %in% allOpts
   if (any(!valid)) {
-    stop("Following components make up none of the sentiment measures: ",
-         paste0(unique(unlist(toSelect)[!valid]), collapse = ', '))
+    stop(paste0("Following components make up none of the sentiment measures: ",
+                paste0(unique(unlist(toSelect)[!valid]), collapse = ', '), "."))
   }
 
   measures <- get_measures(sentomeasures)
@@ -276,20 +276,31 @@ check_merge_dimensions <- function(sentomeasures, features = NULL, lexicons = NU
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sentomeasures <- sento_measures(corpusSample, l, ctr)
 #'
-#' # perform the merging
+#' # merging across specified components
 #' sentomeasuresMerged <- measures_merge(sentomeasures,
 #'                                       time = list(W = c("equal_weight", "linear")),
 #'                                       features = list(journals = c("wsj", "wapo")),
 #'                                       do.keep = TRUE)
 #'
+#' # merging in full
+#' dims <- get_dimensions(sentomeasures)
+#' sentomeasuresFull <- measures_merge(sentomeasures,
+#'                                     lexicons = list(L = dims[["lexicons"]]),
+#'                                     time = list(T = dims[["time"]]),
+#'                                     features = list(F = dims[["features"]]))
+#'
 #' \dontrun{
-#' # this merging won't work, but produces an informative error message
+#' # this merging will not work, but produces an informative error message
 #' measures_merge(sentomeasures,
 #'                time = list(W = c("equal_weight", "almon1")),
 #'                lexicons = list(LEX = c("LM_en")),
 #'                features = list(journals = c("notInHere", "wapo")))}
 #' @export
 measures_merge <- function(sentomeasures, features = NULL, lexicons = NULL, time = NULL, do.keep = FALSE) {
+
+  stopifnot(is.null(features) || is.list(features))
+  stopifnot(is.null(lexicons) || is.list(lexicons))
+  stopifnot(is.null(time) || is.list(time))
 
   check <- check_merge_dimensions(sentomeasures, features = features, lexicons = lexicons, time = time) # check inputs
   if (check$stop == TRUE)
@@ -309,28 +320,39 @@ measures_merge <- function(sentomeasures, features = NULL, lexicons = NULL, time
       name <- names(across)[i] # e.g. "lex12"
       cols <- across[[i]] # e.g. c("lex1", "lex2")
       # find all sentiment columns aggregated at one of the 'cols' aggregation levels and stack them into ls
-      ls <- list()
+      ls <- sels <- as.list(1:length(cols))
+      names(ls) <- names(sels) <- cols
       for (elem in cols) {
         sel <- colnames(measures)[stringi::stri_detect(colnames(measures), regex = paste0("\\b", elem, "\\b"))] # exact match
-        ls[[elem]] <- measures[, sel, with = FALSE, drop = FALSE]
-        measures <- measures[, !sel, with = FALSE, drop = FALSE]
+        selMeas <- measures[, sel, with = FALSE, drop = FALSE]
+        nms <- stringi::stri_split(colnames(selMeas), regex = "--")
+        loc <- which(stringi::stri_detect(nms[[1]], regex = elem))[1]
+        nmsNew <- sapply(nms, function(x) {
+          x[loc] <- name
+          paste0(x, collapse = "--")
+        })
+        colnames(selMeas) <- nmsNew
+        ls[[elem]] <- selMeas
+        sels[[elem]] <- sel
       }
+      common <- Reduce(intersect, lapply(ls, colnames))
+      ls <- lapply(1:length(ls), function(k) {
+        m <- ls[[k]]
+        ind <- which(colnames(m) %in% common)
+        measures <<- measures[, !sels[[k]][ind], with = FALSE, drop = FALSE] # drop columns to merge
+        m[, ind, with = FALSE, drop = FALSE]
+      })
       # take element-wise average for every row/column combination across columns to merge
       if (ncol(ls[[1]]) >= 2) { # ncol across elements of ls is the same
         all <- array(NA, dim = c(nrow(ls[[1]]), ncol(ls[[2]]), length(ls)))
         for (k in 1:length(ls)) all[, , k] <- as.matrix(ls[[k]])
         merged <- apply(all, c(1, 2), mean, na.rm = TRUE)
         colnames(merged) <- colnames(ls[[length(ls)]])
-      } else merged <- rowSums(do.call(cbind, ls))
-      # insert new name at name location of aggregation level (e.g. "lex1--top1" + "lex2--top1" = "lex12--top1")
-      nms <- stringi::stri_split(colnames(merged), regex = "--") # list
-      loc <- which(stringi::stri_detect(nms[[1]], regex = elem))[1]
-      nmsNew <- lapply(nms, function(x) {
-        x[loc] <- name
-        return(paste0(x, collapse = "--"))
-      })
-      colnames(merged) <- unlist(nmsNew)
-      measures <- cbind(measures, merged) # add back merged columns for further merging if needed
+      } else {
+        merged <- as.matrix(rowSums(do.call(cbind, ls)))
+        colnames(merged) <- colnames(ls[[length(ls)]])
+      }
+      measures <- cbind(measures, merged) # add back merged columns
     }
   }
   # add old unmerged measures to merged measures (if do.keep is TRUE)
@@ -352,7 +374,7 @@ measures_merge <- function(sentomeasures, features = NULL, lexicons = NULL, time
 #' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
 #' @param toDelete a \code{character} vector of the lexicon, feature and time weighting scheme names, to indicate which
 #' measures need to be deleted, or as a \code{list} of \code{character} vectors, possibly with separately specified
-#' combinations (only consisting of one lexicon, one feature, and one time weighting scheme at maximum).
+#' combinations (consisting of one unique lexicon, one unique feature, and one unique time weighting scheme at maximum).
 #'
 #' @return A modified \code{sentomeasures} object, with the required sentiment measures deleted, including updated information
 #' and statistics, but the original sentiment scores \code{data.table} untouched.
@@ -384,8 +406,8 @@ measures_delete <- function(sentomeasures, toDelete) {
   allOpts <- unlist(get_dimensions(sentomeasures))
   valid <- unlist(toDelete) %in% allOpts
   if (any(!valid)) {
-    stop("Following components make up none of the sentiment measures: ",
-         paste0(unique(unlist(toDelete)[!valid]), collapse = ', '))
+    stop(paste0("Following components make up none of the sentiment measures: ",
+                paste0(unique(unlist(toDelete)[!valid]), collapse = ', '), "."))
   }
 
   measures <- get_measures(sentomeasures)
@@ -416,13 +438,11 @@ measures_delete <- function(sentomeasures, toDelete) {
 #' \code{lexicons}, \code{features}, and \code{time} dimensions.
 #'
 #' @details In contrast to other \code{measures_xyz} functions, this particular function returns no new \code{sentomeasures}
-#' object. The global sentiment measures as outputted can easily be added to regressions as an additional
-#' variable using the \code{x} argument in the \code{\link{sento_model}} function (omitting the \code{"date"} column). The
-#' measures are constructed from weights that indicate the importance (and sign) along each component from the \code{lexicons},
-#' \code{features}, and \code{time} dimensions. There is no condition in terms of allowed weights. For example, the global index
-#' based on the supplied lexicon weights (\code{"globLex"}) is obtained first by multiplying every sentiment measure with
-#' its corresponding weight (meaning, the weight given to the lexicon the sentiment is computed with), then by taking
-#' the average per date.
+#' object. The measures are constructed from weights that indicate the importance (and sign) along each component from the
+#' \code{lexicons}, \code{features}, and \code{time} dimensions. There is no restriction in terms of allowed weights. For
+#' example, the global index based on the supplied lexicon weights (\code{"globLex"}) is obtained first by multiplying
+#' every sentiment measure with its corresponding weight (meaning, the weight given to the lexicon the sentiment is
+#' computed with), then by taking the average per date.
 #'
 #' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
 #' @param lexicons a \code{numeric} vector of weights, of size \code{length(sentomeasures$lexicons)}, in the same order.

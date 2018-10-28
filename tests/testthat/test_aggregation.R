@@ -23,6 +23,9 @@ ctr2 <- ctr_agg(howWithin = "counts", howDocs = "proportional", howTime = c("equ
                lag = 2, weights = data.frame(q1 = c(0.25, 0.75), q3 = c(0.75, 0.25)), do.ignoreZeros = FALSE)
 sentMeas2 <- sento_measures(corpus, lex, ctr2)
 
+ctr3 <- ctr_agg(howWithin = "counts", howDocs = "proportional", howTime = c("equal_weight", "linear", "own"), by = "year",
+                lag = 3, weights = data.frame(GI_en = c(0.3, 0.6, 0.1)))
+
 # sento_measures
 test_that("Number of columns coincide with provided dimensions", {
   expect_equal(nmeasures(sentMeas1), length(sentMeas1$features) * length(sentMeas1$lexicons) * length(sentMeas1$time))
@@ -47,6 +50,7 @@ test_that("Test input format of sentiment aggregation function", {
   expect_true(inherits(s1, "sentiment"))
   expect_true(inherits(aggregate(s1, ctr1), "sentomeasures"))
   expect_error(aggregate(s2, ctr2))
+  expect_error(sento_measures(corpus, lex, ctr3))
 })
 
 # peakdocs

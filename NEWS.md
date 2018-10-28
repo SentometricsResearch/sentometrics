@@ -12,6 +12,9 @@
 - dropped the `"x"` output element from a `sentomodel` object (for large samples, this became too memory consuming)
 - dropped the `"howWithin"` output element from a `sentomeasures` object
 - expanded the `do.shrinkage.x` argument in the `ctr_model()` function to a vector argument
+- added a `do.lags` argument to the `attributions()` function, to be able to circumvent the most time-consuming part of the computation 
+- imposed a check in the `sento_measures()` function on the uniqueness of the names within and across the lexicons, features and time weighting schemes
+- solved a bug in the `measures_merge()` function that made full merging not possible
 
 ## sentometrics 0.5.1
 

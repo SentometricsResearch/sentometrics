@@ -29,13 +29,11 @@ Merges all sentiment measures into a weighted global textual sentiment measure f
 }
 \details{
 In contrast to other \code{measures_xyz} functions, this particular function returns no new \code{sentomeasures}
-object. The global sentiment measures as outputted can easily be added to regressions as an additional
-variable using the \code{x} argument in the \code{\link{sento_model}} function (omitting the \code{"date"} column). The
-measures are constructed from weights that indicate the importance (and sign) along each component from the \code{lexicons},
-\code{features}, and \code{time} dimensions. There is no condition in terms of allowed weights. For example, the global index
-based on the supplied lexicon weights (\code{"globLex"}) is obtained first by multiplying every sentiment measure with
-its corresponding weight (meaning, the weight given to the lexicon the sentiment is computed with), then by taking
-the average per date.
+object. The measures are constructed from weights that indicate the importance (and sign) along each component from the
+\code{lexicons}, \code{features}, and \code{time} dimensions. There is no restriction in terms of allowed weights. For
+example, the global index based on the supplied lexicon weights (\code{"globLex"}) is obtained first by multiplying
+every sentiment measure with its corresponding weight (meaning, the weight given to the lexicon the sentiment is
+computed with), then by taking the average per date.
 }
 \examples{
 data("usnews", package = "sentometrics")

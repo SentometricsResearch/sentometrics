@@ -42,7 +42,7 @@ not considered when it is a duplicate of another, or when at least 50\% of the o
 
 If \code{ctr$do.iter = TRUE}, a \code{sentomodeliter} object which is a \code{list} containing:
 \item{models}{all sparse regressions, i.e., separate \code{sentomodel} objects as above, as a \code{list} with as names the
-dates from the perspective of the sentiment measures at which predictions for performance measurement are carried out.}
+dates from the perspective of the sentiment measures at which the out-of-sample predictions are carried out.}
 \item{alphas}{calibrated alphas.}
 \item{lambdas}{calibrated lambdas.}
 \item{performance}{a \code{data.frame} with performance-related measures, being "\code{RMSFE}" (root mean squared

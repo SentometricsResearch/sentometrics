@@ -46,14 +46,21 @@ l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 sentomeasures <- sento_measures(corpusSample, l, ctr)
 
-# perform the merging
+# merging across specified components
 sentomeasuresMerged <- measures_merge(sentomeasures,
                                       time = list(W = c("equal_weight", "linear")),
                                       features = list(journals = c("wsj", "wapo")),
                                       do.keep = TRUE)
 
+# merging in full
+dims <- get_dimensions(sentomeasures)
+sentomeasuresFull <- measures_merge(sentomeasures,
+                                    lexicons = list(L = dims[["lexicons"]]),
+                                    time = list(T = dims[["time"]]),
+                                    features = list(F = dims[["features"]]))
+
 \dontrun{
-# this merging won't work, but produces an informative error message
+# this merging will not work, but produces an informative error message
 measures_merge(sentomeasures,
                time = list(W = c("equal_weight", "almon1")),
                lexicons = list(LEX = c("LM_en")),

@@ -4,14 +4,17 @@
 \alias{attributions}
 \title{Retrieve top-down model sentiment attributions}
 \usage{
-attributions(model, sentomeasures, do.normalize = FALSE,
-  refDates = NULL, factor = NULL)
+attributions(model, sentomeasures, do.lags = TRUE,
+  do.normalize = FALSE, refDates = NULL, factor = NULL)
 }
 \arguments{
 \item{model}{a \code{sentomodel} or \code{sentomodeliter} object created with \code{\link{sento_model}}.}
 
 \item{sentomeasures}{the \code{sentomeasures} object, as created with \code{\link{sento_measures}}, used to estimate
 the model from the first argument (make sure this is the case!).}
+
+\item{do.lags}{a \code{logical}, \code{TRUE} also computes the attribution to each time lag. For large time lags,
+this is time-consuming.}
 
 \item{do.normalize}{a \code{logical}, \code{TRUE} divides each element of every attribution vector at a given date by its
 L2-norm at that date, normalizing the values between -1 and 1. The document attributions are not normalized.}
@@ -28,9 +31,10 @@ case of (a) multinomial model(s). Ignored for linear and binomial models.}
 \value{
 A \code{list} of class \code{attributions}, with \code{"documents"}, \code{"lags"}, \code{"lexicons"},
 \code{"features"} and \code{"time"} as dimensions for which aggregation is computed. The last four dimensions are
-\code{data.table}s having a \code{"date"} column and the other columns the different components of the dimension, with the
-attributions as values. Document-level attribution is further decomposed into a \code{data.table} per date, with
-\code{"id"}, \code{"date"} and \code{"attrib"} columns.
+\code{data.table}s having a \code{"date"} column and the other columns the different components of the dimension, with
+the attributions as values. Document-level attribution is further decomposed into a \code{data.table} per date, with
+\code{"id"}, \code{"date"} and \code{"attrib"} columns. If \code{do.lags = FALSE}, the \code{"lags"} element is set
+to \code{NULL}.
 }
 \description{
 Computes the attributions to predictions for a (given) number of dates at all possible sentiment dimensions,
@@ -40,7 +44,7 @@ based on the coefficients associated to each sentiment measure, as estimated in 
 See \code{\link{sento_model}} for an elaborate modelling example including the calculation and plotting of
 attributions. The attribution for logistic models is represented in terms of log odds. For binomial models, it is
 calculated with respect to the last factor level or factor column. A \code{NULL} value for document-level attribution
-on a given date means that no documents are (directly) implicated for the associated prediction.
+on a given date means no documents are directly implicated in the associated prediction.
 }
 \seealso{
 \code{\link{sento_model}}
