@@ -11,7 +11,7 @@ measures_delete(sentomeasures, toDelete)
 
 \item{toDelete}{a \code{character} vector of the lexicon, feature and time weighting scheme names, to indicate which
 measures need to be deleted, or as a \code{list} of \code{character} vectors, possibly with separately specified
-combinations (only consisting of one lexicon, one feature, and one time weighting scheme at maximum).}
+combinations (consisting of one unique lexicon, one unique feature, and one unique time weighting scheme at maximum).}
 }
 \value{
 A modified \code{sentomeasures} object, with the required sentiment measures deleted, including updated information

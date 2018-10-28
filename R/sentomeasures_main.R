@@ -350,7 +350,15 @@ aggregate_time <- function(sentomeasures, lag, fill, how = get_hows()$time, ...)
     stop(paste0("Names of weighting schemes are not unique. Following names occur at least twice: ",
                 paste0(duplics, collapse = ", "), "."))
   }
-  sentomeasures$attribWeights[["B"]] <- copy(weights)
+
+  # check if any duplicate names across dimensions
+  namesAll <- c(sentomeasures$features, sentomeasures$lexicons, colnames(weights))
+  dup <- duplicated(namesAll)
+  if (any(dup)) {
+    stop(paste0("Following names appear at least twice as a component of a dimension: ",
+                paste0(unique(namesAll[dup]), collapse = ', '), ". ",
+                "Make sure names are unique within and across lexicons, features and time weighting schemes."))
+  }
 
   # apply rolling time window, if not too large, for every weights column and combine all new measures column-wise
   if (!(fill %in% "none")) sentomeasures <- measures_fill(sentomeasures, fill = fill)
@@ -359,6 +367,7 @@ aggregate_time <- function(sentomeasures, lag, fill, how = get_hows()$time, ...)
   m <- nrow(measures)
   if (lag > m)
     stop("Rolling time aggregation window (= ", lag, ") is too large for number of observations per measure (= ", m, ")")
+  sentomeasures$attribWeights[["B"]] <- copy(weights)
   for (i in 1:ncol(weights)) {
     name <- colnames(weights)[i]
     add <- RcppRoll::roll_sum(as.matrix(toRoll), n = lag, weights = as.vector(weights[, i]),
