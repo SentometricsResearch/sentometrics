@@ -1,10 +1,17 @@
 
-## submission (version 0.5.1) [20/09/2018]
+## submission (version 0.5.5) [xx/11/2018]
+
+**new**: ...
+
+- resolved failing test for old R version 3.4.4
+- ...
+
+<!--- ## submission (version 0.5.1) [20/09/2018]
 
 **new**: minor modifications, mainly to resolve CRAN check issues
 
 - set number of default threads used to 1, to avoid UBSAN warnings coming from usage of RcppParallel
-- modified C++ code to avoid Solaris error
+- modified C++ code to avoid Solaris error --->
 
 <!--- ## submission (version 0.5) [18/09/2018]
 
@@ -36,9 +43,9 @@
 
 - marked UTF-8 strings will remain; this is intentional and comes from the built--in French (mostly) and Dutch word lists --->
 
-<!--- ## Re-submission (version 0.2) [comments received 08/11/2017]
+<!--- ## Re-submission (version 0.2) [12/11/2017]
 
 - added reference to vignette paper in 'Description' field of DESCRIPTION file
 - we relocated the code to the GitHub repo 'sborms/sentometrics' 
-- changed quanteda::tokenize() to quanteda::tokens() due to errors in automatic checks by CRAN on 12-11-2017 --->
+- changed quanteda::tokenize() to quanteda::tokens() due to errors in automatic checks by CRAN --->
 

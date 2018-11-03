@@ -472,7 +472,7 @@ plot_theme <- function(legendPos) { # plotting specifications (border and grid)
     panel.background = element_rect(colour = "black", size = 0.35),
     panel.grid.major = element_line(colour = "grey95", size = 0.10),
     panel.grid.minor = element_line(colour = "grey95", size = 0.10),
-    plot.margin = unit(c(0.20, 0.35, 0.20, 0.20), "cm")
+    plot.margin = unit(c(0.20, 0.40, 0.20, 0.20), "cm")
   )
 }
 

@@ -1,5 +1,5 @@
 
-## sentometrics 0.5.5 (development)
+## sentometrics 0.5.5
 
 - new functions: `sentiment_bind()`, and `to_sentiment()`
 - defined replacement (of lexicons and names) for a `sentolexicons` object
@@ -10,7 +10,7 @@
 - extended the `quanteda::docvars()` replacement method to a `sentocorpus` object
 - modified information criterion estimators for edge cases to avoid them turning negative 
 - dropped the `"x"` output element from a `sentomodel` object (for large samples, this became too memory consuming)
-- dropped the `"howWithin"` output element from a `sentomeasures` object
+- dropped the `"howWithin"` output element from a `sentomeasures` object, and simplified a `sentiment` object into a `data.table` directly instead of a `list`
 - expanded the `do.shrinkage.x` argument in the `ctr_model()` function to a vector argument
 - added a `do.lags` argument to the `attributions()` function, to be able to circumvent the most time-consuming part of the computation 
 - imposed a check in the `sento_measures()` function on the uniqueness of the names within and across the lexicons, features and time weighting schemes
