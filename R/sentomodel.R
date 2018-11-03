@@ -772,7 +772,7 @@ plot.sentomodeliter <- function(x, ...) {
 #' @seealso \code{\link{predict.glmnet}}, \code{\link{sento_model}}
 #'
 #' @export
-predict.sentomodel <- function(object, newx, type, offset = NULL, ...) {
+predict.sentomodel <- function(object, newx, type = "response", offset = NULL, ...) {
   stopifnot(is.matrix(newx))
   sentomodel <- object
   reg <- sentomodel$reg

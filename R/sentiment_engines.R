@@ -79,10 +79,8 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, nCore = 1) {
 #'
 #' @return If \code{x} is a \code{sentocorpus} object, a \code{sentiment} object, i.e., a \code{data.table} containing
 #' the sentiment scores \code{data.table} with an \code{"id"}, a \code{"date"} and a \code{"word_count"} column,
-#' and all lexicon--feature sentiment scores columns.
-#'
-#' A \code{sentiment} object can be used for aggregation into time series with the
-#' \code{\link{aggregate.sentiment}} function.
+#' and all lexicon--feature sentiment scores columns. A \code{sentiment} object can be used for aggregation into
+#' time series with the \code{\link{aggregate.sentiment}} function.
 #'
 #' @return If \code{x} is a \pkg{quanteda} \code{\link[quanteda]{corpus}} object, a sentiment scores
 #' \code{data.table} with an \code{"id"} and a \code{"word_count"} column, and all lexicon--feature
