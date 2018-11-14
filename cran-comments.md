@@ -1,10 +1,10 @@
 
 ## submission (version 0.5.5) [xx/11/2018]
 
-**new**: ...
+**new**: minor additions and simplifications
 
 - resolved failing test for old R version 3.4.4
-- ...
+- diminished the number of Imports
 
 <!--- ## submission (version 0.5.1) [20/09/2018]
 

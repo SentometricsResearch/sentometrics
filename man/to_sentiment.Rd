@@ -24,7 +24,7 @@ sentiment scores not necessarily computed with \code{\link{compute_sentiment}}.
 set.seed(505)
 
 ids <- paste0("id", 1:200)
-date <- sample(seq(as.Date("2015-01-01"), as.Date("2018-01-01"), by = "day"), 200, replace = TRUE)
+date <- sample(seq(as.Date("2015-01-01"), as.Date("2018-01-01"), by = "day"), 200, TRUE)
 word_count <- sample(150:850, 200, replace = TRUE)
 sent <- matrix(rnorm(200 * 8), nrow =  200)
 s1 <- s2 <- s3 <- data.table(id = ids, date = date, word_count = word_count, sent)

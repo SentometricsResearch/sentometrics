@@ -10,13 +10,13 @@
 #' \code{howDocs} and \code{howTime} arguments), call \code{\link{get_hows}}.
 #'
 #' @param howWithin a single \code{character} vector defining how aggregation within documents will be performed. Should
-#' \code{length(howWithin) > 1}, the first element is used. For currently available options on how this aggregation can
+#' \code{length(howWithin) > 1}, the first element is used. For available options on how this aggregation can
 #' occur; see \code{\link{get_hows}()$words}.
 #' @param howDocs a single \code{character} vector defining how aggregation across documents per date will be performed.
-#' Should \code{length(howDocs) > 1}, the first element is used. For currently available options on how this aggregation
+#' Should \code{length(howDocs) > 1}, the first element is used. For available options on how this aggregation
 #' can occur; see \code{\link{get_hows}()$docs}.
 #' @param howTime a \code{character} vector defining how aggregation across dates will be performed. More than one choice
-#' is possible. For currently available options on how this aggregation can occur; see \code{\link{get_hows}()$time}.
+#' is possible. For available options on how this aggregation can occur; see \code{\link{get_hows}()$time}.
 #' @param do.ignoreZeros a \code{logical} indicating whether zero sentiment values have to be ignored in the determination of
 #' the document weights while aggregating across documents. By default \code{do.ignoreZeros = TRUE}, such that documents with
 #' a raw sentiment score of zero or for which a given feature indicator is equal to zero are considered irrelevant.
@@ -231,8 +231,8 @@ sento_measures <- function(sentocorpus, lexicons, ctr) {
 #' measures by aggregating across documents and time. This function is called within \code{\link{sento_measures}},
 #' applied on the output of \code{\link{compute_sentiment}}.
 #'
-#' @param x a \code{sentiment} object created using \code{\link{compute_sentiment}}, computed from a
-#' \code{sentocorpus} object.
+#' @param x a \code{sentiment} object created using \code{\link{compute_sentiment}} (from a
+#' \code{sentocorpus} object), or an output from \code{\link{to_sentiment}}.
 #' @param ctr output from a \code{\link{ctr_agg}} call. The \code{howWithin} and \code{nCore} elements are ignored.
 #' @param ... not used.
 #'

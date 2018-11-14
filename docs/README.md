@@ -5,7 +5,7 @@ You collected a large number of texts and think it is a good idea to summarize y
 
 The **`sentometrics`** package is **an integrated framework for textual sentiment time series aggregation and prediction**. It accounts for the intrinsic challenge that, for a given text, sentiment can be computed in many different ways, as well as the large number of possibilities to pool sentiment across texts and time. This additional layer of manipulation does not exist in standard text mining and time series analysis packages. The package also provides an interface to econometrically model the impact of sentiment in texts on a given variable, as part of one coherent workflow. The package therefore integrates the fast _qualification_ of sentiment from texts, the _aggregation_ into different sentiment measures and the optimized _prediction_ based on these measures.
 
-The package was first created during a [Google Summer of Code 2017](https://github.com/rstats-gsoc/gsoc2017/wiki/Sentometrics:-An-integrated-framework-for-text-based-multivariate-time-series-modeling-and-forecasting) project. It implements in a user--friendly way the main methodology developed in the paper "[Questioning the news about economic growth: Sparse forecasting using thousands of news--based sentiment values](https://ssrn.com/abstract=2976084)" (Ardia, Bluteau and Boudt, 2017).
+The package was first created during a [Google Summer of Code 2017](https://github.com/rstats-gsoc/gsoc2017/wiki/Sentometrics:-An-integrated-framework-for-text-based-multivariate-time-series-modeling-and-forecasting) project. It implements in a user--friendly way the main methodology developed in the paper [Questioning the news about economic growth: Sparse forecasting using thousands of news--based sentiment values](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2976084).
 
 ## Typical workflow
 
@@ -19,7 +19,7 @@ Outputs a _`sentocorpus`_ object.
 
 **Step 2**: Choose lexicons and compute document--level textual sentiment
 
-Functions: `sento_lexicons()`, and `compute_sentiment()`.
+Functions: `sento_lexicons()`, `compute_sentiment()`, `to_sentiment()`, and `sentiment_bind()`.
 
 Outputs a _`sentolexicons`_ object, and a _`sentiment`_ object or a sentiment scores `data.table`.
 
@@ -73,5 +73,5 @@ library("sentometrics")
 
 ## Contact
 
-Reach out to the development team if you have questions, suggestions or want to help: [Samuel Borms](mailto:samuel.borms@unine.ch), [Keven Bluteau](mailto:keven.bluteau@unine.ch), [David Ardia](mailto:david.ardia@unine.ch) or [Kris Boudt](mailto:kris.boudt@vub.be).
+Reach out to [Samuel Borms](mailto:samuel.borms@unine.ch) if you have questions, suggestions or want to help.
 

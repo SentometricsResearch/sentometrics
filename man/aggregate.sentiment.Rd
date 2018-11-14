@@ -7,8 +7,8 @@
 \method{aggregate}{sentiment}(x, ctr, ...)
 }
 \arguments{
-\item{x}{a \code{sentiment} object created using \code{\link{compute_sentiment}}, computed from a
-\code{sentocorpus} object.}
+\item{x}{a \code{sentiment} object created using \code{\link{compute_sentiment}} (from a
+\code{sentocorpus} object), or an output from \code{\link{to_sentiment}}.}
 
 \item{ctr}{output from a \code{\link{ctr_agg}} call. The \code{howWithin} and \code{nCore} elements are ignored.}
 
