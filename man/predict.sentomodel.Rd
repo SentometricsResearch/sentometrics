@@ -10,8 +10,8 @@
 \arguments{
 \item{object}{a \code{sentomodel} object created with \code{\link{sento_model}}.}
 
-\item{newx}{a data \code{matrix} to be used for the prediction(s), structured row-by-row; see
-\code{\link{predict.glmnet}}. The number of variables should be equal to \code{sum(sentomodel$nVar)}, being the
+\item{newx}{a data \code{matrix} used for the prediction(s), row-by-row; see
+\code{\link{predict.glmnet}}. The number of columns should be equal to \code{sum(sentomodel$nVar)}, being the
 number of original sentiment measures and other variables. The variables discarded in the regression process are
 dealt with within this function, based on \code{sentomodel$discarded}.}
 

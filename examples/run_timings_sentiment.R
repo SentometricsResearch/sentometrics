@@ -15,18 +15,19 @@ set.seed(505)
 
 ########################################### loading of packages, definition of lexicons
 
-# library("sentometrics")
-devtools::load_all()
-library("lexicon")
+library("sentometrics")
+
 library("quanteda")
-library("dplyr")
-library("tidyr")
-library("tibble")
 library("tidytext")
 library("sentimentr")
 library("meanr")
 library("syuzhet")
 library("SentimentAnalysis")
+
+library("lexicon")
+library("dplyr")
+library("tidyr")
+library("tibble")
 library("stringr")
 library("microbenchmark")
 
@@ -205,7 +206,7 @@ timingsFull.single <- lapply(nTexts, function(n) {
     sentoBigramsFunc(texts),
     sentoClustersFunc(texts),
     meanrFunc(texts),
-    # SentimentAnalysisFunc(texts),
+    # SentimentAnalysisFunc(texts), # see separate calculations below
     syuzhetFunc(texts),
     quantedaFunc(texts),
     tidytextUnigramsFunc(texts),
@@ -223,8 +224,8 @@ timingsSentimentAnalysis <- lapply(head(nTexts, -1), function(n) {
   out <- microbenchmark(SentimentAnalysisFunc(texts), times = 3, unit = "s")
   out
 })
-timingsSentimentAnalysis <- c(do.call(rbind,
-                                      lapply(timingsSentimentAnalysis, function(timing) summary(timing)[, "mean"])), NA)
+timingsSentimentAnalysis <- c(do.call(rbind, lapply(timingsSentimentAnalysis,
+                                                    function(timing) summary(timing)[, "mean"])), NA)
 
 timingsAll.single <- cbind(timingsFull.single[, 1:4], timingsSentimentAnalysis, timingsFull.single[, 5:7])
 colnames(timingsAll.single) <- c("sento_unigrams", "sento_bigrams", "sento_clusters",
