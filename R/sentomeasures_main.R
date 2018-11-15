@@ -402,7 +402,8 @@ aggregate_time <- function(sentomeasures, lag, fill, how = get_hows()$time, ...)
 #' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
 #' @param sentocorpus the \code{sentocorpus} object created with \code{\link{sento_corpus}}, used for the construction
 #' of the input \code{sentomeasures} object.
-#' @param n a \code{numeric} value to indicate the number of dates associated to sentiment peaks to extract.
+#' @param n a positive \code{numeric} value to indicate the number of dates associated to sentiment peaks to extract.
+#' If \code{n < 1}, it is interpreted as a quantile (for example, 0.07 would mean the 7\% most extreme dates).
 #' @param type a \code{character} value, either \code{"pos"}, \code{"neg"} or \code{"both"}, respectively to look
 #' for the \code{n} dates related to the most positive, most negative or most extreme (in absolute terms) sentiment
 #' occurrences.
@@ -426,13 +427,20 @@ aggregate_time <- function(sentomeasures, lag, fill, how = get_hows()$time, ...)
 #'
 #' # extract the peaks
 #' peaksAbs <- peakdocs(sentomeasures, corpus, n = 5)
+#' peaksAbsQuantile <- peakdocs(sentomeasures, corpus, n = 0.50)
 #' peaksPos <- peakdocs(sentomeasures, corpus, n = 5, type = "pos")
 #' peaksNeg <- peakdocs(sentomeasures, corpus, n = 5, type = "neg")
 #'
 #' @export
 peakdocs <- function(sentomeasures, sentocorpus, n = 10, type = "both", do.average = FALSE) {
   check_class(sentomeasures, "sentomeasures")
+  stopifnot(n > 0)
   stopifnot(type %in% c("both", "neg", "pos"))
+
+  nMax <- nobs(sentomeasures)
+  if (n < 1) n <- n * nMax
+  n <- floor(n)
+  if (n >= nMax) stop("The 'n' argument asks for too many dates.")
 
   measures <- get_measures(sentomeasures)[, -1] # drop dates
   m <- nmeasures(sentomeasures)

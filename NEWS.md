@@ -15,6 +15,7 @@
 - added a `do.lags` argument to the `attributions()` function, to be able to circumvent the most time-consuming part of the computation 
 - imposed a check in the `sento_measures()` function on the uniqueness of the names within and across the lexicons, features and time weighting schemes
 - solved a bug in the `measures_merge()` function that made full merging not possible
+- the `n` argument in the `peakdocs()` function can now also be specified as a quantile
 
 ## sentometrics 0.5.1
 
