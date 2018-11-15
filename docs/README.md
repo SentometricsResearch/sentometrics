@@ -45,13 +45,13 @@ Our [vignette](https://ssrn.com/abstract=3067734) explains the ins and outs of t
 
 ## Installation
 
-To install the package from CRAN, simply do:
+To install the latest package version from CRAN, simply do:
 
 ```R
 install.packages("sentometrics")
 ```
 
-The current version is **0.5.1**. The latest development version of **`sentometrics`** resides on the GitHub repository. To install this version (which may still contain bugs!), execute:
+The latest development version of **`sentometrics`** resides on the GitHub repository. To install this version (which may still contain bugs!), execute:
 
 ```R
 devtools::install_github("sborms/sentometrics")
