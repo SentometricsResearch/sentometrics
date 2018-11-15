@@ -18,8 +18,7 @@
 #' \code{\link{sento_measures}}, \code{\link{peakdocs}}, and a series of \code{measures_xyz}, generic
 #' and extractor functions
 #' \item Sparse modelling: \code{\link{ctr_model}}, \code{\link{sento_model}}
-#' \item Prediction and post-modelling analysis: \code{\link{predict.sentomodel}}, \code{\link{attributions}},
-#' \code{\link{get_loss_data}}
+#' \item Prediction and post-modelling analysis: \code{\link{predict.sentomodel}}, \code{\link{attributions}}
 #' }
 #'
 #' @section Update:
