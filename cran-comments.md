@@ -1,5 +1,5 @@
 
-## submission (version 0.5.5) [xx/11/2018]
+## submission (version 0.5.5) [15/11/2018]
 
 **new**: minor additions and simplifications
 

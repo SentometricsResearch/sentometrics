@@ -4,9 +4,8 @@
 ###########################################
 
 remove(list = ls())
-dir <- "C:/Users/gebruiker/Dropbox/SENTOMETRICS-R-PACKAGE/vignette/"
 options(prompt = "R> ", continue = "+  ", width = 120, digits = 4, max.print = 80, useFancyQuotes = FALSE)
-sink(file = paste0(dir, "output_vignette.txt"), append = FALSE, split = TRUE) # output printed in .txt file
+sink(file = "output_vignette.txt", append = FALSE, split = TRUE) # output printed in .txt file
 
 info <- sessionInfo()
 cat("\n")
