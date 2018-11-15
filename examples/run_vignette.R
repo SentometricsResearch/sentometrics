@@ -97,9 +97,6 @@ pT
 measures_delete(sentMeas, list(c("LM_en"),
                                c("SENTICNET", "economy", "equal_weight")))
 
-measures_select(sentMeas, list("exponential_0.2",
-                               c("HENRY_en", "equal_weight", "wsj")))
-
 measures_subset(sentMeas, date %in% get_dates(sentMeas)[50:149])
 
 sentMeasFill <- measures_fill(sentMeas, fill = "latest", dateBefore = "1995-07-01")
@@ -184,7 +181,7 @@ pF <- plot(sentMeasPred, group = "features") +
   guides(colour = guide_legend(nrow = 1))
 pF
 
-load("vix.rda") ### add as data in package?
+load("examples/vix.rda")
 data("epu", package = "sentometrics")
 sentMeasIn <- measures_subset(sentMeasPred, date %in% vix$date)
 datesIn <- get_dates(sentMeasIn)
@@ -265,12 +262,9 @@ fe <- plot(attr, group = "features") +
   guides(fill = guide_legend(nrow = 1))
 le <- plot(attr, group = "lexicons") +
   guides(fill = guide_legend(nrow = 1))
-ti <- plot(attr, group = "time") +
-  guides(fill = guide_legend(nrow = 1))
 a <- gridExtra::grid.arrange(fe + theme(axis.title.x = element_blank(), axis.title.y = element_blank()),
                              le + theme(axis.title.x = element_blank()),
-                             ti + theme(axis.title.y = element_blank()),
-                             ncol = 1, nrow = 3)
+                             ncol = 1, nrow = 2)
 
 sink()
 

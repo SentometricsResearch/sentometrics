@@ -13,7 +13,8 @@ peakdocs(sentomeasures, sentocorpus, n = 10, type = "both",
 \item{sentocorpus}{the \code{sentocorpus} object created with \code{\link{sento_corpus}}, used for the construction
 of the input \code{sentomeasures} object.}
 
-\item{n}{a \code{numeric} value to indicate the number of dates associated to sentiment peaks to extract.}
+\item{n}{a positive \code{numeric} value to indicate the number of dates associated to sentiment peaks to extract.
+If \code{n < 1}, it is interpreted as a quantile (for example, 0.07 would mean the 7\% most extreme dates).}
 
 \item{type}{a \code{character} value, either \code{"pos"}, \code{"neg"} or \code{"both"}, respectively to look
 for the \code{n} dates related to the most positive, most negative or most extreme (in absolute terms) sentiment
@@ -46,6 +47,7 @@ sentomeasures <- sento_measures(corpusSample, l, ctr)
 
 # extract the peaks
 peaksAbs <- peakdocs(sentomeasures, corpus, n = 5)
+peaksAbsQuantile <- peakdocs(sentomeasures, corpus, n = 0.50)
 peaksPos <- peakdocs(sentomeasures, corpus, n = 5, type = "pos")
 peaksNeg <- peakdocs(sentomeasures, corpus, n = 5, type = "neg")
 

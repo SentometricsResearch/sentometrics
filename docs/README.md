@@ -5,8 +5,6 @@ You collected a large number of texts and think it is a good idea to summarize y
 
 The **`sentometrics`** package is **an integrated framework for textual sentiment time series aggregation and prediction**. It accounts for the intrinsic challenge that, for a given text, sentiment can be computed in many different ways, as well as the large number of possibilities to pool sentiment across texts and time. This additional layer of manipulation does not exist in standard text mining and time series analysis packages. The package also provides an interface to econometrically model the impact of sentiment in texts on a given variable, as part of one coherent workflow. The package therefore integrates the fast _qualification_ of sentiment from texts, the _aggregation_ into different sentiment measures and the optimized _prediction_ based on these measures.
 
-The package was first created during a [Google Summer of Code 2017](https://github.com/rstats-gsoc/gsoc2017/wiki/Sentometrics:-An-integrated-framework-for-text-based-multivariate-time-series-modeling-and-forecasting) project. It implements in a user--friendly way the main methodology developed in the paper [Questioning the news about economic growth: Sparse forecasting using thousands of news--based sentiment values](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2976084).
-
 ## Typical workflow
 
 Below represent the typical **`sentometrics`** package workflow, and the associated output objects and functions. The steps are generally carried out linearly, but not necessarily so. For example, the model information from steps 4 and 5 can be exploited to further merge the sentiment measures in step 3. This serves as a broad taxonomy of what can be done and with which functions.
