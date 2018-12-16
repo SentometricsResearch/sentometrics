@@ -32,7 +32,7 @@ head(epu)
 
 }
 \references{
-Baker, Bloom and Davis (2015). ``Measuring Economic Policy Uncertainty''.
-\emph{NBER Working Paper No. 21633}, \url{http://www.nber.org/papers/w21633}.
+Baker, Bloom and Davis (2016). ``Measuring Economic Policy Uncertainty''.
+\emph{The Quarterly Journal of Economics 131, 1593-1636}, \url{https://doi.org/10.1093/qje/qjw024}.
 }
 \keyword{datasets}

@@ -19,15 +19,15 @@ case of a \code{character} vector, sentiment is only computed across lexicons.}
 \item{how}{a single \code{character} vector defining how aggregation within documents should be performed. For currently
 available options on how aggregation can occur, see \code{\link{get_hows}()$words}.}
 
-\item{tokens}{a \code{list} of tokenised documents, to specify your own tokenisation scheme. Can result from the
+\item{tokens}{a \code{list} of tokenized documents, to specify your own tokenization scheme. Can result from the
 \pkg{quanteda}'s \code{\link[quanteda]{tokens}} function, the \pkg{tokenizers} package, or other. Make sure the tokens are
 constructed from (the texts from) the \code{x} argument, are unigrams, and preferably set to lowercase, otherwise, results
 may be spurious and errors could occur. By default set to \code{NULL}.}
 
 \item{nCore}{a positive \code{numeric} that will be passed on to the \code{numThreads} argument of the
-\code{\link[RcppParallel]{setThreadOptions}} function, to parallelise the sentiment computation across texts. A
-value of 1 (default) implies no parallelisation. Parallelisation is expected to improve speed of the sentiment
-computation only for sufficiently large corpora, say, in the order of having at least 100,000 documents.}
+\code{\link[RcppParallel]{setThreadOptions}} function, to parallelize the sentiment computation across texts. A
+value of 1 (default) implies no parallelization. Parallelization is expected to improve speed of the sentiment
+computation only for sufficiently large corpora.}
 }
 \value{
 If \code{x} is a \code{sentocorpus} object, a \code{sentiment} object, i.e., a \code{data.table} containing
@@ -50,9 +50,9 @@ based on the lexicons provided and a choice of aggregation across words per docu
 For a separate calculation of positive (resp. negative) sentiment, one has to provide distinct positive (resp.
 negative) lexicons. This can be done using the \code{do.split} option in the \code{\link{sento_lexicons}} function, which
 splits out the lexicons into a positive and a negative polarity counterpart. All \code{NA}s are converted to 0, under the
-assumption that this is equivalent to no sentiment. If \code{tokens = NULL} (as per default), texts are tokenised as
+assumption that this is equivalent to no sentiment. If \code{tokens = NULL} (as per default), texts are tokenized as
 unigrams using the \code{\link[tokenizers]{tokenize_words}} function. Punctuation and numbers are removed, but not
-stopwords. The number of words for each document is computed based on that same tokenisation. All tokens are converted
+stopwords. The number of words for each document is computed based on that same tokenization. All tokens are converted
 to lowercase, in line with what the \code{\link{sento_lexicons}} function does for the lexicons and valence shifters.
 }
 \section{Calculation}{
@@ -72,7 +72,7 @@ All scores, whether per unigram, per bigram or per cluster, are summed within a 
 by the \code{how} argument is applied. The \code{how = "proportionalPol"} option divides each document's sentiment
 score by the number of detected polarized words (counting words that appear multiple times by their frequency), instead
 of the total number of words which the \code{how = "proportional"} option gives. The \code{how = "counts"} option
-does no normalisation. See the vignette for more details.
+does no normalization. See the vignette for more details.
 }
 
 \examples{
@@ -98,7 +98,7 @@ corpusQ <- quanteda::corpus(usnews, text_field = "texts")
 corpusQSample <- quanteda::corpus_sample(corpusQ, size = 200)
 sent3 <- compute_sentiment(corpusQSample, l3, how = "counts")
 
-# from an already tokenised corpus, using the 'tokens' argument
+# from an already tokenized corpus, using the 'tokens' argument
 toks <- as.list(quanteda::tokens(corpusQSample, what = "fastestword"))
 sent4 <- compute_sentiment(corpusQSample, l1[1], how = "counts", tokens = toks)
 

@@ -54,10 +54,18 @@ test_that("Test input format of sentiment aggregation function", {
 })
 
 # peakdocs
-test_that("Number of output dates for peak documents extraction in line with input", {
-  expect_length(peakdocs(sentMeas1, corpus, n = 15, type = "both")[["dates"]], 15)
-  expect_length(peakdocs(sentMeas1, corpus, n = 21, type = "pos")[["dates"]], 21)
-  expect_length(peakdocs(sentMeas1, corpus, n = 4, type = "neg")[["dates"]], 4)
-  expect_length(peakdocs(sentMeas1, corpus, n = 10, type = "both", do.average = TRUE)[["dates"]], 10)
+test_that("Output for peak documents extraction in line with input", {
+  expect_length(peakdocs(s1, n = 7, type = "both"), 7)
+  expect_length(peakdocs(s1, n = 11, type = "pos"), 11)
+  expect_length(peakdocs(s1, n = 1, type = "neg"), 1)
+  expect_length(peakdocs(s1, n = 25, type = "both", do.average = TRUE), 25)
+})
+
+# peakdates
+test_that("Output for peak dates extraction in line with input", {
+  expect_length(peakdates(sentMeas1, n = 15, type = "both"), 15)
+  expect_length(peakdates(sentMeas1, n = 21, type = "pos"), 21)
+  expect_length(peakdates(sentMeas1, n = 4, type = "neg"), 4)
+  expect_length(peakdates(sentMeas1, n = 10, type = "both", do.average = TRUE), 10)
 })
 

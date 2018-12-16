@@ -41,20 +41,20 @@
 #' data("usnews", package = "sentometrics")
 #'
 #' # corpus construction
-#' corpus <- sento_corpus(corpusdf = usnews)
+#' corp <- sento_corpus(corpusdf = usnews)
 #'
 #' # take a random subset making use of quanteda
-#' corpusSmall <- quanteda::corpus_sample(corpus, size = 500)
+#' corpusSmall <- quanteda::corpus_sample(corp, size = 500)
 #'
 #' # deleting a feature
-#' quanteda::docvars(corpus, field = "wapo") <- NULL
+#' quanteda::docvars(corp, field = "wapo") <- NULL
 #'
 #' # deleting all features results in the addition of a dummy feature
-#' quanteda::docvars(corpus, field = c("economy", "noneconomy", "wsj")) <- NULL
+#' quanteda::docvars(corp, field = c("economy", "noneconomy", "wsj")) <- NULL
 #'
 #' \dontrun{
 #' # to add or replace features, use the add_features() function...
-#' quanteda::docvars(corpus, field = c("wsj", "new")) <- 1}
+#' quanteda::docvars(corp, field = c("wsj", "new")) <- 1}
 #'
 #' # corpus creation when no features are present
 #' corpusDummy <- sento_corpus(corpusdf = usnews[, 1:3])
@@ -202,9 +202,9 @@ to_sentocorpus <- function(corpus, dates, do.clean = FALSE) {
 #' in which (at least one of) the keyword(s) appear(s), and 0 if not (for \code{do.binary = TRUE}), or with as value the
 #' normalized number of times the keyword(s) occur(s) in the text (for \code{do.binary = FALSE}). If no texts match a
 #' keyword, no column is added. The \code{list} names are used as the names of the new features. For more complex searching,
-#' instead of keywords, one can also directly use a single regex expression to define a new feature (cf. the details section).
-#' @param do.binary a \code{logical}, cf. argument \code{keywords}. If \code{do.binary = FALSE}, the counts are normalized
-#' between 0 and 1.
+#' instead of just keywords, one can also directly use a single regex expression to define a new feature (see the details section).
+#' @param do.binary a \code{logical}, if \code{do.binary = FALSE}, the number of occurrences are normalized
+#' between 0 and 1 (see argument \code{keywords}).
 #' @param do.regex a \code{logical} vector equal in length to the number of elements in the \code{keywords} argument
 #' \code{list}, or a single value if it applies to all. It should be set to \code{TRUE} at those positions where a single
 #' regex expression is used to identify the particular feature.

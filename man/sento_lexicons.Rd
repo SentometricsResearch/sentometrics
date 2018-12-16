@@ -8,8 +8,8 @@ sento_lexicons(lexiconsIn, valenceIn = NULL, do.split = FALSE)
 }
 \arguments{
 \item{lexiconsIn}{a named \code{list} of (raw) lexicons, each element as a \code{data.table} or a \code{data.frame} with
-respectively a words column and a polarity score column. The built-in lexicons
-accessible via \code{list_lexicons} should be passed here first as well.}
+respectively a \code{character} column (the words) and a \code{numeric} column (the polarity scores). This argument can be
+one of the built-in lexicons accessible via \code{list_lexicons}.}
 
 \item{valenceIn}{a single valence word list as a \code{data.table} or a \code{data.frame} with respectively a \code{"x"}
 and a \code{"y"} or \code{"t"} column. The first column has the words, \code{"y"} has the values for bigram
@@ -27,7 +27,7 @@ polarity lexicon.}
 A \code{list} of class \code{sentolexicons} with each lexicon as a separate element according to its name, as a
 \code{data.table}, and optionally an element named \code{valence} that comprises the valence words. Every \code{"x"} column
 contains the words, every \code{"y"} column contains the polarity scores. The \code{"t"} column for valence shifters
-contains the valence shifting types.
+contains the different types.
 }
 \description{
 Structures provided lexicon(s) and optionally valence words. One can for example combine (part of) the

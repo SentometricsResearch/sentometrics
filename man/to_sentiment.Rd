@@ -40,6 +40,9 @@ colnames(s3)[-c(1:3)] <- c(paste0(m, 1:3, "--", "feat1"), paste0(m, 1:3, "--", "
                            paste0(m, 4:5))
 sent3 <- to_sentiment(s3)
 
+# further aggregation from then on is easy
+sentMeas1 <- aggregate(sent1, ctr_agg(lag = 10))
+
 }
 \author{
 Samuel Borms

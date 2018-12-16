@@ -19,10 +19,10 @@ in \code{corpus}, recycling will occur. The numeric values should be between 0 a
 in which (at least one of) the keyword(s) appear(s), and 0 if not (for \code{do.binary = TRUE}), or with as value the
 normalized number of times the keyword(s) occur(s) in the text (for \code{do.binary = FALSE}). If no texts match a
 keyword, no column is added. The \code{list} names are used as the names of the new features. For more complex searching,
-instead of keywords, one can also directly use a single regex expression to define a new feature (cf. the details section).}
+instead of just keywords, one can also directly use a single regex expression to define a new feature (see the details section).}
 
-\item{do.binary}{a \code{logical}, cf. argument \code{keywords}. If \code{do.binary = FALSE}, the counts are normalized
-between 0 and 1.}
+\item{do.binary}{a \code{logical}, if \code{do.binary = FALSE}, the number of occurrences are normalized
+between 0 and 1 (see argument \code{keywords}).}
 
 \item{do.regex}{a \code{logical} vector equal in length to the number of elements in the \code{keywords} argument
 \code{list}, or a single value if it applies to all. It should be set to \code{TRUE} at those positions where a single

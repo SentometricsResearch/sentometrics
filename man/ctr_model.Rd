@@ -72,8 +72,8 @@ length one, it applies to all external regressors.}
 
 \item{nCore}{a positive \code{integer} to indicate the number of cores to use for a parallel iterative model
 estimation (\code{do.iter = TRUE}). We use the \code{\%dopar\%} construct from the \pkg{foreach} package. By default,
-\code{nCore = 1}, which implies no parallelisation. No progress statements are displayed whatsoever when \code{nCore > 1}.
-For cross-validation models, parallelisation can also be carried out for a single-shot model (\code{do.iter = FALSE}),
+\code{nCore = 1}, which implies no parallelization. No progress statements are displayed whatsoever when \code{nCore > 1}.
+For cross-validation models, parallelization can also be carried out for a single-shot model (\code{do.iter = FALSE}),
 whenever a parallel backend is set up. See the examples in \code{\link{sento_model}}.}
 }
 \value{
@@ -107,7 +107,7 @@ Tibshirani and Taylor (2012). ``Degrees of freedom in LASSO problems''.
 \emph{Annals of Statistics 40, 1198-12}, \url{https://doi.org/10.1214/12-AOS1003}.
 
 Zou, Hastie and Tibshirani (2007). ``On the `degrees of freedom' of the LASSO''.
-\emph{Annals of Statistics 35, 2173-2192},  \url{https://doi.org/10.1214/009053607000000127}.
+\emph{Annals of Statistics 35, 2173-2192}, \url{https://doi.org/10.1214/009053607000000127}.
 }
 \seealso{
 \code{\link{sento_model}}

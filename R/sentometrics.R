@@ -1,14 +1,13 @@
 
 #' @title sentometrics: An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction
 #'
-#' @description The \pkg{sentometrics} package is designed to perform time series analysis based on textual sentiment. It
-#' accounts for the intrinsic challenge that, for a given text, sentiment can be computed in many ways, as well as the large
-#' number of possibilities to pool sentiment across texts and time. This additional layer of manipulation does not exist
-#' in standard text mining and time series analysis packages. The package provides an interface to model
-#' the impact of sentiment in texts on a given variable, by first computing a wide range of textual
-#' sentiment time series and then selecting those that are most informative. Altogether, \pkg{sentometrics} integrates the
-#' fast \emph{qualification} of sentiment from texts, the \emph{aggregation} into different sentiment measures and the optimized
-#' \emph{prediction} based on these measures.
+#' @description The \pkg{sentometrics} package is an integrated framework for textual sentiment time series
+#' aggregation and prediction. It accounts for the intrinsic challenge that, for a given text, sentiment can
+#' be computed in many different ways, as well as the large number of possibilities to pool sentiment across
+#' texts and time. This additional layer of manipulation does not exist in standard text mining and time series
+#' analysis packages. The package therefore integrates the fast \emph{qualification} of sentiment from texts,
+#' the \emph{aggregation} into different sentiment time series and the optimized \emph{prediction} based on
+#' these measures.
 #'
 #' @section Main functions:
 #' \itemize{
@@ -27,7 +26,8 @@
 #' @note Please cite the package in publications. Use \code{citation("sentometrics")}.
 #'
 #' @references Ardia, Bluteau and Boudt (2018). ``Questioning the news about economic growth: Sparse forecasting using
-#' thousands of news-based sentiment values''. \emph{Working paper}, \url{https://doi.org/10.2139/ssrn.2976084}.
+#' thousands of news-based sentiment values''. \emph{International Journal of Forecasting, forthcoming},
+#' \url{https://doi.org/10.2139/ssrn.2976084}.
 #' @references Ardia, Bluteau, Borms and Boudt (2018). ``The R package sentometrics to compute, aggregate and
 #' predict with textual sentiment''. \emph{Working paper}, \url{https://doi.org/10.2139/ssrn.3067734}.
 "_PACKAGE"
@@ -174,8 +174,8 @@
 #'
 #' @format A \code{data.frame} with 403 rows and 4 columns.
 #'
-#' @references Baker, Bloom and Davis (2015). ``Measuring Economic Policy Uncertainty''.
-#' \emph{NBER Working Paper No. 21633}, \url{http://www.nber.org/papers/w21633}.
+#' @references Baker, Bloom and Davis (2016). ``Measuring Economic Policy Uncertainty''.
+#' \emph{The Quarterly Journal of Economics 131, 1593-1636}, \url{https://doi.org/10.1093/qje/qjw024}.
 #'
 #' @source \href{http://www.policyuncertainty.com/us_monthly.html}{Measuring Economic Policy Uncertainty}. Retrieved
 #' August 24, 2018.

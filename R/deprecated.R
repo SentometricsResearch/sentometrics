@@ -83,26 +83,6 @@ select_measures <- function(sentomeasures, toSelect) {
 
 #' @rdname sentometrics-deprecated
 #'
-#' @param sentocorpus the \code{sentocorpus} object created with \code{\link{sento_corpus}}, used for the construction
-#' of the input \code{sentomeasures} object.
-#' @param n a \code{numeric} value to indicate the number of dates associated to sentiment peaks to extract, or
-#' a single \code{numeric} to indicate the lag length.
-#' @param type a \code{character} value, either \code{"pos"}, \code{"neg"} or \code{"both"}, respectively to look
-#' for the \code{n} dates related to the most positive, most negative or most extreme (in absolute terms) sentiment
-#' occurrences.
-#' @param do.average a \code{logical} to indicate whether peaks should be selected based on the average sentiment
-#' value per date.
-#'
-#' @seealso \code{\link{peakdocs}}
-#'
-#' @export
-extract_peakdocs <- function(sentomeasures, sentocorpus, n, type, do.average) {
-  .Deprecated("peakdocs", package = "sentometrics")
-  peakdocs(sentomeasures, sentocorpus, n = n, type = type, do.average = do.average)
-}
-
-#' @rdname sentometrics-deprecated
-#'
 #' @param lexiconsIn a named \code{list} of (raw) lexicons, each element as a \code{data.table} or a \code{data.frame} with
 #' respectively a words column and a polarity score column. A subset of the already formatted built-in lexicons
 #' accessible via \code{list_lexicons} should be passed here first.

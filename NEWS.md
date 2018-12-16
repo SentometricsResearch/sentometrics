@@ -1,4 +1,10 @@
 
+## sentometrics 0.5.6
+
+- new functions: `peakdates()`
+- modified the purpose of the `peakdocs()` function and added a `peakdates()` function to properly handle the entire functionality of extracting peaks 
+- a series of documentation fixes
+
 ## sentometrics 0.5.5
 
 - new functions: `sentiment_bind()`, and `to_sentiment()`

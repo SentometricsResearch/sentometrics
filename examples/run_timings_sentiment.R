@@ -3,6 +3,12 @@
 ####### COMPARISON OF TEXTUAL SENTIMENT COMPUTATIONS #######
 ############################################################
 
+###### DESCRIPTION ######
+
+### This code is used to generate Table 2 in the vignette paper 'The R Package sentometrics to
+### Compute, Aggregate and Predict with Textual Sentiment' (Ardia, Bluteau, Borms and Boudt, 2017)
+### Download all required packages first before you run this script...
+
 remove(list = ls())
 
 info <- sessionInfo()
@@ -19,7 +25,6 @@ library("sentometrics")
 
 library("quanteda")
 library("tidytext")
-library("sentimentr")
 library("meanr")
 library("syuzhet")
 library("SentimentAnalysis")
@@ -156,45 +161,7 @@ quantedaFunc <- function(texts) {
   sentiment[, 1]
 }
 
-sentimentrFunc <- function(texts) {
-  sents <- sentimentr::get_sentences(texts)
-  sentimentr::sentiment_by(sents, averaging.function = average_mean,
-                           polarity_dt = lex[["HULIU"]],
-                           valence_shifters_dt = lexicon::hash_valence_shifters, n.before = 1, n.after = 0)
-}
-
-syuzhetFunc <- function(texts) syuzhet::get_sentiment(texts, method = "syuzhet")
-
-########################################### intermediate checks
-
-# # K <- tail(nTexts, 1)
-# K <- 5000
-#
-# system.time(s1 <- sentoUnigramsFunc(corpusAll[1:K]))
-# system.time(s2 <- tidytextUnigramsFunc(corpusAll[1:K]))
-# all.equal(s1$word_count, s2$word_count) & all.equal(s1$HULIU, s2$HULIU)
-#
-# system.time(s3 <- sentoUnigramsAllFunc(corpusAll[1:K]))
-# all.equal(s1$word_count, s3$word_count) & all.equal(s1$HULIU, s3$HULIU)
-#
-# system.time(s4 <- sentoBigramsFunc(corpusAll[1:K]))
-# system.time(s5 <- sentoBigramsAllFunc(corpusAll[1:K]))
-# system.time(s6 <- tidytextBigramsFunc(corpusAll[1:K]))
-# all.equal(s4$word_count, s5$word_count) & all.equal(s4$HULIU, s5$HULIU)
-# all.equal(s4$word_count, s6$word_count) & all.equal(s4$HULIU, s6$HULIU)
-#
-# system.time(s7 <- compute_sentiment(corpusAll[1:K], lexicons = lex[c("HULIU")], how = "proportional"))
-# system.time(s8 <- compute_sentiment(corpusAll[1:K], lexicons = lexPure, how = "proportional"))
-# all.equal(s7$word_count, s8$word_count) & all.equal(s7$HULIU, s8$HULIU)
-#
-# system.time(s9 <- compute_sentiment(corpusAll[1:K], lexicons = lex[c("HULIU")], how = "proportionalPol"))
-# system.time(s10 <- compute_sentiment(corpusAll[1:K], lexicons = lexPure, how = "proportionalPol"))
-# all.equal(s9$word_count, s10$word_count) & all.equal(s9$HULIU, s10$HULIU)
-#
-# system.time(sA <- sentoUnigramsAllFunc(corpusAll[1:K]))
-# system.time(sB <- tidytextUnigramsAllFunc(corpusAll[1:K]))
-# system.time(sC <- sentoClustersAllParFunc(corpusAll[1:K]))
-# sapply(colnames(sA), function(col) all(all.equal(sA[[col]], sB[[col]])))
+syuzhetFunc <- function(texts) syuzhet::get_sentiment(texts, method = "bing")
 
 ########################################### timings for one lexicon
 
@@ -206,11 +173,9 @@ timingsFull.single <- lapply(nTexts, function(n) {
     sentoBigramsFunc(texts),
     sentoClustersFunc(texts),
     meanrFunc(texts),
-    # SentimentAnalysisFunc(texts), # see separate calculations below
     syuzhetFunc(texts),
     quantedaFunc(texts),
     tidytextUnigramsFunc(texts),
-    # sentimentrFunc(texts), # too slow
     times = 5,
     unit = "s"
   )
@@ -218,7 +183,7 @@ timingsFull.single <- lapply(nTexts, function(n) {
 })
 timingsFull.single <- do.call(rbind, lapply(timingsFull.single, function(timing) summary(timing)[, "mean"]))
 
-timingsSentimentAnalysis <- lapply(head(nTexts, -1), function(n) {
+timingsSentimentAnalysis <- lapply(head(nTexts, -1), function(n) { # run separately to avoid memory error
   cat("Run timings for texts size of", n, "\n")
   texts <- corpusAll[1:n]
   out <- microbenchmark(SentimentAnalysisFunc(texts), times = 3, unit = "s")
@@ -231,14 +196,14 @@ timingsAll.single <- cbind(timingsFull.single[, 1:4], timingsSentimentAnalysis, 
 colnames(timingsAll.single) <- c("sento_unigrams", "sento_bigrams", "sento_clusters",
                                  "meanr", "SentimentAnalysis", "syuzhet", "quanteda", "tidytext")
 timings.single <- data.table(texts = nTexts, timingsAll.single)
-timings.single
-save(timings.single, file = "C:/Users/gebruiker/Dropbox/SENTOMETRICS-R-PACKAGE/vignette/timings.single.rda")
+timings.single ### TABLE 2 (PANEL A)
 
 ########################################### timings for many lexicons
 
 timingsFull.many <- lapply(nTexts, function(n) {
   cat("Run timings for texts size of", n, "\n")
-  corpus <-  quanteda::corpus(do.call(rbind, lapply(1:25, function(j) usnews))[keep[1:n], ], text_field = "texts")
+  corpus <-  quanteda::corpus(do.call(rbind, lapply(1:25, function(j) usnews))[keep[1:n], ],
+                              text_field = "texts")
   texts <- quanteda::texts(corpus)
   out <- microbenchmark(
     sentoUnigramsAllFunc(texts),
@@ -258,8 +223,7 @@ colnames(timingsFull.many) <- c("sento_unigrams_many", "sento_unigrams_many_feat
                                 "sento_clusters_many", "sento_clusters_many_parallel",
                                 "tidytext_unigrams_many", "tidytext_bigrams_many")
 timings.many <- data.table(texts = nTexts, timingsFull.many)
-timings.many
-save(timings.many, file = "C:/Users/gebruiker/Dropbox/SENTOMETRICS-R-PACKAGE/vignette/timings.many.rda")
+timings.many ### TABLE 2 (PANEL B)
 
 ###########################################
 

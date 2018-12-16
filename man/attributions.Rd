@@ -8,7 +8,7 @@ attributions(model, sentomeasures, do.lags = TRUE,
   do.normalize = FALSE, refDates = NULL, factor = NULL)
 }
 \arguments{
-\item{model}{a \code{sentomodel} or \code{sentomodeliter} object created with \code{\link{sento_model}}.}
+\item{model}{a \code{sentomodel} or a \code{sentomodeliter} object created with \code{\link{sento_model}}.}
 
 \item{sentomeasures}{the \code{sentomeasures} object, as created with \code{\link{sento_measures}}, used to estimate
 the model from the first argument (make sure this is the case!).}

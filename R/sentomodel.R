@@ -42,8 +42,8 @@
 #' only for the last 31 samples.
 #' @param nCore a positive \code{integer} to indicate the number of cores to use for a parallel iterative model
 #' estimation (\code{do.iter = TRUE}). We use the \code{\%dopar\%} construct from the \pkg{foreach} package. By default,
-#' \code{nCore = 1}, which implies no parallelisation. No progress statements are displayed whatsoever when \code{nCore > 1}.
-#' For cross-validation models, parallelisation can also be carried out for a single-shot model (\code{do.iter = FALSE}),
+#' \code{nCore = 1}, which implies no parallelization. No progress statements are displayed whatsoever when \code{nCore > 1}.
+#' For cross-validation models, parallelization can also be carried out for a single-shot model (\code{do.iter = FALSE}),
 #' whenever a parallel backend is set up. See the examples in \code{\link{sento_model}}.
 #' @param do.difference a \code{logical}, \code{TRUE} will difference the target variable \code{y} supplied in the
 #' \code{\link{sento_model}} function with as lag the absolute value of the \code{h} argument, but
@@ -63,7 +63,7 @@
 #' @references Tibshirani and Taylor (2012). ``Degrees of freedom in LASSO problems''.
 #' \emph{Annals of Statistics 40, 1198-12}, \url{https://doi.org/10.1214/12-AOS1003}.
 #' @references Zou, Hastie and Tibshirani (2007). ``On the `degrees of freedom' of the LASSO''.
-#' \emph{Annals of Statistics 35, 2173-2192},  \url{https://doi.org/10.1214/009053607000000127}.
+#' \emph{Annals of Statistics 35, 2173-2192}, \url{https://doi.org/10.1214/009053607000000127}.
 #'
 #' @examples
 #' # information criterion based model control functions
@@ -279,7 +279,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' newx <- runif(nx) * cbind(get_measures(sentomeasures)[, -1], x)[30:40, ]
 #' preds <- predict(out1, newx = as.matrix(newx), type = "link")
 #'
-#' # an iterative out-of-sample analysis, parallelised
+#' # an iterative out-of-sample analysis, parallelized
 #' ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE, h = 3,
 #'                      oos = 2, alphas = c(0.25, 0.75), nSample = 75, nCore = 2)
 #' out2 <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
@@ -289,7 +289,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' p <- plot(out2)
 #' p
 #'
-#' # a cross-validation based model, parallelised
+#' # a cross-validation based model, parallelized
 #' cl <- parallel::makeCluster(2)
 #' doParallel::registerDoParallel(cl)
 #' ctrCV <- ctr_model(model = "gaussian", type = "cv", do.iter = FALSE,
