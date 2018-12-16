@@ -7,7 +7,6 @@
 \alias{to_global}
 \alias{subset_measures}
 \alias{select_measures}
-\alias{extract_peakdocs}
 \alias{setup_lexicons}
 \alias{retrieve_attributions}
 \alias{perform_agg}
@@ -25,8 +24,6 @@ to_global(sentomeasures, lexicons, features, time)
 subset_measures(sentomeasures, subset)
 
 select_measures(sentomeasures, toSelect)
-
-extract_peakdocs(sentomeasures, sentocorpus, n, type, do.average)
 
 setup_lexicons(lexiconsIn, valenceIn, do.split)
 
@@ -62,19 +59,6 @@ set to 1, which means equally weighted.}
 \item{toSelect}{a \code{character} vector of the lexicon, feature and time weighting scheme names, to indicate which
 measures need to be selected, or as a \code{list} of \code{character} vectors, possibly with separately specified
 combinations (only consisting of one lexicon, one feature, and one time weighting scheme at maximum).}
-
-\item{sentocorpus}{the \code{sentocorpus} object created with \code{\link{sento_corpus}}, used for the construction
-of the input \code{sentomeasures} object.}
-
-\item{n}{a \code{numeric} value to indicate the number of dates associated to sentiment peaks to extract, or
-a single \code{numeric} to indicate the lag length.}
-
-\item{type}{a \code{character} value, either \code{"pos"}, \code{"neg"} or \code{"both"}, respectively to look
-for the \code{n} dates related to the most positive, most negative or most extreme (in absolute terms) sentiment
-occurrences.}
-
-\item{do.average}{a \code{logical} to indicate whether peaks should be selected based on the average sentiment
-value per date.}
 
 \item{lexiconsIn}{a named \code{list} of (raw) lexicons, each element as a \code{data.table} or a \code{data.frame} with
 respectively a words column and a polarity score column. A subset of the already formatted built-in lexicons
@@ -137,8 +121,6 @@ have been deprecated.
 \code{\link{measures_subset}}
 
 \code{\link{measures_select}}
-
-\code{\link{peakdocs}}
 
 \code{\link{sento_lexicons}}
 

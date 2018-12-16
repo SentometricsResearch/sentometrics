@@ -234,7 +234,7 @@ attributions.sentomodeliter <- compiler::cmpfun(.attributions.sentomodeliter)
 #' calculated with respect to the last factor level or factor column. A \code{NULL} value for document-level attribution
 #' on a given date means no documents are directly implicated in the associated prediction.
 #'
-#' @param model a \code{sentomodel} or \code{sentomodeliter} object created with \code{\link{sento_model}}.
+#' @param model a \code{sentomodel} or a \code{sentomodeliter} object created with \code{\link{sento_model}}.
 #' @param sentomeasures the \code{sentomeasures} object, as created with \code{\link{sento_measures}}, used to estimate
 #' the model from the first argument (make sure this is the case!).
 #' @param do.lags a \code{logical}, \code{TRUE} also computes the attribution to each time lag. For large time lags,

@@ -47,20 +47,20 @@ complementary features (e.g., \code{"economy"} and \code{"noneconomy"}) makes se
 data("usnews", package = "sentometrics")
 
 # corpus construction
-corpus <- sento_corpus(corpusdf = usnews)
+corp <- sento_corpus(corpusdf = usnews)
 
 # take a random subset making use of quanteda
-corpusSmall <- quanteda::corpus_sample(corpus, size = 500)
+corpusSmall <- quanteda::corpus_sample(corp, size = 500)
 
 # deleting a feature
-quanteda::docvars(corpus, field = "wapo") <- NULL
+quanteda::docvars(corp, field = "wapo") <- NULL
 
 # deleting all features results in the addition of a dummy feature
-quanteda::docvars(corpus, field = c("economy", "noneconomy", "wsj")) <- NULL
+quanteda::docvars(corp, field = c("economy", "noneconomy", "wsj")) <- NULL
 
 \dontrun{
 # to add or replace features, use the add_features() function...
-quanteda::docvars(corpus, field = c("wsj", "new")) <- 1}
+quanteda::docvars(corp, field = c("wsj", "new")) <- 1}
 
 # corpus creation when no features are present
 corpusDummy <- sento_corpus(corpusdf = usnews[, 1:3])

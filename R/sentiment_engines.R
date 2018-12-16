@@ -8,7 +8,7 @@ spread_sentiment_features <- function(sent, features, lexNames) {
   sent
 }
 
-tokenise_texts <- function(x, tokens = NULL) { # x is a (sento)corpus object or a character vector
+tokenize_texts <- function(x, tokens = NULL) { # x is a (sento)corpus object or a character vector
   if (is.null(tokens)) {
     x <- stringi::stri_trans_tolower(x)
     tok <- stringi::stri_split_boundaries(x, type = "word", skip_word_none = TRUE, skip_word_number = TRUE)
@@ -37,9 +37,9 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, nCore = 1) {
 #' @details For a separate calculation of positive (resp. negative) sentiment, one has to provide distinct positive (resp.
 #' negative) lexicons. This can be done using the \code{do.split} option in the \code{\link{sento_lexicons}} function, which
 #' splits out the lexicons into a positive and a negative polarity counterpart. All \code{NA}s are converted to 0, under the
-#' assumption that this is equivalent to no sentiment. If \code{tokens = NULL} (as per default), texts are tokenised as
+#' assumption that this is equivalent to no sentiment. If \code{tokens = NULL} (as per default), texts are tokenized as
 #' unigrams using the \code{\link[tokenizers]{tokenize_words}} function. Punctuation and numbers are removed, but not
-#' stopwords. The number of words for each document is computed based on that same tokenisation. All tokens are converted
+#' stopwords. The number of words for each document is computed based on that same tokenization. All tokens are converted
 #' to lowercase, in line with what the \code{\link{sento_lexicons}} function does for the lexicons and valence shifters.
 #'
 #' @section Calculation:
@@ -58,7 +58,7 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, nCore = 1) {
 #' by the \code{how} argument is applied. The \code{how = "proportionalPol"} option divides each document's sentiment
 #' score by the number of detected polarized words (counting words that appear multiple times by their frequency), instead
 #' of the total number of words which the \code{how = "proportional"} option gives. The \code{how = "counts"} option
-#' does no normalisation. See the vignette for more details.
+#' does no normalization. See the vignette for more details.
 #'
 #' @param x either a \code{sentocorpus} object created with \code{\link{sento_corpus}}, a \pkg{quanteda}
 #' \code{\link[quanteda]{corpus}} object, or a \code{character} vector. The latter two do not incorporate a
@@ -68,14 +68,14 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, nCore = 1) {
 #' @param lexicons a \code{sentolexicons} object created using \code{\link{sento_lexicons}}.
 #' @param how a single \code{character} vector defining how aggregation within documents should be performed. For currently
 #' available options on how aggregation can occur, see \code{\link{get_hows}()$words}.
-#' @param tokens a \code{list} of tokenised documents, to specify your own tokenisation scheme. Can result from the
+#' @param tokens a \code{list} of tokenized documents, to specify your own tokenization scheme. Can result from the
 #' \pkg{quanteda}'s \code{\link[quanteda]{tokens}} function, the \pkg{tokenizers} package, or other. Make sure the tokens are
 #' constructed from (the texts from) the \code{x} argument, are unigrams, and preferably set to lowercase, otherwise, results
 #' may be spurious and errors could occur. By default set to \code{NULL}.
 #' @param nCore a positive \code{numeric} that will be passed on to the \code{numThreads} argument of the
-#' \code{\link[RcppParallel]{setThreadOptions}} function, to parallelise the sentiment computation across texts. A
-#' value of 1 (default) implies no parallelisation. Parallelisation is expected to improve speed of the sentiment
-#' computation only for sufficiently large corpora, say, in the order of having at least 100,000 documents.
+#' \code{\link[RcppParallel]{setThreadOptions}} function, to parallelize the sentiment computation across texts. A
+#' value of 1 (default) implies no parallelization. Parallelization is expected to improve speed of the sentiment
+#' computation only for sufficiently large corpora.
 #'
 #' @return If \code{x} is a \code{sentocorpus} object, a \code{sentiment} object, i.e., a \code{data.table} containing
 #' the sentiment scores \code{data.table} with an \code{"id"}, a \code{"date"} and a \code{"word_count"} column,
@@ -112,7 +112,7 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, nCore = 1) {
 #' corpusQSample <- quanteda::corpus_sample(corpusQ, size = 200)
 #' sent3 <- compute_sentiment(corpusQSample, l3, how = "counts")
 #'
-#' # from an already tokenised corpus, using the 'tokens' argument
+#' # from an already tokenized corpus, using the 'tokens' argument
 #' toks <- as.list(quanteda::tokens(corpusQSample, what = "fastestword"))
 #' sent4 <- compute_sentiment(corpusQSample, l1[1], how = "counts", tokens = toks)
 #'
@@ -134,7 +134,7 @@ compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, 
 .compute_sentiment.sentocorpus <- function(x, lexicons, how, tokens = NULL, nCore = 1) {
   nCore <- check_nCore(nCore)
   features <- names(quanteda::docvars(x))[-1] # drop date column
-  tok <- tokenise_texts(quanteda::texts(x), tokens)
+  tok <- tokenize_texts(quanteda::texts(x), tokens)
   s <- compute_sentiment_lexicons(tok, lexicons, how, nCore) # compute sentiment per document for all lexicons
   lexNames <- colnames(s)[-1]
   s <- cbind(id = quanteda::docnames(x), quanteda::docvars(x), s) # id - date - features - word_count - lexicons/sentiment
@@ -156,7 +156,7 @@ compute_sentiment.sentocorpus <- compiler::cmpfun(.compute_sentiment.sentocorpus
     isNumeric <- sapply(quanteda::docvars(x), is.numeric)
     if (sum(isNumeric) == 0) features <- NULL else features <- names(isNumeric[isNumeric])
   }
-  tok <- tokenise_texts(quanteda::texts(x), tokens)
+  tok <- tokenize_texts(quanteda::texts(x), tokens)
   s <- compute_sentiment_lexicons(tok, lexicons, how, nCore) # compute sentiment per document for all lexicons
   if (!is.null(features)) { # spread sentiment across numeric features if present and reformat
       lexNames <- colnames(s)[-1]
@@ -174,7 +174,7 @@ compute_sentiment.corpus <- compiler::cmpfun(.compute_sentiment.corpus)
 
 .compute_sentiment.character <- function(x, lexicons, how, tokens = NULL, nCore = 1) {
   nCore <- check_nCore(nCore)
-  tok <- tokenise_texts(x, tokens)
+  tok <- tokenize_texts(x, tokens)
   s <- compute_sentiment_lexicons(tok, lexicons, how, nCore) # compute sentiment per document for all lexicons
   s
 }
@@ -262,6 +262,9 @@ sentiment_bind <- function(...) {
 #'                            paste0(m, 4:5))
 #' sent3 <- to_sentiment(s3)
 #'
+#' # further aggregation from then on is easy
+#' sentMeas1 <- aggregate(sent1, ctr_agg(lag = 10))
+#'
 #' @export
 to_sentiment <- function(s) {
   stopifnot(is.data.table(s))
@@ -284,5 +287,68 @@ to_sentiment <- function(s) {
   s <- s[order(date)]
   class(s) <- c("sentiment", class(s))
   s
+}
+
+#' Extract documents related to sentiment peaks
+#'
+#' @author Samuel Borms
+#'
+#' @description This function extracts the documents with most extreme sentiment (lowest, highest or both
+#' in absolute terms). The extracted documents are unique, even when, for example, all most extreme
+#' sentiment values (across sentiment calculation methods) occur only for one document.
+#'
+#' @param sentiment a \code{sentiment} object created using \code{\link{compute_sentiment}} or
+#' \code{\link{to_sentiment}}.
+#' @param n a positive \code{numeric} value to indicate the number of dates associated to sentiment peaks to extract.
+#' If \code{n < 1}, it is interpreted as a quantile (for example, 0.07 would mean the 7\% most extreme dates).
+#' @param type a \code{character} value, either \code{"pos"}, \code{"neg"} or \code{"both"}, respectively to look
+#' for the \code{n} dates related to the most positive, most negative or most extreme (in absolute terms) sentiment
+#' occurrences.
+#' @param do.average a \code{logical} to indicate whether peaks should be selected based on the average sentiment
+#' value per date.
+#'
+#' @return A vector of type \code{"character"} corresponding to the \code{n} extracted document identifiers.
+#'
+#' @examples
+#' set.seed(505)
+#'
+#' data("usnews", package = "sentometrics")
+#' data("list_lexicons", package = "sentometrics")
+#' data("list_valence_shifters", package = "sentometrics")
+#'
+#' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")])
+#'
+# compute sentiment to begin with
+#' corpus <- sento_corpus(corpusdf = usnews)
+#' corpusSample <- quanteda::corpus_sample(corpus, size = 200)
+#' sent <- compute_sentiment(corpusSample, l, how = "proportionalPol")
+#'
+#' # extract the peaks
+#' peaksAbs <- peakdocs(sent, n = 5)
+#' peaksAbsQuantile <- peakdocs(sent, n = 0.50)
+#' peaksPos <- peakdocs(sent, n = 5, type = "pos")
+#' peaksNeg <- peakdocs(sent, n = 5, type = "neg")
+#'
+#' @export
+peakdocs <- function(sentiment, n = 10, type = "both", do.average = FALSE) {
+  check_class(sentiment, "sentiment")
+  stopifnot(n > 0)
+  stopifnot(type %in% c("both", "neg", "pos"))
+
+  nMax <- nrow(sentiment)
+  if (n < 1) n <- n * nMax
+  n <- floor(n)
+  if (n >= nMax) stop("The 'n' argument asks for too many documents.")
+
+  s <- sentiment[, -c(1:3)] # drop id, date and word_count columns
+  m <- ncol(s)
+  if (do.average == TRUE) {
+    s <- rowMeans(s, na.rm = TRUE)
+    ids <- sentiment[["id"]]
+  } else ids <- rep(sentiment[["id"]], m)
+  if (type == "both") s <- abs(s)
+  indx <- order(s, decreasing = ifelse(type == "neg", FALSE, TRUE))[1:(m * n)]
+  peakIds <- unique(ids[indx])[1:n]
+  peakIds
 }
 

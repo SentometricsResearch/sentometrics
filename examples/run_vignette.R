@@ -3,21 +3,29 @@
 ############## VIGNETTE CODE ##############
 ###########################################
 
+###### DESCRIPTION ######
+
+### This code is used in the vignette paper 'The R Package sentometrics to Compute,
+### Aggregate and Predict with Textual Sentiment' (Ardia, Bluteau, Borms and Boudt, 2017)
+### See the paper for the results and setup details
+### Download the package first before you run this script...
+#### install.packages("sentometrics") # from CRAN (version 0.5.5), OR
+#### install.packages("sentometrics_0.5.5.tar.gz", repos = NULL) # from the tar
+
 remove(list = ls())
 options(prompt = "R> ", continue = "+  ", width = 120, digits = 4, max.print = 80, useFancyQuotes = FALSE)
 sink(file = "output_vignette.txt", append = FALSE, split = TRUE) # output printed in .txt file
 
 info <- sessionInfo()
-cat("\n")
 cat(info$R.version$version.string, "\n")
 cat(info$platform, "\n")
 cat(info$locale, "\n \n")
 
-set.seed(505)
+##################
+###### CODE ######
+##################
 
-###############################
-### 3.1 #######################
-###############################
+cat("### SECTION 3.1 ####################### \n \n")
 
 library("sentometrics")
 
@@ -30,24 +38,27 @@ library("lubridate")
 
 data("usnews", package = "sentometrics")
 class(usnews)
+cat("\n")
 
 head(usnews[, -3])
+cat("\n")
 
 usnews[["texts"]][2029]
+cat("\n")
 
-corpus <- sento_corpus(usnews)
-class(corpus)
+uscorpus <- sento_corpus(usnews)
+class(uscorpus)
+cat("\n")
 
 regex <- c("\\bRepublic[s]?\\b|\\bDemocrat[s]?\\b|\\belection\\b")
-corpus <- add_features(corpus,
+uscorpus <- add_features(uscorpus,
                        keywords = list(uncertainty = c("uncertainty", "distrust"), election = regex),
                        do.binary = TRUE,
                        do.regex = c(FALSE, TRUE))
-tail(quanteda::docvars(corpus))
+tail(quanteda::docvars(uscorpus))
+cat("\n")
 
-###############################
-### 3.2 #######################
-###############################
+cat("### SECTION 3.2 ####################### \n \n")
 
 data("list_lexicons", package = "sentometrics")
 data("list_valence_shifters", package = "sentometrics")
@@ -65,13 +76,13 @@ lexiconsIn <- c(
 lex <- sento_lexicons(lexiconsIn = lexiconsIn,
                       valenceIn = list_valence_shifters[["en"]])
 lex[["HENRY_en"]]
+cat("\n")
 
 sentScores <- compute_sentiment(usnews[["texts"]], lexicons = lex, how = "proportional")
 head(sentScores[, c("word_count", "GI_en", "SENTIWORD", "SOCAL")])
+cat("\n")
 
-###############################
-### 3.3 #######################
-###############################
+cat("### SECTION 3.3 ####################### \n \n")
 
 ctrAgg <- ctr_agg(howWithin = "counts",
                   howDocs = "proportional",
@@ -82,24 +93,26 @@ ctrAgg <- ctr_agg(howWithin = "counts",
                   lag = 30,
                   alphasExp = 0.2)
 
-sentMeas <- sento_measures(corpus, lexicons = lex, ctr = ctrAgg)
+sentMeas <- sento_measures(uscorpus, lexicons = lex, ctr = ctrAgg)
 
 get_measures(sentMeas)[, c(1, 23)]
+cat("\n")
 
 pT <- plot(sentMeas, group = "time")
 pT
 
-###############################
-### 3.4 #######################
-###############################
+cat("### SECTION 3.4 ####################### \n \n")
 
 measures_delete(sentMeas, list(c("LM_en"),
                                c("SENTICNET", "economy", "equal_weight")))
+cat("\n")
 
 measures_subset(sentMeas, date %in% get_dates(sentMeas)[50:149])
+cat("\n")
 
 sentMeasFill <- measures_fill(sentMeas, fill = "latest", dateBefore = "1995-07-01")
 head(get_measures(sentMeasFill)[, 1:3])
+cat("\n")
 
 corpusPlain <- sento_corpus(usnews[, 1:3])
 ctrAggLex <- ctr_agg(howWithin = "proportionalPol",
@@ -110,6 +123,7 @@ ctrAggLex <- ctr_agg(howWithin = "proportionalPol",
                      lag = 1)
 sentMeasLex <- sento_measures(corpusPlain, lexicons = lex[-length(lex)], ctr = ctrAggLex)
 mean(as.numeric(sentMeasLex$stats["meanCorr", ]))
+cat("\n")
 
 pL <- plot(sentMeasLex, group = "lexicons") +
   guides(colour = guide_legend(nrow = 1))
@@ -128,35 +142,33 @@ glob <- measures_global(sentMeas,
                         features = c(0.20, 0.20, 0.20, 0.20, 0.10, 0.10),
                         time = c(1/2, 1/2))
 
-peaksNeg <- peakdocs(sentMeas, corpus, n = 1, type = "neg")
-peaksNeg[c("dates", "ids")]
+peakdates(sentMeas, n = 1, type = "neg")
+cat("\n")
 
-###############################
-### 3.5 #######################
-###############################
+cat("### SECTION 3.5 ####################### \n \n")
 
+set.seed(505)
 y <- rnorm(nobs(sentMeas))
 ctrInSample <- ctr_model(model = "gaussian",
                          type = "BIC",
                          h = 0,
                          alphas = 0,
-                         do.iter = FALSE)
+                         do.iter = FALSE, do.progress = FALSE)
 fit <- sento_model(sentMeas, y, ctr = ctrInSample)
 
 attrFit <- attributions(fit, sentMeas)
 head(attrFit[["features"]])
+cat("\n")
 
 X <- as.matrix(get_measures(sentMeas)[, -1])
 yFit <- predict(fit, newx = X)
 attrSum <- rowSums(attrFit[["lexicons"]][, -1]) + fit[["reg"]][["a0"]]
 all.equal(as.numeric(yFit), attrSum)
+cat("\n")
 
-###############################
-### 4 #########################
-###############################
+cat("### SECTION 4 ####################### \n \n")
 
-corpusIn <- corpus
-dfm <- quanteda::dfm(corpusIn, tolower = TRUE,
+dfm <- quanteda::dfm(uscorpus, tolower = TRUE,
                      remove_punct = TRUE, remove_numbers = TRUE, remove = quanteda::stopwords("en")) %>%
   quanteda::dfm_remove(min_nchar = 3) %>%
   quanteda::dfm_trim(min_termfreq = 0.95, termfreq_type = "quantile") %>%
@@ -168,19 +180,20 @@ topTerms <- t(stm::labelTopics(topicModel, n = 5)[["prob"]])
 keywords <- lapply(1:ncol(topTerms), function(i) topTerms[, i])
 names(keywords) <- paste0("TOPIC_", 1:length(keywords))
 
-corpusIn <- add_features(corpusIn, keywords = keywords, do.binary = FALSE, do.regex = FALSE)
-quanteda::docvars(corpusIn, c("uncertainty", "election", "economy", "noneconomy", "wsj", "wapo")) <- NULL
-colSums(quanteda::docvars(corpusIn)[, -1] != 0)
+uscorpus <- add_features(uscorpus, keywords = keywords, do.binary = FALSE, do.regex = FALSE)
+quanteda::docvars(uscorpus, c("uncertainty", "election", "economy", "noneconomy", "wsj", "wapo")) <- NULL
+colSums(quanteda::docvars(uscorpus)[, -1] != 0)
+cat("\n")
 
 ctrAggPred <- ctr_agg(howWithin = "proportionalPol", howDocs = "equal_weight", howTime = "beta",
                       by = "day", fill = "latest", lag = 270, aBeta = 1:3, bBeta = 1:2)
-sentMeasPred <- sento_measures(corpusIn, lexicons = lex, ctr = ctrAggPred)
+sentMeasPred <- sento_measures(uscorpus, lexicons = lex, ctr = ctrAggPred)
 
 pF <- plot(sentMeasPred, group = "features") +
   guides(colour = guide_legend(nrow = 1))
 pF
 
-load("examples/vix.rda")
+load("vix.rda")
 data("epu", package = "sentometrics")
 sentMeasIn <- measures_subset(sentMeasPred, date %in% vix$date)
 datesIn <- get_dates(sentMeasIn)
@@ -201,7 +214,9 @@ ctrIter <- ctr_model(model = "gaussian",
                      nSample = M,
                      nCore = 1)
 out <- sento_model(sentMeasIn, x = x[, "lag", drop = FALSE], y = y, ctr = ctrIter)
+cat("\n")
 summary(out)
+cat("\n")
 
 preds <- predsAR <- rep(NA, nrow(out[["performance"]]$raw))
 yTarget <- y[-(1:h)]
@@ -222,33 +237,42 @@ benchmark <- data.frame(preds = preds, error = preds - true, errorSq = (preds - 
                         predsAR = predsAR, errorAR = predsAR - true, errorSqAR = (predsAR - true)^2,
                         stringsAsFactors = FALSE)
 
-### TABLE 3
-dates <- names(out$models)
+###### TABLE 3 ######
+dates  <- names(out$models)
 dates1 <- which(dates <= "2007-06-01")
 dates2 <- which(dates > "2007-06-01" & dates <= "2009-12-01")
 dates3 <- which(dates > "2009-12-01")
 
 rmseTable <- c(out$performance$RMSFE,
-               sqrt(mean(benchmark$errorSq)), sqrt(mean(benchmark$errorSqAR)), # full
-               sqrt(mean(out$performance$raw[dates1, "errorSq"])),
-               sqrt(mean(benchmark[dates1, "errorSq"])), sqrt(mean(benchmark[dates1, "errorSqAR"])), # pre-crisis (P1)
-               sqrt(mean(out$performance$raw[dates2, "errorSq"])),
-               sqrt(mean(benchmark[dates2, "errorSq"])), sqrt(mean(benchmark[dates2, "errorSqAR"])), # crisis (P2)
-               sqrt(mean(out$performance$raw[dates3, "errorSq"])),
-               sqrt(mean(benchmark[dates3, "errorSq"])), sqrt(mean(benchmark[dates3, "errorSqAR"])) # post-crisis (P3)
+  sqrt(mean(benchmark$errorSq)), sqrt(mean(benchmark$errorSqAR)), # full
+  sqrt(mean(out$performance$raw[dates1, "errorSq"])),
+  sqrt(mean(benchmark[dates1, "errorSq"])), sqrt(mean(benchmark[dates1, "errorSqAR"])), # pre-crisis (P1)
+  sqrt(mean(out$performance$raw[dates2, "errorSq"])),
+  sqrt(mean(benchmark[dates2, "errorSq"])), sqrt(mean(benchmark[dates2, "errorSqAR"])), # crisis (P2)
+  sqrt(mean(out$performance$raw[dates3, "errorSq"])),
+  sqrt(mean(benchmark[dates3, "errorSq"])), sqrt(mean(benchmark[dates3, "errorSqAR"])) # post-crisis (P3)
 )
 madTable <- c(out$performance$MAD,
-              mean(abs(benchmark$error)), mean(abs(benchmark$errorAR)),
-              mean(abs(out$performance$raw[dates1, "error"])),
-              mean(abs(benchmark[dates1, "error"])), mean(abs(benchmark[dates1, "errorAR"])),
-              mean(abs(out$performance$raw[dates2, "error"])),
-              mean(abs(benchmark[dates2, "error"])), mean(abs(benchmark[dates2, "errorAR"])),
-              mean(abs(out$performance$raw[dates3, "error"])),
-              mean(abs(benchmark[dates3, "error"])), mean(abs(benchmark[dates3, "errorAR"]))
+  mean(abs(benchmark$error)), mean(abs(benchmark$errorAR)),
+  mean(abs(out$performance$raw[dates1, "error"])),
+  mean(abs(benchmark[dates1, "error"])), mean(abs(benchmark[dates1, "errorAR"])),
+  mean(abs(out$performance$raw[dates2, "error"])),
+  mean(abs(benchmark[dates2, "error"])), mean(abs(benchmark[dates2, "errorAR"])),
+  mean(abs(out$performance$raw[dates3, "error"])),
+  mean(abs(benchmark[dates3, "error"])), mean(abs(benchmark[dates3, "errorAR"]))
 )
 names(rmseTable) <- names(madTable) <-
   paste0(rep(c("Full", "P1", "P2", "P3"), rep(3, 4)), "_", c("M-s", "M-bm", "M-ar"))
-###
+
+cat("RMSE \n")
+rmseTable
+cat("\n")
+
+cat("MAD \n")
+madTable
+cat("\n")
+
+######
 
 r <- plot(out) +
   geom_line(data = melt(data.table(date = names(out$models),
@@ -261,9 +285,17 @@ fe <- plot(attr, group = "features") +
   guides(fill = guide_legend(nrow = 1))
 le <- plot(attr, group = "lexicons") +
   guides(fill = guide_legend(nrow = 1))
-a <- gridExtra::grid.arrange(fe + theme(axis.title.x = element_blank(), axis.title.y = element_blank()),
-                             le + theme(axis.title.x = element_blank()),
+a <- gridExtra::grid.arrange(fe + theme(axis.title.x = element_blank()),
+                             le + theme(axis.title.y = element_blank()),
                              ncol = 1, nrow = 2)
 
 sink()
+
+###### FIGURES ######
+
+ggsave("sentmeasT.pdf", pT) # Figure 1
+ggsave("sentmeasL.pdf", pL) # Figure 2
+ggsave("sentmeasF.pdf", pF) # Figure 3
+ggsave("for.pdf", r) # Figure 4
+ggsave("attr.pdf", a) # Figure 5
 

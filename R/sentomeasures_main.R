@@ -183,7 +183,8 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #' \item{stats}{a \code{data.frame} with a series of elementary statistics (mean, standard deviation, maximum, minimum, and
 #' average correlation with all other measures) for each individual sentiment measure.}
 #' \item{sentiment}{the sentiment scores \code{data.table} with \code{"date"}, \code{"word_count"} and lexicon--feature
-#' sentiment scores columns.
+#' sentiment scores columns. The \code{"date"} column has the dates already converted at the frequency for
+#' the across-document aggregation.
 #' If \code{ctr$do.ignoreZeros = TRUE}, all zeros are replaced by \code{NA}.}
 #' \item{howDocs}{a single \code{character} vector to remind how sentiment across documents was aggregated.}
 #' \item{fill}{a single \code{character} vector that specifies if and how missing dates have been added before
@@ -390,18 +391,16 @@ aggregate_time <- function(sentomeasures, lag, fill, how = get_hows()$time, ...)
   return(sentomeasures)
 }
 
-#' Extract dates and documents related to sentiment peaks
+#' Extract dates related to sentiment time series peaks
 #'
 #' @author Samuel Borms
 #'
-#' @description This function extracts the dates and documents for which aggregated sentiment is most
+#' @description This function extracts the dates for which aggregated sentiment is most
 #' extreme (lowest, highest or both in absolute terms). The extracted dates are unique, even when,
 #' for example, all most extreme sentiment values (for different sentiment measures) occur on only
 #' one date.
 #'
 #' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
-#' @param sentocorpus the \code{sentocorpus} object created with \code{\link{sento_corpus}}, used for the construction
-#' of the input \code{sentomeasures} object.
 #' @param n a positive \code{numeric} value to indicate the number of dates associated to sentiment peaks to extract.
 #' If \code{n < 1}, it is interpreted as a quantile (for example, 0.07 would mean the 7\% most extreme dates).
 #' @param type a \code{character} value, either \code{"pos"}, \code{"neg"} or \code{"both"}, respectively to look
@@ -410,10 +409,11 @@ aggregate_time <- function(sentomeasures, lag, fill, how = get_hows()$time, ...)
 #' @param do.average a \code{logical} to indicate whether peaks should be selected based on the average sentiment
 #' value per date.
 #'
-#' @return A \code{list} with as elements \code{"dates"}, \code{"ids"} and \code{"documents"}, corresponding to
-#' the \code{n} extracted sentiment peak dates and associated document ids and texts.
+#' @return A vector of type \code{"Date"} corresponding to the \code{n} extracted sentiment peak dates.
 #'
 #' @examples
+#' set.seed(505)
+#'
 #' data("usnews", package = "sentometrics")
 #' data("list_lexicons", package = "sentometrics")
 #' data("list_valence_shifters", package = "sentometrics")
@@ -426,13 +426,13 @@ aggregate_time <- function(sentomeasures, lag, fill, how = get_hows()$time, ...)
 #' sentomeasures <- sento_measures(corpusSample, l, ctr)
 #'
 #' # extract the peaks
-#' peaksAbs <- peakdocs(sentomeasures, corpus, n = 5)
-#' peaksAbsQuantile <- peakdocs(sentomeasures, corpus, n = 0.50)
-#' peaksPos <- peakdocs(sentomeasures, corpus, n = 5, type = "pos")
-#' peaksNeg <- peakdocs(sentomeasures, corpus, n = 5, type = "neg")
+#' peaksAbs <- peakdates(sentomeasures, n = 5)
+#' peaksAbsQuantile <- peakdates(sentomeasures, n = 0.50)
+#' peaksPos <- peakdates(sentomeasures, n = 5, type = "pos")
+#' peaksNeg <- peakdates(sentomeasures, n = 5, type = "neg")
 #'
 #' @export
-peakdocs <- function(sentomeasures, sentocorpus, n = 10, type = "both", do.average = FALSE) {
+peakdates <- function(sentomeasures, n = 10, type = "both", do.average = FALSE) {
   check_class(sentomeasures, "sentomeasures")
   stopifnot(n > 0)
   stopifnot(type %in% c("both", "neg", "pos"))
@@ -444,7 +444,6 @@ peakdocs <- function(sentomeasures, sentocorpus, n = 10, type = "both", do.avera
 
   measures <- get_measures(sentomeasures)[, -1] # drop dates
   m <- nmeasures(sentomeasures)
-  if (n >= (nobs(sentomeasures) * m)) stop("The parameter 'n' exceeds the total number of sentiment values.")
   if (do.average == TRUE) {
     measures <- rowMeans(measures, na.rm = TRUE)
     dates <- get_dates(sentomeasures)
@@ -452,9 +451,6 @@ peakdocs <- function(sentomeasures, sentocorpus, n = 10, type = "both", do.avera
   if (type == "both") measures <- abs(measures)
   indx <- order(measures, decreasing = ifelse(type == "neg", FALSE, TRUE))[1:(m * n)]
   peakDates <- unique(dates[indx])[1:n]
-  ids <- sentomeasures$sentiment[date %in% peakDates, ]$id # get document IDs
-  peakDocs <- quanteda::texts(sentocorpus)[row.names(sentocorpus$documents) %in% ids]
-  peaks <- list(dates = peakDates, ids = ids, docs = peakDocs)
-  return(peaks)
+  peakDates
 }
 
