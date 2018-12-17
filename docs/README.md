@@ -17,13 +17,13 @@ Outputs a _`sentocorpus`_ object.
 
 **Step 2**: Choose lexicons and compute document--level textual sentiment
 
-Functions: `sento_lexicons()`, `compute_sentiment()`, `to_sentiment()`, and `sentiment_bind()`.
+Functions: `sento_lexicons()`, `compute_sentiment()`, `to_sentiment()`, `sentiment_bind()` and `peakdocs()`.
 
 Outputs a _`sentolexicons`_ object, and a _`sentiment`_ object or a sentiment scores `data.table`.
 
 **Step 3**: Aggregate the sentiment into multiple textual sentiment time series
 
-Functions: `ctr_agg()`, `sento_measures()`, `plot()`, `aggregate()`, `peakdocs()`, `diff()`, `scale()`, and `summary()`.
+Functions: `ctr_agg()`, `sento_measures()`, `plot()`, `aggregate()`, `peakdates()`, `diff()`, `scale()`, and `summary()`.
 
 A bunch of functions to manipulate the sentiment measures are available (`measures_merge()`, `measures_global()`, `measures_subset()`, `measures_select()`, `measures_delete()`, and `measures_fill()`), as well as a number of convenient extractor functions (`nobs()`, `nmeasures()`, `get_dimensions()`, `get_dates()` and `get_measures()`). Make use of them to facilitate your analysis!
 
