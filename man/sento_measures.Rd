@@ -23,9 +23,8 @@ A \code{sentomeasures} object, which is a \code{list} containing:
 \item{stats}{a \code{data.frame} with a series of elementary statistics (mean, standard deviation, maximum, minimum, and
 average correlation with all other measures) for each individual sentiment measure.}
 \item{sentiment}{the sentiment scores \code{data.table} with \code{"date"}, \code{"word_count"} and lexicon--feature
-sentiment scores columns. The \code{"date"} column has the dates already converted at the frequency for
-the across-document aggregation.
-If \code{ctr$do.ignoreZeros = TRUE}, all zeros are replaced by \code{NA}.}
+sentiment scores columns. The \code{"date"} column has the dates converted at the frequency for
+across-document aggregation. All zeros are replaced by \code{NA} if \code{ctr$do.ignoreZeros = TRUE}.}
 \item{howDocs}{a single \code{character} vector to remind how sentiment across documents was aggregated.}
 \item{fill}{a single \code{character} vector that specifies if and how missing dates have been added before
 aggregation across time was carried out.}
