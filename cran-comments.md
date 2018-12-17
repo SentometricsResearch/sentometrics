@@ -1,4 +1,8 @@
 
+## submission (version 0.5.6) [17/12/2018]
+
+**new**: very minor update (one function change and a few documentation fixes)
+
 ## submission (version 0.5.5) [15/11/2018]
 
 **new**: minor additions and simplifications
