@@ -1,7 +1,7 @@
 
 ## sentometrics 0.5.6
 
-- new functions: `peakdates()`
+- new function: `peakdates()`
 - modified the purpose of the `peakdocs()` function and added a `peakdates()` function to properly handle the entire functionality of extracting peaks 
 - a series of documentation fixes
 

@@ -1,25 +1,61 @@
 
-############################################################
-####### COMPARISON OF TEXTUAL SENTIMENT COMPUTATIONS #######
-############################################################
+##############################################################
+#######  COMPARISON OF TEXTUAL SENTIMENT COMPUTATIONS  #######
+##############################################################
 
-###### DESCRIPTION ######
+###### DESCRIPTION ###### 
 
-### This code is used to generate Table 2 in the vignette paper 'The R Package sentometrics to
-### Compute, Aggregate and Predict with Textual Sentiment' (Ardia, Bluteau, Borms and Boudt, 2017)
-### Download all required packages first before you run this script...
+### This code is used in the vignette paper 'The R Package sentometrics to Compute,
+### Aggregate and Predict with Textual Sentiment' (Ardia, Bluteau, Borms and Boudt, 2018)
+### See the paper for the results and setup details
+### Download the package first before you run this script...
+### install.packages("sentometrics") # from CRAN (version 0.5.6), OR
+### install.packages("sentometrics_0.5.6.tar.gz", repos = NULL) # from the tar
+
+
+###### WARNING ######
+
+### For a corpus of 100,000 texts, we run the SentimentAnalysis 
+### function separately to avoid a memory error; it might be that this
+### memory error also occurs for a smaller corpus size
+
+###### SESSION INFO ######
+
+### R version 3.5.1 (2018-07-02)
+### Platform: x86_64-w64-mingw32/x64 (64-bit)
+### Running under: Windows >= 8 x64 (build 9200)
+###  
+### Matrix products: default
+###  
+### locale:
+### [1] LC_COLLATE=Dutch_Belgium.1252  LC_CTYPE=Dutch_Belgium.1252    LC_MONETARY=Dutch_Belgium.1252
+### [4] LC_NUMERIC=C                   LC_TIME=Dutch_Belgium.1252    
+###  
+### attached base packages:
+### [1] stats     graphics  grDevices utils     datasets  methods   base     
+###  
+### other attached packages:
+### [1] microbenchmark_1.4-6    tidyr_0.8.2             dplyr_0.7.8             lexicon_1.1.3          
+### [5] SentimentAnalysis_1.3-2 syuzhet_1.0.4           meanr_0.1-1             tidytext_0.2.0         
+### [9] quanteda_1.3.14         sentometrics_0.5.6      data.table_1.11.8      
+###  
+### loaded via a namespace (and not attached):
+### [1] Rcpp_1.0.0         pillar_1.3.1       compiler_3.5.1     plyr_1.8.4         bindr_0.1.1        tokenizers_0.2.1  
+### [7] iterators_1.0.10   tools_3.5.1        stopwords_0.9.0    nlme_3.1-137       lubridate_1.7.4    tibble_1.4.2      
+### [13] gtable_0.2.0       lattice_0.20-38    pkgconfig_2.0.2    rlang_0.3.0.1      Matrix_1.2-15      foreach_1.4.4     
+### [19] fastmatch_1.1-0    yaml_2.2.0         bindrcpp_0.2.2     janeaustenr_0.1.5  stringr_1.3.1      generics_0.0.2    
+### [25] grid_3.5.1         glmnet_2.0-16      tidyselect_0.2.5   glue_1.3.0         R6_2.3.0           ggplot2_3.1.0     
+### [31] purrr_0.2.5        spacyr_1.0         magrittr_1.5       backports_1.1.3    SnowballC_0.5.1    scales_1.0.0      
+### [37] codetools_0.2-15   assertthat_0.2.0   colorspace_1.3-2   stringi_1.2.4      RcppParallel_4.4.2 lazyeval_0.2.1    
+### [43] munsell_0.5.0      broom_0.5.1        crayon_1.3.4 
 
 remove(list = ls())
 
-info <- sessionInfo()
-cat("\n")
-cat(info$R.version$version.string, "\n")
-cat(info$platform, "\n")
-cat(info$locale, "\n \n")
-
 set.seed(505)
 
-########################################### loading of packages, definition of lexicons
+remove(list = ls())
+options(prompt = "R> ", continue = "+  ", width = 120, digits = 4, max.print = 80, useFancyQuotes = FALSE)
+sink(file = "output_timings.txt", append = FALSE, split = TRUE) # output printed in .txt file
 
 library("sentometrics")
 
@@ -32,9 +68,14 @@ library("SentimentAnalysis")
 library("lexicon")
 library("dplyr")
 library("tidyr")
-library("tibble")
-library("stringr")
 library("microbenchmark")
+
+info <- sessionInfo()
+cat(info$locale, "\n \n")
+print(info)
+cat("\n")
+
+########################################### loading of packages, definition of lexicons
 
 data("usnews", package = "sentometrics")
 data("list_lexicons", package = "sentometrics")
@@ -182,8 +223,12 @@ timingsFull.single <- lapply(nTexts, function(n) {
   out
 })
 timingsFull.single <- do.call(rbind, lapply(timingsFull.single, function(timing) summary(timing)[, "mean"]))
+cat("\n")
 
-timingsSentimentAnalysis <- lapply(head(nTexts, -1), function(n) { # run separately to avoid memory error
+### comment: for a corpus of 100,000 texts, we run the SentimentAnalysis 
+### function separately to avoid a memory error; it might be that this
+### memory error also occurs for a smaller corpus size
+timingsSentimentAnalysis <- lapply(head(nTexts, -1), function(n) {
   cat("Run timings for texts size of", n, "\n")
   texts <- corpusAll[1:n]
   out <- microbenchmark(SentimentAnalysisFunc(texts), times = 3, unit = "s")
@@ -191,12 +236,17 @@ timingsSentimentAnalysis <- lapply(head(nTexts, -1), function(n) { # run separat
 })
 timingsSentimentAnalysis <- c(do.call(rbind, lapply(timingsSentimentAnalysis,
                                                     function(timing) summary(timing)[, "mean"])), NA)
+cat("\n")
 
 timingsAll.single <- cbind(timingsFull.single[, 1:4], timingsSentimentAnalysis, timingsFull.single[, 5:7])
 colnames(timingsAll.single) <- c("sento_unigrams", "sento_bigrams", "sento_clusters",
                                  "meanr", "SentimentAnalysis", "syuzhet", "quanteda", "tidytext")
 timings.single <- data.table(texts = nTexts, timingsAll.single)
-timings.single ### TABLE 2 (PANEL A)
+
+cat("TABLE 3 (PANEL A)")
+cat("\n")
+timings.single
+cat("\n \n")
 
 ########################################### timings for many lexicons
 
@@ -223,7 +273,12 @@ colnames(timingsFull.many) <- c("sento_unigrams_many", "sento_unigrams_many_feat
                                 "sento_clusters_many", "sento_clusters_many_parallel",
                                 "tidytext_unigrams_many", "tidytext_bigrams_many")
 timings.many <- data.table(texts = nTexts, timingsFull.many)
-timings.many ### TABLE 2 (PANEL B)
+
+cat("TABLE 3 (PANEL B)")
+cat("\n")
+timings.many
 
 ###########################################
+
+sink()
 
