@@ -12,12 +12,11 @@
 ### install.packages("sentometrics") # from CRAN (version 0.5.6), OR
 ### install.packages("sentometrics_0.5.6.tar.gz", repos = NULL) # from the tar
 
-
 ###### WARNING ######
 
-### For a corpus of 100,000 texts, we run the SentimentAnalysis 
-### function separately to avoid a memory error; it might be that this
-### memory error also occurs for a smaller corpus size
+### For a corpus of 100,000 texts, we run the SentimentAnalysis function
+### separately (cf. timingsSentimentAnalysis <- ...) to avoid a memory error; 
+### it might be that this memory error also occurs for a smaller corpus size
 
 ###### SESSION INFO ######
 
@@ -225,9 +224,6 @@ timingsFull.single <- lapply(nTexts, function(n) {
 timingsFull.single <- do.call(rbind, lapply(timingsFull.single, function(timing) summary(timing)[, "mean"]))
 cat("\n")
 
-### comment: for a corpus of 100,000 texts, we run the SentimentAnalysis 
-### function separately to avoid a memory error; it might be that this
-### memory error also occurs for a smaller corpus size
 timingsSentimentAnalysis <- lapply(head(nTexts, -1), function(n) {
   cat("Run timings for texts size of", n, "\n")
   texts <- corpusAll[1:n]
