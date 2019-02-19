@@ -45,7 +45,7 @@ sentMeas <- sento_measures(corpus, l, ctrA)
 
 # prepare y and other x variables
 y <- epu[epu$date \%in\% get_dates(sentMeas), "index"]
-length(y) == nobs(sentMeas1) # TRUE
+length(y) == nobs(sentMeas) # TRUE
 x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
 colnames(x) <- c("x1", "x2")
 
