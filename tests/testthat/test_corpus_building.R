@@ -12,7 +12,8 @@ data("usnews")
 # sento_corpus
 corpus <- sento_corpus(corpusdf = usnews, do.clean = TRUE)
 test_that("Corpus building works and fails when appropriate", {
-  expect_equal(c("texts", "date", "wsj", "wapo", "economy", "noneconomy"), colnames(corpus$documents))
+  expect_equal(c("date", "wsj", "wapo", "economy", "noneconomy"),
+               names(docvars(corpus)))
   expect_warning(corpusDummy <- sento_corpus(corpusdf = usnews[, 1:3]))
   expect_equal(colnames(quanteda::docvars(corpusDummy)), c("date", "dummyFeature"))
   expect_warning(sento_corpus(corpusdf = cbind(usnews, "notNumeric")))
@@ -24,8 +25,8 @@ test_that("Corpus building works and fails when appropriate", {
 # to_sentocorpus
 test_that("Conversion to sentocorpus from quanteda corpus", {
   expect_equal(
-    c("texts", "date", "wsj", "wapo", "economy", "noneconomy"),
-    colnames(to_sentocorpus(quanteda::corpus(usnews, text_field = "texts", docid_field = "id"), dates = usnews$date)$documents)
+    c("date", "wsj", "wapo", "economy", "noneconomy"),
+    names(docvars(to_sentocorpus(quanteda::corpus(usnews, text_field = "texts", docid_field = "id"), dates = usnews$date)))
   )
   expect_warning(to_sentocorpus(
     quanteda::corpus(cbind(usnews, wrong = "nutNumeric"),  text_field = "texts", docid_field = "id"), dates = usnews$date))
