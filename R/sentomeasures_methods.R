@@ -36,6 +36,7 @@
 #'
 #' \dontrun{
 #' # adjust appearance of plot
+#' library("ggplot2")
 #' p <- plot(sentomeasures)
 #' p <- p +
 #'   scale_x_date(name = "month-year") +
