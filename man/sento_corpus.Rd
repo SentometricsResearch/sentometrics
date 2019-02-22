@@ -53,14 +53,14 @@ corp <- sento_corpus(corpusdf = usnews)
 corpusSmall <- quanteda::corpus_sample(corp, size = 500)
 
 # deleting a feature
-#quanteda::docvars(corp, field = "wapo") <- NULL
+quanteda::docvars(corp, field = "wapo") <- NULL
 
 # deleting all features results in the addition of a dummy feature
-#quanteda::docvars(corp, field = c("economy", "noneconomy", "wsj")) <- NULL
+quanteda::docvars(corp, field = c("economy", "noneconomy", "wsj")) <- NULL
 
 \dontrun{
 # to add or replace features, use the add_features() function...
-#quanteda::docvars(corp, field = c("wsj", "new")) <- 1}
+quanteda::docvars(corp, field = c("wsj", "new")) <- 1}
 
 # corpus creation when no features are present
 corpusDummy <- sento_corpus(corpusdf = usnews[, 1:3])
