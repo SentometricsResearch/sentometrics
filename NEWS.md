@@ -1,4 +1,9 @@
 
+## sentometrics 0.6.0
+
+- fixed a small bug in the `measures_merge()` function to take the mean instead of the sum in a particular case
+- handled reverse dependency issue raised by quanteda developers regarding their new corpus object in quanteda v2.0
+
 ## sentometrics 0.5.6
 
 - new function: `peakdates()`
