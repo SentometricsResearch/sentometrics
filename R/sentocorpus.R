@@ -101,7 +101,6 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
         warning("No remaining feature columns. A 'dummyFeature' feature valued at 1 throughout is added.")
         if (do.clean) corpusdf <- clean_texts(corpusdf)
         corp <- quanteda::corpus(x = corpusdf, docid_field = "id", text_field = "texts", metacorpus = list(info = info))
-        corp$tokens <- NULL
         class(corp) <- c("sentocorpus", class(corp))
         return(corp)
       }
@@ -122,7 +121,6 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
 
   if (do.clean) corpusdf <- clean_texts(corpusdf)
   corp <- quanteda::corpus(x = corpusdf, docid_field = "id", text_field = "texts", metacorpus = list(info = info))
-  corp$tokens <- NULL
   class(corp) <- c("sentocorpus", class(corp))
 
   return(corp)
@@ -170,7 +168,9 @@ clean_texts <- function(corpusdf) {
 to_sentocorpus <- function(corpus, dates, do.clean = FALSE) {
   if (length(dates) != quanteda::ndoc(corpus))
     stop("The number of dates in 'dates' should be equal to the number of documents in 'corpus'.")
-  corpusdf <- data.table::as.data.table(corpus$documents)
+  corpusdf <- data.table::as.data.table(data.frame(texts = quanteda::texts(corpus),
+                                                   quanteda::docvars(corpus),
+                                                   stringsAsFactors = FALSE))
   corpusdf[, id := quanteda::docnames(corpus)]
   corpusdf[, date := dates]
   setcolorder(corpusdf, c("id", "date", "texts", setdiff(names(corpusdf), c("id", "date", "texts"))))
@@ -232,12 +232,12 @@ to_sentocorpus <- function(corpus, dates, do.clean = FALSE) {
 #'                                         war = "war"),
 #'                         do.regex = c(TRUE, TRUE, FALSE))
 #'
-#' sum(corpus3$documents$pres) == sum(corpus4$documents$pres2) # TRUE
+#' sum(quanteda::docvars(corpus3, "pres")) ==
+#'   sum(quanteda::docvars(corpus4, "pres2")) # TRUE
 #'
 #' # adding a complementary feature
-#' nonpres <- data.frame(nonpres = as.numeric(!quanteda::docvars(corpus3)[["pres"]]))
-#' corpus3 <- add_features(corpus3,
-#'                         featuresdf = nonpres)
+#' nonpres <- data.frame(nonpres = as.numeric(!quanteda::docvars(corpus3, "pres")))
+#' corpus3 <- add_features(corpus3, featuresdf = nonpres)
 #'
 #' @export
 add_features <- function(corpus, featuresdf = NULL, keywords = NULL, do.binary = TRUE, do.regex = FALSE) {

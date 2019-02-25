@@ -66,12 +66,12 @@ corpus4 <- add_features(corpus,
                                         war = "war"),
                         do.regex = c(TRUE, TRUE, FALSE))
 
-sum(corpus3$documents$pres) == sum(corpus4$documents$pres2) # TRUE
+sum(quanteda::docvars(corpus3, "pres")) ==
+  sum(quanteda::docvars(corpus4, "pres2")) # TRUE
 
 # adding a complementary feature
-nonpres <- data.frame(nonpres = as.numeric(!quanteda::docvars(corpus3)[["pres"]]))
-corpus3 <- add_features(corpus3,
-                        featuresdf = nonpres)
+nonpres <- data.frame(nonpres = as.numeric(!quanteda::docvars(corpus3, "pres")))
+corpus3 <- add_features(corpus3, featuresdf = nonpres)
 
 }
 \author{
