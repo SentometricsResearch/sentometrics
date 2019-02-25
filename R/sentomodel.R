@@ -61,9 +61,9 @@
 #' @seealso \code{\link{sento_model}}
 #'
 #' @references Tibshirani and Taylor (2012). ``Degrees of freedom in LASSO problems''.
-#' \emph{Annals of Statistics 40, 1198-12}, \url{https://doi.org/10.1214/12-AOS1003}.
+#' \emph{The Annals of Statistics 40, 1198-12}, \url{https://doi.org/10.1214/12-AOS1003}.
 #' @references Zou, Hastie and Tibshirani (2007). ``On the `degrees of freedom' of the LASSO''.
-#' \emph{Annals of Statistics 35, 2173-2192}, \url{https://doi.org/10.1214/009053607000000127}.
+#' \emph{The Annals of Statistics 35, 2173-2192}, \url{https://doi.org/10.1214/009053607000000127}.
 #'
 #' @examples
 #' # information criterion based model control functions
