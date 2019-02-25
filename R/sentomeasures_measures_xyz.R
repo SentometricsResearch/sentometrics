@@ -349,7 +349,7 @@ measures_merge <- function(sentomeasures, features = NULL, lexicons = NULL, time
         merged <- apply(all, c(1, 2), mean, na.rm = TRUE)
         colnames(merged) <- colnames(ls[[length(ls)]])
       } else {
-        merged <- as.matrix(rowSums(do.call(cbind, ls)))
+        merged <- as.matrix(rowMeans(do.call(cbind, ls)))
         colnames(merged) <- colnames(ls[[length(ls)]])
       }
       measures <- cbind(measures, merged) # add back merged columns
