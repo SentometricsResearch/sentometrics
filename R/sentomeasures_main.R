@@ -155,8 +155,7 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
   ctr <- list(within = list(howWithin = howWithin),
               docs = list(howDocs = howDocs,
                           weightingParam = list(alphaExpDocs = alphaExpDocs,
-                                                do.ignoreZeros = do.ignoreZeros)
-                          ),
+                                                do.ignoreZeros = do.ignoreZeros)),
               time = list(howTime = howTime,
                           weightingParam = list(by = by,
                                                 lag = lag,

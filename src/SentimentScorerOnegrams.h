@@ -2,8 +2,6 @@
 #ifndef SENTIMENT_ONEGRAMS
 #define SENTIMENT_ONEGRAMS
 
-
-
 struct SentimentScorerOnegrams : public RcppParallel::Worker {
 
   // thread-safe input
@@ -22,20 +20,18 @@ struct SentimentScorerOnegrams : public RcppParallel::Worker {
                           const std::unordered_map< std::string, std::vector< double > > lexiconMap,
                           const std::string how,
                           int nL,
-                           std::unordered_map< int, std::unordered_map< std::string, double > > frequencyMap,
-                           std::unordered_map< std::string, double > inverseFrequencyMap,
+                          std::unordered_map< int, std::unordered_map< std::string, double > > frequencyMap,
+                          std::unordered_map< std::string, double > inverseFrequencyMap,
                           const bool isFreqWeighting,
                           Rcpp::NumericMatrix sentScores)
     : texts(texts), lexiconMap(lexiconMap), how(how), nL(nL), frequencyMap(frequencyMap), inverseFrequencyMap(inverseFrequencyMap), isFreqWeighting(isFreqWeighting), sentScores(sentScores) {}
 
   void operator()(std::size_t begin, std::size_t end) {
 
-
     for (std::size_t i = begin; i < end; i++) {
 
-
       std::vector< std::string > tokens = texts[i];
-      std::vector< double > scores(nL, 0.0); //scores van 1 tekst voor verschillende lexicons!!
+      std::vector< double > scores(nL, 0.0); // scores van 1 tekst voor verschillende lexicons
       std::vector< double > nPolarized(nL, 0.0);
       double normalizer = 0.0;
       int nTokens = tokens.size();

@@ -6,7 +6,6 @@
 #include <chrono>
 #include <unistd.h>
 
-
 // [[Rcpp::depends(RcppParallel)]]
 using namespace std;
 using namespace Rcpp;
@@ -16,7 +15,6 @@ using namespace RcppParallel;
 Rcpp::NumericMatrix compute_sentiment_onegrams(std::vector< std::vector<std::string>> texts,
                                                Rcpp::List lexicons,
                                                std::string how) {
-
 
   int nTexts = texts.size(); // already tokenized texts
   int nL = lexicons.size();
