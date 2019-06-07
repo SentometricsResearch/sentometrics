@@ -73,7 +73,7 @@ measures_fill <- function(sentomeasures, fill = "zero", dateBefore = NULL, dateA
 
   sentomeasures$fill <- fill # might become uninformative, if measures manipulated multiple times with different fill
   sentomeasures$measures <- measuresFill
-  sentomeasures$stats <- compute_stats(sentomeasures) # will be overwritten at end of agg_time() call
+  sentomeasures$stats <- compute_stats(sentomeasures) # will be overwritten at end of aggregate_time() call
 
   return(sentomeasures)
 }
