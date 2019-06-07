@@ -44,7 +44,7 @@
 measures_fill <- function(sentomeasures, fill = "zero", dateBefore = NULL, dateAfter = NULL) {
   check_class(sentomeasures, "sentomeasures")
 
-  by <- sentomeasures$by
+  by <- sentomeasures$ctr$time$weightingParam$by
   dates <- get_dates(sentomeasures)
 
   start <- dates[1]
@@ -71,7 +71,6 @@ measures_fill <- function(sentomeasures, fill = "zero", dateBefore = NULL, dateA
   } else stop("Input variable 'fill' should be either 'zero' or 'latest'.")
   measuresFill <- data.table(date = ts, measuresFill[, lapply(.SD, as.numeric), .SDcols = colnames(measures)[-1]])
 
-  sentomeasures$fill <- fill # might become uninformative, if measures manipulated multiple times with different fill
   sentomeasures$measures <- measuresFill
   sentomeasures$stats <- compute_stats(sentomeasures) # will be overwritten at end of aggregate_time() call
 

@@ -222,14 +222,14 @@ scale.sentomeasures <- function(x, center = TRUE, scale = TRUE) {
 #' @export
 summary.sentomeasures <- function(object, ...) {
   sentomeasures <- object
-  freq <- c("daily", "weekly", "monthly", "yearly")[c("day", "week", "month", "year") %in% sentomeasures$by]
+  freq <- c("daily", "weekly", "monthly", "yearly")[c("day", "week", "month", "year") %in% sentomeasures$ctr$time$weightingParam$by]
   cat("This sentomeasures object contains ", nmeasures(sentomeasures), " textual sentiment time series with ",
       nobs(sentomeasures), " observations each ", "(", freq, ").", "\n", sep = "")
   cat("\n")
   cat("Following features are present:", sentomeasures$features, "\n")
   cat("Following lexicons are used to calculate sentiment:", sentomeasures$lexicons, "\n")
-  cat("Following scheme is applied for aggregation within documents:", sentomeasures$howWithin, "\n")
-  cat("Following scheme is applied for aggregation across documents:", sentomeasures$howDocs, "\n")
+  cat("Following scheme is applied for aggregation within documents:", sentomeasures$within$howWithin, "\n")
+  cat("Following scheme is applied for aggregation across documents:", sentomeasures$docs$howDocs, "\n")
   cat("Following schemes are applied for aggregation across time:", sentomeasures$time, "\n")
   cat("\n")
   cat("Aggregate average statistics:", "\n")

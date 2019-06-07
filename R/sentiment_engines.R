@@ -58,7 +58,18 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, nCore = 1) {
 #' by the \code{how} argument is applied. The \code{how = "proportionalPol"} option divides each document's sentiment
 #' score by the number of detected polarized words (counting words that appear multiple times by their frequency), instead
 #' of the total number of words which the \code{how = "proportional"} option gives. The \code{how = "counts"} option
-#' does no normalization. See the vignette for more details.
+#' does no normalization. The \code{how = "UShaped"} option, gives a higher weight to words
+#' at the beginning and end of the texts. The \code{how = "invertedUShaped"} option gives a lower weight to words at the beginning
+#' and the end of the texts. The \code{how = "exponential"} option gives gradually more weight the later the word appears in the text.
+#' The \code{ how = "invertedExponential"} option gives gradually less weight the later the words appears in the text. The \code{
+#' how = "TF"} option gives a weight proportional to the number of times a word appears in a text. The \code{how = "logarithmicTF"} option
+#' gives the same weight as the latter but then logarithmically scaled. The \code{how = "augmentedTF"} option can be used to prevent
+#' a bias towards longer documents. The weight is determined by dividing the raw frequency of a token by the raw frequency
+#' of the most occuring term in the document. The \code{how = "IDF"} option uses the logarithm of the division of the raw frequency of a word by the number of texts
+#' in which the word appears. By doing this, words appearing in multiple texts get a lower weight. The \code{how = "TFIDF"},
+#'  \code{how = "logarithmicTFIDF"}, \code{how = "augmentedTFIDF"} options use the same weights as there \code{IDF} - variant
+#'  but then multiplied with \code{how = "IDF"} option. See the vignette for more details.
+#'
 #'
 #' @param x either a \code{sentocorpus} object created with \code{\link{sento_corpus}}, a \pkg{quanteda}
 #' \code{\link[quanteda]{corpus}} object, or a \code{character} vector. The latter two do not incorporate a
@@ -89,6 +100,13 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, nCore = 1) {
 #' @return If \code{x} is a \code{character} vector, a sentiment scores
 #' \code{data.table} with a \code{"word_count"} column, and all lexicon--feature sentiment scores columns.
 #'
+#' @return If \code{x} is a \code{SimpleCorpus} object, a sentiment scores
+#' \code{data.table} with a \code{"word_count"} column, and all lexicon--feature sentiment scores columns.
+#'
+#' @return If \code{x} is a \code{VCorpus} object, a sentiment scores
+#' \code{data.table} with an \code{"id"} and a \code{"word_count"} column, and all lexicon--feature
+#' sentiment scores columns.
+#'
 #' @examples
 #' data("usnews", package = "sentometrics")
 #' data("list_lexicons", package = "sentometrics")
@@ -96,8 +114,7 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, nCore = 1) {
 #'
 #' l1 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")])
 #' l2 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
-#' l3 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")],
-#'                      list_valence_shifters[["en"]][, c("x", "t")])
+#' l3 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]][, c("x", "t")])
 #'
 #' # from a sentocorpus object, unigrams approach
 #' corpus <- sento_corpus(corpusdf = usnews)
@@ -116,6 +133,21 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, nCore = 1) {
 #' toks <- as.list(quanteda::tokens(corpusQSample, what = "fastestword"))
 #' sent4 <- compute_sentiment(corpusQSample, l1[1], how = "counts", tokens = toks)
 #'
+#' # from a SimpleCorpus object, unigrams approach
+#' txt <- system.file("texts", "txt", package = "tm")
+#' sc <- SimpleCorpus(DirSource(txt, encoding = "UTF-8"),control = list(language = "eng"))
+#' sent5 <- compute_sentiment(sc, l1, how = "proportional")
+#'
+#' # from a VCorpus object, unigrams approach
+#' reut21578 <- system.file("texts", "crude", package = "tm")
+#' vcorp <- VCorpus(DirSource(reut21578, mode = "binary"),list(reader = readReut21578XMLasPlain))
+#' sent6 <-compute_sentiment(vcorp, l1, how = "proportional")
+#'
+#' # from a sentocorpus object, unigrams approach with the td-idf weighting approach
+#' corpus <- sento_corpus(corpusdf = usnews)
+#' corpusSample <- quanteda::corpus_sample(corpus, size = 200)
+#' sent7 <- compute_sentiment(corpusSample, l1, how = "TFIDF")
+#'
 #' @importFrom compiler cmpfun
 #' @export
 compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, nCore = 1) {
@@ -130,6 +162,8 @@ compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, 
 
   UseMethod("compute_sentiment", x)
 }
+
+
 
 .compute_sentiment.sentocorpus <- function(x, lexicons, how, tokens = NULL, nCore = 1) {
   nCore <- check_nCore(nCore)
@@ -182,6 +216,33 @@ compute_sentiment.corpus <- compiler::cmpfun(.compute_sentiment.corpus)
 #' @importFrom compiler cmpfun
 #' @export
 compute_sentiment.character <- compiler::cmpfun(.compute_sentiment.character)
+
+
+.compute_sentiment.VCorpus <- function(x, lexicons, how, tokens=NULL, nCore=1){
+  x<-sento_corpus(data.table("id" = unname(unlist(meta(vcorp,"id"))), "date" = as.POSIXct(do.call("c", meta(vcorp,"datetimestamp"))),"texts" = as.character(vcorp$content)))
+  compute_sentiment(x,lexicons,how,tokens,nCore)
+
+
+}
+
+#' @importFrom compiler cmpfun
+#' @export
+compute_sentiment.VCorpus <- compiler::cmpfun(.compute_sentiment.VCorpus)
+
+.compute_sentiment.SimpleCorpus <- function(x, lexicons, how, tokens=NULL, nCore=1){
+  #' Only language available in metadata so no transformation to sentocorpus
+  nCore <- check_nCore(nCore)
+  tok <- tokenize_texts(as.character(x$content), tokens)
+  s <- compute_sentiment_lexicons(tok, lexicons, how, nCore) # compute sentiment per document for all lexicons
+  s
+
+
+}
+
+#' @importFrom compiler cmpfun
+#' @export
+compute_sentiment.SimpleCorpus <- compiler::cmpfun(.compute_sentiment.SimpleCorpus)
+
 
 #' Bind sentiment objects row-wise
 #'

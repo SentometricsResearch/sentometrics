@@ -95,7 +95,7 @@ lex <- sento_lexicons(lexiconsIn = lexiconsIn, valenceIn = list_valence_shifters
 
 keep <- sample(1:(nrow(usnews) * 25), 100000)
 corpusAll <- quanteda::corpus(do.call(rbind, lapply(1:25, function(j) usnews))[keep, ], text_field = "texts")
-nTexts <- c(1, 5, 10, 25, 50, 75, 100) * 1000
+nTexts <- c(1,  75, 100) * 100
 
 ########################################### definition of sentiment functions
 
@@ -227,7 +227,7 @@ cat("\n")
 timingsSentimentAnalysis <- lapply(head(nTexts, -1), function(n) {
   cat("Run timings for texts size of", n, "\n")
   texts <- corpusAll[1:n]
-  out <- microbenchmark(SentimentAnalysisFunc(texts), times = 3, unit = "s")
+  out <- microbenchmark(SentimentAnalysisFunc(texts), times = 1, unit = "s")
   out
 })
 timingsSentimentAnalysis <- c(do.call(rbind, lapply(timingsSentimentAnalysis,
