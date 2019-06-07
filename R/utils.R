@@ -175,8 +175,6 @@ get_hows <- function() {
   return(list(words = words, docs = docs, time = time))
 }
 
-
-
 create_cv_slices <- function (y, trainWindow, testWindow = 1, skip = 0, do.reverse = FALSE) {
   if ((trainWindow + skip + testWindow) >= length(y)) stop("(trainWindow + skip + testWindow) >= length(y).")
   if (do.reverse) {

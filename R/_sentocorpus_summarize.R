@@ -7,10 +7,11 @@
 #'
 #'
 #' @details This function summarizes the sentocorpus object and gives the user insight in the statistics of features and tokens over time.
-#'  Additional arguments can be passed to narrow down the insights. The \code{by} argument specifies the frequency intervals of the calculated statistics.
-#'  The \code{filter} argument allows to select a subset of the data (e.g. filter on specific features being equal to 1). The
-#'   \code{features} argument allows to select a subset of the features for which statistics are returned. All the statistics are also plotted. These plots
-#'   are all returned so the user can plot them seperately.
+#' Additional arguments can be passed to narrow down the insights. The \code{by} argument specifies the frequency intervals of the calculated statistics.
+#' The \code{filter} argument allows to select a subset of the data (e.g. filter on specific features being equal to 1). The
+#' \code{features} argument allows to select a subset of the features for which statistics are returned. All the statistics are also plotted. These plots
+#' are all returned so the user can plot them seperately. We use the same tokenizer as in the sentiment
+#' calculation in \code{\link{compute_sentiment}}.
 #'
 #' @param x is a \code{sentocorpus} object created with \code{\link{sento_corpus}}
 #' @param filter a \code{character} vector that can be used to filter on the data in the \code{sentocorpus} object. As the sentocorpus is
@@ -41,7 +42,8 @@
 #' corpus <- sento_corpus(usnews)
 #' summary3 <- corpus_summarize(corpus, filter="date > '2000-01-01' & wsj ==1 ", features =c("economy", "noneconomy"), by="week")
 #'
- corpus_summarize <- function(x, filter = NULL, by = "day", features = NULL) {
+#' @export
+corpus_summarize <- function(x, filter = NULL, by = "day", features = NULL) {
   check_class(x, "sentocorpus")
   if (!(by %in% c("year", "month", "week", "day"))) {
     stop( paste0(by, " is no current 'by' option."))

@@ -55,11 +55,12 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, nCore = 1) {
 #' the difference between the number of amplifiers (\code{t = 2}) and the number of deamplifiers (\code{t = 3}). If there
 #' is an odd number of negators (\code{t = 1}), \eqn{n = -1} and amplifiers are counted as deamplifiers, else \eqn{n = 1}.
 #' All scores, whether per unigram, per bigram or per cluster, are summed within a document, before the scaling defined
-#' by the \code{how} argument is applied. The \code{how = "proportionalPol"} option divides each document's sentiment
+#' by the \code{how} argument is applied.
+#'
+#' The \code{how = "proportionalPol"} option divides each document's sentiment
 #' score by the number of detected polarized words (counting words that appear multiple times by their frequency), instead
 #' of the total number of words which the \code{how = "proportional"} option gives. The \code{how = "counts"} option
-#' does no normalization. The \code{how = "UShaped"} option, gives a higher weight to words
-#' at the beginning and end of the texts. The \code{how = "invertedUShaped"} option gives a lower weight to words at the beginning
+#' does no normalization. The \code{how = "UShaped"} option, gives a higher weight to words at the beginning and end of the texts. The \code{how = "invertedUShaped"} option gives a lower weight to words at the beginning
 #' and the end of the texts. The \code{how = "exponential"} option gives gradually more weight the later the word appears in the text.
 #' The \code{ how = "invertedExponential"} option gives gradually less weight the later the words appears in the text. The \code{
 #' how = "TF"} option gives a weight proportional to the number of times a word appears in a text. The \code{how = "logarithmicTF"} option
@@ -69,7 +70,6 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, nCore = 1) {
 #' in which the word appears. By doing this, words appearing in multiple texts get a lower weight. The \code{how = "TFIDF"},
 #'  \code{how = "logarithmicTFIDF"}, \code{how = "augmentedTFIDF"} options use the same weights as there \code{IDF} - variant
 #'  but then multiplied with \code{how = "IDF"} option. See the vignette for more details.
-#'
 #'
 #' @param x either a \code{sentocorpus} object created with \code{\link{sento_corpus}}, a \pkg{quanteda}
 #' \code{\link[quanteda]{corpus}} object, or a \code{character} vector. The latter two do not incorporate a
@@ -135,13 +135,13 @@ compute_sentiment_lexicons <- function(tok, lexicons, how, nCore = 1) {
 #'
 #' # from a SimpleCorpus object, unigrams approach
 #' txt <- system.file("texts", "txt", package = "tm")
-#' sc <- SimpleCorpus(DirSource(txt, encoding = "UTF-8"),control = list(language = "eng"))
+#' sc <- tm::SimpleCorpus(DirSource(txt, encoding = "UTF-8"),control = list(language = "eng"))
 #' sent5 <- compute_sentiment(sc, l1, how = "proportional")
 #'
 #' # from a VCorpus object, unigrams approach
 #' reut21578 <- system.file("texts", "crude", package = "tm")
-#' vcorp <- VCorpus(DirSource(reut21578, mode = "binary"),list(reader = readReut21578XMLasPlain))
-#' sent6 <-compute_sentiment(vcorp, l1, how = "proportional")
+#' vcorp <- tm::VCorpus(DirSource(reut21578, mode = "binary"),list(reader = readReut21578XMLasPlain))
+#' sent6 <- compute_sentiment(vcorp, l1, how = "proportional")
 #'
 #' # from a sentocorpus object, unigrams approach with the td-idf weighting approach
 #' corpus <- sento_corpus(corpusdf = usnews)
