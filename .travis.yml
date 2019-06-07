@@ -11,9 +11,9 @@ r_packages:
   # - roxygen2
 
 script:
-  - |
-    R CMD build .
-    travis_wait 180 R CMD check --no-build-vignettes --no-manual --as-cran sentometrics*tar.gz
+  # - |
+  #  R CMD build .
+  #  travis_wait 180 R CMD check --no-build-vignettes --no-manual --as-cran sentometrics*tar.gz
   # - Rscript -e 'devtools::install(); devtools::test()'
 
 r:
@@ -22,4 +22,4 @@ r:
   # - oldrel
 
 after_success:
-- Rscript -e 'covr::codecov()'
+  # - Rscript -e 'covr::codecov()'
