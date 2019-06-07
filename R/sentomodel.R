@@ -151,7 +151,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
   } else nCore <- check_nCore(nCore)
   if (model %in% c("binomial", "multinomial")) do.difference <- FALSE
   if (length(do.difference) != 1 || !is.logical(do.difference)) {
-    err <- c(err, "The 'do.difference' argument should a logical of size one.")
+    err <- c(err, "The 'do.difference' argument should be a logical of size one.")
   }
   if (do.difference == TRUE && abs(h) == 0) {
     err <- c(err, "If the 'do.difference' argument is TRUE, the absolute value of 'h' should be positive.")
