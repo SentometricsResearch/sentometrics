@@ -57,7 +57,7 @@ struct SentimentScorerOnegrams : public RcppParallel::Worker {
         if (lexiconMap.find(token) != lexiconMap.end()) {
           tokenScores[j] = lexiconMap.at(token); // get value of token for each lexico
         }
-        if (how != "proportional") {
+        if (how != "proportional"  && how != "counts") {
           update_token_weights(tokenWeights, normalizer, nPolarized, j, nTokens, how, nL, tokenScores, tokenFrequency, tokenInverseFrequency, maxTokenFrequency); //step 3 and 4: get token Weights
         }
       }
