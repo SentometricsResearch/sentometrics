@@ -62,7 +62,7 @@ struct SentimentScorerBigrams : public RcppParallel::Worker {
             tokenShifters[j] = valenceMap.at(tokens[k]);
           }
         }
-        if (how != "proportional") {
+        if (how != "proportional" && how != "counts") {
           update_token_weights(tokenWeights, normalizer, nPolarized, j, nTokens, how, nL, tokenScores, tokenFrequency, tokenInverseFrequency, maxTokenFrequency); //step 3 and 4: get token Weights
         }
       }

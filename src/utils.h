@@ -186,7 +186,7 @@ inline void update_token_scores(std::vector< double >& scores,
                                 int nL,
                                 int& nTokens,
                                 std::string how) {
-  if (how != "proportional") {
+  if (how != "proportional" && how != "counts") {
     scale_token_weights(tokenWeights, normalizer, nPolarized, how, nTokens, nL);
   }
 
@@ -195,7 +195,9 @@ inline void update_token_scores(std::vector< double >& scores,
       if (tokenScores[i].size() != 0) {
         double score = tokenScores[i][j];
         if (score != 0) {
-          if (how == "proportional") {
+          if (how == "counts") {
+            scores[j] += (shifters[j] * score);
+          } else if (how == "proportional") {
             scores[j] += (shifters[j] * score / nTokens);
           } else if (how == "proportionalPol") {
             if (nPolarized[j] > 0)  scores[j] += (shifters[j] * score) * (tokenWeights[i] / nPolarized[j]);

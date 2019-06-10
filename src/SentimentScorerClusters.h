@@ -64,7 +64,7 @@ struct SentimentScorerClusters : public RcppParallel::Worker {
           int en = std::min(nTokens, j + nA + 1);
 
           for (int k = st; k < en; k++) {
-            if (how != "proportional") {
+            if (how != "proportional"  && how != "counts") {
               update_token_weights(tokenWeights, normalizer, nPolarized, j, nTokens, how, nL, tokenScores, tokenFrequency, tokenInverseFrequency, maxTokenFrequency); //step 3 and 4: get token Weights
             }
             if (k == j) continue;

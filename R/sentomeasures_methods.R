@@ -274,9 +274,13 @@ get_dates <- function(sentomeasures) {
 #' @export
 get_dimensions <- function(sentomeasures) {
   check_class(sentomeasures, "sentomeasures")
-  sentomeasures[c("features", "lexicons", "time")]
+  sentomeasures[c("features", "lexicons", "time", "valence")]
 }
 
+set_dimensions <- function(sentomeasures) {
+
+  sentomeasures
+}
 #' Get the sentiment measures
 #'
 #' @author Samuel Borms

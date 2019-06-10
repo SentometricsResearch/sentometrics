@@ -218,31 +218,6 @@ compute_sentiment.corpus <- compiler::cmpfun(.compute_sentiment.corpus)
 compute_sentiment.character <- compiler::cmpfun(.compute_sentiment.character)
 
 
-.compute_sentiment.VCorpus <- function(x, lexicons, how, tokens=NULL, nCore=1){
-  x<-sento_corpus(data.table("id" = unname(unlist(meta(vcorp,"id"))), "date" = as.POSIXct(do.call("c", meta(vcorp,"datetimestamp"))),"texts" = as.character(vcorp$content)))
-  compute_sentiment(x,lexicons,how,tokens,nCore)
-
-
-}
-
-#' @importFrom compiler cmpfun
-#' @export
-compute_sentiment.VCorpus <- compiler::cmpfun(.compute_sentiment.VCorpus)
-
-.compute_sentiment.SimpleCorpus <- function(x, lexicons, how, tokens=NULL, nCore=1){
-  #' Only language available in metadata so no transformation to sentocorpus
-  nCore <- check_nCore(nCore)
-  tok <- tokenize_texts(as.character(x$content), tokens)
-  s <- compute_sentiment_lexicons(tok, lexicons, how, nCore) # compute sentiment per document for all lexicons
-  s
-
-
-}
-
-#' @importFrom compiler cmpfun
-#' @export
-compute_sentiment.SimpleCorpus <- compiler::cmpfun(.compute_sentiment.SimpleCorpus)
-
 
 #' Bind sentiment objects row-wise
 #'

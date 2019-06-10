@@ -226,7 +226,7 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #'
 #' @import data.table
 #' @export
-sento_measures <- function(sentocorpus, lexicons, ctr) {
+sento_measures <- function(sentocorpus = NULL, lexicons, ctr) {
   check_class(sentocorpus, "sentocorpus")
   sentiment <- compute_sentiment(sentocorpus, lexicons, how = ctr$within$howWithin, tokens = ctr$tokens, nCore = ctr$nCore)
   sentomeasures <- aggregate(sentiment, ctr)
