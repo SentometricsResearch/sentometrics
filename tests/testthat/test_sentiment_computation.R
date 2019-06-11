@@ -31,7 +31,19 @@ sentimentList <- list(
   # s9 = compute_sentiment(quanteda::texts(corpus), lex, how = "proportionalPol", nCore = 2),
   s10 = compute_sentiment(quanteda::texts(corpus), lexClust, how = "counts"),
   s11 = compute_sentiment(corpus, lexClust, how = "proportional"),
-  s12 = compute_sentiment(quanteda::texts(corpus), lexClust, how = "proportionalPol")
+  s12 = compute_sentiment(quanteda::texts(corpus), lexClust, how = "proportionalPol"),
+  s13 = compute_sentiment(quanteda::texts(corpus), lex, how = "exponential"),
+  s14 = compute_sentiment(quanteda::texts(corpus), lex, how = "invertedExponential"),
+  s15 = compute_sentiment(quanteda::texts(corpus), lex, how = "UShaped"),
+  s16 = compute_sentiment(quanteda::texts(corpus), lex, how = "invertedUShaped"),
+  s17 = compute_sentiment(quanteda::texts(corpus), lex, how = "TF"),
+  s18 = compute_sentiment(quanteda::texts(corpus), lex, how = "logarithmicTF"),
+  s19 = compute_sentiment(quanteda::texts(corpus), lex, how = "augmentedTF"),
+  s20 = compute_sentiment(quanteda::texts(corpus), lex, how = "IDF"),
+  s21 = compute_sentiment(quanteda::texts(corpus), lex, how = "TFIDF"),
+  s22 = compute_sentiment(quanteda::texts(corpus), lex, how = "logarithmicTFIDF"),
+  s23 = compute_sentiment(quanteda::texts(corpus), lex, how = "augmentedTFIDF")
+
 )
 
 # compute_sentiment
