@@ -67,3 +67,4 @@ test_that("Proper long formatting of sentiment measures", {
   expect_true(all(get_measures(sentMeas)[["date"]] %in% unique(measuresLong[["date"]])))
 })
 
+

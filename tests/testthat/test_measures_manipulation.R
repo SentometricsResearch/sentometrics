@@ -101,3 +101,16 @@ test_that("Consistency of measures_subset() function", {
   expect_length(sentMeasSubset$attribWeights$W[[1]], 1000)
 })
 
+# update sentomeasures
+
+corpus1 <- quanteda::corpus_sample(sento_corpus(corpusdf = usnews[1:100,]))
+corpus2 <- quanteda::corpus_sample(sento_corpus(corpusdf = usnews[101:200,]))
+
+sentMeas <- sento_measures(corpus1, lex, ctr)
+sentMeasUpd <- measures_update(sentocorpus= corpus2 , sentMeas, lexicon = lex)
+
+test_that("Sentomeasure update works properly", {
+  expect_true(length(sentMeas$sentiment$word_count) == 100)
+  expect_true(length(sentMeasUpd$sentiment$word_count) == 200)
+})
+
