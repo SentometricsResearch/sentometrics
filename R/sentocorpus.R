@@ -65,7 +65,7 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
   corpusdf <- as.data.frame(corpusdf)
 
   # check for presence of id, date and texts columns
-  nonfeatures <- c("id", "date", "texts", "language")
+  nonfeatures <- c("id", "date", "texts")
   cols <- stringi::stri_replace_all(colnames(corpusdf), "_", regex = " ")
   colnames(corpusdf) <- cols
   if (!all(nonfeatures %in% cols))
