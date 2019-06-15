@@ -53,7 +53,7 @@ summWeek <- corpus_summarize(corpus, by = "week")
 summDay <- corpus_summarize(corpus, by = "day")
 test_that("Summary of sentocorpus object" , {
   expect_true(inherits(summYear$plots_list$feature_plot, "ggplot"))
-  expect_true(inherits(summ$plots_list$token_plot, "ggplot"))
+  expect_true(inherits(summYear$plots_list$token_plot, "ggplot"))
   expect_true(length(summDay$stats$date) == 3043)
   expect_true(length(summWeek$stats$date) == 1005)
   expect_true(length(summMonth$stats$date) == 239)

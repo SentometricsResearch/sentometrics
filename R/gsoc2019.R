@@ -14,45 +14,33 @@
 #' calculation in \code{\link{compute_sentiment}}.
 #'
 #' @param x is a \code{sentocorpus} object created with \code{\link{sento_corpus}}
-#' @param filter a \code{character} vector that can be used to filter on the data in the \code{sentocorpus} object. As the sentocorpus is
-#' translated to a \code{data.table}, the filter will be applied on the rows.
 #' @param features a \code{character} vector that can be used to select a subset of the features to be analysed.
 #' @param by a single \code{character} vector to specify the frequency interval on which the (over time) statistics need to be calculated
 #'
 #' @return returns a \code{list} containing:
-#' \item{total_features} {a \code{data.table} with total counts for each feature in the corpus.}
-#' \item{mean_featuers} {a \code{data.table} with the average for each feature in the corpus }
-#' \item{features} {a \code{data.table} with the number of texts and feature counts per time interval, specified in the \code{by} argument }
-#' \item{tokens} {a \code{data.table} with the total, mean, median, minimum and maximum of tokens per time interal specified in the \code{by} argument}
-#' \item{plots} {a \code{list} with plots representing the above statistics }
+#' \item{stats}{a \code{data.table} with statistics about the number of documents, total, average, minimum and maximum number of tokens
+#' and the number of texts per features for each date. }
+#' \item{plots}{a \code{list} with plots representing the above statistics }
 #'
 #' @examples
 #'
 #' data("usnews", package = "sentometrics")
 #'
-#' # Summary of entire corpus
+#' # Summary of corpus by day
 #' corpus <- sento_corpus(usnews)
 #' summary1 <- corpus_summarize(corpus)
 #'
-#' #Summary of economic texts
-#' corpus <- sento_corpus(usnews)
-#' summary2 <-corpus_summarize(corpus, filter="economy == 1")
-#'
-#' #Summary  economic and noneconomic features after the year 2000 where wsj equals 1
-#' corpus <- sento_corpus(usnews)
-#' summary3 <- corpus_summarize(corpus, filter="date > '2000-01-01' & wsj ==1 ", features =c("economy", "noneconomy"), by="week")
-#'
+#' #Summary of corpus by week
+#' summary2 <-corpus_summarize(corpus, by = "year")
+
 #' @export
-corpus_summarize <- function(x, filter = NULL, by = "day", features = NULL) {
+corpus_summarize <- function(x, by = "day", features = NULL) {
   check_class(x, "sentocorpus")
   if (!(by %in% c("year", "month", "week", "day"))) {
     stop( paste0(by, " is no current 'by' option."))
   }
   dt <- data.table(x$documents, nTokens = as.numeric(sapply(tokenize_texts(quanteda::texts(x)), length)))[, !"texts"]
 
-  if (!is.null(filter)) {
-    dt <- dt[eval(parse(text = filter))]
-  }
   if (!is.null(features)) {
     dt <- dt[, c(features, "date", "nTokens"), with = FALSE]
   }
@@ -93,18 +81,6 @@ corpus_summarize <- function(x, filter = NULL, by = "day", features = NULL) {
     scale_x_date(name = "Date", date_labels = "%m-%Y") +
     scale_y_continuous(name = "Count")
 
-
-
-  # p <- ggplot(data = measuresMelt, aes(x = date, y = value, color = variable)) +
-  #   geom_line() +
-  #   geom_hline(yintercept = 0, size = 0.50, linetype = "dotted") +
-  #   scale_x_date(name = "Date", date_labels = "%m-%Y") +
-  #   scale_y_continuous(name = "Sentiment") +
-  #   theme_bw() +
-  #   plot_theme(legendPos)
-  # p
-
-
   summary <- list(
     stats = stats,
     plots_list = list(feature_plot = feat_plot,
@@ -115,19 +91,14 @@ corpus_summarize <- function(x, filter = NULL, by = "day", features = NULL) {
 }
 #' Partial recomputation of sentomeasures
 #'
-#' @author Jeroen Van Pelt
+#' @author Andres Algaba, Sam Borms, Jeroen Van Pelt
 #'
 #' @description Partially recalculates the sentomeasures, based on the input parameters and/or changes in these parameters.
 #'
 #' @param sentocorpus a \code{sentocorpus} object created with \code{\link{sento_corpus}}.
 #' @param sentomeasures \code{sentomeasures} object created with \code{\link{sento_measures}}
-#' @param ctr output from a \code{\link{ctr_agg}} call.
-#' @param sentiment the sentiment scores \code{data.table} with \code{"date"}, \code{"word_count"} and lexicon--feature
-#' sentiment scores columns. The \code{"date"} column has the dates converted at the frequency for
-#' across-document aggregation. All zeros are replaced by \code{NA} if \code{ctr$docs$weightingParam$do.ignoreZeros = TRUE}.
 #' @param lexicons a \code{sentolexicons} object created with \code{\link{sento_lexicons}}.
-
-#sentocorpus = NULL, sentomeasures = NULL, ctr = NULL, sentiment = NULL, lexicons = NULL
+#
 #' @return An updated \code{sentomeasures} object.
 #'
 #' @seealso \code{\link{sento_measures}}, \code{\link{compute_sentiment}}
@@ -135,53 +106,14 @@ corpus_summarize <- function(x, filter = NULL, by = "day", features = NULL) {
 #' @examples
 #' set.seed(505)
 #'
-#' #Update of across document weighting
-#' data("usnews", package = "sentometrics")
-#'  corpus <- sento_corpus( usnews)
-#'  ctr <- ctr_agg(howTime = "linear", by = "year", lag = 3)
-#'  l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
-#'  sentomeasures <- sento_measures(corpus, l, ctr)
-#'  ctr$docs$howDocs <- "exponential"
-#'  ctr$docs$weightingParam$alphaExpDocs <- 0.3
-#'  sentomeasures_updated <-measures_update(sentocorpus = corpus, lexicons = l, ctr = ctr)
-#'
-#'  #Update of across document weighting. Control variables and sentiment reused from sentomeasures object
-#'  data("usnews", package = "sentometrics")
-#'  corpus <- sento_corpus( usnews)
-#'  ctr <- ctr_agg(howTime = "linear", by = "year", lag = 3)
-#'  l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
-#'  sentomeasures <- sento_measures(corpus, l, ctr)
-#'  sentomeasures$ctr$docs$howDocs <- "inverseProportional"
-#'  sentomeasures_updated <-measures_update(sentomeasures = sentomeasures)
-#'
 #'  #New texts in corpus with control variables (ctr) from old sentomeasures object. Sentiment only recalculated for new texts.
 #'  data("usnews", package = "sentometrics")
 #'  corpus1 <- sento_corpus(usnews[1:500,])
 #'  ctr <- ctr_agg(howTime = "linear", by = "year", lag = 3)
 #'  l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 #'  sentomeasures <- sento_measures(corpus1, l, ctr)
-#'  corpus2 <- sento_corpus(usnews[1:2000,])
-#'  sentomeasures_updated <- measures_update(sentocorpus = corpus2, lexicons = l, sentomeasures = sentomeasures)
-#'
-#'  #New texts in corpus with new control variables object (ctr). Sentiment only recalculated for new texts.
-#'  data("usnews", package = "sentometrics")
-#'  corpus1 <- sento_corpus(usnews[1:500,])
-#'  ctr1 <- ctr_agg(howTime = "linear", by = "year", lag = 3)
-#'  l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
-#'  sentomeasures <- sento_measures(corpus1, l, ctr1)
-#'  corpus2 <- sento_corpus(usnews[1:2000,])
-#'  ctr2 <- ctr_agg(howTime = "linear", by = "year", lag = 3, howDocs = "inverseProportional")
-#'  sentomeasures_updated <- measures_update(sentocorpus = corpus2, lexicons = l, ctr = ctr2)
-#'
-#'  #Update sentomeasures starting from sentiment and control variables without sentocorpus or sentomeasures object
-#'  data("usnews", package = "sentometrics")
-#'  corpus <- sento_corpus( usnews)
-#'  ctr <- ctr_agg(howTime = "linear", by = "year", lag = 3)
-#'  l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
-#'  sentomeasures <- sento_measures(corpus, l, ctr)
-#'  ctr$docs$howDocs <- "inverseProportional"
-#'  sentiment <- sentomeasures$sentiment
-#'  sentomeasures_updated <-measures_update(sentiment = sentiment, ctr = ctr)
+#'  corpus <- sento_corpus(usnews[1:2000,])
+#'  sentomeasures_updated <- measures_update(sentocorpus = corpus, lexicons = l, sentomeasures = sentomeasures)
 #'
 #' @export
 measures_update <- function(sentocorpus = NULL, sentomeasures = NULL, lexicons = NULL) {
@@ -216,7 +148,7 @@ measures_update <- function(sentocorpus = NULL, sentomeasures = NULL, lexicons =
 
 
 .compute_sentiment.VCorpus <- function(x, lexicons, how, tokens=NULL, nCore=1){
-  x<-sento_corpus(data.table("id" = unname(unlist(meta(vcorp,"id"))), "date" = as.POSIXct(do.call("c", meta(vcorp,"datetimestamp"))),"texts" = as.character(vcorp$content)))
+  x <- sento_corpus(data.table("id" = unname(unlist(meta(vcorp,"id"))), "date" = as.POSIXct(do.call("c", meta(vcorp,"datetimestamp"))), "texts" = as.character(vcorp$content)))
   compute_sentiment(x,lexicons,how,tokens,nCore)
 
 
@@ -232,7 +164,6 @@ compute_sentiment.VCorpus <- compiler::cmpfun(.compute_sentiment.VCorpus)
   tok <- tokenize_texts(as.character(x$content), tokens)
   s <- compute_sentiment_lexicons(tok, lexicons, how, nCore) # compute sentiment per document for all lexicons
   s
-
 
 }
 

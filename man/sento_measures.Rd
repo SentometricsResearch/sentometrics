@@ -4,7 +4,7 @@
 \alias{sento_measures}
 \title{One-way road towards a sentomeasures object}
 \usage{
-sento_measures(sentocorpus, lexicons, ctr)
+sento_measures(sentocorpus = NULL, lexicons, ctr)
 }
 \arguments{
 \item{sentocorpus}{a \code{sentocorpus} object created with \code{\link{sento_corpus}}.}
