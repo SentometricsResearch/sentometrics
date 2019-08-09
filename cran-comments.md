@@ -1,7 +1,11 @@
 
-## submission (version 0.5.6) [17/12/2018]
+## submission (version 0.6) [xx/08/2019]
 
-**new**: very minor update (one function change and a few documentation fixes)
+**new**: ...
+
+<!--- ## submission (version 0.5.6) [17/12/2018]
+
+**new**: very minor update (one function change and a few documentation fixes) --->
 
 <!--- ## submission (version 0.5.5) [15/11/2018]
 

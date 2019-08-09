@@ -2,7 +2,7 @@
 % Please edit documentation in R/sentocorpus.R
 \name{sento_corpus}
 \alias{sento_corpus}
-\title{Create a sentocorpus object}
+\title{Create a sentocorpus object ###}
 \usage{
 sento_corpus(corpusdf, do.clean = FALSE)
 }
@@ -42,6 +42,8 @@ structure and may come in handy. To add additional features, use \code{\link{add
 a mechanism to select the texts which have to be integrated in the respective feature-based sentiment measure(s), but
 applies only when \code{do.ignoreZeros = TRUE}. Because of this (implicit) selection that can be performed, having
 complementary features (e.g., \code{"economy"} and \code{"noneconomy"}) makes sense.
+It is also possible to add one non-numerical feature called 'language'. When this feature is provided on corpus-level,
+a list of lexicons for different languages is expected in the function \code{compute_sentiment}.
 }
 \examples{
 data("usnews", package = "sentometrics")
@@ -64,6 +66,10 @@ quanteda::docvars(corp, field = c("wsj", "new")) <- 1}
 
 # corpus creation when no features are present
 corpusDummy <- sento_corpus(corpusdf = usnews[, 1:3])
+
+ #Corpus creation with language feature
+ usnews[["language"]] <- "en"
+ corpus <- sento_corpus(corpusdf = usnews)
 
 }
 \seealso{

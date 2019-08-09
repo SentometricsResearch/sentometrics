@@ -46,8 +46,8 @@
 #' @param tokens see \code{\link{compute_sentiment}}.
 #' @param nCore see \code{\link{compute_sentiment}}.
 #' @param alphaExpDocs a single \code{integer} vector. A smoothing factor to calculate weights for, used if
-#' \code{"exponential" \%in\% howDocs} or \code{"inverseExponential" \%in\% howDocs}. Value should be between 0 and 1 (both excluded); see
-#' \code{\link{weights_exponential}}.
+#' \code{"exponential" \%in\% howDocs} or \code{"inverseExponential" \%in\% howDocs}. Value should be between 0 and 1
+#' (both excluded); see \code{\link{weights_exponential}}.
 #
 #' @return A \code{list} encapsulating the control parameters.
 #'
@@ -198,12 +198,9 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #' across-document aggregation. All zeros are replaced by \code{NA} if \code{ctr$docs$weightingParam$do.ignoreZeros = TRUE}.}
 #' \item{attribWeights}{a \code{list} of document and time weights used in the \code{\link{attributions}} function.
 #' Serves further no direct purpose.}
-#' \item{ctr}{ A \code{list} encapsulating the control parameters like howDocs, howTime, howWithin and the parameterization required for these hows.
-#'  Easy to have this linked to the sento_measures for recalculation when e.g. the sentiment is recalculated or features are added.
-#'  See \code{\link{ctr_agg}}}
+#' \item{ctr}{a \code{list} encapsulating the control parameters.}
 #'
-#'
-#' @seealso \code{\link{compute_sentiment}}, \code{\link{aggregate}},\code{\link{measures_update}}
+#' @seealso \code{\link{compute_sentiment}}, \code{\link{aggregate}}, \code{\link{measures_update}}
 #'
 #' @examples
 #' data("usnews", package = "sentometrics")
@@ -226,9 +223,10 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #'
 #' @import data.table
 #' @export
-sento_measures <- function(sentocorpus = NULL, lexicons, ctr) {
+sento_measures <- function(sentocorpus, lexicons, ctr) {
   check_class(sentocorpus, "sentocorpus")
-  sentiment <- compute_sentiment(sentocorpus, lexicons, how = ctr$within$howWithin, tokens = ctr$tokens, nCore = ctr$nCore)
+  sentiment <- compute_sentiment(sentocorpus, lexicons, how = ctr$within$howWithin,
+                                 tokens = ctr$tokens, nCore = ctr$nCore)
   sentomeasures <- aggregate(sentiment, ctr)
   return(sentomeasures)
 }
@@ -277,16 +275,21 @@ aggregate.sentiment <- function(x, ctr, ...) {
   aggDocs$ctr <- ctr
   sentomeasures <- aggregate_time(aggDocs, how = howTime, weightingParamTime = weightingParamTime)
 
-   return(sentomeasures)
+  return(sentomeasures)
 }
 
-aggregate_docs <- function(sentiment, by, how = get_hows()$docs, weightingParamDocs ) {
+aggregate_docs <- function(sentiment, by, how = get_hows()$docs, weightingParamDocs) {
 
   names <- stringi::stri_split(colnames(sentiment)[4:ncol(sentiment)], regex = "--")
   lexNames <- unique(sapply(names, "[", 1))
   features <- unique(sapply(names, "[", 2))
 
+  if ("sentence_id" %in% colnames(sentiment)) {
+    stop("sentiment should be on document level. Aggregate sentiment on sentence level first to document level.")
+  }
+
   sent <- sentiment
+  setorder(sent, "date", na.last = FALSE)
   attribWeights <- list(W = NA, B = NA) # list with weights useful in later attribution analysis
 
   # reformat dates so they can be aggregated at the specified 'by' level, and cast to Date format
@@ -309,52 +312,9 @@ aggregate_docs <- function(sentiment, by, how = get_hows()$docs, weightingParamD
   if (do.ignoreZeros == TRUE)
     sent[, names(sent)] <- sent[, names(sent), with = FALSE][, lapply(.SD, function(x) replace(x, which(x == 0), NA))]
 
-  # aggregate feature-sentiment per document by date for all lexicon columns
-  s <- sent[, -1]
-  if (how == "equal_weight") {
-    if (do.ignoreZeros == TRUE) {
-      docsIn <- s[, lapply(.SD, function(x) (x * 1) / x), by = date] # indicator of 1 if document score not equal to NA
-      weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = date][, -1:-2]
-    } else {
-      weights <- s[, w := 1 / .N, by = date][, "w"]
-      weights <- weights[, colnames(s)[-1:-2] := weights][, -1] # drop w column
-      s[, w := NULL]
-    }
-  } else if (how == "proportional") { # proportional w.r.t. words in document vs. total words in all documents per date
-    if (do.ignoreZeros == TRUE) {
-      docsIn <- s[, lapply(.SD, function(x) (x *  word_count) / x), by = date]
-      weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = date][, -1:-2]
-    } else {
-      weights <- s[, word_count / sum(word_count, na.rm = TRUE), by = date][, 2]
-      weights <- weights[, colnames(s)[-1:-2] := weights][, -1]
-    }
-  } else if (how == "inverseProportional") { # inverse proportional w.r.t. words in document vs. total words in all documents per date
-    if (do.ignoreZeros == TRUE) {
-      docsIn <- s[, lapply(.SD, function(x) (x * (1 / word_count)) / x), by = date]
-      weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = date][, -1:-2]
-    } else {
-      weights <- s[, word_count / sum(1 / word_count, na.rm = TRUE), by = date][, 2]
-      weights <- weights[, colnames(s)[-1:-2] := weights][, -1]
-    }
-  } else if (how == "exponential") { # exponential w.r.t. words in document vs. total words in all documents per date
-    alpha <- weightingParamDocs$alphaExpDocs
-    if (do.ignoreZeros == TRUE) {
-      docsIn <- s[, lapply(.SD, function(x) (x *  alpha * (1 - alpha) ^ (1 - word_count / mean(word_count)) / sum(alpha * (1 - alpha) ^ (1 - word_count / mean(word_count))) / x)), by = date]
-      weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = date][, -1:-2]
-    } else {
-      weights <- s[, alpha * (1 - alpha) ^ (1 - word_count / mean(word_count, na.rm = TRUE)) / sum(alpha * (1 - alpha) ^ (1 - word_count / mean(word_count, na.rm = TRUE)), na.rm = TRUE) , by = date][, 2]
-      weights <- weights[, colnames(s)[-1:-2] := weights][, -1]
-    }
-  } else if (how == "inverseExponential") { # inverse exponential w.r.t. words in document vs. total words in all documents per date
-    alpha <- weightingParamDocs$alphaExpDocs
-    if (do.ignoreZeros == TRUE) {
-      docsIn <- s[, lapply(.SD, function(x) (x *  (1 / (alpha * (1 - alpha) ^ (1 - word_count / mean(word_count)))) / sum(alpha * (1 - alpha) ^ (1 - word_count / mean(word_count))) / x)), by = date]
-      weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = date][, -1:-2]
-    } else {
-      weights <- s[, (1 / (alpha * (1 - alpha) ^ (1 - word_count / mean(word_count, na.rm = TRUE)))) / sum(alpha * (1 - alpha) ^ (1 - word_count / mean(word_count, na.rm = TRUE)), na.rm = TRUE) , by = date][, 2]
-      weights <- weights[, colnames(s)[-1:-2] := weights][, -1]
-    }
-  }
+  weights <- aggregate_across(sent, how = how, do.ignoreZeros = do.ignoreZeros, by = "date")
+
+  s <- sent[,!"id"]
   attribWeights[["W"]] <- data.table(id = sent$id, date = sent$date, weights)
   sw <- data.table(date = s$date, s[, -1:-2] * weights)
   measures <- sw[, lapply(.SD, function(x) sum(x, na.rm = TRUE)), by = date]

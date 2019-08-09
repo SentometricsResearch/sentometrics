@@ -79,7 +79,7 @@ sento_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
   }
 
   lexNames <- names(lexiconsIn)
-  lexicons <- suppressWarnings(lapply(lexiconsIn, sento_as_key)) # supress warnings on removal of duplicated values
+  lexicons <- suppressWarnings(lapply(lexiconsIn, sento_as_key)) # suppress warnings on removal of duplicated values
   names(lexicons) <- lexNames
   if (do.split == TRUE) { # split each lexicon into a positive and a negative polarity words only lexicon
     lexiconsPos <- lapply(lexicons, function(lex) return(lex[lex$y > 0]))
@@ -88,14 +88,17 @@ sento_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
     names(lexiconsNeg) <- paste0(names(lexicons), "_NEG")
     lexicons <- c(lexiconsPos, lexiconsNeg)
   }
+
   lexicons <- lapply(lexicons, function(l) l[!stringi::stri_detect(l$x, regex = "\\s+"), ])
   if (!is.null(valenceIn)) {
     if (!all(names(valenceIn) %in% c("x", "y", "t")) || !(ncol(valenceIn) %in% c(2, 3)))
       stop("Provide columns 'x' and 'y' and/or 't' to the 'valenceIn' argument.")
     if (ncol(valenceIn) == 3) valenceIn <- valenceIn[, 1:2]
     if ("t" %in% names(valenceIn)) {
-      if (!all(unique(valenceIn[["t"]]) %in% c(1, 2, 3)))
-        stop("Supported types of valence shifters under the 't' column are 1, 2 and 3.")
+      if (!all(unique(valenceIn[["t"]]) %in% c(1, 2, 3, 4)))
+        stop("Supported types of valence shifters under the 't' column are 1, 2, 3 and 4.")
+      if (4 %in% unique(valenceIn[["t"]]))
+        warning("Valence shifter type 4 is only used for sentiment calculation by sentence.")
     }
     valenceIn$x <- stringi::stri_trans_tolower(valenceIn$x)
     valenceIn <- valenceIn[!(stringi::stri_detect(valenceIn$x, regex = "\\s+") | duplicated(valenceIn$x)), ]

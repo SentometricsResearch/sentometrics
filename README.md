@@ -1,7 +1,7 @@
 
 ## sentometrics: An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction
 
-# sentometrics <a href='https://sentometrics.org'><img src='man/figures/logo.png' align="right" height="138.5" /></a>
+# sentometrics
 
 <!--- comment out when submitting to CRAN until CRAN/pandoc issues (e.g. handshake) solved --->
 [![CRAN](http://www.r-pkg.org/badges/version/sentometrics)](https://cran.r-project.org/package=sentometrics)
@@ -11,6 +11,8 @@
 [![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/sentometrics?color=brightgreen)](http://www.r-pkg.org/pkg/sentometrics)
 <!--- [![Pending Pull-Requests](http://githubbadges.herokuapp.com/sborms/sentometrics/pulls.svg?style=flat)](https://github.com/sborms/sentometrics/pulls) --->
 <!--- [![Github Issues](http://githubbadges.herokuapp.com/sborms/sentometrics/issues.svg)](https://github.com/sborms/sentometrics/issues) --->
+
+<a href='https://sentometrics.org'><img src='man/figures/logo.png' align="right" height="138.5" /></a>
 
 ### Introduction
 

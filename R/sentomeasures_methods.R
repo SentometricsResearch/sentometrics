@@ -277,10 +277,6 @@ get_dimensions <- function(sentomeasures) {
   sentomeasures[c("features", "lexicons", "time", "valence")]
 }
 
-set_dimensions <- function(sentomeasures) {
-
-  sentomeasures
-}
 #' Get the sentiment measures
 #'
 #' @author Samuel Borms

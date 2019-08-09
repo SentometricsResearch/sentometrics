@@ -1,7 +1,7 @@
-using namespace Rcpp;
 
 #include <algorithm>
 
+using namespace Rcpp;
 using namespace std;
 
 #ifndef UTILS_H
@@ -24,9 +24,7 @@ inline Rcpp::CharacterVector prepare_column_names(Rcpp::CharacterVector x, int n
   return(names);
 }
 
-inline std::unordered_map< std::string, std::vector< double > > make_lexicon_map(Rcpp::List lexicons,
-                                                                               int nL) {
-
+inline std::unordered_map< std::string, std::vector< double > > make_lexicon_map(Rcpp::List lexicons, int nL) {
 
   std::unordered_map< std::string, std::vector< double > > lexiconMap;
 
@@ -135,14 +133,14 @@ inline void update_token_weights(std::vector < double >& tokenWeights,
     } else if (how == "invertedExponential") {
       token_weight =  std::exp(1.0 - x / y) - 1.0;
     } else if (how == "TF") {
-      token_weight =  frequency /  nTokens;
+      token_weight =  frequency / nTokens;
     } else if (how == "logarithmicTF") {
       token_weight = std::log( 1 + frequency / nTokens);
     } else if (how =="augmentedTF") {
       token_weight = (0.5 + 0.5 * frequency / maxTokenFrequency) / nTokens;
-    }else if (how == "IDF") {
+    } else if (how == "IDF") {
       token_weight =  std::log(frequency / inverseFrequency);
-    }else if (how == "TFIDF") {
+    } else if (how == "TFIDF") {
       token_weight =  std::log(frequency / inverseFrequency) * (frequency / nTokens);
     } else if (how == "logarithmicTFIDF") {
       token_weight =  std::log(frequency / inverseFrequency) * (std::log( 1 + frequency / nTokens));
@@ -181,28 +179,36 @@ inline void update_token_scores(std::vector< double >& scores,
                                 std::vector <std::vector< double > >& tokenScores,
                                 double& normalizer,
                                 std::vector< double >& nPolarized,
-                                std::vector< double >& shifters,
+                                std::vector< double >& tokenShifters,
                                 std::vector< double >& tokenWeights,
                                 int nL,
                                 int& nTokens,
                                 std::string how) {
-  if (how != "proportional" && how != "counts") {
+  if (how != "proportional" && how != "counts" && how != "squareRootCounts") {
     scale_token_weights(tokenWeights, normalizer, nPolarized, how, nTokens, nL);
   }
 
   for (int i = 0; i < nTokens; i ++) {
+    //std::cout<< "Tokenloop " << i << "\n";
     for (int j = 0; j < nL; j++) {
+      //std::cout<< "Lexicon loop " << j << "\n";
       if (tokenScores[i].size() != 0) {
         double score = tokenScores[i][j];
+       // std::cout<< "score within lexicon loop: " << score << "\n";
         if (score != 0) {
           if (how == "counts") {
-            scores[j] += (shifters[j] * score);
+            //std::cout<< "tokenshifter: " << tokenShifters[i] << " & score: " << score << "\n";
+            //std::cout<< "score before: " <<scores[j]<< "\n";
+            scores[j] += (tokenShifters[i] * score);
+            //std::cout<< "score after: " <<scores[j]<< "\n";
+          } else if (how == "squareRootCounts") {
+            scores[j] += (tokenShifters[i] * score / std::sqrt(nTokens));
           } else if (how == "proportional") {
-            scores[j] += (shifters[j] * score / nTokens);
+            scores[j] += (tokenShifters[i] * score / nTokens);
           } else if (how == "proportionalPol") {
-            if (nPolarized[j] > 0)  scores[j] += (shifters[j] * score) * (tokenWeights[i] / nPolarized[j]);
+            if (nPolarized[j] > 0)  scores[j] += (tokenShifters[i] * score) * (tokenWeights[i] / nPolarized[j]);
           } else {
-            scores[j] += (shifters[j] * score) * tokenWeights[i];
+            scores[j] += (tokenShifters[j] * score) * tokenWeights[i];
           }
         }
       }
@@ -221,15 +227,14 @@ inline double compute_cluster_impact(std::vector<int>& shifters) {
   int n = shifters[0] % 2; // 0 if even number of negators, 1 if odd number of negators
   double wA = (1 - n) * shifters[1]; // amplification impact
   double wD = n * shifters[1] + shifters[2]; // deamplification impact
-  double impact = 1 + std::max(0.8 * (wA - wD), -1.0);
+  double impact = 1 + std::max(0.8 * (wA - wD), -1.0) ;
   if (n == 1) impact *= -1.0; // apply negation
   return(impact);
 }
 
 inline void make_frequency_maps(std::unordered_map< int, std::unordered_map< std::string, double > >& frequencyMap,
                                 std::unordered_map< std::string, double >& inverseFrequencyMap,
-                                std::vector< std::vector< std::string > >& texts,
-                                std::string how) {
+                                std::vector< std::vector< std::string > >& texts) {
 
   int nTexts = texts.size();
 

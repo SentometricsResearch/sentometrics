@@ -14,7 +14,7 @@
 #' \item Corpus features generation: \code{\link{sento_corpus}}, \code{\link{add_features}}
 #' \item Sentiment computation and aggregation into sentiment measures: \code{\link{ctr_agg}},
 #' \code{\link{sento_lexicons}}, \code{\link{compute_sentiment}}, \code{\link{aggregate.sentiment}},
-#' \code{\link{sento_measures}}, \code{\link{peakdocs}}, \code{\link{peakdates}}, and a series of 
+#' \code{\link{sento_measures}}, \code{\link{peakdocs}}, \code{\link{peakdates}}, and a series of
 #' \code{measures_xyz}, generic and extractor functions
 #' \item Sparse modelling: \code{\link{ctr_model}}, \code{\link{sento_model}}
 #' \item Prediction and post-modelling analysis: \code{\link{predict.sentomodel}}, \code{\link{attributions}}
@@ -144,7 +144,7 @@
 #'
 #' @format A \code{data.frame}, formatted as required to be an input for \code{\link{sento_corpus}}.
 #'
-#' @source \href{https://www.crowdflower.com/data-for-everyone/}{Economic News Article Tone and Relevance}. Retrieved
+#' @source \href{https://www.figure-eight.com/data-for-everyone/}{Economic News Article Tone and Relevance}. Retrieved
 #' November 1, 2017.
 "usnews"
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/sentomeasures_measures_xyz.R
 \name{measures_fill}
 \alias{measures_fill}
-\title{Add and fill missing dates}
+\title{Add and fill missing dates to sentiment measures}
 \usage{
 measures_fill(sentomeasures, fill = "zero", dateBefore = NULL,
   dateAfter = NULL)
