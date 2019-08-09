@@ -35,15 +35,14 @@ struct SentimentScorerClusters : public RcppParallel::Worker {
       std::vector< std::string > tokens = texts[i];
       std::vector< double > scores(nL, 0.0);
       std::vector< double > nPolarized(nL, 0.0);
-      double normalizer = 0.0;
-      int nTokens = tokens.size();
+      double normalizer = 0.0, maxTokenFrequency = 1.0;
+      int nTokens = tokens.size(), lB = 0, nB = 4, nA = 2;
       std::vector< std::vector< double > > tokenScores(nTokens,std::vector< double >(nL, 0.0));
 
       std::vector< double > tokenWeights(nTokens,0.0);
       std::vector< double > tokenShifters(nTokens, 1.0);
-      int lB = 0, nB = 4, nA = 2; // polarity cluster: [max(lB, hit - nB); min(hit + nA, nTokens)]
       std::unordered_map< std::string, double > freqMap;
-      double maxTokenFrequency = 1.0;
+
       if (isFreqWeighting) {
         update_frequency_map(freqMap, frequencyMap, i);
         update_max_token_frequency(maxTokenFrequency, freqMap, how);
@@ -51,8 +50,7 @@ struct SentimentScorerClusters : public RcppParallel::Worker {
 
       for (int j = 0; j < nTokens; j++) {
         std::string token = tokens[j];
-        double tokenFrequency = 1.0;
-        double tokenInverseFrequency = 1.0;
+        double tokenFrequency = 1.0, tokenInverseFrequency = 1.0;
         if (isFreqWeighting) {
           update_token_frequency(tokenFrequency, freqMap, token);
           update_token_inverse_frequency(tokenInverseFrequency, inverseFrequencyMap, token, how);
@@ -63,10 +61,10 @@ struct SentimentScorerClusters : public RcppParallel::Worker {
           int st = std::max(lB, j - nB);
           int en = std::min(nTokens, j + nA + 1);
 
+          if (how != "proportional"  && how != "counts" && how != "squareRootCounts") {
+            update_token_weights(tokenWeights, normalizer, nPolarized, j, nTokens, how, nL, tokenScores, tokenFrequency, tokenInverseFrequency, maxTokenFrequency); //step 3 and 4: get token Weights
+          }
           for (int k = st; k < en; k++) {
-            if (how != "proportional"  && how != "counts") {
-              update_token_weights(tokenWeights, normalizer, nPolarized, j, nTokens, how, nL, tokenScores, tokenFrequency, tokenInverseFrequency, maxTokenFrequency); //step 3 and 4: get token Weights
-            }
             if (k == j) continue;
             std::string token_k = tokens[k];
             if (lexiconMap.find(token_k) != lexiconMap.end()) {
@@ -78,13 +76,14 @@ struct SentimentScorerClusters : public RcppParallel::Worker {
           }
            //step 3 and 4: get token Weights
           tokenShifters[j] = compute_cluster_impact(shifters);
-          update_token_scores(scores, tokenScores, normalizer, nPolarized, tokenShifters, tokenWeights, nL, nTokens, how);
 
           lB = en + 1; // reset index such that polarity clusters are not overlapping
           j = en; // updated to j + 1 immediately after
 
         }
+
       }
+      update_token_scores(scores, tokenScores, normalizer, nPolarized, tokenShifters, tokenWeights, nL, nTokens, how);
 
       sentScores(i, 0) = nTokens;
       for (int m = 0; m < nL; m++) {

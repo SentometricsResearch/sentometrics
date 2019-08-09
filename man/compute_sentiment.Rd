@@ -81,16 +81,18 @@ by the \code{how} argument is applied.
 The \code{how = "proportionalPol"} option divides each document's sentiment
 score by the number of detected polarized words (counting words that appear multiple times by their frequency), instead
 of the total number of words which the \code{how = "proportional"} option gives. The \code{how = "counts"} option
-does no normalization. The \code{how = "UShaped"} option, gives a higher weight to words at the beginning and end of the texts. The \code{how = "invertedUShaped"} option gives a lower weight to words at the beginning
+does no normalization. The \code{squareRootCounts} divides the sentiment by the square root of the number of tokens in each text.
+ The \code{how = "UShaped"} option, gives a higher weight to words at the beginning and end of the texts.
+ The \code{how = "invertedUShaped"} option gives a lower weight to words at the beginning
 and the end of the texts. The \code{how = "exponential"} option gives gradually more weight the later the word appears in the text.
-The \code{ how = "invertedExponential"} option gives gradually less weight the later the words appears in the text. The \code{
+The \code{ how = "invertedExponential"} option gives gradually less weight, the later the words appears in the text. The \code{
 how = "TF"} option gives a weight proportional to the number of times a word appears in a text. The \code{how = "logarithmicTF"} option
 gives the same weight as the latter but then logarithmically scaled. The \code{how = "augmentedTF"} option can be used to prevent
 a bias towards longer documents. The weight is determined by dividing the raw frequency of a token by the raw frequency
-of the most occuring term in the document. The \code{how = "IDF"} option uses the logarithm of the division of the raw frequency of a word by the number of texts
+of the most occurring term in the document. The \code{how = "IDF"} option uses the logarithm of the division of the raw frequency of a word by the number of texts
 in which the word appears. By doing this, words appearing in multiple texts get a lower weight. The \code{how = "TFIDF"},
- \code{how = "logarithmicTFIDF"}, \code{how = "augmentedTFIDF"} options use the same weights as there \code{IDF} - variant
- but then multiplied with \code{how = "IDF"} option. See the vignette for more details.
+\code{how = "logarithmicTFIDF"}, \code{how = "augmentedTFIDF"} options use the same weights as there \code{IDF}-variant
+but then multiplied with the \code{how = "IDF"} option. See the vignette for more details.
 }
 
 \examples{
@@ -100,7 +102,8 @@ data("list_valence_shifters", package = "sentometrics")
 
 l1 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")])
 l2 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
-l3 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]][, c("x", "t")])
+l3 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")],
+                     list_valence_shifters[["en"]][, c("x", "t")])
 
 # from a sentocorpus object, unigrams approach
 corpus <- sento_corpus(corpusdf = usnews)
@@ -121,20 +124,22 @@ sent4 <- compute_sentiment(corpusQSample, l1[1], how = "counts", tokens = toks)
 
 # from a SimpleCorpus object, unigrams approach
 txt <- system.file("texts", "txt", package = "tm")
-sc <- tm::SimpleCorpus(DirSource(txt, encoding = "UTF-8"),control = list(language = "eng"))
+sc <- tm::SimpleCorpus(tm::DirSource(txt, encoding = "UTF-8"),
+                       control = list(language = "eng"))
 sent5 <- compute_sentiment(sc, l1, how = "proportional")
 
 # from a VCorpus object, unigrams approach
 reut21578 <- system.file("texts", "crude", package = "tm")
-vcorp <- tm::VCorpus(DirSource(reut21578, mode = "binary"),list(reader = readReut21578XMLasPlain))
+vcorp <- tm::VCorpus(tm::DirSource(reut21578, mode = "binary"),
+                     list(reader = tm::readReut21578XMLasPlain))
 sent6 <- compute_sentiment(vcorp, l1, how = "proportional")
 
-# from a sentocorpus object, unigrams approach with the td-idf weighting approach
+# from a sentocorpus object, unigrams approach with tf-idf weighting
 corpus <- sento_corpus(corpusdf = usnews)
 corpusSample <- quanteda::corpus_sample(corpus, size = 200)
 sent7 <- compute_sentiment(corpusSample, l1, how = "TFIDF")
 
 }
 \author{
-Samuel Borms
+Samuel Borms, Andres Algaba, Jeroen Van Pelt
 }

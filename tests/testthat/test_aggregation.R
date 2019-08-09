@@ -9,7 +9,7 @@ set.seed(123)
 # corpus, lexicon and aggregation control creation
 data("usnews")
 corpus <- quanteda::corpus_sample(sento_corpus(corpusdf = usnews), size = 1000)
-
+setorder(corpus$documents, "date", na.last=FALSE)
 data("list_lexicons")
 lex <- sento_lexicons(list_lexicons[c("GI_en", "LM_en")])
 

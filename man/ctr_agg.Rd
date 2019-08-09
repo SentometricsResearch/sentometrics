@@ -63,8 +63,8 @@ equal to the desired \code{lag}.}
 \item{nCore}{see \code{\link{compute_sentiment}}.}
 
 \item{alphaExpDocs}{a single \code{integer} vector. A smoothing factor to calculate weights for, used if
-\code{"exponential" \%in\% howDocs} or \code{"inverseExponential" \%in\% howDocs}. Value should be between 0 and 1 (both excluded); see
-\code{\link{weights_exponential}}.}
+\code{"exponential" \%in\% howDocs} or \code{"inverseExponential" \%in\% howDocs}. Value should be between 0 and 1
+(both excluded); see \code{\link{weights_exponential}}.}
 }
 \value{
 A \code{list} encapsulating the control parameters.

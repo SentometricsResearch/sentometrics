@@ -4,7 +4,7 @@
 \alias{sento_measures}
 \title{One-way road towards a sentomeasures object}
 \usage{
-sento_measures(sentocorpus = NULL, lexicons, ctr)
+sento_measures(sentocorpus, lexicons, ctr)
 }
 \arguments{
 \item{sentocorpus}{a \code{sentocorpus} object created with \code{\link{sento_corpus}}.}
@@ -26,9 +26,7 @@ sentiment scores columns. The \code{"date"} column has the dates converted at th
 across-document aggregation. All zeros are replaced by \code{NA} if \code{ctr$docs$weightingParam$do.ignoreZeros = TRUE}.}
 \item{attribWeights}{a \code{list} of document and time weights used in the \code{\link{attributions}} function.
 Serves further no direct purpose.}
-\item{ctr}{ A \code{list} encapsulating the control parameters like howDocs, howTime, howWithin and the parameterization required for these hows.
- Easy to have this linked to the sento_measures for recalculation when e.g. the sentiment is recalculated or features are added.
- See \code{\link{ctr_agg}}}
+\item{ctr}{a \code{list} encapsulating the control parameters.}
 }
 \description{
 Wrapper function which assembles calls to \code{\link{compute_sentiment}} and \code{\link{aggregate}}.
@@ -59,7 +57,7 @@ summary(sentomeasures)
 
 }
 \seealso{
-\code{\link{compute_sentiment}}, \code{\link{aggregate}},\code{\link{measures_update}}
+\code{\link{compute_sentiment}}, \code{\link{aggregate}}, \code{\link{measures_update}}
 }
 \author{
 Samuel Borms, Keven Bluteau

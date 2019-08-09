@@ -23,7 +23,7 @@ Please cite the package in publications. Use \code{citation("sentometrics")}.
 \item Corpus features generation: \code{\link{sento_corpus}}, \code{\link{add_features}}
 \item Sentiment computation and aggregation into sentiment measures: \code{\link{ctr_agg}},
 \code{\link{sento_lexicons}}, \code{\link{compute_sentiment}}, \code{\link{aggregate.sentiment}},
-\code{\link{sento_measures}}, \code{\link{peakdocs}}, \code{\link{peakdates}}, and a series of 
+\code{\link{sento_measures}}, \code{\link{peakdocs}}, \code{\link{peakdates}}, and a series of
 \code{measures_xyz}, generic and extractor functions
 \item Sparse modelling: \code{\link{ctr_model}}, \code{\link{sento_model}}
 \item Prediction and post-modelling analysis: \code{\link{predict.sentomodel}}, \code{\link{attributions}}
@@ -59,6 +59,12 @@ Authors:
   \item David Ardia \email{david.ardia@unine.ch}
   \item Keven Bluteau \email{keven.bluteau@unine.ch}
   \item Kris Boudt \email{kris.boudt@vub.be}
+}
+
+Other contributors:
+\itemize{
+  \item Andres Algaba \email{andres.algaba@vub.be} [contributor]
+  \item Jeroen Van Pelt \email{jeroenvanpelt@hotmail.com} [contributor]
 }
 
 }
