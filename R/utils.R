@@ -25,7 +25,8 @@ weights_exponential <- function(n, alphas = seq(0.1, 0.5, by = 0.1)) {
   for (i in 1:length(alphas)) {
     alpha <- alphas[i]
     exponential <- ((alpha * (1 - alpha)^(1 - vals))) / sum((alpha * (1 - alpha)^(1 - vals)))
-    exponentials[, i] <- exponential
+    exponentials[, i] <-exponential
+
   }
   return(as.data.frame(exponentials))
 }
@@ -123,9 +124,8 @@ weights_beta <- function(n, a = 1:4, b = 1:4) {
   return(as.data.frame(betas))
 }
 
-setup_time_weights <- function(lag, how, ...) {
-  dots <- tryCatch(list(...)[[1]], # extract list from list of list (if ... is a list)
-                   error = function(x) list(...)) # if ... is empty
+setup_time_weights <- function(how, param) {
+  lag <- param$lag
   if (!all(how %in% get_hows()$time)) stop("Please select an appropriate aggregation 'how'.")
   weights <- data.frame(row.names = 1:lag)
   if ("equal_weight" %in% how) {
@@ -135,16 +135,16 @@ setup_time_weights <- function(lag, how, ...) {
     weights <- cbind(weights, data.frame(linear = matrix((1:lag)/sum(1:lag), nrow = lag, ncol = 1)))
   }
   if ("exponential" %in% how) {
-    weights <- cbind(weights, weights_exponential(lag, dots$alphasExp))
+    weights <- cbind(weights, weights_exponential(lag, param$alphasExp))
   }
   if ("almon" %in% how) {
-    weights <- cbind(weights, weights_almon(lag, dots$ordersAlm, dots$do.inverseAlm, TRUE)) # always normalize
+    weights <- cbind(weights, weights_almon(lag, param$ordersAlm, param$do.inverseAlm, TRUE)) # always normalize
   }
   if ("beta" %in% how) {
-    weights <- cbind(weights, weights_beta(lag, dots$aBeta, dots$bBeta))
+    weights <- cbind(weights, weights_beta(lag, param$aBeta, param$bBeta))
   }
   if ("own" %in% how) {
-    weights <- cbind(weights, dots$weights)
+    weights <- cbind(weights, param$weights)
   }
   return(weights)
 }
@@ -164,8 +164,10 @@ setup_time_weights <- function(lag, how, ...) {
 #'
 #' @export
 get_hows <- function() {
-  words <- c("proportional", "proportionalPol", "counts")
-  docs <- c("equal_weight", "proportional")
+  words <- c("proportional", "proportionalPol", "counts", "squareRootCounts", "UShaped",
+             "invertedUShaped", "exponential", "invertedExponential", "TF", "logarithmicTF",
+             "augmentedTF", "IDF", "TFIDF", "logarithmicTFIDF", "augmentedTFIDF")
+  docs <- c("equal_weight", "proportional", "inverseProportional", "exponential", "inverseExponential")
   time <- c("equal_weight", "almon", "beta", "linear", "exponential", "own")
   return(list(words = words, docs = docs, time = time))
 }

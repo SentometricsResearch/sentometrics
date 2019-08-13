@@ -1,5 +1,5 @@
 
-#' Add and fill missing dates
+#' Add and fill missing dates to sentiment measures
 #'
 #' @author Samuel Borms
 #'
@@ -44,20 +44,23 @@
 measures_fill <- function(sentomeasures, fill = "zero", dateBefore = NULL, dateAfter = NULL) {
   check_class(sentomeasures, "sentomeasures")
 
-  by <- sentomeasures$by
+  by <- sentomeasures$ctr$time$weightingParam$by
   dates <- get_dates(sentomeasures)
 
   start <- dates[1]
+
   if (!is.null(dateBefore)) {
     dateBefore <- convert_date(dateBefore, by = by)
     if (dateBefore < start) start <- dateBefore
   }
   end <- utils::tail(dates, 1)
+
   if (!is.null(dateAfter)) {
     dateAfter <- convert_date(dateAfter, by = by)
     if (dateAfter > end) end <- dateAfter
   }
-  ts <- seq(start, end, by = by) # continuous date series
+
+  ts <- seq.Date(start, end, by = by) # continuous date series
   dt <- data.table(date = ts)
 
   # join and fill as provided into new measures
@@ -71,7 +74,6 @@ measures_fill <- function(sentomeasures, fill = "zero", dateBefore = NULL, dateA
   } else stop("Input variable 'fill' should be either 'zero' or 'latest'.")
   measuresFill <- data.table(date = ts, measuresFill[, lapply(.SD, as.numeric), .SDcols = colnames(measures)[-1]])
 
-  sentomeasures$fill <- fill # might become uninformative, if measures manipulated multiple times with different fill
   sentomeasures$measures <- measuresFill
   sentomeasures$stats <- compute_stats(sentomeasures) # will be overwritten at end of aggregate_time() call
 
@@ -505,5 +507,52 @@ measures_global <- function(sentomeasures, lexicons = 1, features = 1, time = 1)
   globs[["global"]] <- rowMeans(globs[, -1])
 
   return(globs)
+}
+
+#' Update sentiment measures
+#'
+#' @author Jeroen Van Pelt, Samuel Borms, Andres Algaba
+#'
+#' @description Updates a sentomeasures object based on a new corpus provided. Sentiment for the unseen corpus
+#' texts calculated and aggregated applying the control variables from the input sentomeasures object.
+#'
+#' @param sentocorpus a \code{sentocorpus} object created with \code{\link{sento_corpus}}.
+#' @param sentomeasures \code{sentomeasures} object created with \code{\link{sento_measures}}
+#' @param lexicons a \code{sentolexicons} object created with \code{\link{sento_lexicons}}.
+#
+#' @return An updated \code{sentomeasures} object.
+#'
+#' @seealso \code{\link{sento_measures}}, \code{\link{compute_sentiment}}
+#'
+#' @examples
+#' data("usnews", package = "sentometrics")
+#'
+#' corpus1 <- sento_corpus(usnews[1:500,])
+#' ctr <- ctr_agg(howTime = "linear", by = "year", lag = 3)
+#' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")],
+#'                     list_valence_shifters[["en"]])
+#' sentomeasures <- sento_measures(corpus1, l, ctr)
+#' corpus2 <- sento_corpus(usnews[400:2000,])
+#' sentomeasuresNew <- measures_update(sentomeasures, corpus2, l)
+#'
+#' @export
+measures_update <- function(sentomeasures, sentocorpus, lexicons) {
+  check_class(sentomeasures, "sentomeasures")
+  check_class(sentocorpus, "sentocorpus")
+
+  if (!setequal(get_dimensions(sentomeasures)$lexicons, names(lexicons)[names(lexicons) != "valence"])) {
+    stop(paste0("Provided lexicon names are not the same as lexicons used in input sentomeasures object."))
+  }
+
+  ctr <- sentomeasures$ctr
+  sentiment <- sentomeasures$sentiment
+  partialCorpus <- quanteda::corpus_subset(sentocorpus, !quanteda::docnames(sentocorpus) %in% sentiment$id)
+  if (length(quanteda::texts(partialCorpus)) > 0) {
+    partialSentiment <- compute_sentiment(partialCorpus, lexicons, how = ctr$within$howWithin, nCore = ctr$nCore)
+    sentiment <- sentiment_bind(sentiment, partialSentiment)
+  }
+
+  sentomeasuresUpdated <- aggregate(sentiment, ctr)
+  sentomeasuresUpdated
 }
 

@@ -1,6 +1,8 @@
 
 context("Methods sentomeasures")
 
+cat("\n\n")
+
 library("sentometrics")
 library("quanteda")
 

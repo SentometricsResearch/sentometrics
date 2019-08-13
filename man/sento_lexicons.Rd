@@ -14,11 +14,11 @@ one of the built-in lexicons accessible via \code{list_lexicons}.}
 \item{valenceIn}{a single valence word list as a \code{data.table} or a \code{data.frame} with respectively a \code{"x"}
 and a \code{"y"} or \code{"t"} column. The first column has the words, \code{"y"} has the values for bigram
 shifting, and \code{"t"} has the types of the valence shifter for a clustered approach to sentiment calculation
-(supported types: \code{1} = negators, \code{2} = amplifiers, \code{3} = deamplifiers). If three columns
-are provided, the first two will be considered only. This argument can be one of the built-in
-valence word lists accessible via \code{list_valence_shifters}. A word that appears in both a lexicon
-and the valence word list is prioritized as a lexical entry during sentiment calculation. If \code{NULL}, valence
-shifting is not applied in the sentiment analysis.}
+(supported types: \code{1} = negators, \code{2} = amplifiers, \code{3} = deamplifiers, \code{4} = adversative conjunctions).
+If three columns are provided, the first two will be considered only. This argument can be one of the
+built-in valence word lists accessible via \code{list_valence_shifters}. A word that appears in both a
+lexicon and the valence word list is prioritized as a lexical entry during sentiment calculation. If
+\code{NULL}, valence shifting is not applied in the sentiment analysis.}
 
 \item{do.split}{a \code{logical} that if \code{TRUE} splits every lexicon into a separate positive polarity and negative
 polarity lexicon.}

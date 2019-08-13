@@ -8,7 +8,7 @@ ctr_agg(howWithin = "proportional", howDocs = "equal_weight",
   howTime = "equal_weight", do.ignoreZeros = TRUE, by = "day",
   lag = 1, fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1),
   ordersAlm = 1:3, do.inverseAlm = TRUE, aBeta = 1:4, bBeta = 1:4,
-  weights = NULL, tokens = NULL, nCore = 1)
+  weights = NULL, tokens = NULL, nCore = 1, alphaExpDocs = 0.1)
 }
 \arguments{
 \item{howWithin}{a single \code{character} vector defining how aggregation within documents will be performed. Should
@@ -61,6 +61,10 @@ equal to the desired \code{lag}.}
 \item{tokens}{see \code{\link{compute_sentiment}}.}
 
 \item{nCore}{see \code{\link{compute_sentiment}}.}
+
+\item{alphaExpDocs}{a single \code{integer} vector. A smoothing factor to calculate weights for, used if
+\code{"exponential" \%in\% howDocs} or \code{"inverseExponential" \%in\% howDocs}. Value should be between 0 and 1
+(both excluded); see \code{\link{weights_exponential}}.}
 }
 \value{
 A \code{list} encapsulating the control parameters.
@@ -81,7 +85,7 @@ ctr1 <- ctr_agg(howTime = "linear", by = "year", lag = 3)
 
 # more elaborate control function (particular attention to time weighting schemes)
 ctr2 <- ctr_agg(howWithin = "proportionalPol",
-                howDocs = "proportional",
+                howDocs = "exponential",
                 howTime = c("equal_weight", "linear", "almon", "beta", "exponential", "own"),
                 do.ignoreZeros = TRUE,
                 by = "day",
@@ -91,7 +95,8 @@ ctr2 <- ctr_agg(howWithin = "proportionalPol",
                 alphasExp = c(0.20, 0.50, 0.70, 0.95),
                 aBeta = c(1, 3),
                 bBeta = c(1, 3, 4, 7),
-                weights = data.frame(myWeights = runif(20)))
+                weights = data.frame(myWeights = runif(20)),
+                alphaExp = 0.3)
 
 # set up control function with one linear and two chosen Almon weighting schemes
 a <- weights_almon(n = 70, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE)
