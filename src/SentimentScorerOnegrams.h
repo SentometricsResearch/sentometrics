@@ -68,9 +68,6 @@ struct SentimentScorerOnegrams : public RcppParallel::Worker {
         sentScores(i, m + 1) = scores[m];
       }
 
-
-
-
     }
   }
 

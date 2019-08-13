@@ -9,8 +9,8 @@ compute_sentiment_onegrams <- function(texts, lexicons, how) {
     .Call(`_sentometrics_compute_sentiment_onegrams`, texts, lexicons, how)
 }
 
-compute_sentiment_sentence <- function(texts, lexicons, how, hasValenceShifters) {
-    .Call(`_sentometrics_compute_sentiment_sentence`, texts, lexicons, how, hasValenceShifters)
+compute_sentiment_sentences <- function(texts, lexicons, how, hasValenceShifters) {
+    .Call(`_sentometrics_compute_sentiment_sentences`, texts, lexicons, how, hasValenceShifters)
 }
 
 compute_sentiment_valence <- function(texts, lexicons, how) {

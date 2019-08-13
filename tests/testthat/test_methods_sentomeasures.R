@@ -1,6 +1,8 @@
 
 context("Methods sentomeasures")
 
+cat("\n\n")
+
 library("sentometrics")
 library("quanteda")
 
@@ -66,5 +68,4 @@ test_that("Proper long formatting of sentiment measures", {
   expect_true(all(sentMeas$time %in% unique(measuresLong[["time"]])))
   expect_true(all(get_measures(sentMeas)[["date"]] %in% unique(measuresLong[["date"]])))
 })
-
 

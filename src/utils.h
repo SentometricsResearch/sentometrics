@@ -127,7 +127,7 @@ inline void update_token_weights(std::vector < double >& tokenWeights,
     if (how == "UShaped") {
       token_weight = std::pow(x - y / 2, 2) / std::pow(y, 2);
     } else if (how == "invertedUShaped") {
-      token_weight = 0.25 + (-1 * std::pow(x - y / 2, 2)) / std::pow(y, 2);
+      token_weight = 0.25 + (- std::pow(x - y / 2, 2)) / std::pow(y, 2);
     } else if (how == "exponential") {
       token_weight = std::exp(x / y) - 1.0;
     } else if (how == "invertedExponential") {
