@@ -46,7 +46,7 @@ attributions_lags <- function(s, sentDates, seqDates, W, cols, sentomeasures, me
     }
     if (length(lagsMissing) != nLags) doc[, "lag" := namesLags[-lagsMissing]]
     datesMissing <- datesLags[lagsMissing]
-    if (sentomeasures$fill == "latest") {
+    if (sentomeasures$ctr$time$weightingParam$fill == "latest") {
       attribFills <- lapply(seq_along(datesMissing), function(j) {
         diffs <- s$date - datesMissing[j]
         diffsNeg <- diffs[diffs < 0]
@@ -157,8 +157,8 @@ attributions_dims <- function(sentomeasures, measures, cols, refDates, loc, coef
 
   # set a sequence of all possible dates
   sentDates <- unique(s$date)
-  if (!(sentomeasures$fill == "none"))
-    seqDates <- seq(sentDates[1], sentDates[length(sentDates)], by = sentomeasures$by)
+  if (!(sentomeasures$ctr$time$weightingParam$fill == "none"))
+    seqDates <- seq(sentDates[1], sentDates[length(sentDates)], by = sentomeasures$ctr$time$weightingParam$by)
   else seqDates <- sentDates
 
   # extract sentiment coefficients

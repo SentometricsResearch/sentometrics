@@ -3,23 +3,23 @@ sudo: required
 cache: packages
 
 os:
-  - linux
+ - linux
 
 r_packages:
-  - devtools
-  - ddalpha # temporary
-  # - roxygen2
+ - devtools
+ - ddalpha # temporary
+ # - roxygen2
 
 script:
-  - |
-    R CMD build .
-    travis_wait 180 R CMD check --no-build-vignettes --no-manual --as-cran sentometrics*tar.gz
-  # - Rscript -e 'devtools::install(); devtools::test()'
+ - |
+   R CMD build .
+   travis_wait 180 R CMD check --no-build-vignettes --no-manual --as-cran sentometrics*tar.gz
+ # - Rscript -e 'devtools::install(); devtools::test()'
 
 r:
-  - devel
-  - release
-  # - oldrel
+ - devel
+ - release
+ # - oldrel
 
 after_success:
-- Rscript -e 'covr::codecov()'
+ - Rscript -e 'covr::codecov()'

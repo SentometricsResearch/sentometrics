@@ -18,7 +18,7 @@
 ### to avoid a memory error for a corpus of 100,000 texts
 ### It might be that this memory error already occurs for a smaller corpus size
 
-###### SESSION INFO ######
+###### SESSION INFO ###### ### TODO: update!
 
 ### R version 3.5.1 (2018-07-02)
 ### Platform: x86_64-w64-mingw32/x64 (64-bit)
@@ -95,7 +95,8 @@ lex <- sento_lexicons(lexiconsIn = lexiconsIn, valenceIn = list_valence_shifters
 
 keep <- sample(1:(nrow(usnews) * 25), 100000)
 corpusAll <- quanteda::corpus(do.call(rbind, lapply(1:25, function(j) usnews))[keep, ], text_field = "texts")
-nTexts <- c(1, 5, 10, 25, 50, 75, 100) * 1000
+# nTexts <- c(1, 5, 10, 25, 50, 75, 100) * 1000
+nTexts <- c(1, 50, 100) * 1000 ### TODO: remove!
 
 ########################################### definition of sentiment functions
 
@@ -126,12 +127,12 @@ tidytextUnigrams <- function(texts, lexicons) {
   wCounts <- tidyTexts %>%
     count(linenumber)
   lexiconsTable <- Reduce(function(x, y) full_join(x, y, by = "x"), lapply(lexicons, as.tbl)) %>%
-    rename_at(vars(-x), funs(names(lexicons)))
+    rename_at(vars(-x), list(~names(lexicons)))
   lexNames <- colnames(lexiconsTable)[-1]
   sentiments <- tidyTexts %>%
     inner_join(lexiconsTable, by = "x") %>%
     group_by(linenumber) %>%
-    summarise_at(vars(lexNames), funs(sum(., na.rm = TRUE)))
+    summarise_at(vars(lexNames), list(~sum(., na.rm = TRUE)))
   N <- length(texts)
   nToAdd <- (1:N)[which(!(1:N %in% sentiments[["linenumber"]]))]
   if (length(nToAdd) != 0) {
@@ -155,7 +156,7 @@ tidytextBigrams <- function(texts, lexicons) {
   wCounts <- tidyTexts %>%
     count(linenumber)
   lexiconsTable <- Reduce(function(x, y) full_join(x, y, by = "x"), lapply(lexicons, as.tbl)) %>%
-    rename_at(vars(-x), funs(names(lexicons)))
+    rename_at(vars(-x), list(~names(lexicons)))
   lexNames <- colnames(lexiconsTable)[-c(1, ncol(lexiconsTable))] # drop "valence" list element
   sentiments <- tidyTexts %>%
     inner_join(lexiconsTable, by = "x") %>%
@@ -163,7 +164,7 @@ tidytextBigrams <- function(texts, lexicons) {
     replace_na(list(bigram = 1)) %>%
     mutate(bigram = replace(bigram, bigram == 0, 1)) %>%
     group_by(linenumber) %>%
-    summarise_at(vars(lexNames), funs(sum(. * bigram, na.rm = TRUE)))
+    summarise_at(vars(lexNames), list(~sum(. * bigram, na.rm = TRUE)))
   N <- length(texts)
   nToAdd <- (1:N)[which(!(1:N %in% sentiments[["linenumber"]]))]
   if (length(nToAdd) != 0) {
@@ -203,6 +204,36 @@ quantedaFunc <- function(texts) {
 
 syuzhetFunc <- function(texts) syuzhet::get_sentiment(texts, method = "bing")
 
+########################################### ### TODO: remove!
+
+# K <- nTexts[2]
+#
+# system.time(s1 <- sentoUnigramsFunc(corpusAll[1:K]))
+# system.time(s2 <- tidytextUnigramsFunc(corpusAll[1:K]))
+# all.equal(s1$word_count, s2$word_count) & all.equal(s1$HULIU, s2$HULIU)
+#
+# system.time(s3 <- sentoUnigramsAllFunc(corpusAll[1:K]))
+# all.equal(s1$word_count, s3$word_count) & all.equal(s1$HULIU, s3$HULIU)
+#
+# system.time(s4 <- sentoBigramsFunc(corpusAll[1:K]))
+# system.time(s5 <- sentoBigramsAllFunc(corpusAll[1:K]))
+# system.time(s6 <- tidytextBigramsFunc(corpusAll[1:K]))
+# all.equal(s4$word_count, s5$word_count) & all.equal(s4$HULIU, s5$HULIU)
+# all.equal(s4$word_count, s6$word_count) & all.equal(s4$HULIU, s6$HULIU)
+#
+# system.time(s7 <- compute_sentiment(corpusAll[1:K], lexicons = lex[c("HULIU")], how = "proportional"))
+# system.time(s8 <- compute_sentiment(corpusAll[1:K], lexicons = lexPure, how = "proportional"))
+# all.equal(s7$word_count, s8$word_count) & all.equal(s7$HULIU, s8$HULIU)
+#
+# system.time(s9 <- compute_sentiment(corpusAll[1:K], lexicons = lex[c("HULIU")], how = "proportionalPol"))
+# system.time(s10 <- compute_sentiment(corpusAll[1:K], lexicons = lexPure, how = "proportionalPol"))
+# all.equal(s9$word_count, s10$word_count) & all.equal(s9$HULIU, s10$HULIU)
+#
+# system.time(sA <- sentoUnigramsAllFunc(corpusAll[1:K]))
+# system.time(sB <- tidytextUnigramsAllFunc(corpusAll[1:K]))
+# system.time(sC <- sentoClustersAllParFunc(corpusAll[1:K]))
+# sapply(colnames(sA), function(col) all(all.equal(sA[[col]], sB[[col]])))
+
 ########################################### timings for one lexicon
 
 timingsFull.single <- lapply(nTexts, function(n) {
@@ -227,7 +258,7 @@ cat("\n")
 timingsSentimentAnalysis <- lapply(head(nTexts, -1), function(n) {
   cat("Run timings for texts size of", n, "\n")
   texts <- corpusAll[1:n]
-  out <- microbenchmark(SentimentAnalysisFunc(texts), times = 3, unit = "s")
+  out <- microbenchmark(SentimentAnalysisFunc(texts), times = 1, unit = "s")
   out
 })
 timingsSentimentAnalysis <- c(do.call(rbind, lapply(timingsSentimentAnalysis,

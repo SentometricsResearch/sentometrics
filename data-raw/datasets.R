@@ -255,3 +255,9 @@ list_valence_shifters <- valShifters
 
 save(list_valence_shifters, file = "data/list_valence_shifters.rda")
 
+######################### ISO CODES TABLE
+
+iso <- na.omit(ISOcodes::ISO_639_2[, c("Alpha_2", "Name")])
+colnames(iso) <- c("code", "language")
+usethis::use_data(iso, internal = TRUE)
+

@@ -46,3 +46,20 @@ test_that("Multiple additions of features to existing sentocorpus object", {
   expect_true(min(quanteda::docvars(corpus2)[, c("good", "cut")]) >= 0)
 })
 
+# corpus summarize
+summYear <- corpus_summarize(corpus, by = "year")
+summMonth <- corpus_summarize(corpus, by = "month")
+summWeek <- corpus_summarize(corpus, by = "week")
+summDay <- corpus_summarize(corpus, by = "day")
+test_that("Summary of sentocorpus object" , {
+  expect_true(inherits(summYear$plots$feature_plot, "ggplot"))
+  expect_true(inherits(summYear$plots$token_plot, "ggplot"))
+  expect_true(length(summDay$stats$date) == 3043)
+  expect_true(length(summWeek$stats$date) == 1009)
+  expect_true(length(summMonth$stats$date) == 239)
+  expect_true(length(summYear$stats$date) == 20)
+  expect_true(all(c("date", "wsj", "economy", "noneconomy", "wapo", "minTokens", "maxTokens", "totalTokens", "documents")
+                  %in% colnames(summMonth$stats), TRUE))
+  expect_true(all(month(summYear$stats$date) == 1 , TRUE ))
+})
+

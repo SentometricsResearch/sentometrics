@@ -19,19 +19,14 @@ A \code{sentomeasures} object, which is a \code{list} containing:
 \item{features}{a \code{character} vector of the different features.}
 \item{lexicons}{a \code{character} vector of the different lexicons used.}
 \item{time}{a \code{character} vector of the different time weighting schemes used.}
-\item{by}{a single \code{character} vector specifying the time interval of aggregation used.}
 \item{stats}{a \code{data.frame} with a series of elementary statistics (mean, standard deviation, maximum, minimum, and
 average correlation with all other measures) for each individual sentiment measure.}
 \item{sentiment}{the sentiment scores \code{data.table} with \code{"date"}, \code{"word_count"} and lexicon--feature
 sentiment scores columns. The \code{"date"} column has the dates converted at the frequency for
-across-document aggregation. All zeros are replaced by \code{NA} if \code{ctr$do.ignoreZeros = TRUE}.}
-\item{howDocs}{a single \code{character} vector to remind how sentiment across documents was aggregated.}
-\item{fill}{a single \code{character} vector that specifies if and how missing dates have been added before
-aggregation across time was carried out.}
-\item{do.ignoreZeros}{a single \code{character} vector to remind if documents with a zero feature-sentiment score
-have been ignored in the within-document aggregation.}
+across-document aggregation. All zeros are replaced by \code{NA} if \code{ctr$docs$weightingParam$do.ignoreZeros = TRUE}.}
 \item{attribWeights}{a \code{list} of document and time weights used in the \code{\link{attributions}} function.
 Serves further no direct purpose.}
+\item{ctr}{a \code{list} encapsulating the control parameters.}
 }
 \description{
 Wrapper function which assembles calls to \code{\link{compute_sentiment}} and \code{\link{aggregate}}.
@@ -62,7 +57,7 @@ summary(sentomeasures)
 
 }
 \seealso{
-\code{\link{compute_sentiment}}, \code{\link{aggregate}}
+\code{\link{compute_sentiment}}, \code{\link{aggregate}}, \code{\link{measures_update}}
 }
 \author{
 Samuel Borms, Keven Bluteau

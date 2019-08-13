@@ -20,13 +20,18 @@
 #' applies only when \code{do.ignoreZeros = TRUE}. Because of this (implicit) selection that can be performed, having
 #' complementary features (e.g., \code{"economy"} and \code{"noneconomy"}) makes sense.
 #'
+#' It is also possible to add one non-numerical feature, that is, \code{"language"}, to designate the language
+#' of the corpus texts. When this feature is provided on corpus-level, a list of lexicons for different
+#' languages is expected in the function \code{compute_sentiment}.
+#'
 #' @param corpusdf a \code{data.frame} (or a \code{data.table}, or a \code{tbl}) with as named columns: a document \code{"id"}
-#' column (in \code{character} mode), a \code{"date"} column (as \code{"yyyy-mm-dd"}), a \code{"texts"} column (in
-#' \code{character} mode), and a series of feature columns of type \code{numeric}, with values between 0 and 1 to specify the
-#' degree of connectedness of a feature to a document. Features could be topics (e.g., legal or economic),
-#' article sources (e.g., online or print), amongst many more options. When no feature column is provided, a
-#' feature named \code{"dummyFeature"} is added. All spaces in the names of the features are replaced by \code{'_'}. Feature
-#' columns with values not between 0 and 1 are rescaled column-wise.
+#' column (in \code{character} mode), a \code{"date"} column (as \code{"yyyy-mm-dd"}), a \code{"texts"} column
+#' (in \code{character} mode), an optional \code{"language"} column (in \code{character} mode), and a series of
+#' feature columns of type \code{numeric}, with values between 0 and 1 to specify the degree of connectedness of
+#' a feature to a document. Features could be topics (e.g., legal or economic), article sources (e.g., online or
+#' print), amongst many more options. When no feature column is provided, a feature named \code{"dummyFeature"}
+#' is added. All spaces in the names of the features are replaced by \code{'_'}. Feature columns with values not
+#' between 0 and 1 are rescaled column-wise.
 #' @param do.clean a \code{logical}, if \code{TRUE} all texts undergo a cleaning routine to eliminate common textual garbage.
 #' This includes a brute force replacement of HTML tags and non-alphanumeric characters by an empty string. To use with care
 #' if the text is meant to have non-alphanumeric characters! Preferably, cleaning is done outside of this function call.
@@ -59,6 +64,11 @@
 #' # corpus creation when no features are present
 #' corpusDummy <- sento_corpus(corpusdf = usnews[, 1:3])
 #'
+#' # corpus creation with a qualitative language feature
+#' usnews[["language"]] <- "en"
+#' usnews[["language"]][c(200:400)] <- "nl"
+#' corpusLang <- sento_corpus(corpusdf = usnews)
+#'
 #' @export
 sento_corpus <- function(corpusdf, do.clean = FALSE) {
 
@@ -76,10 +86,19 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
   dates <- as.Date(corpusdf$date, format = "%Y-%m-%d")
   if (any(is.na(dates))) stop("Some dates are not in appropriate format. Should be 'yyyy-mm-dd'.")
   else corpusdf$date <- dates
+
+  # check if language is provided
+  if ("language" %in% cols) {
+    nonfeatures <- c(nonfeatures, "language")
+    # if (!all(sapply(corpusdf$language, is_iso_language)))
+    #   stop("Not all text contain ISO 639 code. Check ISOcodes::ISO_639_2 for list of available options.")
+  }
+
   features <- cols[!(cols %in% nonfeatures)]
   if (!is_names_correct(features))
     stop("At least one feature's name contains '-'. Please provide proper names.")
-  corpusdf <- corpusdf[, c("id", "date", "texts", features)]
+  corpusdf <- corpusdf[, c(nonfeatures, features)]
+
   info <- "This is a sentocorpus object derived from a quanteda corpus object."
 
   if (length(features) == 0) {
@@ -122,7 +141,7 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
   if (do.clean) corpusdf <- clean_texts(corpusdf)
   corp <- quanteda::corpus(x = corpusdf, docid_field = "id", text_field = "texts", metacorpus = list(info = info))
   class(corp) <- c("sentocorpus", class(corp))
-
+  setorder(corp$documents, "date", na.last=FALSE)
   return(corp)
 }
 
@@ -304,7 +323,7 @@ add_features <- function(corpus, featuresdf = NULL, keywords = NULL, do.binary =
 #' @export
 `docvars<-.sentocorpus` <- function(x, field, value) {
   if (!is.null(value)) {
-    stop("To add or replace features, use the add_features() function.", call. = FALSE)
+    stop("To add or replace features in a sentocorpus object, use the add_features() function.", call. = FALSE)
   } else {
     # xNew <- NextMethod("docvars<-")
     xNew <- x
@@ -319,5 +338,104 @@ add_features <- function(corpus, featuresdf = NULL, keywords = NULL, do.binary =
   }
   class(xNew) <- class(x)
   xNew
+}
+
+#' Summarize the sentocorpus object
+#'
+#' @author Jeroen Van Pelt, Samuel Borms, Andres Algaba
+#'
+#' @description Summarizes the sentocorpus object and returns insights about features and tokens over time.
+#'
+#' @details This function summarizes the sentocorpus object by generating statistics about features and tokens over
+#' time. The insights can be narrowed down to a chosen set of metadata features. The same tokenizer as in the sentiment
+#' calculation in \code{\link{compute_sentiment}} is used.
+#'
+#' @param x is a \code{sentocorpus} object created with \code{\link{sento_corpus}}
+#' @param by a single \code{character} vector to specify the frequency time interval over which the statistics
+#' need to be calculated.
+#' @param features a \code{character} vector that can be used to select a subset of the features to be analysed.
+#'
+#' @return returns a \code{list} containing:
+#' \item{stats}{a \code{data.table} with statistics about the number of documents, total, average, minimum and maximum
+#' number of tokens and the number of texts per features for each date.}
+#' \item{plots}{a \code{list} with three plots representing the above statistics.}
+#'
+#' @examples
+#' data("usnews", package = "sentometrics")
+#'
+#' # summary of corpus by day
+#' corpus <- sento_corpus(usnews)
+#' summary1 <- corpus_summarize(corpus)
+#'
+#' # summary of corpus by month
+#' summary2 <- corpus_summarize(corpus, by = "month")
+#'
+#' @export
+corpus_summarize <- function(x, by = "day", features = NULL) {
+  check_class(x, "sentocorpus")
+  if (!(by %in% c("year", "month", "week", "day"))) {
+    stop(paste0(by, " is no current 'by' option."))
+  }
+
+  # statistics
+  dt <- data.table::data.table(quanteda::docvars(x),
+                               "nTokens" = as.numeric(sapply(tokenize_texts(quanteda::texts(x)), length)))
+
+  if (!is.null(features)) {
+    dt <- dt[, c(features, "date", "nTokens"), with = FALSE]
+  }
+
+  if (by == "year") {
+    dt[, "date" := as.Date(paste0(format(as.Date(date), "%Y"), "-01-01"), "%Y-%m-%d")]
+  } else if (by == "month") {
+    dt[,"date":= as.Date(paste0(format(as.Date(date), "%Y-%m"), "-01"), "%Y-%m-%d")]
+  } else if (by == "week") {
+    dt[, "date" := ISOweek::ISOweek2date(paste(ISOweek::ISOweek(date), 1, sep = "-"))]
+  }
+
+  tokensDT <- dt[, .(date, nTokens)][, .(sum(nTokens), mean(nTokens), min(nTokens), max(nTokens)), by = date]
+  tokensDT <- setnames(tokensDT, c( "date", "totalTokens", "meanTokens", "minTokens", "maxTokens"))
+
+  featuresDT <- dt[, !"nTokens"]
+  freqTexts <- featuresDT[, .("documents" = as.numeric(.N)), by = .(date)]
+  freqFeatures <- featuresDT[, lapply(.SD, function(x) sum(ifelse(x > 0, 1, 0), na.rm = TRUE)), by = date]
+  freqAll <- merge(freqTexts, freqFeatures, by = "date")
+
+  stats <- merge(tokensDT, freqAll, by = "date")
+  setcolorder(stats, c("date", "documents"))
+
+  # plots
+  docPlot <- ggplot(melt(freqAll[, .(date, documents)], id = "date", all = TRUE)) +
+    geom_line(aes(x = date, y = value, color = variable, group = variable)) +
+    ggtitle(paste0("Number of documents over time (by ", by, ")")) +
+    theme_bw() +
+    scale_x_date(name = "Date", date_labels = "%m-%Y") +
+    scale_y_continuous(name = "Count") +
+    plot_theme(legendPos = "none")
+
+  freqAllMelt <- melt(freqAll[, !"documents"], id = "date", all = TRUE)
+  legendPos <- ifelse(length(unique(freqAllMelt[["variable"]])) <= 12, "top", "none")
+  featPlot <- ggplot(freqAllMelt) +
+    geom_line(aes(x = date, y = value, color = variable, group = variable)) +
+    ggtitle(paste0("Feature statistics over time (by ", by, ")")) +
+    theme_bw() +
+    scale_x_date(name = "Date", date_labels = "%m-%Y") +
+    scale_y_continuous(name = "Count") +
+    plot_theme(legendPos)
+
+  tokPlot <- ggplot(melt(tokensDT[, !"totalTokens"], id = "date", all = TRUE)) +
+    geom_line(aes(x = date, y = value, color = variable, group = variable)) +
+    ggtitle(paste0("Token statistics over time (by ", by, ")")) +
+    theme_bw() +
+    scale_x_date(name = "Date", date_labels = "%m-%Y") +
+    scale_y_continuous(name = "Count") +
+    plot_theme(legendPos = "top")
+
+  # output
+  summary <- list(
+    stats = stats,
+    plots = list(doc_plot = docPlot, feature_plot = featPlot, token_plot = tokPlot)
+  )
+  return(summary)
 }
 

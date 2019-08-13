@@ -45,6 +45,9 @@
 #' equal to the desired \code{lag}.
 #' @param tokens see \code{\link{compute_sentiment}}.
 #' @param nCore see \code{\link{compute_sentiment}}.
+#' @param alphaExpDocs a single \code{integer} vector. A smoothing factor to calculate weights for, used if
+#' \code{"exponential" \%in\% howDocs} or \code{"inverseExponential" \%in\% howDocs}. Value should be between 0 and 1
+#' (both excluded); see \code{\link{weights_exponential}}.
 #
 #' @return A \code{list} encapsulating the control parameters.
 #'
@@ -58,7 +61,7 @@
 #'
 #' # more elaborate control function (particular attention to time weighting schemes)
 #' ctr2 <- ctr_agg(howWithin = "proportionalPol",
-#'                 howDocs = "proportional",
+#'                 howDocs = "exponential",
 #'                 howTime = c("equal_weight", "linear", "almon", "beta", "exponential", "own"),
 #'                 do.ignoreZeros = TRUE,
 #'                 by = "day",
@@ -68,7 +71,8 @@
 #'                 alphasExp = c(0.20, 0.50, 0.70, 0.95),
 #'                 aBeta = c(1, 3),
 #'                 bBeta = c(1, 3, 4, 7),
-#'                 weights = data.frame(myWeights = runif(20)))
+#'                 weights = data.frame(myWeights = runif(20)),
+#'                 alphaExp = 0.3)
 #'
 #' # set up control function with one linear and two chosen Almon weighting schemes
 #' a <- weights_almon(n = 70, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE)
@@ -79,7 +83,7 @@
 ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTime = "equal_weight",
                     do.ignoreZeros = TRUE, by = "day", lag = 1, fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1),
                     ordersAlm = 1:3, do.inverseAlm = TRUE, aBeta = 1:4, bBeta = 1:4, weights = NULL,
-                    tokens = NULL, nCore = 1) {
+                    tokens = NULL, nCore = 1, alphaExpDocs = 0.1) {
 
   if (length(howWithin) > 1) howWithin <- howWithin[1]
   if (length(howDocs) > 1) howDocs <- howDocs[1]
@@ -141,21 +145,29 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
   if (!is.null(tokens) && !is.list(tokens)) {
     err <- c(err, "The 'tokens' argument, if not NULL, must be a list.")
   }
+  if(howDocs == "exponential" || howDocs =="inverseExponential"){
+    if(alphaExpDocs >= 1 || alphaExpDocs <= 0){
+      err <- c(err, "Alpha must be a number between 0 and 1 (both excluded).")
+    }
+  }
   if (!is.null(err)) stop("Wrong inputs. See below for specifics. \n", paste0(err, collapse = "\n"))
 
-  other <- list(alphasExp = alphasExp, ordersAlm = ordersAlm, do.inverseAlm = do.inverseAlm,
-                aBeta = aBeta, bBeta = bBeta, weights = weights)
-
-  ctr <- list(howWithin = howWithin,
-              howDocs = howDocs,
-              howTime = howTime,
-              do.ignoreZeros = do.ignoreZeros,
-              by = by,
-              lag = lag,
-              fill = fill,
+  ctr <- list(within = list(howWithin = howWithin),
+              docs = list(howDocs = howDocs,
+                          weightingParam = list(alphaExpDocs = alphaExpDocs,
+                                                do.ignoreZeros = do.ignoreZeros)),
+              time = list(howTime = howTime,
+                          weightingParam = list(by = by,
+                                                lag = lag,
+                                                fill = fill,
+                                                ordersAlm = ordersAlm,
+                                                do.inverseAlm = do.inverseAlm,
+                                                aBeta = aBeta,
+                                                bBeta = bBeta,
+                                                alphasExp = alphasExp,
+                                                weights = weights)),
               tokens = tokens,
-              nCore = nCore,
-              other = other)
+              nCore = nCore)
 
   return(ctr)
 }
@@ -179,21 +191,16 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #' \item{features}{a \code{character} vector of the different features.}
 #' \item{lexicons}{a \code{character} vector of the different lexicons used.}
 #' \item{time}{a \code{character} vector of the different time weighting schemes used.}
-#' \item{by}{a single \code{character} vector specifying the time interval of aggregation used.}
 #' \item{stats}{a \code{data.frame} with a series of elementary statistics (mean, standard deviation, maximum, minimum, and
 #' average correlation with all other measures) for each individual sentiment measure.}
 #' \item{sentiment}{the sentiment scores \code{data.table} with \code{"date"}, \code{"word_count"} and lexicon--feature
 #' sentiment scores columns. The \code{"date"} column has the dates converted at the frequency for
-#' across-document aggregation. All zeros are replaced by \code{NA} if \code{ctr$do.ignoreZeros = TRUE}.}
-#' \item{howDocs}{a single \code{character} vector to remind how sentiment across documents was aggregated.}
-#' \item{fill}{a single \code{character} vector that specifies if and how missing dates have been added before
-#' aggregation across time was carried out.}
-#' \item{do.ignoreZeros}{a single \code{character} vector to remind if documents with a zero feature-sentiment score
-#' have been ignored in the within-document aggregation.}
+#' across-document aggregation. All zeros are replaced by \code{NA} if \code{ctr$docs$weightingParam$do.ignoreZeros = TRUE}.}
 #' \item{attribWeights}{a \code{list} of document and time weights used in the \code{\link{attributions}} function.
 #' Serves further no direct purpose.}
+#' \item{ctr}{a \code{list} encapsulating the control parameters.}
 #'
-#' @seealso \code{\link{compute_sentiment}}, \code{\link{aggregate}}
+#' @seealso \code{\link{compute_sentiment}}, \code{\link{aggregate}}, \code{\link{measures_update}}
 #'
 #' @examples
 #' data("usnews", package = "sentometrics")
@@ -218,7 +225,8 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #' @export
 sento_measures <- function(sentocorpus, lexicons, ctr) {
   check_class(sentocorpus, "sentocorpus")
-  sentiment <- compute_sentiment(sentocorpus, lexicons, how = ctr$howWithin, tokens = ctr$tokens, nCore = ctr$nCore)
+  sentiment <- compute_sentiment(sentocorpus, lexicons, how = ctr$within$howWithin,
+                                 tokens = ctr$tokens, nCore = ctr$nCore)
   sentomeasures <- aggregate(sentiment, ctr)
   return(sentomeasures)
 }
@@ -245,36 +253,44 @@ sento_measures <- function(sentocorpus, lexicons, ctr) {
 #' data("list_lexicons", package = "sentometrics")
 #' data("list_valence_shifters", package = "sentometrics")
 #'
-#' # computation of sentiment and aggregation into sentiment measures
+#' # computation of sentiment
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 #' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 #' sent <- compute_sentiment(corpusSample, l, how = "counts")
 #' ctr <- ctr_agg(howTime = c("linear"), by = "year", lag = 3)
+#'
+#' # aggregation into sentiment measures
 #' sentomeasures <- aggregate(sent, ctr)
 #'
 #' @importFrom stats aggregate
 #' @export
 aggregate.sentiment <- function(x, ctr, ...) {
-  howDocs <- ctr$howDocs
-  howTime <- ctr$howTime
-  do.ignoreZeros <- ctr$do.ignoreZeros
-  by <- ctr$by
-  lag <- ctr$lag
-  fill <- ctr$fill
-  otherVars <- ctr$other # list or empty
-  aggDocs <- aggregate_docs(x, by = by, how = howDocs, do.ignoreZeros = do.ignoreZeros)
-  sentomeasures <- aggregate_time(aggDocs, lag = lag, fill = fill, how = howTime, otherVars)
-  return(sentomeasures)
+  howDocs <- ctr$docs$howDocs
+  howTime <- ctr$time$howTime
+  howWithin <- ctr$within$howWithin
+  weightingParamDocs <- ctr$docs$weightingParam
+  weightingParamTime <- ctr$time$weightingParam
+  by <- ctr$time$weightingParam$by
+  ctr <- ctr
+  aggDocs <- aggregate_docs(x, by = by, how = howDocs, weightingParamDocs = weightingParamDocs)
+  aggDocs$ctr <- ctr
+  sentomeasures <- aggregate_time(aggDocs, how = howTime, weightingParamTime = weightingParamTime)
+  sentomeasures
 }
 
-aggregate_docs <- function(sentiment, by, how = get_hows()$docs, do.ignoreZeros = TRUE) {
+aggregate_docs <- function(sentiment, by, how = get_hows()$docs, weightingParamDocs) {
 
   names <- stringi::stri_split(colnames(sentiment)[4:ncol(sentiment)], regex = "--")
   lexNames <- unique(sapply(names, "[", 1))
   features <- unique(sapply(names, "[", 2))
 
+  if ("sentence_id" %in% colnames(sentiment)) {
+    stop("sentiment should be on document level. Aggregate sentiment on sentence level first to document level.")
+  }
+
   sent <- sentiment
+  setorder(sent, "date", na.last = FALSE)
   attribWeights <- list(W = NA, B = NA) # list with weights useful in later attribution analysis
 
   # reformat dates so they can be aggregated at the specified 'by' level, and cast to Date format
@@ -293,31 +309,14 @@ aggregate_docs <- function(sentiment, by, how = get_hows()$docs, do.ignoreZeros 
   sent$date <- dates
 
   # ignore documents with zero sentiment in aggregation (if do.ignoreZeros is TRUE)
+  do.ignoreZeros <- weightingParamDocs$do.ignoreZeros
   if (do.ignoreZeros == TRUE)
     sent[, names(sent)] <- sent[, names(sent), with = FALSE][, lapply(.SD, function(x) replace(x, which(x == 0), NA))]
 
-  # aggregate feature-sentiment per document by date for all lexicon columns
-  s <- sent[, -1]
-  if (how == "equal_weight") {
-    if (do.ignoreZeros == TRUE) {
-      docsIn <- s[, lapply(.SD, function(x) (x * 1) / x), by = date] # indicator of 1 if document score not equal to NA
-      weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = date][, -1:-2]
-    } else {
-      weights <- s[, w := 1 / .N, by = date][, "w"]
-      weights <- weights[, colnames(s)[-1:-2] := weights][, -1] # drop w column
-      s[, w := NULL]
-    }
-  } else if (how == "proportional") { # proportional w.r.t. words in document vs. total words in all documents per date
-    if (do.ignoreZeros == TRUE) {
-      docsIn <- s[, lapply(.SD, function(x) (x * word_count) / x), by = date]
-      weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = date][, -1:-2]
-    } else {
-      weights <- s[, word_count / sum(word_count, na.rm = TRUE), by = date][, 2]
-      weights <- weights[, colnames(s)[-1:-2] := weights][, -1]
-    }
-  }
+  weights <- aggregate_across(sent, how = how, do.ignoreZeros = do.ignoreZeros, by = "date")
+  s <- sent[, !"id"]
   attribWeights[["W"]] <- data.table(id = sent$id, date = sent$date, weights)
-  sw <- data.table(date = s$date, s[, -1:-2] * weights)
+  sw <- data.table(date = s$date, s[, -c(1:2)] * weights)
   measures <- sw[, lapply(.SD, function(x) sum(x, na.rm = TRUE)), by = date]
 
   sentomeasures <- list(measures = measures,
@@ -326,10 +325,6 @@ aggregate_docs <- function(sentiment, by, how = get_hows()$docs, do.ignoreZeros 
                         time = NA,
                         sentiment = sent, # zeros replaced by NAs if do.ignoreZeros = TRUE
                         stats = NA,
-                        by = by,
-                        howDocs = how,
-                        fill = NA,
-                        do.ignoreZeros = do.ignoreZeros,
                         attribWeights = attribWeights)
 
   class(sentomeasures) <- "sentomeasures"
@@ -337,15 +332,12 @@ aggregate_docs <- function(sentiment, by, how = get_hows()$docs, do.ignoreZeros 
   return(sentomeasures)
 }
 
-aggregate_time <- function(sentomeasures, lag, fill, how = get_hows()$time, ...) {
+aggregate_time <- function(sentomeasures, how = get_hows()$time, weightingParamTime) {
   check_class(sentomeasures, "sentomeasures")
-
-  dots <- tryCatch(list(...)[[1]], # extract list from list of list
-                   error = function(x) list(...)) # if ... is empty
-
-  # construct all weights and check for duplicated names
-  weights <- setup_time_weights(lag, how, dots)
-  if (sum(duplicated(colnames(weights))) > 0) {
+  lag <- weightingParamTime$lag
+  fill <- weightingParamTime$fill
+  weights <- setup_time_weights(how, weightingParamTime) # construct all weights
+  if (sum(duplicated(colnames(weights))) > 0) { # check for duplicated names
     duplics <- unique(colnames(weights)[duplicated(colnames(weights))])
     stop(paste0("Names of weighting schemes are not unique. Following names occur at least twice: ",
                 paste0(duplics, collapse = ", "), "."))
@@ -385,7 +377,6 @@ aggregate_time <- function(sentomeasures, lag, fill, how = get_hows()$time, ...)
   sentomeasures$measures <- measuresAggTime
   sentomeasures$time <- colnames(weights)
   sentomeasures$stats <- compute_stats(sentomeasures)
-  sentomeasures$fill <- fill
 
   return(sentomeasures)
 }
@@ -451,5 +442,74 @@ peakdates <- function(sentomeasures, n = 10, type = "both", do.average = FALSE) 
   indx <- order(measures, decreasing = ifelse(type == "neg", FALSE, TRUE))[1:(m * n)]
   peakDates <- unique(dates[indx])[1:n]
   peakDates
+}
+
+aggregate_across <- function(s, how = "proportional", do.ignoreZeros = TRUE, alphaExp = 0.1, by = "date") {
+
+  if ("id" %in% colnames(s) && !"id" %in% by) {
+    s <- s[, !"id"]
+  }
+  if ("sentence_id" %in% colnames(s) && !"sentence_id" %in% by) {
+    s <- s[, !"sentence_id"][, !"date"]
+  }
+
+  if (how == "equal_weight") {
+    if (do.ignoreZeros == TRUE) {
+      docsIn <- s[, lapply(.SD, function(x) (x * 1) / x), by = eval(by)] # 1 if document score not equal to NA
+      weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = eval(by)][, -c(1:2)]
+    } else {
+      weights <- s[, w := 1 / .N, by = eval(by)][, "w"]
+      weights <- weights[, colnames(s)[-c(1:2)] := weights][, -1] # drop w column
+      s[, w := NULL]
+    }
+  } else if (how == "proportional") {
+    # proportional w.r.t. words in document vs. total words in all documents per date
+    if (do.ignoreZeros == TRUE) {
+      docsIn <- s[, lapply(.SD, function(x) (x * word_count) / x), by = eval(by)]
+      weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = eval(by)][, -c(1:2)]
+    } else {
+      weights <- s[, w := word_count / sum(word_count, na.rm = TRUE), by = eval(by)][, "w"]
+      weights <- weights[, colnames(s)[-c(1:2)] := weights][, -1]
+    }
+  } else if (how == "inverseProportional") {
+    # inverse proportional w.r.t. words in document vs. total words in all documents per date
+    if (do.ignoreZeros == TRUE) {
+      docsIn <- s[, lapply(.SD, function(x) (x * (1 / word_count)) / x), by = eval(by)]
+      weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = eval(by)][, -c(1:2)]
+    } else {
+      weights <- s[, w := word_count / sum(1 / word_count, na.rm = TRUE), by = eval(by)][, "w"]
+      weights <- weights[, colnames(s)[-c(1:2)] := weights][, -1]
+    }
+  }  else if (how == "exponential") {
+    # exponential w.r.t. words in document vs. total words in all documents per date
+    alpha <- alphaExp
+    if (do.ignoreZeros == TRUE) {
+      docsIn <- s[, lapply(.SD, function(x)
+        (x * alpha * (1 - alpha) ^ (1 - word_count / mean(word_count)) /
+           sum(alpha * (1 - alpha) ^ (1 - word_count / mean(word_count))) / x)), by = eval(by)]
+      weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = eval(by)][, -c(1:2)]
+    } else {
+      weights <- s[, w := alpha * (1 - alpha) ^ (1 - word_count / mean(word_count, na.rm = TRUE)) /
+                     sum(alpha * (1 - alpha) ^ (1 - word_count / mean(word_count, na.rm = TRUE)), na.rm = TRUE),
+                   by = eval(by)][, "w"]
+      weights <- weights[, colnames(s)[-c(1:2)] := weights][, -1]
+    }
+  } else if (how == "inverseExponential") {
+    # inverse exponential w.r.t. words in document vs. total words in all documents per date
+    alpha <- alphaExp
+    if (do.ignoreZeros == TRUE) {
+      docsIn <- s[, lapply(.SD, function(x)
+        (x * (1 / (alpha * (1 - alpha) ^ (1 - word_count / mean(word_count)))) /
+           sum(alpha * (1 - alpha) ^ (1 - word_count / mean(word_count))) / x)), by = eval(by)]
+      weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = eval(by)][, -c(1:2)]
+    } else {
+      weights <- s[, w := (1 / (alpha * (1 - alpha) ^ (1 - word_count / mean(word_count, na.rm = TRUE)))) /
+                     sum(alpha * (1 - alpha) ^ (1 - word_count / mean(word_count, na.rm = TRUE)), na.rm = TRUE),
+                   by = eval(by)][, "w"]
+      weights <- weights[, colnames(s)[-c(1:2)] := weights][, -1]
+    }
+  }
+
+  weights
 }
 
