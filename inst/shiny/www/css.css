@@ -1,0 +1,11 @@
+#inputs-table {
+  border-collapse: collapse;
+}
+                
+#inputs-table td {
+  padding: 5px;
+}
+
+.dropdown-menu{
+  width: 200px;
+}

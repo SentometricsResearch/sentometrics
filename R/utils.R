@@ -28,8 +28,7 @@ weights_exponential <- function(n, alphas = seq(0.1, 0.5, by = 0.1)) {
     exponentials[, i] <-exponential
 
   }
-    return(as.data.frame(exponentials))
-
+  return(as.data.frame(exponentials))
 }
 
 #' Compute Almon polynomials
@@ -165,11 +164,9 @@ setup_time_weights <- function(how, param) {
 #'
 #' @export
 get_hows <- function() {
-  words <- c("proportional", "proportionalPol", "counts", "squareRootCounts", "UShaped","invertedUShaped",
-             "exponential", "invertedExponential", "TF","logarithmicTF",
-             "augmentedTF", "IDF", "TFIDF",
-             "logarithmicTFIDF",
-             "augmentedTFIDF")
+  words <- c("proportional", "proportionalPol", "counts", "squareRootCounts", "UShaped",
+             "invertedUShaped", "exponential", "invertedExponential", "TF", "logarithmicTF",
+             "augmentedTF", "IDF", "TFIDF", "logarithmicTFIDF", "augmentedTFIDF")
   docs <- c("equal_weight", "proportional", "inverseProportional", "exponential", "inverseExponential")
   time <- c("equal_weight", "almon", "beta", "linear", "exponential", "own")
   return(list(words = words, docs = docs, time = time))
@@ -480,73 +477,4 @@ plot_theme <- function(legendPos) { # plotting specifications (border and grid)
     plot.margin = unit(c(0.20, 0.40, 0.20, 0.20), "cm")
   )
 }
-
-
-aggregate_across <- function(s, how = "proportional", do.ignoreZeros = TRUE, alphaExp = 0.1, by = "date"){
-
-
-  if ("id" %in% colnames(s) && !"id" %in% by) {
-    s <- s[, !"id"]
-
-  }
-  if ("sentence_id" %in% colnames(s) && !"sentence_id" %in% by) {
-    s <- s[, !"sentence_id"][, !"date"]
-  }
-
-  if (how == "equal_weight") {
-    if (do.ignoreZeros == TRUE) {
-      docsIn <- s[, lapply(.SD, function(x) (x * 1) / x), by = eval(by)] # indicator of 1 if document score not equal to NA
-      weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = eval(by)][, -1:-2]
-    } else {
-      weights <- s[, w := 1 / .N,  by = eval(by)][, "w"]
-      weights <- weights[, colnames(s)[-1:-2] := weights][, -1] # drop w column
-      s[, w := NULL]
-    }
-  } else if (how == "proportional") { # proportional w.r.t. words in document vs. total words in all documents per date
-    if (do.ignoreZeros == TRUE) {
-      docsIn <- s[, lapply(.SD, function(x) (x *  word_count) / x),  by = eval(by)]
-      weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = eval(by)][, -1:-2]
-    } else {
-      weights <- s[, w := word_count / sum(word_count, na.rm = TRUE), by = eval(by)][, "w"]
-      weights <- weights[, colnames(s)[-1:-2] := weights][, -1]
-    }
-  } else if (how == "inverseProportional") { # inverse proportional w.r.t. words in document vs. total words in all documents per date
-    if (do.ignoreZeros == TRUE) {
-      docsIn <- s[, lapply(.SD, function(x) (x * (1 / word_count)) / x),  by = eval(by)]
-      weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)),  by = eval(by)][, -1:-2]
-    } else {
-      weights <- s[, w := word_count / sum(1 / word_count, na.rm = TRUE),  by = eval(by)][, "w"]
-      weights <- weights[, colnames(s)[-1:-2] := weights][, -1]
-    }
-  }  else if (how == "exponential") { # exponential w.r.t. words in document vs. total words in all documents per date
-    alpha <- alphaExp
-    if (do.ignoreZeros == TRUE) {
-      docsIn <- s[, lapply(.SD, function(x)
-        (x *  alpha * (1 - alpha) ^ (1 - word_count / mean(word_count)) /
-           sum(alpha * (1 - alpha) ^ (1 - word_count / mean(word_count))) / x)), by = eval(by)]
-      weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)),  by = eval(by)][, -1:-2]
-    } else {
-      weights <- s[, w := alpha * (1 - alpha) ^ (1 - word_count / mean(word_count, na.rm = TRUE)) /
-                     sum(alpha * (1 - alpha) ^ (1 - word_count / mean(word_count, na.rm = TRUE)), na.rm = TRUE),  by = eval(by)][, "w"]
-      weights <- weights[, colnames(s)[-1:-2] := weights][, -1]
-    }
-  } else if (how == "inverseExponential") { # inverse exponential w.r.t. words in document vs. total words in all documents per date
-    alpha <- alphaExp
-    if (do.ignoreZeros == TRUE) {
-      docsIn <- s[, lapply(.SD, function(x)
-        (x *  (1 / (alpha * (1 - alpha) ^ (1 - word_count / mean(word_count)))) /
-           sum(alpha * (1 - alpha) ^ (1 - word_count / mean(word_count))) / x)), by = eval(by)]
-      weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = eval(by)][, -1:-2]
-    } else {
-      weights <- s[, w := (1 / (alpha * (1 - alpha) ^ (1 - word_count / mean(word_count, na.rm = TRUE)))) /
-                     sum(alpha * (1 - alpha) ^ (1 - word_count / mean(word_count, na.rm = TRUE)), na.rm = TRUE) , by = eval(by)][, "w"]
-      weights <- weights[, colnames(s)[-1:-2] := weights][, -1]
-    }
-  }
-
-  weights
-
-
-}
-
 

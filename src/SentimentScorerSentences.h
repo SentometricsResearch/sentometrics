@@ -4,7 +4,6 @@
 
 struct SentimentScorerSentences : public RcppParallel::Worker {
 
-
   // thread-safe input
   const std::vector< std::vector< std::string > > texts;
   const std::unordered_map< std::string, std::vector< double > > lexiconMap;
@@ -85,11 +84,9 @@ struct SentimentScorerSentences : public RcppParallel::Worker {
             tokenShifters[j] = compute_sentence_impact(shifters, position);
           }
         }
-
       }
 
       update_token_scores_sentences(scores, tokenScores, normalizer, nPolarized, tokenShifters, tokenWeights, nL, nTokens, how, nPuncts);
-
 
       sentScores(i, 0) = nTokens - nPuncts;
       for (int m = 0; m < nL; m++) {
@@ -97,8 +94,6 @@ struct SentimentScorerSentences : public RcppParallel::Worker {
       }
 
     }
-
-
   }
 
 };

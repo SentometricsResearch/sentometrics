@@ -22,11 +22,9 @@ inline void update_primary_shifters_sentence(std::vector< int >& shifters,
 
 inline double compute_sentence_impact(std::vector<int>& shifters, int& position) {
   int n = shifters[0] % 2; // 0 if even number of negators, 1 if odd number of negators
-  // std::cout << "w_neg: " <<n << "\n";
   double wA = (1 - n) * shifters[1] * 0.8; // amplification impact
+  double wD =  (-n * shifters[1] - shifters[2]) * 0.8; // deamplification impact
 
-  double wD =  (-n * shifters[1] - shifters[2]) * 0.8;// deamplification impact
-  // std::cout << "Position is: " << position <<"\n";
   if (position != -1) {
     double b = (1 + shifters[3] * 0.25);
     if (b > 1) {
@@ -36,18 +34,11 @@ inline double compute_sentence_impact(std::vector<int>& shifters, int& position)
       if (wD <= -1 ) wD = -0.999;
     }
   }
-  // std::cout << "Shifters 3: " << shifters[3] << "\n";
-  // std::cout << "w_a: " << wA << "\n";
-  // std::cout << "w_d: " << wD << "\n";
 
   double impact = (1 + (wA + wD));
-  // std:::cout << "Impact before adversative : " <<impact << "\n";
-
   if (n == 1){
     impact *= -1.0;
-  } // apply negation
-  // std:::cout <<  "Shifters 3: " << shifters[3] << "\n";
-  // std:::cout << "Impact after adversative : " << impact << "\n";
+  }
 
   return(impact);
 }
@@ -67,7 +58,7 @@ inline void update_token_scores_sentences(std::vector< double >& scores,
   }
 
   for (int i = 0; i < nTokens; i ++) {
-    // std:::cout << "Tokenloop " << i << "\n";
+    // std:::cout << "token loop " << i << "\n";
     for (int j = 0; j < nL; j++) {
       // std:::cout << "Lexicon loop " << j << "\n";
       if (tokenScores[i].size() != 0) {
@@ -75,10 +66,10 @@ inline void update_token_scores_sentences(std::vector< double >& scores,
         // std::cout<< "score within lexicon loop: " << score << "\n";
         if (score != 0) {
           if (how == "counts") {
-            // std:::cout << "tokenshifter: " << tokenShifters[i] << " & score: " << score << "\n";
-            // std:::cout << "score before: " <<scores[j]<< "\n";
+            // std:::cout << "token shifter: " << tokenShifters[i] << " & score: " << score << "\n";
+            // std:::cout << "score before: " << scores[j] << "\n";
             scores[j] += (tokenShifters[i] * score);
-            // std:::cout << "score after: " <<scores[j]<< "\n";
+            // std:::cout << "score after: " << scores[j] << "\n";
           } else if (how == "squareRootCounts") {
             scores[j] += (tokenShifters[i] * score / std::sqrt(nTokens - nPuncts));
           } else if (how == "proportional") {

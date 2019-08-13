@@ -28,7 +28,8 @@ Suggests: covr,
   randomForest, 
   testthat,
   tm,
-  NLP
+  NLP,
+  shiny
 Imports: caret,
   compiler,
   foreach,

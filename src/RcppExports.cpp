@@ -32,9 +32,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// compute_sentiment_sentence
-Rcpp::NumericMatrix compute_sentiment_sentence(std::vector<std::vector<std::string>> texts, Rcpp::List lexicons, std::string how, bool hasValenceShifters);
-RcppExport SEXP _sentometrics_compute_sentiment_sentence(SEXP textsSEXP, SEXP lexiconsSEXP, SEXP howSEXP, SEXP hasValenceShiftersSEXP) {
+// compute_sentiment_sentences
+Rcpp::NumericMatrix compute_sentiment_sentences(std::vector<std::vector<std::string>> texts, Rcpp::List lexicons, std::string how, bool hasValenceShifters);
+RcppExport SEXP _sentometrics_compute_sentiment_sentences(SEXP textsSEXP, SEXP lexiconsSEXP, SEXP howSEXP, SEXP hasValenceShiftersSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -42,7 +42,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::List >::type lexicons(lexiconsSEXP);
     Rcpp::traits::input_parameter< std::string >::type how(howSEXP);
     Rcpp::traits::input_parameter< bool >::type hasValenceShifters(hasValenceShiftersSEXP);
-    rcpp_result_gen = Rcpp::wrap(compute_sentiment_sentence(texts, lexicons, how, hasValenceShifters));
+    rcpp_result_gen = Rcpp::wrap(compute_sentiment_sentences(texts, lexicons, how, hasValenceShifters));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -87,7 +87,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_sentometrics_compute_df", (DL_FUNC) &_sentometrics_compute_df, 3},
     {"_sentometrics_compute_sentiment_onegrams", (DL_FUNC) &_sentometrics_compute_sentiment_onegrams, 3},
-    {"_sentometrics_compute_sentiment_sentence", (DL_FUNC) &_sentometrics_compute_sentiment_sentence, 4},
+    {"_sentometrics_compute_sentiment_sentences", (DL_FUNC) &_sentometrics_compute_sentiment_sentences, 4},
     {"_sentometrics_compute_sentiment_valence", (DL_FUNC) &_sentometrics_compute_sentiment_valence, 3},
     {"_sentometrics_fill_NAs", (DL_FUNC) &_sentometrics_fill_NAs, 1},
     {"_sentometrics_make_frequency_maps", (DL_FUNC) &_sentometrics_make_frequency_maps, 3},

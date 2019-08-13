@@ -2,18 +2,19 @@
 % Please edit documentation in R/sentocorpus.R
 \name{sento_corpus}
 \alias{sento_corpus}
-\title{Create a sentocorpus object ###}
+\title{Create a sentocorpus object}
 \usage{
 sento_corpus(corpusdf, do.clean = FALSE)
 }
 \arguments{
 \item{corpusdf}{a \code{data.frame} (or a \code{data.table}, or a \code{tbl}) with as named columns: a document \code{"id"}
-column (in \code{character} mode), a \code{"date"} column (as \code{"yyyy-mm-dd"}), a \code{"texts"} column (in
-\code{character} mode), and a series of feature columns of type \code{numeric}, with values between 0 and 1 to specify the
-degree of connectedness of a feature to a document. Features could be topics (e.g., legal or economic),
-article sources (e.g., online or print), amongst many more options. When no feature column is provided, a
-feature named \code{"dummyFeature"} is added. All spaces in the names of the features are replaced by \code{'_'}. Feature
-columns with values not between 0 and 1 are rescaled column-wise.}
+column (in \code{character} mode), a \code{"date"} column (as \code{"yyyy-mm-dd"}), a \code{"texts"} column
+(in \code{character} mode), an optional \code{"language"} column (in \code{character} mode), and a series of
+feature columns of type \code{numeric}, with values between 0 and 1 to specify the degree of connectedness of
+a feature to a document. Features could be topics (e.g., legal or economic), article sources (e.g., online or
+print), amongst many more options. When no feature column is provided, a feature named \code{"dummyFeature"}
+is added. All spaces in the names of the features are replaced by \code{'_'}. Feature columns with values not
+between 0 and 1 are rescaled column-wise.}
 
 \item{do.clean}{a \code{logical}, if \code{TRUE} all texts undergo a cleaning routine to eliminate common textual garbage.
 This includes a brute force replacement of HTML tags and non-alphanumeric characters by an empty string. To use with care
@@ -42,8 +43,10 @@ structure and may come in handy. To add additional features, use \code{\link{add
 a mechanism to select the texts which have to be integrated in the respective feature-based sentiment measure(s), but
 applies only when \code{do.ignoreZeros = TRUE}. Because of this (implicit) selection that can be performed, having
 complementary features (e.g., \code{"economy"} and \code{"noneconomy"}) makes sense.
-It is also possible to add one non-numerical feature called 'language'. When this feature is provided on corpus-level,
-a list of lexicons for different languages is expected in the function \code{compute_sentiment}.
+
+It is also possible to add one non-numerical feature, that is, \code{"language"}, to designate the language
+of the corpus texts. When this feature is provided on corpus-level, a list of lexicons for different
+languages is expected in the function \code{compute_sentiment}.
 }
 \examples{
 data("usnews", package = "sentometrics")
@@ -67,9 +70,10 @@ quanteda::docvars(corp, field = c("wsj", "new")) <- 1}
 # corpus creation when no features are present
 corpusDummy <- sento_corpus(corpusdf = usnews[, 1:3])
 
- #Corpus creation with language feature
- usnews[["language"]] <- "en"
- corpus <- sento_corpus(corpusdf = usnews)
+# corpus creation with a qualitative language feature
+usnews[["language"]] <- "en"
+usnews[["language"]][c(200:400)] <- "nl"
+corpusLang <- sento_corpus(corpusdf = usnews)
 
 }
 \seealso{

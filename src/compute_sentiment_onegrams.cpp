@@ -4,7 +4,6 @@
 #include "utils.h"
 #include "SentimentScorerOnegrams.h"
 
-
 // [[Rcpp::depends(RcppParallel)]]
 using namespace std;
 using namespace Rcpp;

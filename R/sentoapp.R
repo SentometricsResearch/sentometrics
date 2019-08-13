@@ -11,13 +11,12 @@
 #' the sentiment. Once calculated, the sentiment can be calculated as a CSV file. Additionally, there is some functionality coming
 #' from the \code{corpus_summarize} function to gain insights in the corpus that you have uploaded.
 #'
-#'
 #' @export
 sento_app <- function() {
   appDir <- system.file("shiny", package = "sentometrics")
   if (appDir == "") {
     stop("Could not find example directory. Try re-installing `sentometrics`.", call. = FALSE)
   }
-  shiny::runApp(appDir, display.mode = "normal")
+  shiny::runApp(appDir, display.mode = "normal") ### TODO: add other suggests/imports?
 }
 

@@ -5,7 +5,7 @@
 \title{Compute document-level sentiment across features and lexicons}
 \usage{
 compute_sentiment(x, lexicons, how = "proportional", tokens = NULL,
-  nCore = 1)
+  nCore = 1, do.sentence = FALSE)
 }
 \arguments{
 \item{x}{either a \code{sentocorpus} object created with \code{\link{sento_corpus}}, a \pkg{quanteda}
@@ -28,6 +28,10 @@ may be spurious and errors could occur. By default set to \code{NULL}.}
 \code{\link[RcppParallel]{setThreadOptions}} function, to parallelize the sentiment computation across texts. A
 value of 1 (default) implies no parallelization. Parallelization is expected to improve speed of the sentiment
 computation only for sufficiently large corpora.}
+
+\item{do.sentence}{a \code{logical} to indicate whether the sentiment computation should be done on
+sentence-level rather than document-level. By default \code{do.sentence = TRUE}. Sentiment computation on
+sentence level follows the methodology defined in the \pkg{sentimentr} package.}
 }
 \value{
 If \code{x} is a \code{sentocorpus} object, a \code{sentiment} object, i.e., a \code{data.table} containing
@@ -48,6 +52,11 @@ If \code{x} is a \code{SimpleCorpus} object, a sentiment scores
 If \code{x} is a \code{VCorpus} object, a sentiment scores
 \code{data.table} with an \code{"id"} and a \code{"word_count"} column, and all lexicon--feature
 sentiment scores columns.
+
+If \code{do.sentence = TRUE}, an additional column \code{"sentence_id"} along the \code{"id"}
+column is added. To use the resulting object for aggregation into time series with
+the \code{\link{aggregate.sentiment}} function, it should first be aggregated to document level with the
+\code{aggregate_sentences} function.
 }
 \description{
 Given a corpus of texts, computes (net) sentiment per document using the bag-of-words approach
@@ -78,6 +87,14 @@ is an odd number of negators (\code{t = 1}), \eqn{n = -1} and amplifiers are cou
 All scores, whether per unigram, per bigram or per cluster, are summed within a document, before the scaling defined
 by the \code{how} argument is applied.
 
+The sentiment calculation on sentence level approaches each sentence as if it is a document. Depending on
+the input either the unigrams, bigrams or clusters approach is used. For the latter, we replicated exactly
+the default \pkg{sentimentr} package method, with a cluster of five words before and two words after the polarized
+word. If there are commas around the polarized word, the cluster is limited (extended) to the words after
+the previous comma and before the next comma. Adversative conjunctions (\eqn{adv}, \code{t = 4})
+are accounted for here. If the value \eqn{(1 + 0.25adv)} is greater than 1, it is added to the overall
+amplification weight, if smaller, it is subtracted from the total deamplification weight.
+
 The \code{how = "proportionalPol"} option divides each document's sentiment
 score by the number of detected polarized words (counting words that appear multiple times by their frequency), instead
 of the total number of words which the \code{how = "proportional"} option gives. The \code{how = "counts"} option
@@ -87,7 +104,7 @@ does no normalization. The \code{squareRootCounts} divides the sentiment by the 
 and the end of the texts. The \code{how = "exponential"} option gives gradually more weight the later the word appears in the text.
 The \code{ how = "invertedExponential"} option gives gradually less weight, the later the words appears in the text. The \code{
 how = "TF"} option gives a weight proportional to the number of times a word appears in a text. The \code{how = "logarithmicTF"} option
-gives the same weight as the latter but then logarithmically scaled. The \code{how = "augmentedTF"} option can be used to prevent
+gives the same weight as \code{"TF"} but logarithmically scaled. The \code{how = "augmentedTF"} option can be used to prevent
 a bias towards longer documents. The weight is determined by dividing the raw frequency of a token by the raw frequency
 of the most occurring term in the document. The \code{how = "IDF"} option uses the logarithm of the division of the raw frequency of a word by the number of texts
 in which the word appears. By doing this, words appearing in multiple texts get a lower weight. The \code{how = "TFIDF"},
@@ -101,7 +118,8 @@ data("list_lexicons", package = "sentometrics")
 data("list_valence_shifters", package = "sentometrics")
 
 l1 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")])
-l2 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+l2 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")],
+                     list_valence_shifters[["en"]])
 l3 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")],
                      list_valence_shifters[["en"]][, c("x", "t")])
 
@@ -135,11 +153,22 @@ vcorp <- tm::VCorpus(tm::DirSource(reut21578, mode = "binary"),
 sent6 <- compute_sentiment(vcorp, l1, how = "proportional")
 
 # from a sentocorpus object, unigrams approach with tf-idf weighting
-corpus <- sento_corpus(corpusdf = usnews)
-corpusSample <- quanteda::corpus_sample(corpus, size = 200)
 sent7 <- compute_sentiment(corpusSample, l1, how = "TFIDF")
+
+# tokenisation and computation sentence-by-sentence
+sent8 <- compute_sentiment(corpusSample, l1, how = "squareRootCounts",
+                           do.sentence = TRUE)
+
+# from an artificially constructed multilingual corpus
+usnews[["language"]] <- "en" # add language column
+usnews$language[1:100] <- "fr"
+l_en <- sento_lexicons(list("FEEL_en" = list_lexicons$FEEL_en_tr))
+l_fr <- sento_lexicons(list("FEEL_fr" = list_lexicons$FEEL_fr))
+lexicons <- list(en = l_en, fr = l_fr)
+corpusLang <- sento_corpus(corpusdf = usnews[1:250, ])
+sent9 <- compute_sentiment(corpusLang, lexicons, how = "proportional")
 
 }
 \author{
-Samuel Borms, Andres Algaba, Jeroen Van Pelt
+Samuel Borms, Jeroen Van Pelt, Andres Algaba
 }

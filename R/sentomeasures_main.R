@@ -253,12 +253,14 @@ sento_measures <- function(sentocorpus, lexicons, ctr) {
 #' data("list_lexicons", package = "sentometrics")
 #' data("list_valence_shifters", package = "sentometrics")
 #'
-#' # computation of sentiment and aggregation into sentiment measures
+#' # computation of sentiment
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 #' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 #' sent <- compute_sentiment(corpusSample, l, how = "counts")
 #' ctr <- ctr_agg(howTime = c("linear"), by = "year", lag = 3)
+#'
+#' # aggregation into sentiment measures
 #' sentomeasures <- aggregate(sent, ctr)
 #'
 #' @importFrom stats aggregate
@@ -274,8 +276,7 @@ aggregate.sentiment <- function(x, ctr, ...) {
   aggDocs <- aggregate_docs(x, by = by, how = howDocs, weightingParamDocs = weightingParamDocs)
   aggDocs$ctr <- ctr
   sentomeasures <- aggregate_time(aggDocs, how = howTime, weightingParamTime = weightingParamTime)
-
-  return(sentomeasures)
+  sentomeasures
 }
 
 aggregate_docs <- function(sentiment, by, how = get_hows()$docs, weightingParamDocs) {
@@ -313,10 +314,9 @@ aggregate_docs <- function(sentiment, by, how = get_hows()$docs, weightingParamD
     sent[, names(sent)] <- sent[, names(sent), with = FALSE][, lapply(.SD, function(x) replace(x, which(x == 0), NA))]
 
   weights <- aggregate_across(sent, how = how, do.ignoreZeros = do.ignoreZeros, by = "date")
-
-  s <- sent[,!"id"]
+  s <- sent[, !"id"]
   attribWeights[["W"]] <- data.table(id = sent$id, date = sent$date, weights)
-  sw <- data.table(date = s$date, s[, -1:-2] * weights)
+  sw <- data.table(date = s$date, s[, -c(1:2)] * weights)
   measures <- sw[, lapply(.SD, function(x) sum(x, na.rm = TRUE)), by = date]
 
   sentomeasures <- list(measures = measures,
@@ -336,9 +336,8 @@ aggregate_time <- function(sentomeasures, how = get_hows()$time, weightingParamT
   check_class(sentomeasures, "sentomeasures")
   lag <- weightingParamTime$lag
   fill <- weightingParamTime$fill
-  # construct all weights and check for duplicated names
-  weights <- setup_time_weights(how, weightingParamTime)
-  if (sum(duplicated(colnames(weights))) > 0) {
+  weights <- setup_time_weights(how, weightingParamTime) # construct all weights
+  if (sum(duplicated(colnames(weights))) > 0) { # check for duplicated names
     duplics <- unique(colnames(weights)[duplicated(colnames(weights))])
     stop(paste0("Names of weighting schemes are not unique. Following names occur at least twice: ",
                 paste0(duplics, collapse = ", "), "."))
@@ -443,5 +442,74 @@ peakdates <- function(sentomeasures, n = 10, type = "both", do.average = FALSE) 
   indx <- order(measures, decreasing = ifelse(type == "neg", FALSE, TRUE))[1:(m * n)]
   peakDates <- unique(dates[indx])[1:n]
   peakDates
+}
+
+aggregate_across <- function(s, how = "proportional", do.ignoreZeros = TRUE, alphaExp = 0.1, by = "date") {
+
+  if ("id" %in% colnames(s) && !"id" %in% by) {
+    s <- s[, !"id"]
+  }
+  if ("sentence_id" %in% colnames(s) && !"sentence_id" %in% by) {
+    s <- s[, !"sentence_id"][, !"date"]
+  }
+
+  if (how == "equal_weight") {
+    if (do.ignoreZeros == TRUE) {
+      docsIn <- s[, lapply(.SD, function(x) (x * 1) / x), by = eval(by)] # 1 if document score not equal to NA
+      weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = eval(by)][, -c(1:2)]
+    } else {
+      weights <- s[, w := 1 / .N, by = eval(by)][, "w"]
+      weights <- weights[, colnames(s)[-c(1:2)] := weights][, -1] # drop w column
+      s[, w := NULL]
+    }
+  } else if (how == "proportional") {
+    # proportional w.r.t. words in document vs. total words in all documents per date
+    if (do.ignoreZeros == TRUE) {
+      docsIn <- s[, lapply(.SD, function(x) (x * word_count) / x), by = eval(by)]
+      weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = eval(by)][, -c(1:2)]
+    } else {
+      weights <- s[, w := word_count / sum(word_count, na.rm = TRUE), by = eval(by)][, "w"]
+      weights <- weights[, colnames(s)[-c(1:2)] := weights][, -1]
+    }
+  } else if (how == "inverseProportional") {
+    # inverse proportional w.r.t. words in document vs. total words in all documents per date
+    if (do.ignoreZeros == TRUE) {
+      docsIn <- s[, lapply(.SD, function(x) (x * (1 / word_count)) / x), by = eval(by)]
+      weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = eval(by)][, -c(1:2)]
+    } else {
+      weights <- s[, w := word_count / sum(1 / word_count, na.rm = TRUE), by = eval(by)][, "w"]
+      weights <- weights[, colnames(s)[-c(1:2)] := weights][, -1]
+    }
+  }  else if (how == "exponential") {
+    # exponential w.r.t. words in document vs. total words in all documents per date
+    alpha <- alphaExp
+    if (do.ignoreZeros == TRUE) {
+      docsIn <- s[, lapply(.SD, function(x)
+        (x * alpha * (1 - alpha) ^ (1 - word_count / mean(word_count)) /
+           sum(alpha * (1 - alpha) ^ (1 - word_count / mean(word_count))) / x)), by = eval(by)]
+      weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = eval(by)][, -c(1:2)]
+    } else {
+      weights <- s[, w := alpha * (1 - alpha) ^ (1 - word_count / mean(word_count, na.rm = TRUE)) /
+                     sum(alpha * (1 - alpha) ^ (1 - word_count / mean(word_count, na.rm = TRUE)), na.rm = TRUE),
+                   by = eval(by)][, "w"]
+      weights <- weights[, colnames(s)[-c(1:2)] := weights][, -1]
+    }
+  } else if (how == "inverseExponential") {
+    # inverse exponential w.r.t. words in document vs. total words in all documents per date
+    alpha <- alphaExp
+    if (do.ignoreZeros == TRUE) {
+      docsIn <- s[, lapply(.SD, function(x)
+        (x * (1 / (alpha * (1 - alpha) ^ (1 - word_count / mean(word_count)))) /
+           sum(alpha * (1 - alpha) ^ (1 - word_count / mean(word_count))) / x)), by = eval(by)]
+      weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = eval(by)][, -c(1:2)]
+    } else {
+      weights <- s[, w := (1 / (alpha * (1 - alpha) ^ (1 - word_count / mean(word_count, na.rm = TRUE)))) /
+                     sum(alpha * (1 - alpha) ^ (1 - word_count / mean(word_count, na.rm = TRUE)), na.rm = TRUE),
+                   by = eval(by)][, "w"]
+      weights <- weights[, colnames(s)[-c(1:2)] := weights][, -1]
+    }
+  }
+
+  weights
 }
 
