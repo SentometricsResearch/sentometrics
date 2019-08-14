@@ -393,6 +393,7 @@ compute_sentiment.VCorpus <- compiler::cmpfun(.compute_sentiment.VCorpus) ### TO
 #' @export
 compute_sentiment.SimpleCorpus <- compiler::cmpfun(.compute_sentiment.SimpleCorpus) ### TODO: document option in main function
 
+### TODO: check if functions applied to "sentiment" objects still function when coming from sentence calculation
 compute_sentiment_by_sentences <- function(x, lexicons, how, tokens = NULL, nCore = 1) {
   count <- text_id <- sentence_id <- NULL
   if (!(how %in% get_hows()[["words"]]))
