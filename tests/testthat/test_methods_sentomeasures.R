@@ -1,8 +1,6 @@
 
 context("Methods sentomeasures")
 
-cat("\n\n")
-
 library("sentometrics")
 library("quanteda")
 
@@ -48,6 +46,7 @@ test_that("Scaling is properly done", {
 })
 
 # summary.sentomeasures, print.sentomeasures
+cat("\n")
 test_that("No output returned when object summarized or printed", {
   expect_null(summary(sentMeas))
   expect_null(print(sentMeas))
