@@ -28,6 +28,8 @@ Please cite the package in publications. Use \code{citation("sentometrics")}.
 \item Sparse modelling: \code{\link{ctr_model}}, \code{\link{sento_model}}
 \item Prediction and post-modelling analysis: \code{\link{predict.sentomodel}}, \code{\link{attributions}}
 }
+
+The \code{\link{sento_app}} function is a Shiny interface for fast document-level sentiment computation.
 }
 
 \section{Update}{
