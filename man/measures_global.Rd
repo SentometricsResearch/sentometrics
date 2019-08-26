@@ -4,18 +4,18 @@
 \alias{measures_global}
 \title{Merge sentiment measures into multiple weighted global sentiment indices}
 \usage{
-measures_global(sentomeasures, lexicons = 1, features = 1, time = 1)
+measures_global(sento_measures, lexicons = 1, features = 1, time = 1)
 }
 \arguments{
-\item{sentomeasures}{a \code{sentomeasures} object created using \code{\link{sento_measures}}.}
+\item{sento_measures}{a \code{sento_measures} object created using \code{\link{sento_measures}}.}
 
-\item{lexicons}{a \code{numeric} vector of weights, of size \code{length(sentomeasures$lexicons)}, in the same order.
+\item{lexicons}{a \code{numeric} vector of weights, of size \code{length(sento_measures$lexicons)}, in the same order.
 By default set to 1, which means equally weighted.}
 
-\item{features}{a \code{numeric} vector of weights, of size \code{length(sentomeasures$features)}, in the same order.
+\item{features}{a \code{numeric} vector of weights, of size \code{length(sento_measures$features)}, in the same order.
 By default set to 1, which means equally weighted.}
 
-\item{time}{a \code{numeric} vector of weights, of size \code{length(sentomeasures$time)}, in the same order. By default
+\item{time}{a \code{numeric} vector of weights, of size \code{length(sento_measures$time)}, in the same order. By default
 set to 1, which means equally weighted.}
 }
 \value{
@@ -28,7 +28,7 @@ Merges all sentiment measures into a weighted global textual sentiment measure f
 \code{lexicons}, \code{features}, and \code{time} dimensions.
 }
 \details{
-In contrast to other \code{measures_xyz} functions, this particular function returns no new \code{sentomeasures}
+In contrast to other \code{measures_xyz} functions, this particular function returns no new \code{sento_measures}
 object. The measures are constructed from weights that indicate the importance (and sign) along each component from the
 \code{lexicons}, \code{features}, and \code{time} dimensions. There is no restriction in terms of allowed weights. For
 example, the global index based on the supplied lexicon weights (\code{"globLex"}) is obtained first by multiplying
@@ -40,15 +40,15 @@ data("usnews", package = "sentometrics")
 data("list_lexicons", package = "sentometrics")
 data("list_valence_shifters", package = "sentometrics")
 
-# construct a sentomeasures object to start with
+# construct a sento_measures object to start with
 corpus <- sento_corpus(corpusdf = usnews)
 corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
-sentomeasures <- sento_measures(corpusSample, l, ctr)
+sento_measures <- sento_measures(corpusSample, l, ctr)
 
 # merge into one global sentiment measure, with specified weighting for lexicons and features
-global <- measures_global(sentomeasures,
+global <- measures_global(sento_measures,
                           lexicons = c(0.40, 0.60),
                           features = c(0.10, -0.20, 0.30, -1),
                           time = 1)

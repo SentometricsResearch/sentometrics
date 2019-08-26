@@ -11,7 +11,9 @@ Authors@R: c(person("Samuel", "Borms", email = "samuel.borms@unine.ch", role = c
 Author: Samuel Borms [aut, cre],
   David Ardia [aut],
   Keven Bluteau [aut],
-  Kris Boudt [aut]
+  Kris Boudt [aut],
+  Jeroen Van Pelt [ctb],
+  Andres Algaba [ctb]
 Maintainer: Samuel Borms <samuel.borms@unine.ch>
 Description: Optimized prediction based on textual sentiment, accounting for the intrinsic challenge that sentiment can be computed and pooled across texts and time in various ways. See Ardia et al. (2018) <doi:10.2139/ssrn.3067734>.
 Depends: R (>= 3.3.0), 

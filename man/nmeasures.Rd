@@ -4,13 +4,13 @@
 \alias{nmeasures}
 \title{Get number of sentiment measures}
 \usage{
-nmeasures(sentomeasures)
+nmeasures(sento_measures)
 }
 \arguments{
-\item{sentomeasures}{a \code{sentomeasures} object created using \code{\link{sento_measures}}.}
+\item{sento_measures}{a \code{sento_measures} object created using \code{\link{sento_measures}}.}
 }
 \value{
-The number of sentiment measures in the input \code{sentomeasures} object.
+The number of sentiment measures in the input \code{sento_measures} object.
 }
 \description{
 Returns the number of sentiment measures.

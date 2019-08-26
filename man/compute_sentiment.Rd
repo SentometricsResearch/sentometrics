@@ -8,13 +8,13 @@ compute_sentiment(x, lexicons, how = "proportional", tokens = NULL,
   nCore = 1, do.sentence = FALSE)
 }
 \arguments{
-\item{x}{either a \code{sentocorpus} object created with \code{\link{sento_corpus}}, a \pkg{quanteda}
+\item{x}{either a \code{sento_corpus} object created with \code{\link{sento_corpus}}, a \pkg{quanteda}
 \code{\link[quanteda]{corpus}} object, or a \code{character} vector. The latter two do not incorporate a
 date dimension. In case of a \code{\link[quanteda]{corpus}} object, the \code{numeric} columns from the
 \code{\link[quanteda]{docvars}} are considered as features over which sentiment will be computed. In
 case of a \code{character} vector, sentiment is only computed across lexicons.}
 
-\item{lexicons}{a \code{sentolexicons} object created using \code{\link{sento_lexicons}}.}
+\item{lexicons}{a \code{sento_lexicons} object created using \code{\link{sento_lexicons}}.}
 
 \item{how}{a single \code{character} vector defining how aggregation within documents should be performed. For currently
 available options on how aggregation can occur, see \code{\link{get_hows}()$words}.}
@@ -34,7 +34,7 @@ sentence-level rather than document-level. By default \code{do.sentence = TRUE}.
 sentence level follows the methodology defined in the \pkg{sentimentr} package.}
 }
 \value{
-If \code{x} is a \code{sentocorpus} object, a \code{sentiment} object, i.e., a \code{data.table} containing
+If \code{x} is a \code{sento_corpus} object, a \code{sentiment} object, i.e., a \code{data.table} containing
 the sentiment scores \code{data.table} with an \code{"id"}, a \code{"date"} and a \code{"word_count"} column,
 and all lexicon--feature sentiment scores columns. A \code{sentiment} object can be used for aggregation into
 time series with the \code{\link{aggregate.sentiment}} function.
@@ -123,7 +123,7 @@ l2 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")],
 l3 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")],
                      list_valence_shifters[["en"]][, c("x", "t")])
 
-# from a sentocorpus object, unigrams approach
+# from a sento_corpus object, unigrams approach
 corpus <- sento_corpus(corpusdf = usnews)
 corpusSample <- quanteda::corpus_sample(corpus, size = 200)
 sent1 <- compute_sentiment(corpusSample, l1, how = "proportionalPol")
@@ -142,17 +142,15 @@ sent4 <- compute_sentiment(corpusQSample, l1[1], how = "counts", tokens = toks)
 
 # from a SimpleCorpus object, unigrams approach
 txt <- system.file("texts", "txt", package = "tm")
-sc <- tm::SimpleCorpus(tm::DirSource(txt, encoding = "UTF-8"),
-                       control = list(language = "eng"))
+sc <- tm::SimpleCorpus(tm::DirSource(txt, encoding = "UTF-8"))
 sent5 <- compute_sentiment(sc, l1, how = "proportional")
 
 # from a VCorpus object, unigrams approach
 reut21578 <- system.file("texts", "crude", package = "tm")
-vcorp <- tm::VCorpus(tm::DirSource(reut21578, mode = "binary"),
-                     list(reader = tm::readReut21578XMLasPlain))
+vcorp <- tm::VCorpus(tm::DirSource(reut21578, mode = "binary"))
 sent6 <- compute_sentiment(vcorp, l1, how = "proportional")
 
-# from a sentocorpus object, unigrams approach with tf-idf weighting
+# from a sento_corpus object, unigrams approach with tf-idf weighting
 sent7 <- compute_sentiment(corpusSample, l1, how = "TFIDF")
 
 # tokenisation and computation sentence-by-sentence

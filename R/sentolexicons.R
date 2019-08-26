@@ -23,7 +23,7 @@
 #' @param do.split a \code{logical} that if \code{TRUE} splits every lexicon into a separate positive polarity and negative
 #' polarity lexicon.
 #'
-#' @return A \code{list} of class \code{sentolexicons} with each lexicon as a separate element according to its name, as a
+#' @return A \code{list} of class \code{sento_lexicons} with each lexicon as a separate element according to its name, as a
 #' \code{data.table}, and optionally an element named \code{valence} that comprises the valence words. Every \code{"x"} column
 #' contains the words, every \code{"y"} column contains the polarity scores. The \code{"t"} column for valence shifters
 #' contains the different types.
@@ -43,7 +43,7 @@
 #' l3 <- sento_lexicons(lexIn, valIn)
 #' l4 <- sento_lexicons(lexIn, valIn[, c("x", "y")], do.split = TRUE)
 #' l5 <- sento_lexicons(lexIn, valIn[, c("x", "t")], do.split = TRUE)
-#' l6 <- l5[c("GI_en_POS", "valence")] # preserves sentolexicons class
+#' l6 <- l5[c("GI_en_POS", "valence")] # preserves sento_lexicons class
 #'
 #' \dontrun{
 #' # include lexicons from lexicon package
@@ -105,13 +105,13 @@ sento_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
     lexicons[["valence"]] <- valenceIn
   }
 
-  class(lexicons) <- c("sentolexicons", class(lexicons))
+  class(lexicons) <- c("sento_lexicons", class(lexicons))
 
   return(lexicons)
 }
 
 #' @export
-`[.sentolexicons` <- function(x, i, ...) {
+`[.sento_lexicons` <- function(x, i, ...) {
   xNew <- NextMethod("[")
   if (length(xNew) == 0 || length(xNew) > length(x) || any(is.na(names(xNew)))) stop("Indexing out of bounds.")
   if (all(names(xNew) == "valence")) stop("Keep at least one lexicon (on top of a table of valence shifters).")
@@ -120,22 +120,22 @@ sento_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
 }
 
 #' @export
-`[<-.sentolexicons` <- function(x, i, value) {
+`[<-.sento_lexicons` <- function(x, i, value) {
   stop("Replacement not allowed.")
 }
 
 #' @export
-`[[<-.sentolexicons` <- function(x, i, value) {
+`[[<-.sento_lexicons` <- function(x, i, value) {
   stop("Replacement not allowed.")
 }
 
 #' @export
-`$<-.sentolexicons` <- function(x, i, value) {
+`$<-.sento_lexicons` <- function(x, i, value) {
   stop("Replacement not allowed.")
 }
 
 #' @export
-`names<-.sentolexicons` <- function(x, value) {
+`names<-.sento_lexicons` <- function(x, value) {
   if (any(duplicated(value))) stop("No duplicated names allowed.")
   NextMethod("names<-")
 }

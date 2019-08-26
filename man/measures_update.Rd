@@ -4,21 +4,21 @@
 \alias{measures_update}
 \title{Update sentiment measures}
 \usage{
-measures_update(sentomeasures, sentocorpus, lexicons)
+measures_update(sento_measures, sento_corpus, lexicons)
 }
 \arguments{
-\item{sentomeasures}{\code{sentomeasures} object created with \code{\link{sento_measures}}}
+\item{sento_measures}{\code{sento_measures} object created with \code{\link{sento_measures}}}
 
-\item{sentocorpus}{a \code{sentocorpus} object created with \code{\link{sento_corpus}}.}
+\item{sento_corpus}{a \code{sento_corpus} object created with \code{\link{sento_corpus}}.}
 
-\item{lexicons}{a \code{sentolexicons} object created with \code{\link{sento_lexicons}}.}
+\item{lexicons}{a \code{sento_lexicons} object created with \code{\link{sento_lexicons}}.}
 }
 \value{
-An updated \code{sentomeasures} object.
+An updated \code{sento_measures} object.
 }
 \description{
-Updates a sentomeasures object based on a new corpus provided. Sentiment for the unseen corpus
-texts calculated and aggregated applying the control variables from the input sentomeasures object.
+Updates a sento_measures object based on a new corpus provided. Sentiment for the unseen corpus
+texts calculated and aggregated applying the control variables from the input sento_measures object.
 }
 \examples{
 data("usnews", package = "sentometrics")
@@ -27,9 +27,9 @@ corpus1 <- sento_corpus(usnews[1:500,])
 ctr <- ctr_agg(howTime = "linear", by = "year", lag = 3)
 l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")],
                     list_valence_shifters[["en"]])
-sentomeasures <- sento_measures(corpus1, l, ctr)
+sento_measures <- sento_measures(corpus1, l, ctr)
 corpus2 <- sento_corpus(usnews[400:2000,])
-sentomeasuresNew <- measures_update(sentomeasures, corpus2, l)
+sento_measuresNew <- measures_update(sento_measures, corpus2, l)
 
 }
 \seealso{

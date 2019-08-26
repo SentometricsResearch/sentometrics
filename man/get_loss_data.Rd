@@ -8,7 +8,7 @@ get_loss_data(models, loss = c("DA", "error", "errorSq", "AD",
   "accuracy"))
 }
 \arguments{
-\item{models}{a named \code{list} of \code{sentomodeliter} objects. All models should be of the same family, being
+\item{models}{a named \code{list} of \code{sento_modelIter} objects. All models should be of the same family, being
 either \code{"gaussian"}, \code{"binomial"} or \code{"multinomial"}, and have performance data of the same dimensions.}
 
 \item{loss}{a single \code{character} vector, either \code{"DA"} (directional \emph{in}accuracy), \code{"error"}
@@ -21,7 +21,7 @@ is calculated. The first four options are available for \code{"gaussian"} models
 A \code{matrix} of loss data.
 }
 \description{
-Structures specific performance data for a set of different \code{sentomodeliter} objects as loss data.
+Structures specific performance data for a set of different \code{sento_modelIter} objects as loss data.
 Can then be used, for instance, as an input to create a model confidence set (Hansen, Lunde and Nason, 2011) with
 the \pkg{MCS} package.
 }
@@ -34,7 +34,7 @@ data("epu", package = "sentometrics")
 
 set.seed(505)
 
-# construct two sentomeasures objects
+# construct two sento_measures objects
 corpusAll <- sento_corpus(corpusdf = usnews)
 corpus <- quanteda::corpus_subset(corpusAll, date >= "1997-01-01" & date < "2014-10-01")
 l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])

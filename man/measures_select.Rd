@@ -4,17 +4,17 @@
 \alias{measures_select}
 \title{Select sentiment measures}
 \usage{
-measures_select(sentomeasures, toSelect)
+measures_select(sento_measures, toSelect)
 }
 \arguments{
-\item{sentomeasures}{a \code{sentomeasures} object created using \code{\link{sento_measures}}.}
+\item{sento_measures}{a \code{sento_measures} object created using \code{\link{sento_measures}}.}
 
 \item{toSelect}{a \code{character} vector of the lexicon, feature and time weighting scheme names, to indicate which
 measures need to be selected, or as a \code{list} of \code{character} vectors, possibly with separately specified
 combinations (consisting of one unique lexicon, one unique feature, and one unique time weighting scheme at maximum).}
 }
 \value{
-A modified \code{sentomeasures} object, with only the sentiment measures required, including updated information
+A modified \code{sento_measures} object, with only the sentiment measures required, including updated information
 and statistics, but the original sentiment scores \code{data.table} untouched.
 }
 \description{
@@ -26,18 +26,18 @@ data("usnews", package = "sentometrics")
 data("list_lexicons", package = "sentometrics")
 data("list_valence_shifters", package = "sentometrics")
 
-# construct a sentomeasures object to start with
+# construct a sento_measures object to start with
 corpus <- sento_corpus(corpusdf = usnews)
 corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
-sentomeasures <- sento_measures(corpusSample, l, ctr)
+sento_measures <- sento_measures(corpusSample, l, ctr)
 
 # different selections
-sel1 <- measures_select(sentomeasures, c("equal_weight"))
-sel2 <- measures_select(sentomeasures, c("equal_weight", "linear"))
-sel3 <- measures_select(sentomeasures, c("linear", "LM_en"))
-sel4 <- measures_select(sentomeasures, list(c("linear", "wsj"), c("linear", "economy")))
+sel1 <- measures_select(sento_measures, c("equal_weight"))
+sel2 <- measures_select(sento_measures, c("equal_weight", "linear"))
+sel3 <- measures_select(sento_measures, c("linear", "LM_en"))
+sel4 <- measures_select(sento_measures, list(c("linear", "wsj"), c("linear", "economy")))
 
 }
 \seealso{

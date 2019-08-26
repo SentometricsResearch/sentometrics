@@ -48,7 +48,7 @@ s1 <- compute_sentiment(corpus, lex, how = "proportional")
 s2 <- compute_sentiment(quanteda::texts(corpus), lex, how = "counts")
 test_that("Test input format of sentiment aggregation function", {
   expect_true(inherits(s1, "sentiment"))
-  expect_true(inherits(aggregate(s1, ctr1), "sentomeasures"))
+  expect_true(inherits(aggregate(s1, ctr1), "sento_measures"))
   expect_error(aggregate(s2, ctr2))
   expect_error(sento_measures(corpus, lex, ctr3))
 })

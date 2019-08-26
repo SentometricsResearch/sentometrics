@@ -23,7 +23,7 @@ options(shiny.maxRequestSize = 50*1024^2)
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
-    theme = "cerulean",
+        theme = shinytheme("cerulean"),
     tags$head(
         tags$link(rel = "stylesheet", type = "text/css", href = "css.css")
     ),
@@ -67,15 +67,12 @@ myvals <- reactiveValues(
     lexiconList = list_lexicons,
     valenceList = list_valence_shifters,
     how = NULL,
-    valenceMethod = "Bigram",
-    readyForSentiment = FALSE
+    valenceMethod = "Bigram"
 )
 
 server <- function(input, output, session) {
 
-    output$test <- renderUI({
-        tags$p("tessst")
-    })
+
 
      corpusFile <- callModule(load_corpus_server, "load_corpus_csv")
      corpus <- callModule(create_corpus_server,"", corpusFile)
@@ -102,19 +99,14 @@ server <- function(input, output, session) {
 
      corpusSummaryModule <- callModule(corpus_summary_server, "corpus_summary_ui", corpus)
 
-
-
-
      sentoLexicon <- callModule(build_sento_lexicon, "",myvals)
 
      output$calculateSentimentButton <- renderUI({
-
              actionButton(
                  inputId = "calcSentimentButton",
                  label = "Calculate Sentiment",
                  icon = icon("rocket")
              )
-
      })
 
      observeEvent(input$calcSentimentButton, {

@@ -24,7 +24,7 @@ lexicon and the valence word list is prioritized as a lexical entry during senti
 polarity lexicon.}
 }
 \value{
-A \code{list} of class \code{sentolexicons} with each lexicon as a separate element according to its name, as a
+A \code{list} of class \code{sento_lexicons} with each lexicon as a separate element according to its name, as a
 \code{data.table}, and optionally an element named \code{valence} that comprises the valence words. Every \code{"x"} column
 contains the words, every \code{"y"} column contains the polarity scores. The \code{"t"} column for valence shifters
 contains the different types.
@@ -51,7 +51,7 @@ l2 <- sento_lexicons(lexIn)
 l3 <- sento_lexicons(lexIn, valIn)
 l4 <- sento_lexicons(lexIn, valIn[, c("x", "y")], do.split = TRUE)
 l5 <- sento_lexicons(lexIn, valIn[, c("x", "t")], do.split = TRUE)
-l6 <- l5[c("GI_en_POS", "valence")] # preserves sentolexicons class
+l6 <- l5[c("GI_en_POS", "valence")] # preserves sento_lexicons class
 
 \dontrun{
 # include lexicons from lexicon package

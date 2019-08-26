@@ -22,13 +22,13 @@ test_that("Corpus building works and fails when appropriate", {
   expect_error(sento_corpus(corpusdf = cbind(usnews, "-doesNotBelong-" = 0.5)))
 })
 
-# to_sentocorpus
-test_that("Conversion to sentocorpus from quanteda corpus", {
+# as.sento_corpus
+test_that("Conversion to sento_corpus from quanteda corpus", {
   expect_equal(
     c("date", "wsj", "wapo", "economy", "noneconomy"),
-    names(docvars(to_sentocorpus(quanteda::corpus(usnews, text_field = "texts", docid_field = "id"), dates = usnews$date)))
+    names(docvars(as.sento_corpus(quanteda::corpus(usnews, text_field = "texts", docid_field = "id"), dates = usnews$date)))
   )
-  expect_warning(to_sentocorpus(
+  expect_warning(as.sento_corpus(
     quanteda::corpus(cbind(usnews, wrong = "nutNumeric"),  text_field = "texts", docid_field = "id"), dates = usnews$date))
 })
 
@@ -36,7 +36,7 @@ test_that("Conversion to sentocorpus from quanteda corpus", {
 corpus1 <- add_features(corpus, featuresdf = data.frame(wsj = 1, wapo = 1, economy = 1, noneconomy = 1))
 corpus2 <- add_features(corpus, keywords = list(good = "good", cut = c("cut|rates")),
                         do.regex = c(FALSE, TRUE), do.binary = FALSE)
-test_that("Multiple additions of features to existing sentocorpus object", {
+test_that("Multiple additions of features to existing sento_corpus object", {
   expect_false(all(quanteda::docvars(corpus)[, -1] == quanteda::docvars(corpus1)[, -1]))
   expect_warning(add_features(corpus, keywords = list(wrong = "forSureNotHere")))
   expect_equal(c("wsj", "wapo", "economy", "noneconomy", "good", "cut"), colnames(quanteda::docvars(corpus2)[-1]))
@@ -51,7 +51,7 @@ summYear <- corpus_summarize(corpus, by = "year")
 summMonth <- corpus_summarize(corpus, by = "month")
 summWeek <- corpus_summarize(corpus, by = "week")
 summDay <- corpus_summarize(corpus, by = "day")
-test_that("Summary of sentocorpus object" , {
+test_that("Summary of sento_corpus object" , {
   expect_true(inherits(summYear$plots$feature_plot, "ggplot"))
   expect_true(inherits(summYear$plots$token_plot, "ggplot"))
   expect_true(length(summDay$stats$date) == 3043)

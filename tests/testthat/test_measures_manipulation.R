@@ -92,7 +92,7 @@ test_that("Consistency of measures_select() function", {
 sentMeasSubset <- measures_subset(sentMeas, date > "2003-05-04" & GI_en--wsj--almon1_inv <= 0)
 test_that("Consistency of measures_subset() function", {
   expect_true(min(get_dates(sentMeasSubset)) >= "2003-05-04")
-  expect_true(max(get_measures(sentMeasSubset)[["GI_en--wsj--almon1_inv"]]) <= 0)
+  expect_true(max(as.data.table(sentMeasSubset)[["GI_en--wsj--almon1_inv"]]) <= 0)
   expect_true(nobs(sentMeasSubset) < nobs(sentMeas))
   expect_equal(nmeasures(sentMeasSubset), nmeasures(sentMeas))
   expect_warning(measures_subset(sentMeas, date > "2017-08-12"))
@@ -101,14 +101,11 @@ test_that("Consistency of measures_subset() function", {
   expect_length(sentMeasSubset$attribWeights$W[[1]], 1000)
 })
 
-# update sentomeasures
-
+# measures_update
 corpus1 <- quanteda::corpus_sample(sento_corpus(corpusdf = usnews[1:100,]))
 corpus2 <- quanteda::corpus_sample(sento_corpus(corpusdf = usnews[101:200,]))
-
 sentMeas <- sento_measures(corpus1, lex, ctr)
-sentMeasUpd <- measures_update(sentocorpus= corpus2 , sentMeas, lexicon = lex)
-
+sentMeasUpd <- measures_update(sento_corpus = corpus2 , sentMeas, lexicon = lex)
 test_that("Sentomeasure update works properly", {
   expect_true(length(sentMeas$sentiment$word_count) == 100)
   expect_true(length(sentMeasUpd$sentiment$word_count) == 200)

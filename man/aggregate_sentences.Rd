@@ -54,7 +54,7 @@ sentAggDocs <- aggregate_sentences(sent, how = "proportional")
 
 # further optional aggregation into time series
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "month", lag = 4)
-sentomeasures <- aggregate(sentAggDocs, ctr)
+sm <- aggregate(sentAggDocs, ctr)
 
 }
 \author{

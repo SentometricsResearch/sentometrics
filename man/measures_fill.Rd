@@ -4,32 +4,32 @@
 \alias{measures_fill}
 \title{Add and fill missing dates to sentiment measures}
 \usage{
-measures_fill(sentomeasures, fill = "zero", dateBefore = NULL,
+measures_fill(sento_measures, fill = "zero", dateBefore = NULL,
   dateAfter = NULL)
 }
 \arguments{
-\item{sentomeasures}{a \code{sentomeasures} object created using \code{\link{sento_measures}}.}
+\item{sento_measures}{a \code{sento_measures} object created using \code{\link{sento_measures}}.}
 
 \item{fill}{an element of \code{c("zero", "latest")}; the first assumes missing dates represent zero sentiment,
 the second assumes missing dates represent constant sentiment.}
 
 \item{dateBefore}{a date as \code{"yyyy-mm-dd"}, to stretch the sentiment time series from up to the first date. Should
-be earlier than \code{get_dates(sentomeasures)[1]} to take effect. The values for these dates are set to those at
-\code{get_dates(sentomeasures)[1]}. If \code{NULL}, then ignored.}
+be earlier than \code{get_dates(sento_measures)[1]} to take effect. The values for these dates are set to those at
+\code{get_dates(sento_measures)[1]}. If \code{NULL}, then ignored.}
 
 \item{dateAfter}{a date as \code{"yyyy-mm-dd"}, to stretch the sentiment time series up to this date. Should be
-later than \code{tail(get_dates(sentomeasures), 1)} to take effect. If \code{NULL}, then ignored.}
+later than \code{tail(get_dates(sento_measures), 1)} to take effect. If \code{NULL}, then ignored.}
 }
 \value{
-A modified \code{sentomeasures} object.
+A modified \code{sento_measures} object.
 }
 \description{
-Adds missing dates between earliest and latest date of a \code{sentomeasures} object or two more extreme
+Adds missing dates between earliest and latest date of a \code{sento_measures} object or two more extreme
 boundary dates, such that the time series are continuous date-wise. Fills in any missing date with either 0 or the
 most recent non-missing value.
 }
 \details{
-The \code{dateBefore} and \code{dateAfter} dates are converted according to the \code{sentomeasures[["by"]]}
+The \code{dateBefore} and \code{dateAfter} dates are converted according to the \code{sento_measures[["by"]]}
 frequency.
 }
 \examples{
@@ -37,19 +37,19 @@ data("usnews", package = "sentometrics")
 data("list_lexicons", package = "sentometrics")
 data("list_valence_shifters", package = "sentometrics")
 
-# construct a sentomeasures object to start with
+# construct a sento_measures object to start with
 corpus <- sento_corpus(corpusdf = usnews)
 corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "day", lag = 7, fill = "none")
-sentomeasures <- sento_measures(corpusSample, l, ctr)
+sento_measures <- sento_measures(corpusSample, l, ctr)
 
 # fill measures
-f1 <- measures_fill(sentomeasures)
-f2 <- measures_fill(sentomeasures, fill = "latest")
-f3 <- measures_fill(sentomeasures, fill = "zero",
-                    dateBefore = get_dates(sentomeasures)[1] - 10,
-                    dateAfter = tail(get_dates(sentomeasures), 1) + 15)
+f1 <- measures_fill(sento_measures)
+f2 <- measures_fill(sento_measures, fill = "latest")
+f3 <- measures_fill(sento_measures, fill = "zero",
+                    dateBefore = get_dates(sento_measures)[1] - 10,
+                    dateAfter = tail(get_dates(sento_measures), 1) + 15)
 
 }
 \author{

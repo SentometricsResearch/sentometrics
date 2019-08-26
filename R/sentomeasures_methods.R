@@ -3,13 +3,13 @@
 #'
 #' @author Samuel Borms
 #'
-#' @method plot sentomeasures
+#' @method plot sento_measures
 #'
-#' @description Plotting method that shows all sentiment measures from the provided \code{sentomeasures}
+#' @description Plotting method that shows all sentiment measures from the provided \code{sento_measures}
 #' object in one plot, or the average along one of the lexicons, features and time weighting dimensions. We suggest to
 #' make use of a \code{measures_xyz} function when you want to plot only a subset of the sentiment measures.
 #'
-#' @param x a \code{sentomeasures} object created using \code{\link{sento_measures}}.
+#' @param x a \code{sento_measures} object created using \code{\link{sento_measures}}.
 #' @param group a value from \code{c("lexicons", "features", "time", "all")}. The first three choices display the average of
 #' all measures from the same group, in a different color. The choice \code{"all"} displays every single sentiment measure
 #' in a separate color, but this may look visually overwhelming very fast, and can be quite slow.
@@ -24,20 +24,20 @@
 #' data("list_lexicons", package = "sentometrics")
 #' data("list_valence_shifters", package = "sentometrics")
 #'
-#' # construct a sentomeasures object to start with
+#' # construct a sento_measures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 #' l <- sento_lexicons(list_lexicons[c("LM_en")], list_valence_shifters[["en"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
-#' sentomeasures <- sento_measures(corpusSample, l, ctr)
+#' sento_measures <- sento_measures(corpusSample, l, ctr)
 #'
 #' # plot sentiment measures
-#' plot(sentomeasures, group = "features")
+#' plot(sento_measures, group = "features")
 #'
 #' \dontrun{
 #' # adjust appearance of plot
 #' library("ggplot2")
-#' p <- plot(sentomeasures)
+#' p <- plot(sento_measures)
 #' p <- p +
 #'   scale_x_date(name = "month-year") +
 #'   scale_y_continuous(name = "newName")
@@ -45,11 +45,11 @@
 #'
 #' @import ggplot2
 #' @export
-plot.sentomeasures <- function(x, group = "all", ...) {
+plot.sento_measures <- function(x, group = "all", ...) {
   if (!(group %in% c("lexicons", "features", "time", "all")))
     stop("The 'group' argument should be either 'lexicons', 'features', 'time' or 'all'.")
-  sentomeasures <- x
-  measures <- get_measures(sentomeasures)
+  sento_measures <- x
+  measures <- as.data.table(sento_measures)
   if (group == "all") {
     measuresMelt <- melt(measures, id.vars = "date", variable.factor = FALSE)
     legendPos <- "none"
@@ -73,14 +73,14 @@ plot.sentomeasures <- function(x, group = "all", ...) {
 #'
 #' @author Samuel Borms
 #'
-#' @description Differences the sentiment measures from a \code{sentomeasures} object.
+#' @description Differences the sentiment measures from a \code{sento_measures} object.
 #'
-#' @param x a \code{sentomeasures} object created using \code{\link{sento_measures}}.
+#' @param x a \code{sento_measures} object created using \code{\link{sento_measures}}.
 #' @param lag a \code{numeric}, see documentation for the generic \code{\link{diff}}.
 #' @param differences a \code{numeric}, see documentation for the generic \code{\link{diff}}.
 #' @param ... not used.
 #'
-#' @return A modified \code{sentomeasures} object, with the measures replaced by the differenced measures as well as updated
+#' @return A modified \code{sento_measures} object, with the measures replaced by the differenced measures as well as updated
 #' statistics.
 #'
 #' @examples
@@ -88,30 +88,30 @@ plot.sentomeasures <- function(x, group = "all", ...) {
 #' data("list_lexicons", package = "sentometrics")
 #' data("list_valence_shifters", package = "sentometrics")
 #'
-#' # construct a sentomeasures object to start with
+#' # construct a sento_measures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 #' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
-#' sentomeasures <- sento_measures(corpusSample, l, ctr)
+#' sento_measures <- sento_measures(corpusSample, l, ctr)
 #'
 #' # first-order difference sentiment measures with a lag of two
-#' diffed <- diff(sentomeasures, lag = 2, differences = 1)
+#' diffed <- diff(sento_measures, lag = 2, differences = 1)
 #'
 #' @export
-diff.sentomeasures <- function(x, lag = 1, differences = 1, ...) {
-  sentomeasures <- x
-  dates <- get_dates(sentomeasures)[-1:-(lag * differences)]
-  measures <- get_measures(sentomeasures)[, -1] # drop dates
+diff.sento_measures <- function(x, lag = 1, differences = 1, ...) {
+  sento_measures <- x
+  dates <- get_dates(sento_measures)[-1:-(lag * differences)]
+  measures <- as.data.table(sento_measures)[, -1] # drop dates
   measuresDiff <- diff(as.matrix(measures), lag = lag, differences = differences)
-  sentomeasures$measures <- data.table(date = dates, measuresDiff)
-  sentomeasures$stats <- compute_stats(sentomeasures)
-  return(sentomeasures)
+  sento_measures$measures <- data.table(date = dates, measuresDiff)
+  sento_measures$stats <- compute_stats(sento_measures)
+  return(sento_measures)
 }
 
 #' @export
-nmeasures.sentomeasures <- function(sentomeasures) {
-  NCOL(sentomeasures[["measures"]]) - 1 # omit date column
+nmeasures.sento_measures <- function(sento_measures) {
+  NCOL(sento_measures[["measures"]]) - 1 # omit date column
 }
 
 #' Get number of sentiment measures
@@ -120,13 +120,13 @@ nmeasures.sentomeasures <- function(sentomeasures) {
 #'
 #' @description Returns the number of sentiment measures.
 #'
-#' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
+#' @param sento_measures a \code{sento_measures} object created using \code{\link{sento_measures}}.
 #'
-#' @return The number of sentiment measures in the input \code{sentomeasures} object.
+#' @return The number of sentiment measures in the input \code{sento_measures} object.
 #'
 #' @export
-nmeasures <- function(sentomeasures) {
-  UseMethod("nmeasures", sentomeasures)
+nmeasures <- function(sento_measures) {
+  UseMethod("nmeasures", sento_measures)
 }
 
 #' Get number of observations in the sentiment measures
@@ -135,16 +135,16 @@ nmeasures <- function(sentomeasures) {
 #'
 #' @description Returns the number of data points available in the sentiment measures.
 #'
-#' @param object a \code{sentomeasures} object created using \code{\link{sento_measures}}.
+#' @param object a \code{sento_measures} object created using \code{\link{sento_measures}}.
 #' @param ... not used.
 #'
-#' @return The number of rows (observations/data points) in \code{sentomeasures[["measures"]]}.
+#' @return The number of rows (observations/data points) in \code{sento_measures[["measures"]]}.
 #'
 #' @keywords internal
 #'
 #' @importFrom stats nobs
 #' @export
-nobs.sentomeasures <- function(object, ...) {
+nobs.sento_measures <- function(object, ...) {
   NROW(object[["measures"]])
 }
 
@@ -152,21 +152,21 @@ nobs.sentomeasures <- function(object, ...) {
 #'
 #' @author Samuel Borms
 #'
-#' @description Scales and centers the sentiment measures from a \code{sentomeasures} object, column-per-column. By default,
+#' @description Scales and centers the sentiment measures from a \code{sento_measures} object, column-per-column. By default,
 #' the measures are normalized. \code{NA}s are removed first.
 #'
 #' @details If one of the arguments \code{center} or \code{scale} is a \code{matrix}, this operation will be applied first,
 #' and eventual other centering or scaling is computed on that data.
 #'
-#' @param x a \code{sentomeasures} object created using \code{\link{sento_measures}}.
+#' @param x a \code{sento_measures} object created using \code{\link{sento_measures}}.
 #' @param center a \code{logical} or a \code{numeric} vector, see documentation for the generic \code{\link{scale}}.
-#' Alternatively, one can provide a \code{matrix} of dimensions \code{nobs(sentomeasures)} times \code{1} or
-#' \code{nmeasures(sentomeasures)} with values to add to each individual observation.
+#' Alternatively, one can provide a \code{matrix} of dimensions \code{nobs(sento_measures)} times \code{1} or
+#' \code{nmeasures(sento_measures)} with values to add to each individual observation.
 #' @param scale a \code{logical} or a \code{numeric} vector, see documentation for the generic \code{\link{scale}}.
-#' Alternatively, one can provide a \code{matrix} of dimensions \code{nobs(sentomeasures)} times \code{1} or
-#' \code{nmeasures(sentomeasures)} with values to divide each individual observation by.
+#' Alternatively, one can provide a \code{matrix} of dimensions \code{nobs(sento_measures)} times \code{1} or
+#' \code{nmeasures(sento_measures)} with values to divide each individual observation by.
 #'
-#' @return A modified \code{sentomeasures} object, with the measures replaced by the scaled measures as well as updated
+#' @return A modified \code{sento_measures} object, with the measures replaced by the scaled measures as well as updated
 #' statistics.
 #'
 #' @examples
@@ -176,72 +176,72 @@ nobs.sentomeasures <- function(object, ...) {
 #'
 #' set.seed(505)
 #'
-#' # construct a sentomeasures object to start with
+#' # construct a sento_measures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 #' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
-#' sentomeasures <- sento_measures(corpusSample, l, ctr)
+#' sento_measures <- sento_measures(corpusSample, l, ctr)
 #'
 #' # scale sentiment measures to zero mean and unit standard deviation
-#' sc1 <- scale(sentomeasures)
+#' sc1 <- scale(sento_measures)
 #'
-#' n <- nobs(sentomeasures)
-#' m <- nmeasures(sentomeasures)
+#' n <- nobs(sento_measures)
+#' m <- nmeasures(sento_measures)
 #'
 #' # add a matrix
-#' sc2 <- scale(sentomeasures, center = matrix(runif(n * m), n, m), scale = FALSE)
+#' sc2 <- scale(sento_measures, center = matrix(runif(n * m), n, m), scale = FALSE)
 #'
 #' # divide every row observation based on a one-column matrix, then center
-#' sc3 <- scale(sentomeasures, center = TRUE, scale = matrix(runif(n)))
+#' sc3 <- scale(sento_measures, center = TRUE, scale = matrix(runif(n)))
 #'
 #' @export
-scale.sentomeasures <- function(x, center = TRUE, scale = TRUE) {
-  sentomeasures <- x
-  dates <- get_dates(sentomeasures)
-  measures <- get_measures(sentomeasures)[, -1] # drop dates
+scale.sento_measures <- function(x, center = TRUE, scale = TRUE) {
+  sento_measures <- x
+  dates <- get_dates(sento_measures)
+  measures <- as.data.table(sento_measures)[, -1] # drop dates
   if (is.matrix(center)) {
-    if (nrow(center) != nobs(sentomeasures) || !(ncol(center) %in% c(1, nmeasures(sentomeasures))))
+    if (nrow(center) != nobs(sento_measures) || !(ncol(center) %in% c(1, nmeasures(sento_measures))))
       stop("The matrix dimensions of the 'center' argument are not correct.")
     measures <- measures + center
     center <- FALSE
   }
   if (is.matrix(scale)) {
-    if (nrow(scale) != nobs(sentomeasures) || !(ncol(scale) %in% c(1, nmeasures(sentomeasures))))
+    if (nrow(scale) != nobs(sento_measures) || !(ncol(scale) %in% c(1, nmeasures(sento_measures))))
       stop("The matrix dimensions of the 'scale' argument are not correct.")
     measures <- measures / scale
     scale <- FALSE
   }
 
   measuresNorm <- scale(measures, center = center, scale = scale)
-  sentomeasures$measures <- data.table(date = dates, measuresNorm)
-  sentomeasures$stats <- compute_stats(sentomeasures)
-  return(sentomeasures)
+  sento_measures$measures <- data.table(date = dates, measuresNorm)
+  sento_measures$stats <- compute_stats(sento_measures)
+  return(sento_measures)
 }
 
 #' @export
-summary.sentomeasures <- function(object, ...) {
-  sentomeasures <- object
-  freq <- c("daily", "weekly", "monthly", "yearly")[c("day", "week", "month", "year") %in% sentomeasures$ctr$time$weightingParam$by]
-  cat("This sentomeasures object contains ", nmeasures(sentomeasures), " textual sentiment time series with ",
-      nobs(sentomeasures), " observations each ", "(", freq, ").", "\n", sep = "")
+summary.sento_measures <- function(object, ...) {
+  sento_measures <- object
+  freq <- c("daily", "weekly", "monthly", "yearly")[c("day", "week", "month", "year") %in% sento_measures$ctr$time$weightingParam$by]
+  cat("This sento_measures object contains ", nmeasures(sento_measures), " textual sentiment time series with ",
+      nobs(sento_measures), " observations each ", "(", freq, ").", "\n", sep = "")
   cat("\n")
-  cat("Following features are present:", sentomeasures$features, "\n")
-  cat("Following lexicons are used to calculate sentiment:", sentomeasures$lexicons, "\n")
-  cat("Following scheme is applied for aggregation within documents:", sentomeasures$within$howWithin, "\n")
-  cat("Following scheme is applied for aggregation across documents:", sentomeasures$docs$howDocs, "\n")
-  cat("Following schemes are applied for aggregation across time:", sentomeasures$time, "\n")
+  cat("Following features are present:", sento_measures$features, "\n")
+  cat("Following lexicons are used to calculate sentiment:", sento_measures$lexicons, "\n")
+  cat("Following scheme is applied for aggregation within documents:", sento_measures$within$howWithin, "\n")
+  cat("Following scheme is applied for aggregation across documents:", sento_measures$docs$howDocs, "\n")
+  cat("Following schemes are applied for aggregation across time:", sento_measures$time, "\n")
   cat("\n")
   cat("Aggregate average statistics:", "\n")
-  print(round(rowMeans(sentomeasures$stats), 5))
+  print(round(rowMeans(sento_measures$stats), 5))
   cat()
 }
 
 #' @export
-print.sentomeasures <- function(x, ...) {
-  sentomeasures <- x
-  cat("A sentomeasures object (", nmeasures(sentomeasures),
-      " textual sentiment time series, ", nobs(sentomeasures),
+print.sento_measures <- function(x, ...) {
+  sento_measures <- x
+  cat("A sento_measures object (", nmeasures(sento_measures),
+      " textual sentiment time series, ", nobs(sento_measures),
       " observations).", "\n", sep = "")
 }
 
@@ -251,14 +251,14 @@ print.sentomeasures <- function(x, ...) {
 #'
 #' @description Returns the dates of the sentiment time series.
 #'
-#' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
+#' @param sento_measures a \code{sento_measures} object created using \code{\link{sento_measures}}.
 #'
-#' @return The \code{"date"} column in \code{sentomeasures[["measures"]]} as a \code{character} vector.
+#' @return The \code{"date"} column in \code{sento_measures[["measures"]]} as a \code{character} vector.
 #'
 #' @export
-get_dates <- function(sentomeasures) {
-  check_class(sentomeasures, "sentomeasures")
-  sentomeasures$measures[, date]
+get_dates <- function(sento_measures) {
+  check_class(sento_measures, "sento_measures")
+  sento_measures$measures[, date]
 }
 
 #' Get the dimensions of the sentiment measures
@@ -267,35 +267,167 @@ get_dates <- function(sentomeasures) {
 #'
 #' @description Returns the components across all three dimensions of the sentiment measures.
 #'
-#' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
+#' @param sento_measures a \code{sento_measures} object created using \code{\link{sento_measures}}.
 #'
-#' @return The \code{"features"}, \code{"lexicons"} and \code{"time"} elements in \code{sentomeasures}.
+#' @return The \code{"features"}, \code{"lexicons"} and \code{"time"} elements in \code{sento_measures}.
 #'
 #' @export
-get_dimensions <- function(sentomeasures) {
-  check_class(sentomeasures, "sentomeasures")
-  sentomeasures[c("features", "lexicons", "time", "valence")]
+get_dimensions <- function(sento_measures) {
+  check_class(sento_measures, "sento_measures")
+  sento_measures[c("features", "lexicons", "time", "valence")]
 }
 
 #' Get the sentiment measures
 #'
 #' @author Samuel Borms
 #'
-#' @description Returns the sentiment measures in either wide (by default) or long format.
+#' @description Extracts the sentiment measures \code{data.table} in either wide (by default)
+#' or long format.
 #'
-#' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
+#' @param sento_measures a \code{sento_measures} object created using \code{\link{sento_measures}}.
 #' @param format a single \code{character} vector, one of \code{c("wide", "long")}.
 #'
-#' @return The panel of sentiment measures under \code{sentomeasures[["measures"]]}, in wide or long format.
+#' @return The panel of sentiment measures under \code{sento_measures[["measures"]]},
+#' in wide or long format.
+#'
+#' @examples
+#' data("usnews", package = "sentometrics")
+#' data("list_lexicons", package = "sentometrics")
+#' data("list_valence_shifters", package = "sentometrics")
+#'
+#' sm <- sento_measures(sento_corpus(corpusdf = usnews[1:200, ]),
+#'                      sento_lexicons(list_lexicons["LM_en"]),
+#'                      ctr_agg(lag = 3))
+#'
+#' as.data.table(sm)
+#' as.data.table(sm, "long")
 #'
 #' @export
-get_measures <- function(sentomeasures, format = "wide") {
-  check_class(sentomeasures, "sentomeasures")
+as.data.table.sento_measures <- function(sento_measures, format = "wide", ...) {
+  check_class(sento_measures, "sento_measures")
   if (format == "wide")
-    sentomeasures[["measures"]]
+    sento_measures[["measures"]]
   else if (format == "long")
-    measures_to_long(sentomeasures[["measures"]])
+    measures_to_long(sento_measures[["measures"]])
   else
     stop("The 'format' argument should be 'wide' or 'long'.")
 }
+
+### TODO: update documentation
+#' Subset sentiment measures
+#'
+#' @author Samuel Borms
+#'
+#' @description Subsets rows of the sentiment measures based on its columns.
+#'
+#' @param x a \code{sento_measures} object created using \code{\link{sento_measures}}.
+#' @param subset a logical expression indicating the rows to keep.
+#' @param select ...
+#' @param delete ...
+#' @param ... ...
+#'
+#' @return A modified \code{sento_measures} object, with only the kept rows, including updated information
+#' and statistics, but the original sentiment scores \code{data.table} untouched.
+#'
+#' @examples
+#' data("usnews", package = "sentometrics")
+#' data("list_lexicons", package = "sentometrics")
+#' data("list_valence_shifters", package = "sentometrics")
+#'
+#' # construct a sento_measures object to start with
+#' corpus <- sento_corpus(corpusdf = usnews)
+#' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
+#' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+#' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
+#' sento_measures <- sento_measures(corpusSample, l, ctr)
+#'
+#' # different subsets
+#' sub1 <- measures_subset(sento_measures, HENRY_en--economy--equal_weight >= 0.01)
+#' sub2 <- measures_subset(sento_measures,
+#'    date %in% seq(as.Date("2000-01-01"), as.Date("2013-12-01"), by = "month"))
+#'
+#' @export
+subset.sento_measures <- function(x, subset, select, delete, ...) { #_subset
+  check_class(x, "sento_measures")
+
+  ### subset
+  sub <- as.character(substitute(list(subset))[-1L])
+  if (length(sub) > 0) {
+    sub <- stringi::stri_replace_all(sub, "", regex = " ")
+    sub <- stringi::stri_replace_all(sub, "____", regex = "--")
+    measures <- as.data.table(x)
+    colnames(measures) <- stringi::stri_replace_all(colnames(measures), "____", regex = "--") # -- is problematic here
+    measuresNew <- tryCatch(measures[eval(parse(text = sub), parent.frame())], error = function(e) return(NULL))
+    if (is.null(measuresNew)) stop("The 'subset' argument must evaluate to logical.")
+    colnames(measuresNew) <- stringi::stri_replace_all(colnames(measuresNew), "--", regex = "____")
+  }
+
+  if (dim(measuresNew)[1] == 0) {
+    warning("No rows selected in subset. Input sento_measures object is returned.")
+    return(x)
+  }
+  sento_measures <- update_info(x, measuresNew) # temporary update (1) of x object
+
+  ### select
+  allOpts <- unlist(get_dimensions(sento_measures))
+  valid <- unlist(select) %in% allOpts
+  if (any(!valid)) {
+    stop(paste0("Following components make up none of the sentiment measures: ",
+                paste0(unique(unlist(select)[!valid]), collapse = ', '), "."))
+  }
+
+  measures <- as.data.table(sento_measures)
+  namesList <- stringi::stri_split(colnames(measures), regex = "--")
+  if (is.list(select)) {
+    ind <- rep(FALSE, length(namesList))
+    for (com in select) {
+      inds <- sapply(namesList, function(x) return(all(com %in% x)))
+      ind[inds == TRUE] <- TRUE
+    }
+  } else ind <- sapply(namesList, function(x) return(any(select %in% x)))
+  if (!any(ind[-1])) {
+    warning("No appropriate combination found. Input sento_measures object is returned.")
+    return(sento_measures)
+  }
+  measuresNew <- measures[, c(TRUE, ind[-1]), with = FALSE]
+  sento_measures <- update_info(sento_measures, measuresNew) # temporary update (2) of sento_measures object
+
+  ### delete
+  allOpts <- unlist(get_dimensions(sento_measures))
+  valid <- unlist(delete) %in% allOpts
+  if (any(!valid)) {
+    stop(paste0("Following components make up none of the sentiment measures: ",
+                paste0(unique(unlist(delete)[!valid]), collapse = ', '), "."))
+  }
+
+  measures <- as.data.table(sento_measures)
+  namesList <- stringi::stri_split(colnames(measures), regex = "--")
+  if (is.list(delete)) {
+    ind <- rep(FALSE, length(namesList))
+    for (com in delete) {
+      inds <- sapply(namesList, function(x) return(all(com %in% x)))
+      ind[inds == TRUE] <- TRUE
+    }
+  } else ind <- sapply(namesList, function(x) return(any(delete %in% x)))
+  if (all(ind[-1]) || all(!ind[-1])) {
+    warning("No appropriate combination found or all measures selected for deletion. Input sento_measures object is returned.")
+    return(sento_measures)
+  }
+  measuresNew <- measures[, c(TRUE, !ind[-1]), with = FALSE]
+  sento_measures <- update_info(sento_measures, measuresNew) # final update (3) of sento_measures object
+
+  return(sento_measures)
+}
+
+# #' @export ### TODO: possible given that sento_measures has mode(...) "list"?
+# `[.sento_measures` <- function(x, ...) { #_select + _delete ### TODO: also (error) functions for replacement etc.?
+#   check_class(sento_measures, "sento_measures")
+#
+#   measures <- as.data.table(sento_measures)
+#   measuresNew <- data.table::`[.data.table`(measures, ...)
+#
+#   sento_measures <- update_info(sento_measures, measuresNew) # update information in sento_measures object
+#
+#   return(sento_measures)
+# }
 

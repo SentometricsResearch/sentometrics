@@ -35,17 +35,17 @@ load_corpus_ui <- function(id) {
 }
 
 load_corpus_server <- function(input, output, session) {
- 
+
   corpusFile <- reactiveVal(usnews)
-  
+
   observeEvent(input$corpusUpload, ignoreNULL = TRUE, ignoreInit = TRUE, {
-    
+
     df <- read.csv(input$corpusUpload$datapath,
                    header = TRUE,
                    sep = ";",
                    quote = '"',
                    fileEncoding = "UTF-8")
-    
+
     if ("texts" %in% colnames(df)) {
       corpusFile(df)
     } else {
@@ -55,7 +55,7 @@ load_corpus_server <- function(input, output, session) {
       ))
     }
   })
-  
+
   observeEvent(input$corpusHelpButton, {
     showModal(modalDialog(
       title = "Upload a corpus",
@@ -64,7 +64,7 @@ load_corpus_server <- function(input, output, session) {
       columns for (numeric) features."
     ))
   })
-  
+
   return(corpusFile)
 }
 
@@ -76,18 +76,19 @@ render_corpus_ui <- function(id) {
 }
 
 render_corpus_server <- function(input, output, session, corpusFile) {
-  
+
   colNumTexts <- reactive({
     grep("texts", colnames(corpusFile()))
   })
-  
+
   output$corpus_table <- DT::renderDataTable({
-    
+
     corp <- data.table::as.data.table(corpusFile())
     cols <- colnames(corp[, sapply(corp,is.numeric), with = FALSE])
-    
+
     DT::datatable(corp, options = list(
       pageLength = 5,
+      server = FALSE,
       searching = TRUE,
       lengthMenu = c( 5, 10, 15, 20),
       columnDefs = list(list(
@@ -102,11 +103,11 @@ render_corpus_server <- function(input, output, session, corpusFile) {
       )
     ) %>% formatRound(columns = cols, digits = 2)
   })
-  
+
 }
 
 create_corpus_server <- function(input, output, session, corpusFile) {
-  
+
   corpusData <- reactive({
     df <- corpusFile()
     if (all(c("texts", "id", "date") %in% colnames(df))) {
@@ -115,8 +116,8 @@ create_corpus_server <- function(input, output, session, corpusFile) {
     } else {
       corp <- as.character(df$texts)
     }
-   
+
   })
-  
+
 }
 

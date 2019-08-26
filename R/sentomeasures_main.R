@@ -172,21 +172,21 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
   return(ctr)
 }
 
-#' One-way road towards a sentomeasures object
+#' One-way road towards a sento_measures object
 #'
 #' @author Samuel Borms, Keven Bluteau
 #'
 #' @description Wrapper function which assembles calls to \code{\link{compute_sentiment}} and \code{\link{aggregate}}.
-#' Serves as the most direct way towards a panel of textual sentiment measures as a \code{sentomeasures} object.
+#' Serves as the most direct way towards a panel of textual sentiment measures as a \code{sento_measures} object.
 #'
 #' @details As a general rule, neither the names of the features, lexicons or time weighting schemes may contain
 #' any `-' symbol.
 #'
-#' @param sentocorpus a \code{sentocorpus} object created with \code{\link{sento_corpus}}.
+#' @param sento_corpus a \code{sento_corpus} object created with \code{\link{sento_corpus}}.
 #' @param lexicons a \code{sentolexicons} object created with \code{\link{sento_lexicons}}.
 #' @param ctr output from a \code{\link{ctr_agg}} call.
 #'
-#' @return A \code{sentomeasures} object, which is a \code{list} containing:
+#' @return A \code{sento_measures} object, which is a \code{list} containing:
 #' \item{measures}{a \code{data.table} with a \code{"date"} column and all textual sentiment measures as remaining columns.}
 #' \item{features}{a \code{character} vector of the different features.}
 #' \item{lexicons}{a \code{character} vector of the different lexicons used.}
@@ -207,7 +207,7 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #' data("list_lexicons", package = "sentometrics")
 #' data("list_valence_shifters", package = "sentometrics")
 #'
-#' # construct a sentomeasures object to start with
+#' # construct a sento_measures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 #' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
@@ -218,17 +218,17 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #'                lag = 3,
 #'                ordersAlm = 1:3,
 #'                do.inverseAlm = TRUE)
-#' sentomeasures <- sento_measures(corpusSample, l, ctr)
-#' summary(sentomeasures)
+#' sento_measures <- sento_measures(corpusSample, l, ctr)
+#' summary(sento_measures)
 #'
 #' @import data.table
 #' @export
-sento_measures <- function(sentocorpus, lexicons, ctr) {
-  check_class(sentocorpus, "sentocorpus")
-  sentiment <- compute_sentiment(sentocorpus, lexicons, how = ctr$within$howWithin,
+sento_measures <- function(sento_corpus, lexicons, ctr) {
+  check_class(sento_corpus, "sento_corpus")
+  sentiment <- compute_sentiment(sento_corpus, lexicons, how = ctr$within$howWithin,
                                  tokens = ctr$tokens, nCore = ctr$nCore)
-  sentomeasures <- aggregate(sentiment, ctr)
-  return(sentomeasures)
+  sento_measures <- aggregate(sentiment, ctr)
+  return(sento_measures)
 }
 
 #' Aggregate textual sentiment across documents and time
@@ -240,11 +240,11 @@ sento_measures <- function(sentocorpus, lexicons, ctr) {
 #' applied on the output of \code{\link{compute_sentiment}}.
 #'
 #' @param x a \code{sentiment} object created using \code{\link{compute_sentiment}} (from a
-#' \code{sentocorpus} object), or an output from \code{\link{to_sentiment}}.
+#' \code{sento_corpus} object), or an output from \code{\link{to_sentiment}}.
 #' @param ctr output from a \code{\link{ctr_agg}} call. The \code{howWithin} and \code{nCore} elements are ignored.
 #' @param ... not used.
 #'
-#' @return A \code{sentomeasures} object.
+#' @return A \code{sento_measures} object.
 #'
 #' @seealso \code{\link{compute_sentiment}}, \code{\link{ctr_agg}}, \code{\link{sento_measures}}
 #'
@@ -261,7 +261,7 @@ sento_measures <- function(sentocorpus, lexicons, ctr) {
 #' ctr <- ctr_agg(howTime = c("linear"), by = "year", lag = 3)
 #'
 #' # aggregation into sentiment measures
-#' sentomeasures <- aggregate(sent, ctr)
+#' sento_measures <- aggregate(sent, ctr)
 #'
 #' @importFrom stats aggregate
 #' @export
@@ -275,8 +275,8 @@ aggregate.sentiment <- function(x, ctr, ...) {
   ctr <- ctr
   aggDocs <- aggregate_docs(x, by = by, how = howDocs, weightingParamDocs = weightingParamDocs)
   aggDocs$ctr <- ctr
-  sentomeasures <- aggregate_time(aggDocs, how = howTime, weightingParamTime = weightingParamTime)
-  sentomeasures
+  sento_measures <- aggregate_time(aggDocs, how = howTime, weightingParamTime = weightingParamTime)
+  sento_measures
 }
 
 aggregate_docs <- function(sentiment, by, how = get_hows()$docs, weightingParamDocs) {
@@ -319,7 +319,7 @@ aggregate_docs <- function(sentiment, by, how = get_hows()$docs, weightingParamD
   sw <- data.table(date = s$date, s[, -c(1:2)] * weights)
   measures <- sw[, lapply(.SD, function(x) sum(x, na.rm = TRUE)), by = date]
 
-  sentomeasures <- list(measures = measures,
+  sento_measures <- list(measures = measures,
                         features = features,
                         lexicons = lexNames,
                         time = NA,
@@ -327,13 +327,13 @@ aggregate_docs <- function(sentiment, by, how = get_hows()$docs, weightingParamD
                         stats = NA,
                         attribWeights = attribWeights)
 
-  class(sentomeasures) <- "sentomeasures"
+  class(sento_measures) <- "sento_measures"
 
-  return(sentomeasures)
+  return(sento_measures)
 }
 
-aggregate_time <- function(sentomeasures, how = get_hows()$time, weightingParamTime) {
-  check_class(sentomeasures, "sentomeasures")
+aggregate_time <- function(sento_measures, how = get_hows()$time, weightingParamTime) {
+  check_class(sento_measures, "sento_measures")
   lag <- weightingParamTime$lag
   fill <- weightingParamTime$fill
   weights <- setup_time_weights(how, weightingParamTime) # construct all weights
@@ -344,7 +344,7 @@ aggregate_time <- function(sentomeasures, how = get_hows()$time, weightingParamT
   }
 
   # check if any duplicate names across dimensions
-  namesAll <- c(sentomeasures$features, sentomeasures$lexicons, colnames(weights))
+  namesAll <- c(sento_measures$features, sento_measures$lexicons, colnames(weights))
   dup <- duplicated(namesAll)
   if (any(dup)) {
     stop(paste0("Following names appear at least twice as a component of a dimension: ",
@@ -353,13 +353,13 @@ aggregate_time <- function(sentomeasures, how = get_hows()$time, weightingParamT
   }
 
   # apply rolling time window, if not too large, for every weights column and combine all new measures column-wise
-  if (!(fill %in% "none")) sentomeasures <- measures_fill(sentomeasures, fill = fill)
-  measures <- get_measures(sentomeasures)
+  if (!(fill %in% "none")) sento_measures <- measures_fill(sento_measures, fill = fill)
+  measures <- as.data.table(sento_measures)
   toRoll <- measures[, -1]
   m <- nrow(measures)
   if (lag > m)
     stop("Rolling time aggregation window (= ", lag, ") is too large for number of observations per measure (= ", m, ")")
-  sentomeasures$attribWeights[["B"]] <- copy(weights)
+  sento_measures$attribWeights[["B"]] <- copy(weights)
   for (i in 1:ncol(weights)) {
     name <- colnames(weights)[i]
     add <- RcppRoll::roll_sum(as.matrix(toRoll), n = lag, weights = as.vector(weights[, i]),
@@ -374,11 +374,11 @@ aggregate_time <- function(sentomeasures, how = get_hows()$time, weightingParamT
   measuresAggTime$date <- date
   measuresAggTime <- setcolorder(measuresAggTime, c("date", colnames(measuresAggTime)[-ncol(measuresAggTime)]))
 
-  sentomeasures$measures <- measuresAggTime
-  sentomeasures$time <- colnames(weights)
-  sentomeasures$stats <- compute_stats(sentomeasures)
+  sento_measures$measures <- measuresAggTime
+  sento_measures$time <- colnames(weights)
+  sento_measures$stats <- compute_stats(sento_measures)
 
-  return(sentomeasures)
+  return(sento_measures)
 }
 
 #' Extract dates related to sentiment time series peaks
@@ -390,7 +390,7 @@ aggregate_time <- function(sentomeasures, how = get_hows()$time, weightingParamT
 #' for example, all most extreme sentiment values (for different sentiment measures) occur on only
 #' one date.
 #'
-#' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
+#' @param sento_measures a \code{sento_measures} object created using \code{\link{sento_measures}}.
 #' @param n a positive \code{numeric} value to indicate the number of dates associated to sentiment peaks to extract.
 #' If \code{n < 1}, it is interpreted as a quantile (for example, 0.07 would mean the 7\% most extreme dates).
 #' @param type a \code{character} value, either \code{"pos"}, \code{"neg"} or \code{"both"}, respectively to look
@@ -408,36 +408,36 @@ aggregate_time <- function(sentomeasures, how = get_hows()$time, weightingParamT
 #' data("list_lexicons", package = "sentometrics")
 #' data("list_valence_shifters", package = "sentometrics")
 #'
-#' # construct a sentomeasures object to start with
+#' # construct a sento_measures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 #' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "month", lag = 3)
-#' sentomeasures <- sento_measures(corpusSample, l, ctr)
+#' sento_measures <- sento_measures(corpusSample, l, ctr)
 #'
 #' # extract the peaks
-#' peaksAbs <- peakdates(sentomeasures, n = 5)
-#' peaksAbsQuantile <- peakdates(sentomeasures, n = 0.50)
-#' peaksPos <- peakdates(sentomeasures, n = 5, type = "pos")
-#' peaksNeg <- peakdates(sentomeasures, n = 5, type = "neg")
+#' peaksAbs <- peakdates(sento_measures, n = 5)
+#' peaksAbsQuantile <- peakdates(sento_measures, n = 0.50)
+#' peaksPos <- peakdates(sento_measures, n = 5, type = "pos")
+#' peaksNeg <- peakdates(sento_measures, n = 5, type = "neg")
 #'
 #' @export
-peakdates <- function(sentomeasures, n = 10, type = "both", do.average = FALSE) {
-  check_class(sentomeasures, "sentomeasures")
+peakdates <- function(sento_measures, n = 10, type = "both", do.average = FALSE) {
+  check_class(sento_measures, "sento_measures")
   stopifnot(n > 0)
   stopifnot(type %in% c("both", "neg", "pos"))
 
-  nMax <- nobs(sentomeasures)
+  nMax <- nobs(sento_measures)
   if (n < 1) n <- n * nMax
   n <- floor(n)
   if (n >= nMax) stop("The 'n' argument asks for too many dates.")
 
-  measures <- get_measures(sentomeasures)[, -1] # drop dates
-  m <- nmeasures(sentomeasures)
+  measures <- as.data.table(sento_measures)[, -1] # drop dates
+  m <- nmeasures(sento_measures)
   if (do.average == TRUE) {
     measures <- rowMeans(measures, na.rm = TRUE)
-    dates <- get_dates(sentomeasures)
-  } else dates <- rep(get_dates(sentomeasures), m)
+    dates <- get_dates(sento_measures)
+  } else dates <- rep(get_dates(sento_measures), m)
   if (type == "both") measures <- abs(measures)
   indx <- order(measures, decreasing = ifelse(type == "neg", FALSE, TRUE))[1:(m * n)]
   peakDates <- unique(dates[indx])[1:n]

@@ -4,10 +4,10 @@
 \alias{sento_model}
 \title{Optimized and automated sentiment-based sparse regression}
 \usage{
-sento_model(sentomeasures, y, x = NULL, ctr)
+sento_model(sento_measures, y, x = NULL, ctr)
 }
 \arguments{
-\item{sentomeasures}{a \code{sentomeasures} object created using \code{\link{sento_measures}}.}
+\item{sento_measures}{a \code{sento_measures} object created using \code{\link{sento_measures}}.}
 
 \item{y}{a one-column \code{data.frame} or a \code{numeric} vector capturing the dependent (response) variable. In case of
 a logistic regression, the response variable is either a \code{factor} or a \code{matrix} with the factors represented by
@@ -20,7 +20,7 @@ default set to \code{NULL}.}
 \item{ctr}{output from a \code{\link{ctr_model}} call.}
 }
 \value{
-If \code{ctr$do.iter = FALSE}, a \code{sentomodel} object which is a \code{list} containing:
+If \code{ctr$do.iter = FALSE}, a \code{sento_model} object which is a \code{list} containing:
 \item{reg}{optimized regression, i.e., a model-specific \code{glmnet} object, including for example the estimated
 coefficients.}
 \item{model}{the input argument \code{ctr$model}, to indicate the type of model estimated.}
@@ -33,15 +33,15 @@ calibration, and under \code{"matrix"}, a \code{matrix} of all information crite
 and the respective lambda values as columns (if \code{ctr$type != } "\code{cv}"). Any \code{NA} value in the latter
 element means the specific information criterion could not be computed.}
 \item{dates}{sample reference dates as a two-element \code{character} vector, being the earliest and most recent date from
-the \code{sentomeasures} object accounted for in the estimation window.}
+the \code{sento_measures} object accounted for in the estimation window.}
 \item{nVar}{a vector of size two, with respectively the number of sentiment measures, and the number of other explanatory
 variables inputted.}
 \item{discarded}{a named \code{logical} vector of length equal to the number of sentiment measures, in which \code{TRUE}
 indicates that the particular sentiment measure has not been considered in the regression process. A sentiment measure is
 not considered when it is a duplicate of another, or when at least 50\% of the observations are equal to zero.}
 
-If \code{ctr$do.iter = TRUE}, a \code{sentomodeliter} object which is a \code{list} containing:
-\item{models}{all sparse regressions, i.e., separate \code{sentomodel} objects as above, as a \code{list} with as names the
+If \code{ctr$do.iter = TRUE}, a \code{sento_modelIter} object which is a \code{list} containing:
+\item{models}{all sparse regressions, i.e., separate \code{sento_model} objects as above, as a \code{list} with as names the
 dates from the perspective of the sentiment measures at which the out-of-sample predictions are carried out.}
 \item{alphas}{calibrated alphas.}
 \item{lambdas}{calibrated lambdas.}
@@ -79,39 +79,39 @@ data("epu", package = "sentometrics")
 
 set.seed(505)
 
-# construct a sentomeasures object to start with
+# construct a sento_measures object to start with
 corpusAll <- sento_corpus(corpusdf = usnews)
 corpus <- quanteda::corpus_subset(corpusAll, date >= "2004-01-01")
 l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")])
 ctr <- ctr_agg(howWithin = "counts", howDocs = "proportional",
                howTime = c("equal_weight", "linear"),
                by = "month", lag = 3)
-sentomeasures <- sento_measures(corpus, l, ctr)
+sento_measures <- sento_measures(corpus, l, ctr)
 
 # prepare y and other x variables
-y <- epu[epu$date \%in\% get_dates(sentomeasures), "index"]
-length(y) == nobs(sentomeasures) # TRUE
+y <- epu[epu$date \%in\% get_dates(sento_measures), "index"]
+length(y) == nobs(sento_measures) # TRUE
 x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
 colnames(x) <- c("x1", "x2")
 
 # a linear model based on the Akaike information criterion
 ctrIC <- ctr_model(model = "gaussian", type = "AIC", do.iter = FALSE, h = 4,
                    do.difference = TRUE)
-out1 <- sento_model(sentomeasures, y, x = x, ctr = ctrIC)
+out1 <- sento_model(sento_measures, y, x = x, ctr = ctrIC)
 
 # attribution and prediction as post-analysis
-attributions1 <- attributions(out1, sentomeasures,
-                              refDates = get_dates(sentomeasures)[20:25])
+attributions1 <- attributions(out1, sento_measures,
+                              refDates = get_dates(sento_measures)[20:25])
 plot(attributions1, "features")
 
-nx <- nmeasures(sentomeasures) + ncol(x)
-newx <- runif(nx) * cbind(get_measures(sentomeasures)[, -1], x)[30:40, ]
+nx <- nmeasures(sento_measures) + ncol(x)
+newx <- runif(nx) * cbind(as.data.table(sento_measures)[, -1], x)[30:40, ]
 preds <- predict(out1, newx = as.matrix(newx), type = "link")
 
 # an iterative out-of-sample analysis, parallelized
 ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE, h = 3,
                      oos = 2, alphas = c(0.25, 0.75), nSample = 75, nCore = 2)
-out2 <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
+out2 <- sento_model(sento_measures, y, x = x, ctr = ctrIter)
 summary(out2)
 
 # plot predicted vs. realized values
@@ -124,17 +124,17 @@ doParallel::registerDoParallel(cl)
 ctrCV <- ctr_model(model = "gaussian", type = "cv", do.iter = FALSE,
                    h = 0, alphas = c(0.10, 0.50, 0.90), trainWindow = 70,
                    testWindow = 10, oos = 0, do.progress = TRUE)
-out3 <- sento_model(sentomeasures, y, x = x, ctr = ctrCV)
+out3 <- sento_model(sento_measures, y, x = x, ctr = ctrCV)
 parallel::stopCluster(cl)
 foreach::registerDoSEQ()
 summary(out3)
 
 # a cross-validation based model for a binomial target
-yb <- epu[epu$date \%in\% get_dates(sentomeasures), "above"]
+yb <- epu[epu$date \%in\% get_dates(sento_measures), "above"]
 ctrCVb <- ctr_model(model = "binomial", type = "cv", do.iter = FALSE,
                     h = 0, alphas = c(0.10, 0.50, 0.90), trainWindow = 70,
                     testWindow = 10, oos = 0, do.progress = TRUE)
-out4 <- sento_model(sentomeasures, yb, x = x, ctr = ctrCVb)
+out4 <- sento_model(sento_measures, yb, x = x, ctr = ctrCVb)
 summary(out4)}
 
 }

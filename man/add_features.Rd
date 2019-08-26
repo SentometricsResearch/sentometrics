@@ -8,7 +8,7 @@ add_features(corpus, featuresdf = NULL, keywords = NULL,
   do.binary = TRUE, do.regex = FALSE)
 }
 \arguments{
-\item{corpus}{a \code{sentocorpus} object created with \code{\link{sento_corpus}}, or a \pkg{quanteda}
+\item{corpus}{a \code{sento_corpus} object created with \code{\link{sento_corpus}}, or a \pkg{quanteda}
 \code{\link[quanteda]{corpus}} object.}
 
 \item{featuresdf}{a named \code{data.frame} of type \code{numeric} where each columns is a new feature to be added to the
@@ -33,7 +33,7 @@ An updated \code{corpus} object.
 }
 \description{
 Adds new feature columns, either user-supplied or based on keyword(s)/regex pattern search, to
-a provided \code{sentocorpus} or a \pkg{quanteda} \code{\link[quanteda]{corpus}} object.
+a provided \code{sento_corpus} or a \pkg{quanteda} \code{\link[quanteda]{corpus}} object.
 }
 \details{
 If a provided feature name is already part of the corpus, it will be replaced. The \code{featuresdf} and
