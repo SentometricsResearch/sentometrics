@@ -4,8 +4,9 @@
 \alias{sentometrics-deprecated}
 \title{Deprecated functions}
 \description{
-Functions deprecated due to changed naming or because functionality is discarded. Deprecated functions are made defunct
-every 1 major or every 2 minor package updates. See the NEWS file for more information about since when or why functions
-have been deprecated.
+Functions deprecated due to changed naming or because functionality is discarded. The general (but not
+blindly followed) rule is that deprecated functions are made defunct every 1 major or every 2 minor
+package updates. See the NEWS file for more information about since when or why functions have been
+deprecated.
 }
 \keyword{internal}

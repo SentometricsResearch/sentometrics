@@ -152,51 +152,6 @@ clean_texts <- function(corpusdf) {
   return(corpusdf)
 }
 
-### TODO: deprecate
-#' Convert a quanteda corpus object into a sento_corpus object
-#'
-#' @author Samuel Borms
-#'
-#' @description Converts a \pkg{quanteda} \code{\link[quanteda]{corpus}} object into a \code{sento_corpus} object, by
-#' adding user-supplied dates and doing proper rearranging.
-#'
-#' @param corpus a quanteda \code{\link[quanteda]{corpus}} object.
-#' @param dates a sequence of dates as \code{"yyyy-mm-dd"}, of the same length as the number of documents
-#' in the input \code{corpus}.
-#' @param do.clean see \code{do.clean} argument from the \code{\link{sento_corpus}} function.
-#'
-#' @return A \code{sento_corpus} object, as returned by the \code{\link{sento_corpus}} function.
-#'
-#' @seealso \code{\link[quanteda]{corpus}}, \code{\link{sento_corpus}}
-#'
-#' @examples
-#' data("usnews", package = "sentometrics")
-#'
-#' # reshuffle usnews data.frame
-#' dates <- usnews$date
-#' usnews$id <- usnews$date <- NULL
-#' usnews$wrong <- "notNumeric"
-#' colnames(usnews)[1] <- "myTexts"
-#'
-#' # set up quanteda corpus object
-#' corpusQ <- quanteda::corpus(usnews, text_field = "myTexts")
-#'
-#' # corpus conversion
-#' corpusS <- to_sento_corpus(corpusQ, dates = dates)
-#'
-#' @export
-to_sento_corpus <- function(corpus, dates, do.clean = FALSE) {
-  if (length(dates) != quanteda::ndoc(corpus))
-    stop("The number of dates in 'dates' should be equal to the number of documents in 'corpus'.")
-  corpusdf <- as.data.table(data.frame(texts = quanteda::texts(corpus),
-                                       quanteda::docvars(corpus),
-                                       stringsAsFactors = FALSE))
-  corpusdf[, id := quanteda::docnames(corpus)]
-  corpusdf[, date := dates]
-  setcolorder(corpusdf, c("id", "date", "texts", setdiff(names(corpusdf), c("id", "date", "texts"))))
-  return(sento_corpus(corpusdf, do.clean))
-}
-
 #' Add feature columns to a (sento)corpus object
 #'
 #' @author Samuel Borms

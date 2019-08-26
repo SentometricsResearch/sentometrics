@@ -274,7 +274,7 @@ get_dates <- function(sento_measures) {
 #' @export
 get_dimensions <- function(sento_measures) {
   check_class(sento_measures, "sento_measures")
-  sento_measures[c("features", "lexicons", "time", "valence")]
+  sento_measures[c("features", "lexicons", "time")]
 }
 
 #' Get the sentiment measures
@@ -285,7 +285,9 @@ get_dimensions <- function(sento_measures) {
 #' or long format.
 #'
 #' @param sento_measures a \code{sento_measures} object created using \code{\link{sento_measures}}.
+#' @param keep.rownames see \code{\link{as.data.table}}.
 #' @param format a single \code{character} vector, one of \code{c("wide", "long")}.
+#' @param ... not used.
 #'
 #' @return The panel of sentiment measures under \code{sento_measures[["measures"]]},
 #' in wide or long format.
@@ -303,7 +305,7 @@ get_dimensions <- function(sento_measures) {
 #' as.data.table(sm, "long")
 #'
 #' @export
-as.data.table.sento_measures <- function(sento_measures, format = "wide", ...) {
+as.data.table.sento_measures <- function(sento_measures, keep.rownames = FALSE, format = "wide", ...) {
   check_class(sento_measures, "sento_measures")
   if (format == "wide")
     sento_measures[["measures"]]
@@ -324,7 +326,7 @@ as.data.table.sento_measures <- function(sento_measures, format = "wide", ...) {
 #' @param subset a logical expression indicating the rows to keep.
 #' @param select ...
 #' @param delete ...
-#' @param ... ...
+#' @param ... not used.
 #'
 #' @return A modified \code{sento_measures} object, with only the kept rows, including updated information
 #' and statistics, but the original sentiment scores \code{data.table} untouched.
@@ -339,20 +341,32 @@ as.data.table.sento_measures <- function(sento_measures, format = "wide", ...) {
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 #' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
-#' sento_measures <- sento_measures(corpusSample, l, ctr)
+#' sm <- sento_measures(corpusSample, l, ctr)
 #'
 #' # different subsets
-#' sub1 <- measures_subset(sento_measures, HENRY_en--economy--equal_weight >= 0.01)
-#' sub2 <- measures_subset(sento_measures,
+#' sub1 <- subset(sm, HENRY_en--economy--equal_weight >= 0.01)
+#' sub2 <- subset(sm,
 #'    date %in% seq(as.Date("2000-01-01"), as.Date("2013-12-01"), by = "month"))
 #'
+#' # different selections
+#' sel1 <- subset(sm, select = c("equal_weight"))
+#' sel2 <- subset(sm, select = c("equal_weight", "linear"))
+#' sel3 <- subset(sm, select = c("linear", "LM_en"))
+#' sel4 <- subset(sm, select = list(c("linear", "wsj"), c("linear", "economy")))
+#'
+#' # different deletions
+#' del1 <- subset(sm, delete = c("equal_weight"))
+#' del2 <- subset(sm, delete = c("linear", "LM_en"))
+#' del3 <- subset(sm, delete = list(c("linear", "wsj"), c("linear", "economy")))
+#' del4 <- subset(sm, delete = c("equal_weight", "linear")) # warning
+#'
 #' @export
-subset.sento_measures <- function(x, subset, select, delete, ...) { #_subset
+subset.sento_measures <- function(x, subset = NULL, select = NULL, delete = NULL, ...) {
   check_class(x, "sento_measures")
 
   ### subset
   sub <- as.character(substitute(list(subset))[-1L])
-  if (length(sub) > 0) {
+  if (length(sub) > 0 && sub != "NULL") {
     sub <- stringi::stri_replace_all(sub, "", regex = " ")
     sub <- stringi::stri_replace_all(sub, "____", regex = "--")
     measures <- as.data.table(x)
@@ -360,63 +374,66 @@ subset.sento_measures <- function(x, subset, select, delete, ...) { #_subset
     measuresNew <- tryCatch(measures[eval(parse(text = sub), parent.frame())], error = function(e) return(NULL))
     if (is.null(measuresNew)) stop("The 'subset' argument must evaluate to logical.")
     colnames(measuresNew) <- stringi::stri_replace_all(colnames(measuresNew), "--", regex = "____")
+    if (dim(measuresNew)[1] == 0) {
+      warning("No rows selected in subset. Input sento_measures object is returned.")
+      return(x)
+    }
+    x <- update_info(x, measuresNew) # update 1
   }
-
-  if (dim(measuresNew)[1] == 0) {
-    warning("No rows selected in subset. Input sento_measures object is returned.")
-    return(x)
-  }
-  sento_measures <- update_info(x, measuresNew) # temporary update (1) of x object
 
   ### select
-  allOpts <- unlist(get_dimensions(sento_measures))
-  valid <- unlist(select) %in% allOpts
-  if (any(!valid)) {
-    stop(paste0("Following components make up none of the sentiment measures: ",
-                paste0(unique(unlist(select)[!valid]), collapse = ', '), "."))
-  }
-
-  measures <- as.data.table(sento_measures)
-  namesList <- stringi::stri_split(colnames(measures), regex = "--")
-  if (is.list(select)) {
-    ind <- rep(FALSE, length(namesList))
-    for (com in select) {
-      inds <- sapply(namesList, function(x) return(all(com %in% x)))
-      ind[inds == TRUE] <- TRUE
+  if (!is.null(select)) {
+    allOpts <- unlist(get_dimensions(x))
+    valid <- unlist(select) %in% allOpts
+    if (any(!valid)) {
+      stop(paste0("Following components make up none of the sentiment measures: ",
+                  paste0(unique(unlist(select)[!valid]), collapse = ', '), "."))
     }
-  } else ind <- sapply(namesList, function(x) return(any(select %in% x)))
-  if (!any(ind[-1])) {
-    warning("No appropriate combination found. Input sento_measures object is returned.")
-    return(sento_measures)
+
+    measures <- as.data.table(x)
+    namesList <- stringi::stri_split(colnames(measures), regex = "--")
+    if (is.list(select)) {
+      ind <- rep(FALSE, length(namesList))
+      for (com in select) {
+        inds <- sapply(namesList, function(x) return(all(com %in% x)))
+        ind[inds == TRUE] <- TRUE
+      }
+    } else ind <- sapply(namesList, function(x) return(any(select %in% x)))
+    if (!any(ind[-1])) {
+      warning("No appropriate combination for selection found. Input sento_measures object is returned.")
+      return(x)
+    }
+    measuresNew <- measures[, c(TRUE, ind[-1]), with = FALSE]
+    x <- update_info(x, measuresNew) # update 2
   }
-  measuresNew <- measures[, c(TRUE, ind[-1]), with = FALSE]
-  sento_measures <- update_info(sento_measures, measuresNew) # temporary update (2) of sento_measures object
 
   ### delete
-  allOpts <- unlist(get_dimensions(sento_measures))
-  valid <- unlist(delete) %in% allOpts
-  if (any(!valid)) {
-    stop(paste0("Following components make up none of the sentiment measures: ",
-                paste0(unique(unlist(delete)[!valid]), collapse = ', '), "."))
-  }
-
-  measures <- as.data.table(sento_measures)
-  namesList <- stringi::stri_split(colnames(measures), regex = "--")
-  if (is.list(delete)) {
-    ind <- rep(FALSE, length(namesList))
-    for (com in delete) {
-      inds <- sapply(namesList, function(x) return(all(com %in% x)))
-      ind[inds == TRUE] <- TRUE
+  if (!is.null(delete)) {
+    allOpts <- unlist(get_dimensions(x))
+    valid <- unlist(delete) %in% allOpts
+    if (any(!valid)) {
+      stop(paste0("Following components make up none of the sentiment measures: ",
+                  paste0(unique(unlist(delete)[!valid]), collapse = ', '), "."))
     }
-  } else ind <- sapply(namesList, function(x) return(any(delete %in% x)))
-  if (all(ind[-1]) || all(!ind[-1])) {
-    warning("No appropriate combination found or all measures selected for deletion. Input sento_measures object is returned.")
-    return(sento_measures)
-  }
-  measuresNew <- measures[, c(TRUE, !ind[-1]), with = FALSE]
-  sento_measures <- update_info(sento_measures, measuresNew) # final update (3) of sento_measures object
 
-  return(sento_measures)
+    measures <- as.data.table(x)
+    namesList <- stringi::stri_split(colnames(measures), regex = "--")
+    if (is.list(delete)) {
+      ind <- rep(FALSE, length(namesList))
+      for (com in delete) {
+        inds <- sapply(namesList, function(x) return(all(com %in% x)))
+        ind[inds == TRUE] <- TRUE
+      }
+    } else ind <- sapply(namesList, function(x) return(any(delete %in% x)))
+    if (all(ind[-1]) || all(!ind[-1])) {
+      warning("No appropriate combination found or all measures selected for deletion. Input sento_measures object is returned.")
+      return(x)
+    }
+    measuresNew <- measures[, c(TRUE, !ind[-1]), with = FALSE]
+    x <- update_info(x, measuresNew) # update 3
+  }
+
+  return(x)
 }
 
 # #' @export ### TODO: possible given that sento_measures has mode(...) "list"?
