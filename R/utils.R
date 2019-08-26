@@ -326,7 +326,7 @@ update_attribweights <- function(sento_measures, ...) {
 
 check_class <- function(x, class) {
   if (!inherits(x, class))
-    stop("Please provide a ", class, " object as one of the arguments.")
+    stop("Please provide a ", class, " object as argument.")
 }
 
 compute_stats <- function(sento_measures) {
@@ -478,9 +478,9 @@ plot_theme <- function(legendPos) { # plotting specifications (border and grid)
   )
 }
 
-pdf_manual <- function() {
+pdf_manual <- function(pkg = "sentometrics") {
   setwd("..")
-  shell('R CMD Rd2pdf --encoding=UTF-8 sentometrics')
-  setwd(paste0(wd, "/sentometrics"))
+  shell(paste0('R CMD Rd2pdf --encoding=UTF-8 ', pkg))
+  setwd(paste0(getwd(), "/", pkg))
 }
 

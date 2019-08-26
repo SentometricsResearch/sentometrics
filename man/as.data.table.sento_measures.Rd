@@ -4,13 +4,17 @@
 \alias{as.data.table.sento_measures}
 \title{Get the sentiment measures}
 \usage{
-\method{as.data.table}{sento_measures}(sento_measures, format = "wide",
-  ...)
+\method{as.data.table}{sento_measures}(sento_measures,
+  keep.rownames = FALSE, format = "wide", ...)
 }
 \arguments{
 \item{sento_measures}{a \code{sento_measures} object created using \code{\link{sento_measures}}.}
 
+\item{keep.rownames}{see \code{\link{as.data.table}}.}
+
 \item{format}{a single \code{character} vector, one of \code{c("wide", "long")}.}
+
+\item{...}{not used.}
 }
 \value{
 The panel of sentiment measures under \code{sento_measures[["measures"]]},

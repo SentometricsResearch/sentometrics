@@ -3,6 +3,9 @@
 
 - fixed a small bug in the `measures_merge()` function to take the mean instead of the sum in a particular case
 - handled reverse dependency issue raised by quanteda developers regarding their new corpus object
+- renamed the class objects coming from any `sento_xyz()` function into the name of the function (e.g., the `sento_measures()` function now gives a `sento_measures` object instead of a `sentomeasures` object)
+- new functions: `measures_update()`, `subset.sento_measures()`, `as.sentiment()`, `as.sento_measures()`, `corpus_summarize()`
+- defunct the `xxx()` function
 
 ## sentometrics 0.5.6
 

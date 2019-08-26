@@ -4,7 +4,8 @@
 \alias{subset.sento_measures}
 \title{Subset sentiment measures}
 \usage{
-\method{subset}{sento_measures}(x, subset, select, delete, ...)
+\method{subset}{sento_measures}(x, subset = NULL, select = NULL,
+  delete = NULL, ...)
 }
 \arguments{
 \item{x}{a \code{sento_measures} object created using \code{\link{sento_measures}}.}
@@ -15,7 +16,7 @@
 
 \item{delete}{...}
 
-\item{...}{...}
+\item{...}{not used.}
 }
 \value{
 A modified \code{sento_measures} object, with only the kept rows, including updated information
@@ -34,12 +35,24 @@ corpus <- sento_corpus(corpusdf = usnews)
 corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
-sento_measures <- sento_measures(corpusSample, l, ctr)
+sm <- sento_measures(corpusSample, l, ctr)
 
 # different subsets
-sub1 <- measures_subset(sento_measures, HENRY_en--economy--equal_weight >= 0.01)
-sub2 <- measures_subset(sento_measures,
+sub1 <- subset(sm, HENRY_en--economy--equal_weight >= 0.01)
+sub2 <- subset(sm,
    date \%in\% seq(as.Date("2000-01-01"), as.Date("2013-12-01"), by = "month"))
+
+# different selections
+sel1 <- subset(sm, select = c("equal_weight"))
+sel2 <- subset(sm, select = c("equal_weight", "linear"))
+sel3 <- subset(sm, select = c("linear", "LM_en"))
+sel4 <- subset(sm, select = list(c("linear", "wsj"), c("linear", "economy")))
+
+# different deletions
+del1 <- subset(sm, delete = c("equal_weight"))
+del2 <- subset(sm, delete = c("linear", "LM_en"))
+del3 <- subset(sm, delete = list(c("linear", "wsj"), c("linear", "economy")))
+del4 <- subset(sm, delete = c("equal_weight", "linear")) # warning
 
 }
 \author{

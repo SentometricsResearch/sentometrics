@@ -18,7 +18,7 @@
 #' \code{\link{sento_measures}}, \code{\link{peakdocs}}, \code{\link{peakdates}}, and a series of
 #' \code{measures_xyz}, generic and extractor functions
 #' \item Sparse modelling: \code{\link{ctr_model}}, \code{\link{sento_model}}
-#' \item Prediction and post-modelling analysis: \code{\link{predict.sentomodel}}, \code{\link{attributions}}
+#' \item Prediction and post-modelling analysis: \code{\link{predict.sento_model}}, \code{\link{attributions}}
 #' }
 #'
 #' The \code{\link{sento_app}} function is a Shiny interface for fast document-level sentiment computation and

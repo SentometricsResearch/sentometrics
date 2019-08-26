@@ -23,12 +23,13 @@ texts calculated and aggregated applying the control variables from the input se
 \examples{
 data("usnews", package = "sentometrics")
 
-corpus1 <- sento_corpus(usnews[1:500,])
+corpus1 <- sento_corpus(usnews[1:500, ])
+corpus2 <- sento_corpus(usnews[400:2000, ])
+
 ctr <- ctr_agg(howTime = "linear", by = "year", lag = 3)
 l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")],
                     list_valence_shifters[["en"]])
 sento_measures <- sento_measures(corpus1, l, ctr)
-corpus2 <- sento_corpus(usnews[400:2000,])
 sento_measuresNew <- measures_update(sento_measures, corpus2, l)
 
 }

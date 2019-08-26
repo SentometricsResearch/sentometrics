@@ -22,15 +22,15 @@ sentMeas <- sento_measures(corpus, lex, ctr)
 dims <- get_dimensions(sentMeas)
 
 # delete
-sentMeasDelete <- measures_delete(sentMeas, list("wsj", c("linear", "wapo"), "beta31"))
-test_that("Consistency of measures_delete() function", {
+sentMeasDelete <- subset(sentMeas, delete = list("wsj", c("linear", "wapo"), "beta31"))
+test_that("Consistency of deletion through subset() function", {
   expect_false("wsj" %in% sentMeasDelete$features)
   expect_equal(dims$lexicons, sentMeasDelete$lexicons)
   expect_false("beta31" %in% sentMeasDelete$time)
   expect_false(any(stringi::stri_detect(colnames(sentMeasDelete$measures)[-1], regex = "wapo--linear")))
-  expect_warning(measures_delete(sentMeas, dims$features))
-  expect_warning(measures_delete(sentMeas, dims$lexicons))
-  expect_warning(measures_delete(sentMeas, dims$time))
+  expect_warning(subset(sentMeas, delete = dims$features))
+  expect_warning(subset(sentMeas, delete = dims$lexicons))
+  expect_warning(subset(sentMeas, delete = dims$time))
   expect_false("beta31" %in% colnames(sentMeasDelete$attribWeights$B))
   expect_true(all(unlist(sapply(sentMeasDelete$lexicons, function(l) paste0(l, "--", sentMeasDelete$features))) %in%
                     colnames(sentMeasDelete$attribWeights$W)[-c(1:2)]))
@@ -73,15 +73,15 @@ test_that("Consistency of measures_merge() function", {
 })
 
 # select
-sentMeasSelect <- measures_select(sentMeas, list(c("wsj", "almon3", "LM_en"), c("wapo", "almon2_inv")))
-test_that("Consistency of measures_select() function", {
+sentMeasSelect <- subset(sentMeas, select = list(c("wsj", "almon3", "LM_en"), c("wapo", "almon2_inv")))
+test_that("Consistency of selection through subset() function", {
   expect_false(all(dims$features %in% sentMeasSelect$features))
   expect_equal(dims$lexicons, sentMeasSelect$lexicons)
   expect_true(all(sentMeasSelect$time %in% c("almon3", "almon2_inv")))
   expect_equal(nmeasures(sentMeasSelect), 1 + length(sentMeasSelect$lexicons))
-  expect_equal(nmeasures(measures_select(sentMeas, dims$features)), nmeasures(sentMeas))
-  expect_equal(nmeasures(measures_select(sentMeas, dims$lexicons)), nmeasures(sentMeas))
-  expect_equal(nmeasures(measures_select(sentMeas, dims$time)), nmeasures(sentMeas))
+  expect_equal(nmeasures(subset(sentMeas, select = dims$features)), nmeasures(sentMeas))
+  expect_equal(nmeasures(subset(sentMeas, select = dims$lexicons)), nmeasures(sentMeas))
+  expect_equal(nmeasures(subset(sentMeas, select = dims$time)), nmeasures(sentMeas))
   expect_true(all(colnames(sentMeasSelect$attribWeights$B) %in% c("almon2_inv", "almon3")))
   expect_true(all(colnames(sentMeasSelect$attribWeights$W)[-c(1:2)] %in%
                     c("LM_en--wsj", "LM_en--wapo", "GI_en--wapo")))
@@ -89,13 +89,13 @@ test_that("Consistency of measures_select() function", {
 })
 
 # subset
-sentMeasSubset <- measures_subset(sentMeas, date > "2003-05-04" & GI_en--wsj--almon1_inv <= 0)
-test_that("Consistency of measures_subset() function", {
+sentMeasSubset <- subset(sentMeas, date > "2003-05-04" & GI_en--wsj--almon1_inv <= 0)
+test_that("Consistency of subsetting through subset() function", {
   expect_true(min(get_dates(sentMeasSubset)) >= "2003-05-04")
   expect_true(max(as.data.table(sentMeasSubset)[["GI_en--wsj--almon1_inv"]]) <= 0)
   expect_true(nobs(sentMeasSubset) < nobs(sentMeas))
   expect_equal(nmeasures(sentMeasSubset), nmeasures(sentMeas))
-  expect_warning(measures_subset(sentMeas, date > "2017-08-12"))
+  expect_warning(subset(sentMeas, date > "2017-08-12"))
   expect_identical(sentMeas$attribWeights$B, sentMeasSubset$attribWeights$B)
   expect_identical(sentMeas$attribWeights$W, sentMeasSubset$attribWeights$W)
   expect_length(sentMeasSubset$attribWeights$W[[1]], 1000)

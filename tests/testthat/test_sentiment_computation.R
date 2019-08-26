@@ -7,10 +7,27 @@ library("tm")
 
 set.seed(123)
 
-# corpus and lexicon creation
+# sento_corpus creation
 data("usnews")
 corpus <- sento_corpus(corpusdf = usnews[1:250, ])
 
+# SimpleCorpus creation
+txt <- system.file("texts", "txt", package = "tm")
+scorp <- SimpleCorpus(DirSource(txt, encoding = "UTF-8"), control = list(language = "en"))
+scorp$content[1] <- "This is a text for which we want to calculate above average sentiment."
+scorp$content[2] <- "This is a text for which we want to calculate below average sentiment."
+scorp$content[3] <- corpus$documents$text[3]
+
+# VCorpus creation
+reut21578 <- system.file("texts", "crude", package = "tm")
+vcorp <- VCorpus(DirSource(reut21578, mode = "binary"))
+
+# corpus with multiple languages
+usnews[["language"]] <- "en"
+usnews[["language"]][1:100] <- "fr"
+corpusLang <- sento_corpus(corpusdf = usnews[1:250, ])
+
+# lexicons creation
 data("list_lexicons")
 lex <- sento_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")], list_valence_shifters[["en"]])
 # lexSimple <- sento_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")]) # same as lex[1:3]
@@ -20,21 +37,6 @@ lEn <- sento_lexicons(list("HENRY_en" = list_lexicons$HENRY_en))
 lFr <- sento_lexicons(list("HENRY_fr" = list_lexicons$HENRY_en))
 lexiconsLang <- list(en = lEn, fr = lFr )
 lexiconsWrong <- list(en = lEn, frr = lFr)
-
-# VCorpus and SimpleCorpus
-sp_texts <- system.file("texts", "txt", package = "tm")
-simple_corpus <- SimpleCorpus(DirSource(sp_texts, encoding = "UTF-8"), control = list(language = "en"))
-simple_corpus$content[1] <- "This is a text for which we want to calculate above average sentiment."
-simple_corpus$content[2] <- "This is a text for which we want to calculate below average sentiment."
-simple_corpus$content[3] <- corpus$documents$text[3]
-
-reut21578 <- system.file("texts", "crude", package = "tm")
-vcorp <- VCorpus(DirSource(reut21578, mode = "binary"))
-
-# Corpus with multiple languages
-usnews[["language"]] <- "en"
-usnews[["language"]][1:100] <- "fr"
-corpusLang <- sento_corpus(corpusdf = usnews[1:250, ])
 
 ### tests from here ###
 
@@ -81,7 +83,7 @@ test_that("Agreement between sentiment scores across input objects", {
   expect_error(compute_sentiment(quanteda::texts(corpus), lex, how = "notAnOption"))
   expect_warning(compute_sentiment(quanteda::texts(corpus), lex, how = "counts", nCore = -1))
   expect_error(compute_sentiment(quanteda::texts(corpus), list_lexicons))
-  expect_true(all.equal(sentimentList$s3[3],compute_sentiment(simple_corpus[3], lex, how = "proportional")))
+  expect_true(all.equal(sentimentList$s3[3],compute_sentiment(scorp[3], lex, how = "proportional")))
   # expect_warning(compute_sentiment(vcorp, lex, how = "proportional"))
   expect_error(compute_sentiment(corpusLang, lex, how = "proportional"))
   expect_true("language" %in% colnames(quanteda::docvars(corpusLang)))
@@ -102,7 +104,7 @@ test_that("Agreement between sentiment scores on sentence level across input obj
   expect_true(all(unlist(lapply(sentimentSentenceList, function(s) nrow(s) == 2658))))
   expect_true(all(unlist(lapply(sentimentSentenceList[1:4], function(s) all(s$word_count == sentimentSentenceList$s1$word_count)))))
   expect_true(all(unlist(lapply(sentimentSentenceList, function(s) sum(s$word_count) == sum(sentimentSentenceList$s1$word_count)))))
-  expect_true(all(c("GI_en", "LM_en", "HENRY_en") %in% colnames(compute_sentiment(simple_corpus[3], lexClust, how = "proportional", do.sentence = TRUE)) ))
+  expect_true(all(c("GI_en", "LM_en", "HENRY_en") %in% colnames(compute_sentiment(scorp[3], lexClust, how = "proportional", do.sentence = TRUE)) ))
   # expect_warning(compute_sentiment(vcorp, lexClust, how = "proportional", do.sentence = TRUE))
 })
 

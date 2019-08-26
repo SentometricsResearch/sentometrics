@@ -7,7 +7,7 @@
 \alias{valence}
 \title{Datasets with defunct names}
 \description{
-These are datasets that have been renamed and the old names removed. Please change your code to use the new names.
+These are datasets that have been renamed and removed.
 }
 \details{
 The dataset \code{lexicons} is defunct, use \code{list_lexicons} instead.

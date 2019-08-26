@@ -35,15 +35,15 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
 
   ids <- quanteda::docnames(x) # original ids to keep same order in output
 
-  # step 1: split corpus by language
+  # split corpus by language
   corpByLang <- lapply(languages, function(l) quanteda::corpus_subset(x, language == l))
   names(corpByLang) <- languages
 
-  # step 2: compute sentiment for each subcorpus (language)
-  sentByLang <- vector("list", 0)
+  # compute sentiment for each language subcorpus
+  sentByLang <- setNames(as.list(languages), languages)
   for (l in languages) {
     corpus <- corpByLang[[l]]
-    if (!l %in% names(lexicons)) {
+    if (!(l %in% names(lexicons))) {
       stop(paste0("No lexicon found for language: ", l))
     }
     lex <- lexicons[[l]]
@@ -52,18 +52,20 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
       sent <- compute_sentiment_lexicons(tok, lex, how, nCore)
       lexNames <- colnames(sent)[-1]
       sent <- cbind(id = quanteda::docnames(corpus), quanteda::docvars(corpus), sent)
-      sent <- spread_sentiment_features(sent, features, lexNames) # compute feature-sentiment
+      sent <- spread_sentiment_features(sent, features, lexNames)
       sentByLang[[l]] <- sent
     } else {
       sentByLang[[l]] <- compute_sentiment_by_sentences(corpus, lexicons = lex, how = how, nCore = nCore)
     }
   }
 
-  # step 3: merge subsets of languages
+  # merge subsets of sentiment
   if ("sentence_id" %in% colnames(sentByLang[[1]])) {
-    s <- Reduce(function(...) merge(..., by = c("id", "language", "date", "word_count", "sentence_id"), all = TRUE), sentByLang)
+    s <- Reduce(function(...)
+      merge(..., by = c("id", "language", "date", "word_count", "sentence_id"), all = TRUE), sentByLang)
   } else {
-    s <- Reduce(function(...) merge(..., by = c("id", "language", "date", "word_count"), all = TRUE), sentByLang)
+    s <- Reduce(function(...)
+      merge(..., by = c("id", "language", "date", "word_count"), all = TRUE), sentByLang)
   }
 
   if ("language" %in% colnames(s)) {
@@ -114,8 +116,8 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
 #' score by the number of detected polarized words (counting words that appear multiple times by their frequency), instead
 #' of the total number of words which the \code{how = "proportional"} option gives. The \code{how = "counts"} option
 #' does no normalization. The \code{squareRootCounts} divides the sentiment by the square root of the number of tokens in each text.
-#'  The \code{how = "UShaped"} option, gives a higher weight to words at the beginning and end of the texts.
-#'  The \code{how = "invertedUShaped"} option gives a lower weight to words at the beginning
+#' The \code{how = "UShaped"} option, gives a higher weight to words at the beginning and end of the texts.
+#' The \code{how = "invertedUShaped"} option gives a lower weight to words at the beginning
 #' and the end of the texts. The \code{how = "exponential"} option gives gradually more weight the later the word appears in the text.
 #' The \code{ how = "invertedExponential"} option gives gradually less weight, the later the words appears in the text. The \code{
 #' how = "TF"} option gives a weight proportional to the number of times a word appears in a text. The \code{how = "logarithmicTF"} option
@@ -279,22 +281,20 @@ compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, 
   if ("language" %in% names(quanteda::docvars(x))) {
     features <- names(quanteda::docvars(x))[-c(1:2)] # drop date and language column
     languages <- unique(quanteda::docvars(x, field = "language"))
-    lex <- lexicons[[languages]]
   } else {
     features <- names(quanteda::docvars(x))[-1] # drop date column
-    languages <- "NA" ### TODO: NA or "NA"?
-    lex <- lexicons
+    languages <- NA
   }
   if (length(languages) == 1) {
     # if only one language in corpus then regular approach
     if (do.sentence == FALSE) {
       tok <- tokenize_texts(quanteda::texts(x), tokens)
-      s <- compute_sentiment_lexicons(tok, lex, how, nCore) # compute sentiment per document for all lexicons
+      s <- compute_sentiment_lexicons(tok, lexicons, how, nCore) # compute sentiment per document for all lexicons
       lexNames <- colnames(s)[-1]
       s <- cbind(id = quanteda::docnames(x), quanteda::docvars(x), s) # id - date - features - word_count - lexicons/sentiment
-      sent <- spread_sentiment_features(s, features, lexNames) # compute feature-sentiment
+      sent <- spread_sentiment_features(s, features, lexNames)
     } else {
-      sent <- compute_sentiment_by_sentences(x, lexicons = lex, how = how, nCore = nCore)
+      sent <- compute_sentiment_by_sentences(x, lexicons, how = how, nCore = nCore)
     }
   } else {
     sent <- compute_sentiment_multiple_languages(x, lexicons, languages, features, how, tokens, nCore, do.sentence)
@@ -302,7 +302,7 @@ compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, 
   if ("language" %in% colnames(sent)) {
     sent[, "language" := NULL]
   }
-  # sent <- sent[order(date)] # order by date
+  sent <- sent[order(date)] # order by date
   class(sent) <- c("sentiment", class(sent))
   sent
 }
@@ -375,7 +375,7 @@ compute_sentiment.VCorpus <- compiler::cmpfun(.compute_sentiment.VCorpus) ### TO
 #' @export
 compute_sentiment.SimpleCorpus <- compiler::cmpfun(.compute_sentiment.SimpleCorpus) ### TODO: document option in main function
 
-### TODO: check if functions applied to "sentiment" objects still function when coming from sentence calculation
+### TODO: check if functions applied to "sentiment" objects still work when coming from sentence calculation
 compute_sentiment_by_sentences <- function(x, lexicons, how, tokens = NULL, nCore = 1) {
   count <- text_id <- sentence_id <- NULL
   if (!(how %in% get_hows()[["words"]]))
@@ -563,69 +563,6 @@ sentiment_bind <- function(...) {
     stop("Column names of sentiment objects are not all the same.")
   s <- data.table::rbindlist(all)[order(date)]
   s <- unique(s, by = "id")
-  class(s) <- c("sentiment", class(s))
-  s
-}
-
-### TODO: deprecate
-#' Convert a sentiment table to a sentiment object
-#'
-#' @author Samuel Borms
-#'
-#' @description Converts a properly structured sentiment table into a \code{sentiment} object, that can be used
-#' for further aggregation with the \code{\link{aggregate.sentiment}} function. This allows to start from document-level
-#' sentiment scores not necessarily computed with \code{\link{compute_sentiment}}.
-#'
-#' @param s a \code{data.table} that can be converted into a \code{sentiment} object. It should have an \code{"id"},
-#' a \code{"date"} and a \code{"word_count"} column. If other column names are provided with a separating \code{"--"},
-#' the first part is considered the lexicon (or more generally, the sentiment computation method), and the second part
-#' the feature. For sentiment column names without any \code{"--"}, a \code{"dummyFeature"} component is added.
-#'
-#' @return A \code{sentiment} object.
-#'
-#' @examples
-#' set.seed(505)
-#'
-#' ids <- paste0("id", 1:200)
-#' date <- sample(seq(as.Date("2015-01-01"), as.Date("2018-01-01"), by = "day"), 200, TRUE)
-#' word_count <- sample(150:850, 200, replace = TRUE)
-#' sent <- matrix(rnorm(200 * 8), nrow =  200)
-#' s1 <- s2 <- s3 <- data.table(id = ids, date = date, word_count = word_count, sent)
-#' m <- "method"
-#'
-#' colnames(s1)[-c(1:3)] <- paste0(m, 1:8)
-#' sent1 <- to_sentiment(s1)
-#'
-#' colnames(s2)[-c(1:3)] <- c(paste0(m, 1:4, "--", "feat1"), paste0(m, 1:4, "--", "feat2"))
-#' sent2 <- to_sentiment(s2)
-#'
-#' colnames(s3)[-c(1:3)] <- c(paste0(m, 1:3, "--", "feat1"), paste0(m, 1:3, "--", "feat2"),
-#'                            paste0(m, 4:5))
-#' sent3 <- to_sentiment(s3)
-#'
-#' # further aggregation from then on is easy
-#' sentMeas1 <- aggregate(sent1, ctr_agg(lag = 10))
-#'
-#' @export
-to_sentiment <- function(s) {
-  stopifnot(is.data.table(s))
-  colNames <- colnames(s)
-  if (any(duplicated(colNames)))
-    stop("No duplicated column names allowed.")
-  if (!all(colNames[1:3] == c("id", "date", "word_count")))
-    stop("The input object 's' should have an 'id', a 'date' and a 'word_count' column, in that order.")
-  if (!inherits(s[["id"]], "character"))
-    stop("The 'id' column should be of type character.")
-  if (!inherits(s[["date"]], "Date"))
-    stop("The 'date' column should be of type Date.")
-  if (!all(sapply(4:ncol(s), function(i) inherits(s[[i]], "numeric"))))
-    stop("All sentiment value columns should be of type numeric.")
-  newNames <- sapply(stringi::stri_split(colNames[4:ncol(s)], regex = "--"), function(name) {
-    if (length(name) == 1) return(paste0(name, "--", "dummyFeature"))
-    else if (length(name) >= 2) return(paste0(name[1], "--", name[2]))
-  })
-  setnames(s, c("id", "date", "word_count", newNames))
-  s <- s[order(date)]
   class(s) <- c("sentiment", class(s))
   s
 }

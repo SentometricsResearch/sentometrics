@@ -99,8 +99,8 @@ The \code{how = "proportionalPol"} option divides each document's sentiment
 score by the number of detected polarized words (counting words that appear multiple times by their frequency), instead
 of the total number of words which the \code{how = "proportional"} option gives. The \code{how = "counts"} option
 does no normalization. The \code{squareRootCounts} divides the sentiment by the square root of the number of tokens in each text.
- The \code{how = "UShaped"} option, gives a higher weight to words at the beginning and end of the texts.
- The \code{how = "invertedUShaped"} option gives a lower weight to words at the beginning
+The \code{how = "UShaped"} option, gives a higher weight to words at the beginning and end of the texts.
+The \code{how = "invertedUShaped"} option gives a lower weight to words at the beginning
 and the end of the texts. The \code{how = "exponential"} option gives gradually more weight the later the word appears in the text.
 The \code{ how = "invertedExponential"} option gives gradually less weight, the later the words appears in the text. The \code{
 how = "TF"} option gives a weight proportional to the number of times a word appears in a text. The \code{how = "logarithmicTF"} option
