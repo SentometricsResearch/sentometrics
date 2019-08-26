@@ -4,13 +4,13 @@
 \alias{get_dimensions}
 \title{Get the dimensions of the sentiment measures}
 \usage{
-get_dimensions(sentomeasures)
+get_dimensions(sento_measures)
 }
 \arguments{
-\item{sentomeasures}{a \code{sentomeasures} object created using \code{\link{sento_measures}}.}
+\item{sento_measures}{a \code{sento_measures} object created using \code{\link{sento_measures}}.}
 }
 \value{
-The \code{"features"}, \code{"lexicons"} and \code{"time"} elements in \code{sentomeasures}.
+The \code{"features"}, \code{"lexicons"} and \code{"time"} elements in \code{sento_measures}.
 }
 \description{
 Returns the components across all three dimensions of the sentiment measures.

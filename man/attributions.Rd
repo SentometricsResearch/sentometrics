@@ -4,13 +4,13 @@
 \alias{attributions}
 \title{Retrieve top-down model sentiment attributions}
 \usage{
-attributions(model, sentomeasures, do.lags = TRUE,
+attributions(model, sento_measures, do.lags = TRUE,
   do.normalize = FALSE, refDates = NULL, factor = NULL)
 }
 \arguments{
-\item{model}{a \code{sentomodel} or a \code{sentomodeliter} object created with \code{\link{sento_model}}.}
+\item{model}{a \code{sento_model} or a \code{sento_modelIter} object created with \code{\link{sento_model}}.}
 
-\item{sentomeasures}{the \code{sentomeasures} object, as created with \code{\link{sento_measures}}, used to estimate
+\item{sento_measures}{the \code{sento_measures} object, as created with \code{\link{sento_measures}}, used to estimate
 the model from the first argument (make sure this is the case!).}
 
 \item{do.lags}{a \code{logical}, \code{TRUE} also computes the attribution to each time lag. For large time lags,
@@ -20,9 +20,9 @@ this is time-consuming.}
 L2-norm at that date, normalizing the values between -1 and 1. The document attributions are not normalized.}
 
 \item{refDates}{the dates (as \code{"yyyy-mm-dd"}) at which attribution is to be performed. These should be between the latest
-date available in the input \code{sentomeasures} object and the first estimation sample date (that is, \code{model$dates[1]}
-if \code{model} is a \code{sentomodel} object). All dates should also be in \code{get_dates(sentomeasures)}. If
-\code{NULL} (default), attribution is calculated for all in-sample dates. Ignored if \code{model} is a \code{sentomodeliter}
+date available in the input \code{sento_measures} object and the first estimation sample date (that is, \code{model$dates[1]}
+if \code{model} is a \code{sento_model} object). All dates should also be in \code{get_dates(sento_measures)}. If
+\code{NULL} (default), attribution is calculated for all in-sample dates. Ignored if \code{model} is a \code{sento_modelIter}
 object, for which attribution is calculated for all out-of-sample prediction dates.}
 
 \item{factor}{the factor level as a single \code{character} vector for which attribution has to be calculated in

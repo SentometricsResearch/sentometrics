@@ -2,7 +2,7 @@
 % Please edit documentation in R/sentocorpus.R
 \name{sento_corpus}
 \alias{sento_corpus}
-\title{Create a sentocorpus object}
+\title{Create a sento_corpus object}
 \usage{
 sento_corpus(corpusdf, do.clean = FALSE)
 }
@@ -21,7 +21,7 @@ This includes a brute force replacement of HTML tags and non-alphanumeric charac
 if the text is meant to have non-alphanumeric characters! Preferably, cleaning is done outside of this function call.}
 }
 \value{
-A \code{sentocorpus} object, derived from a \pkg{quanteda} \code{\link[quanteda]{corpus}} classed \code{list}
+A \code{sento_corpus} object, derived from a \pkg{quanteda} \code{\link[quanteda]{corpus}} classed \code{list}
 with elements \code{"documents"}, \code{"metadata"}, and \code{"settings"} kept. The first element incorporates
 the corpus represented as a \code{data.frame}.
 }
@@ -33,9 +33,9 @@ handy corpus manipulation toolset. This function performs a set of checks on the
 corpus for further analysis.
 }
 \details{
-A \code{sentocorpus} object is a specialized instance of a \pkg{quanteda} \code{\link[quanteda]{corpus}}. Any
-\pkg{quanteda} function applicable to its \code{\link[quanteda]{corpus}} object can also be applied to a \code{sentocorpus}
-object. However, changing a given \code{sentocorpus} object too drastically using some of \pkg{quanteda}'s functions might
+A \code{sento_corpus} object is a specialized instance of a \pkg{quanteda} \code{\link[quanteda]{corpus}}. Any
+\pkg{quanteda} function applicable to its \code{\link[quanteda]{corpus}} object can also be applied to a \code{sento_corpus}
+object. However, changing a given \code{sento_corpus} object too drastically using some of \pkg{quanteda}'s functions might
 alter the very structure the corpus is meant to have (as defined in the \code{corpusdf} argument) to be able to be used as
 an input in other functions of the \pkg{sentometrics} package. There are functions, including
 \code{\link[quanteda]{corpus_sample}} or \code{\link[quanteda]{corpus_subset}}, that do not change the actual corpus

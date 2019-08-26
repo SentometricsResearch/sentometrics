@@ -4,17 +4,141 @@
 \alias{sentometrics-defunct}
 \alias{ctr_merge}
 \alias{perform_MCS}
+\alias{fill_measures}
+\alias{merge_measures}
+\alias{to_global}
+\alias{subset_measures}
+\alias{select_measures}
+\alias{setup_lexicons}
+\alias{retrieve_attributions}
+\alias{perform_agg}
+\alias{plot_attributions}
+\alias{almons}
+\alias{exponentials}
 \title{Defunct functions}
 \usage{
 ctr_merge(...)
 
 perform_MCS(...)
+
+fill_measures(sentomeasures, fill)
+
+merge_measures(...)
+
+to_global(sentomeasures, lexicons, features, time)
+
+subset_measures(sentomeasures, subset)
+
+select_measures(sentomeasures, toSelect)
+
+setup_lexicons(lexiconsIn, valenceIn, do.split)
+
+retrieve_attributions(model, sentomeasures, do.normalize, refDates, factor)
+
+perform_agg(sentiment, ctr)
+
+plot_attributions(attributions, group, ...)
+
+almons(n, orders, do.inverse, do.normalize)
+
+exponentials(n, alphas)
 }
 \arguments{
 \item{...}{arguments not documented since function declared defunct.}
+
+\item{sentomeasures}{an appropriate \code{sentomeasures} object created using \code{\link{sento_measures}}.}
+
+\item{fill}{an element of \code{c("zero", "latest", NA)}; the first and last assume missing dates represent zero sentiment,
+the second assumes missing dates represent constant sentiment.}
+
+\item{lexicons}{a \code{numeric} vector of weights, of size \code{length(sentomeasures$lexicons)}, in the same order.
+By default set to 1, which means equally weighted.}
+
+\item{features}{a \code{numeric} vector of weights, of size \code{length(sentomeasures$features)}, in the same order.
+By default set to 1, which means equally weighted.}
+
+\item{time}{a \code{numeric} vector of weights, of size \code{length(sentomeasures$time)}, in the same order. By default
+set to 1, which means equally weighted.}
+
+\item{subset}{a logical expression indicating the rows to keep.}
+
+\item{toSelect}{a \code{character} vector of the lexicon, feature and time weighting scheme names, to indicate which
+measures need to be selected, or as a \code{list} of \code{character} vectors, possibly with separately specified
+combinations (only consisting of one lexicon, one feature, and one time weighting scheme at maximum).}
+
+\item{lexiconsIn}{a named \code{list} of (raw) lexicons, each element as a \code{data.table} or a \code{data.frame} with
+respectively a words column and a polarity score column. A subset of the already formatted built-in lexicons
+accessible via \code{list_lexicons} should be passed here first.}
+
+\item{valenceIn}{a single valence word list as a \code{data.table} or a \code{data.frame} with respectively a \code{"x"}
+and a \code{"y"} or \code{"t"} column. The first column has the words, \code{"y"} has the values for bigram
+shifting, and \code{"t"} has the types of the valence shifter for a clustered approach to sentiment calculation
+(supported types: \code{1} = negators, \code{2} = amplifiers, \code{3} = deamplifiers). If three columns
+are provided, the first two will be considered only. This argument can be one of the already formatted
+built-in valence word lists accessible via \code{list_valence_shifters}. A word that appears in both a lexicon
+and the valence word list is prioritized as a lexical entry during sentiment calculation. If \code{NULL}, no valence word
+list is part of this function's output, and is thus not applied in the sentiment analysis.}
+
+\item{do.split}{a \code{logical} that if \code{TRUE} splits every lexicon into a separate positive polarity and negative
+polarity lexicon.}
+
+\item{model}{a \code{sentomodel} or \code{sentomodeliter} object created with \code{\link{sento_model}}.}
+
+\item{do.normalize}{a \code{logical}, \code{TRUE} divides each element of every attribution vector at a given date by its
+L2-norm at that date, normalizing the values between -1 and 1. The document attributions are not normalized. Or, for
+\code{\link{almons}}, if \code{TRUE}, then polynomials should be normalized to unity.}
+
+\item{refDates}{the dates (as \code{"yyyy-mm-dd"}) at which attribution is to be performed. These should be between the latest
+date available in the input \code{sentomeasures} object and the first estimation sample date (that is, \code{model$dates[1]}
+if \code{model} is a \code{sentomodel} object). All dates should also be in \code{get_dates(sentomeasures)}. If
+\code{NULL} (default), attribution is calculated for all in-sample dates. Ignored if \code{model} is a \code{sentomodeliter}
+object, for which attribution is calculated for all out-of-sample prediction dates.}
+
+\item{factor}{the factor level as a single \code{character} vector for which attribution has to be calculated in
+case of (a) multinomial model(s). Ignored for linear and binomial models.}
+
+\item{sentiment}{output from a \code{\link{compute_sentiment}} call, computed from a \code{sentocorpus} object.}
+
+\item{ctr}{output from a \code{\link{ctr_agg}} call. The \code{howWithin} and \code{nCore} elements are ignored.}
+
+\item{attributions}{an \code{attributions} object created with \code{\link{attributions}}.}
+
+\item{group}{a value from \code{c("lags", "lexicons", "features", "time")}.}
+
+\item{orders}{a \code{numeric} vector as the sequence of the Almon orders (cf., \emph{b}). The maximum value
+corresponds to \emph{B}.}
+
+\item{do.inverse}{\code{TRUE} if the inverse Almon polynomials should be calculated as well.}
+
+\item{alphas}{a \code{numeric} vector of decay factors.}
+
+\item{...}{(other) allowed input arguments.}
 }
 \description{
 Functions defunct due to changed naming or because functionality is discarded. See the NEWS file for more information
 about since when or why functions have been defunct.
+}
+\seealso{
+\code{\link{measures_fill}}
+
+\code{\link{measures_merge}}
+
+\code{\link{measures_global}}
+
+\code{\link{measures_subset}}
+
+\code{\link{measures_select}}
+
+\code{\link{sento_lexicons}}
+
+\code{\link{attributions}}
+
+\code{\link{aggregate}}
+
+\code{\link{plot.attributions}}
+
+\code{\link{weights_almon}}
+
+\code{\link{weights_exponential}}
 }
 \keyword{internal}

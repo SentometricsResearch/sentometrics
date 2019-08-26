@@ -15,11 +15,11 @@ lex <- sento_lexicons(list_lexicons[c("GI_en", "LM_en")])
 ctrA <- ctr_agg(howWithin = "proportional", howDocs = "proportional", howTime = "almon", by = "month",
                 lag = 7, ordersAlm = 1:3, do.inverseAlm = TRUE, do.ignoreZeros = FALSE, fill = "latest")
 
-sentomeasures <- sento_measures(corpus, lex, ctrA)
+sento_measures <- sento_measures(corpus, lex, ctrA)
 
 # preparation of estimation data
 data("epu")
-idx <- sample(1:nrow(epu), nobs(sentomeasures), replace = TRUE)
+idx <- sample(1:nrow(epu), nobs(sento_measures), replace = TRUE)
 y <- epu[idx, "index"]
 yb <- epu[idx, "above"]
 ym <- epu[idx, "aboveMulti"]
@@ -32,41 +32,41 @@ N <- nrow(x)
 nSample <- floor(0.925 * N)
 
 ctrM1 <- ctr_model(model = "gaussian", type = "Cp", h = 8, alphas = c(0.2, 0.7))
-out1 <- sento_model(sentomeasures, y, x = x, ctr = ctrM1)
+out1 <- sento_model(sento_measures, y, x = x, ctr = ctrM1)
 
 ctrM2 <- ctr_model(model = "gaussian", type = "AIC", h = -1, do.shrinkage.x = c(FALSE, FALSE), alphas = c(0.2, 0.7))
-out2 <- sento_model(sentomeasures, y, x = x, ctr = ctrM2)
+out2 <- sento_model(sento_measures, y, x = x, ctr = ctrM2)
 
 ctrM3 <- ctr_model(model = "gaussian", type = "BIC", h = 0, do.shrinkage.x = c(TRUE, FALSE), alphas = c(0.2, 0.7))
-out3 <- sento_model(sentomeasures, y, x = x, ctr = ctrM3)
+out3 <- sento_model(sento_measures, y, x = x, ctr = ctrM3)
 
 ctrM4 <- ctr_model(model = "gaussian", type = "cv", h = 3, trainWindow = nrow(x) - 30, testWindow = 7, alphas = c(0.2, 0.7))
-out4 <- sento_model(sentomeasures, y, x = x, ctr = ctrM4)
+out4 <- sento_model(sento_measures, y, x = x, ctr = ctrM4)
 
 ctrM5 <- ctr_model(model = "binomial", type = "cv", h = 1, trainWindow = nrow(x) - 15, testWindow = 10, alphas = c(0.2, 0.7))
-out5 <- sento_model(sentomeasures, yb, x = x, ctr = ctrM5)
+out5 <- sento_model(sento_measures, yb, x = x, ctr = ctrM5)
 
 ctrM6 <- ctr_model(model = "multinomial", type = "cv", h = 5, trainWindow = nrow(x) - 21, testWindow = 6, alphas = c(0.2, 0.7))
-out6 <- sento_model(sentomeasures, ym, x = x, ctr = ctrM6)
+out6 <- sento_model(sento_measures, ym, x = x, ctr = ctrM6)
 
 ctrM7 <- ctr_model(model = "gaussian", type = "AIC", do.difference = TRUE, h = 1, alphas = c(0.2, 0.7), lambdas = 50:1)
-out7 <- sento_model(sentomeasures, y, x = x, ctr = ctrM7)
+out7 <- sento_model(sento_measures, y, x = x, ctr = ctrM7)
 
 ctrM8 <- ctr_model(model = "gaussian", type = "Cp", h = 1, alphas = c(0, 0.4, 1),
                    do.intercept = FALSE, nSample = nSample, do.iter = TRUE, start = 2)
-out8 <- sento_model(sentomeasures, y, x = x, ctr = ctrM8)
+out8 <- sento_model(sento_measures, y, x = x, ctr = ctrM8)
 
 ctrM9 <- ctrM8
 ctrM9$nSample <- N - 1 - 2 + 1
 
 ctrM10 <- ctr_model(model = "gaussian", type = "Cp", h = 1, alphas = 0,
                     nSample = nSample, do.iter = TRUE, start = 2, nCore = 2)
-out10 <- sento_model(measures_select(sentomeasures, c("GI_en")), y, ctr = ctrM10)
+out10 <- sento_model(measures_select(sento_measures, c("GI_en")), y, ctr = ctrM10)
 
 ctrM11 <- ctr_model(model = "gaussian", type = "Cp", h = 1, alphas = c(0, 0.4, 1),
                     nSample = nSample, do.iter = TRUE, start = 2)
-out11 <- sento_model(measures_select(sentomeasures, c("LM_en", "wsj", "almon1")),
-                     y, x = cbind(x, measures_global(sentomeasures)[, -1]), ctr = ctrM11)
+out11 <- sento_model(measures_select(sento_measures, c("LM_en", "wsj", "almon1")),
+                     y, x = cbind(x, measures_global(sento_measures)[, -1]), ctr = ctrM11)
 
 # sento_model
 test_that("Different model specifications give specified output", {
@@ -85,8 +85,8 @@ test_that("Different model specifications give specified output", {
   expect_true(all(sapply(c(list(out1, out2, out4, out5, out7), out8$models),
                          function(out) stats::coef(out$reg)[c("x1", "x2"), ]) != 0))
   expect_true(stats::coef(out3$reg)[c("x2"), ] != 0)
-  expect_error(sento_model(sentomeasures, y, x = x, ctr = ctrM9))
-  expect_error(sento_model(sentomeasures, y, x = x[, 1, drop = FALSE], ctr = ctrM9))
+  expect_error(sento_model(sento_measures, y, x = x, ctr = ctrM9))
+  expect_error(sento_model(sento_measures, y, x = x[, 1, drop = FALSE], ctr = ctrM9))
   expect_null(summary(out1))
   expect_null(summary(out5))
   expect_null(summary(out6))
@@ -103,7 +103,7 @@ test_that("Getting loss data works and fails if needed", {
   expect_warning(get_loss_data(list(same1 = out8, same2 = out8, different = out11), loss = "errorSq"))
 })
 
-# summary.sentomodel, summary.sentomodeliter, print.sentomodel, print.sentomodeliter
+# summary.sento_model, summary.sento_modelIter, print.sento_model, print.sento_modelIter
 test_that("No output returned when object summarized or printed", {
   expect_null(summary(out1))
   expect_null(summary(out5))
@@ -115,7 +115,7 @@ test_that("No output returned when object summarized or printed", {
   expect_null(print(out8))
 })
 
-# plot.sentomodeliter
+# plot.sento_modelIter
 p <- plot(out8)
 test_that("Plot is a ggplot object", {
   expect_true(inherits(p, "ggplot"))

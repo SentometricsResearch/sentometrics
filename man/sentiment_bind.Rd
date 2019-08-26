@@ -10,7 +10,7 @@ sentiment_bind(...)
 \item{...}{\code{sentiment} objects to combine in the order given.}
 }
 \value{
-A new, larger, \code{sentiment} object.
+The new, combined, \code{sentiment} object.
 }
 \description{
 Combines multiple sentiment objects with the same column names into a new sentiment object. Duplicates

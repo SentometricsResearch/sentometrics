@@ -4,13 +4,13 @@
 \alias{get_dates}
 \title{Get the dates of the sentiment measures/time series}
 \usage{
-get_dates(sentomeasures)
+get_dates(sento_measures)
 }
 \arguments{
-\item{sentomeasures}{a \code{sentomeasures} object created using \code{\link{sento_measures}}.}
+\item{sento_measures}{a \code{sento_measures} object created using \code{\link{sento_measures}}.}
 }
 \value{
-The \code{"date"} column in \code{sentomeasures[["measures"]]} as a \code{character} vector.
+The \code{"date"} column in \code{sento_measures[["measures"]]} as a \code{character} vector.
 }
 \description{
 Returns the dates of the sentiment time series.

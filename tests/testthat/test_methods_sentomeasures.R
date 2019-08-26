@@ -29,7 +29,7 @@ test_that("Differencing is properly done", {
 
 # scale
 s1 <- scale(sentMeas)
-s2 <- suppressWarnings(scale(sentMeas, center = -as.matrix(get_measures(sentMeas)[, -1]), scale = FALSE))
+s2 <- suppressWarnings(scale(sentMeas, center = -as.matrix(as.data.table(sentMeas)[, -1]), scale = FALSE))
 s3 <- scale(sentMeas, center = as.numeric(sentMeas$stats["mean", ]), scale = as.numeric(sentMeas$stats["sd", ]))
 s4 <- scale(sentMeas,
             center = -matrix(as.numeric(sentMeas$stats["mean", ]), nrow = N, ncol = M, byrow = TRUE),
@@ -58,13 +58,13 @@ test_that("Plot is a ggplot object", {
   expect_true(inherits(p, "ggplot"))
 })
 
-# get_measures, to_long
-measuresLong <- get_measures(sentMeas, format = "long")
+# as.data.table, to_long
+measuresLong <- as.data.table(sentMeas, format = "long")
 test_that("Proper long formatting of sentiment measures", {
   expect_true(nrow(measuresLong) == nobs(sentMeas) * nmeasures(sentMeas))
   expect_true(all(sentMeas$lexicons %in% unique(measuresLong[["lexicons"]])))
   expect_true(all(sentMeas$features %in% unique(measuresLong[["features"]])))
   expect_true(all(sentMeas$time %in% unique(measuresLong[["time"]])))
-  expect_true(all(get_measures(sentMeas)[["date"]] %in% unique(measuresLong[["date"]])))
+  expect_true(all(as.data.table(sentMeas)[["date"]] %in% unique(measuresLong[["date"]])))
 })
 

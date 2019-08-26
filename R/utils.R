@@ -188,7 +188,7 @@ create_cv_slices <- function (y, trainWindow, testWindow = 1, skip = 0, do.rever
   return(list(train = train, test = test))
 }
 
-align_variables <- function(y, sentomeasures, x, h, difference, i = 1, nSample = NULL) {
+align_variables <- function(y, sento_measures, x, h, difference, i = 1, nSample = NULL) {
 
   if (is.factor(y)) {
     levs <- levels(y)
@@ -205,8 +205,8 @@ align_variables <- function(y, sentomeasures, x, h, difference, i = 1, nSample =
     row.names(y) <- NULL
   }
 
-  datesX <- get_dates(sentomeasures)
-  sent <- get_measures(sentomeasures)[, -1] # drop dates
+  datesX <- get_dates(sento_measures)
+  sent <- as.data.table(sento_measures)[, -1] # drop dates
   if (is.null(x)) x <- sent
   else x <- cbind(sent, x)
   x <- as.matrix(x)
@@ -263,22 +263,22 @@ clean_panel <- function(x, nx, threshold = 0.50) {
   return(list(xNew = xNew, discarded = toDiscard))
 }
 
-update_info <- function(sentomeasures, newMeasures, ...) {
-  check_class(sentomeasures, "sentomeasures")
+update_info <- function(sento_measures, newMeasures, ...) {
+  check_class(sento_measures, "sento_measures")
   n <- ncol(newMeasures)
   newNames <- stringi::stri_split(colnames(newMeasures), regex = "--")[-1] # drop first element (date column)
-  sentomeasures$measures <- newMeasures
-  sentomeasures$lexicons <- unique(sapply(newNames, "[", 1))
-  sentomeasures$features <- unique(sapply(newNames, "[", 2))
-  sentomeasures$time <- unique(sapply(newNames, "[", 3))
-  sentomeasures$stats <- compute_stats(sentomeasures) # measures in sentomeasures are already updated by here
-  sentomeasures$attribWeights <- update_attribweights(sentomeasures, ...)
-  return(sentomeasures)
+  sento_measures$measures <- newMeasures
+  sento_measures$lexicons <- unique(sapply(newNames, "[", 1))
+  sento_measures$features <- unique(sapply(newNames, "[", 2))
+  sento_measures$time <- unique(sapply(newNames, "[", 3))
+  sento_measures$stats <- compute_stats(sento_measures) # measures in sento_measures are already updated by here
+  sento_measures$attribWeights <- update_attribweights(sento_measures, ...)
+  return(sento_measures)
 }
 
-update_attribweights <- function(sentomeasures, ...) {
-  attribWeights <- sentomeasures$attribWeights
-  dims <- get_dimensions(sentomeasures)
+update_attribweights <- function(sento_measures, ...) {
+  attribWeights <- sento_measures$attribWeights
+  dims <- get_dimensions(sento_measures)
   dots <- list(...)
   toMerge <- dots$merges
 
@@ -286,7 +286,7 @@ update_attribweights <- function(sentomeasures, ...) {
   W <- attribWeights[["W"]]
 
   lexFeats <- unique(
-    sapply(stringi::stri_split(colnames(get_measures(sentomeasures))[-1], regex = "--"),
+    sapply(stringi::stri_split(colnames(as.data.table(sento_measures))[-1], regex = "--"),
            function(x) paste0(x[1:2], collapse = "--"))
   )
 
@@ -317,7 +317,7 @@ update_attribweights <- function(sentomeasures, ...) {
     }
   }
 
-  newB <- B[, sentomeasures$time, drop = FALSE]
+  newB <- B[, sento_measures$time, drop = FALSE]
   newW <- W[, c("id", "date", lexFeats), with = FALSE]
   for (col in lexFeats) set(newW, which(is.nan(newW[[col]])), col, NA) # convert NaN to NA
 
@@ -329,8 +329,8 @@ check_class <- function(x, class) {
     stop("Please provide a ", class, " object as one of the arguments.")
 }
 
-compute_stats <- function(sentomeasures) {
-  measures <- get_measures(sentomeasures)[, -1] # drop dates
+compute_stats <- function(sento_measures) {
+  measures <- as.data.table(sento_measures)[, -1] # drop dates
   names <- c("mean", "sd", "max", "min", "meanCorr")
   stats <- data.frame(matrix(NA, nrow = length(names), ncol = length(measures), dimnames = list(names)))
   colnames(stats) <- colnames(measures)
@@ -476,5 +476,11 @@ plot_theme <- function(legendPos) { # plotting specifications (border and grid)
     panel.grid.minor = element_line(colour = "grey95", size = 0.10),
     plot.margin = unit(c(0.20, 0.40, 0.20, 0.20), "cm")
   )
+}
+
+pdf_manual <- function() {
+  setwd("..")
+  shell('R CMD Rd2pdf --encoding=UTF-8 sentometrics')
+  setwd(paste0(wd, "/sentometrics"))
 }
 

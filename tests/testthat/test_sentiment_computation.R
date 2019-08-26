@@ -29,7 +29,7 @@ simple_corpus$content[2] <- "This is a text for which we want to calculate below
 simple_corpus$content[3] <- corpus$documents$text[3]
 
 reut21578 <- system.file("texts", "crude", package = "tm")
-v_corpus <- VCorpus(DirSource(reut21578, mode = "binary"), list(reader = readReut21578XMLasPlain))
+vcorp <- VCorpus(DirSource(reut21578, mode = "binary"))
 
 # Corpus with multiple languages
 usnews[["language"]] <- "en"
@@ -50,7 +50,7 @@ sentimentList <- list(
                          lex, how = "counts"),
   s7 = compute_sentiment(corpus, lex, how = "counts"),
   s8 = compute_sentiment(quanteda::texts(corpus), lexSplit, how = "counts"),
-  # s9 = compute_sentiment(quanteda::texts(corpus), lex, how = "proportionalPol", nCore = 2),
+  # s9 = compute_sentiment(quanteda::texts(corpus), lex, how = "TF", nCore = 2), # no multicore computation for CRAN
   s10 = compute_sentiment(quanteda::texts(corpus), lexClust, how = "counts"),
   s11 = compute_sentiment(corpus, lexClust, how = "proportional"),
   s12 = compute_sentiment(quanteda::texts(corpus), lexClust, how = "proportionalPol"),
@@ -82,7 +82,7 @@ test_that("Agreement between sentiment scores across input objects", {
   expect_warning(compute_sentiment(quanteda::texts(corpus), lex, how = "counts", nCore = -1))
   expect_error(compute_sentiment(quanteda::texts(corpus), list_lexicons))
   expect_true(all.equal(sentimentList$s3[3],compute_sentiment(simple_corpus[3], lex, how = "proportional")))
-  expect_warning(compute_sentiment(v_corpus , lex, how = "proportional"))
+  # expect_warning(compute_sentiment(vcorp, lex, how = "proportional"))
   expect_error(compute_sentiment(corpusLang, lex, how = "proportional"))
   expect_true("language" %in% colnames(quanteda::docvars(corpusLang)))
   expect_error(compute_sentiment(corpusLang, lexiconsWrong, how = "proportional"))
@@ -103,7 +103,7 @@ test_that("Agreement between sentiment scores on sentence level across input obj
   expect_true(all(unlist(lapply(sentimentSentenceList[1:4], function(s) all(s$word_count == sentimentSentenceList$s1$word_count)))))
   expect_true(all(unlist(lapply(sentimentSentenceList, function(s) sum(s$word_count) == sum(sentimentSentenceList$s1$word_count)))))
   expect_true(all(c("GI_en", "LM_en", "HENRY_en") %in% colnames(compute_sentiment(simple_corpus[3], lexClust, how = "proportional", do.sentence = TRUE)) ))
-  expect_warning(compute_sentiment(v_corpus , lexClust, how = "proportional", do.sentence = TRUE))
+  # expect_warning(compute_sentiment(vcorp, lexClust, how = "proportional", do.sentence = TRUE))
 })
 
 # sento_lexicons
@@ -114,16 +114,16 @@ test_that("Proper fails when issues with lexicons and valence shifters input", {
   expect_error(sento_lexicons(list_lexicons["GI_en"], valenceIn = data.table(x = "w", t = 2:5)))
 })
 
-# to_sentiment
+# as.sentiment
 sA <- sAw1 <- sAw2 <- sAw3 <- sentimentList[["s7"]]
 colnames(sAw1)[1:3] <- letters[1:3]
 colnames(sAw2)[5:6] <- letters[1]
 sAw3[[7]] <- "notNumeric"
 test_that("Correct or failed conversion to a sentiment object", {
-  expect_true(inherits(to_sentiment(sA), "sentiment"))
-  expect_error(to_sentiment(sAw1))
-  expect_error(to_sentiment(sAw2))
-  expect_error(to_sentiment(sAw3))
+  expect_true(inherits(as.sentiment(sA), "sentiment"))
+  expect_error(as.sentiment(sAw1))
+  expect_error(as.sentiment(sAw2))
+  expect_error(as.sentiment(sAw3))
 })
 
 # sentiment_bind

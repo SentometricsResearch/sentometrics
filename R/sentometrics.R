@@ -1,4 +1,5 @@
 
+### TODO: add GSoC 2019 (also in readme file)
 #' @title sentometrics: An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction
 #'
 #' @description The \pkg{sentometrics} package is an integrated framework for textual sentiment time series

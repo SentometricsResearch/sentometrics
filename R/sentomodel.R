@@ -196,7 +196,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' for a logistic model. We suppress many of the details that can be supplied to the \code{\link[glmnet]{glmnet}} and
 #' \code{\link[caret]{train}} functions we rely on, for the sake of user-friendliness.
 #'
-#' @param sentomeasures a \code{sentomeasures} object created using \code{\link{sento_measures}}.
+#' @param sento_measures a \code{sento_measures} object created using \code{\link{sento_measures}}.
 #' @param y a one-column \code{data.frame} or a \code{numeric} vector capturing the dependent (response) variable. In case of
 #' a logistic regression, the response variable is either a \code{factor} or a \code{matrix} with the factors represented by
 #' the columns as binary indicators, with the second factor level or column as the reference class in case of a binomial
@@ -205,7 +205,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' default set to \code{NULL}.
 #' @param ctr output from a \code{\link{ctr_model}} call.
 #'
-#' @return If \code{ctr$do.iter = FALSE}, a \code{sentomodel} object which is a \code{list} containing:
+#' @return If \code{ctr$do.iter = FALSE}, a \code{sento_model} object which is a \code{list} containing:
 #' \item{reg}{optimized regression, i.e., a model-specific \code{glmnet} object, including for example the estimated
 #' coefficients.}
 #' \item{model}{the input argument \code{ctr$model}, to indicate the type of model estimated.}
@@ -218,15 +218,15 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' and the respective lambda values as columns (if \code{ctr$type != } "\code{cv}"). Any \code{NA} value in the latter
 #' element means the specific information criterion could not be computed.}
 #' \item{dates}{sample reference dates as a two-element \code{character} vector, being the earliest and most recent date from
-#' the \code{sentomeasures} object accounted for in the estimation window.}
+#' the \code{sento_measures} object accounted for in the estimation window.}
 #' \item{nVar}{a vector of size two, with respectively the number of sentiment measures, and the number of other explanatory
 #' variables inputted.}
 #' \item{discarded}{a named \code{logical} vector of length equal to the number of sentiment measures, in which \code{TRUE}
 #' indicates that the particular sentiment measure has not been considered in the regression process. A sentiment measure is
 #' not considered when it is a duplicate of another, or when at least 50\% of the observations are equal to zero.}
 #'
-#' @return If \code{ctr$do.iter = TRUE}, a \code{sentomodeliter} object which is a \code{list} containing:
-#' \item{models}{all sparse regressions, i.e., separate \code{sentomodel} objects as above, as a \code{list} with as names the
+#' @return If \code{ctr$do.iter = TRUE}, a \code{sento_modelIter} object which is a \code{list} containing:
+#' \item{models}{all sparse regressions, i.e., separate \code{sento_model} objects as above, as a \code{list} with as names the
 #' dates from the perspective of the sentiment measures at which the out-of-sample predictions are carried out.}
 #' \item{alphas}{calibrated alphas.}
 #' \item{lambdas}{calibrated lambdas.}
@@ -250,39 +250,39 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #'
 #' set.seed(505)
 #'
-#' # construct a sentomeasures object to start with
+#' # construct a sento_measures object to start with
 #' corpusAll <- sento_corpus(corpusdf = usnews)
 #' corpus <- quanteda::corpus_subset(corpusAll, date >= "2004-01-01")
 #' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")])
 #' ctr <- ctr_agg(howWithin = "counts", howDocs = "proportional",
 #'                howTime = c("equal_weight", "linear"),
 #'                by = "month", lag = 3)
-#' sentomeasures <- sento_measures(corpus, l, ctr)
+#' sento_measures <- sento_measures(corpus, l, ctr)
 #'
 #' # prepare y and other x variables
-#' y <- epu[epu$date %in% get_dates(sentomeasures), "index"]
-#' length(y) == nobs(sentomeasures) # TRUE
+#' y <- epu[epu$date %in% get_dates(sento_measures), "index"]
+#' length(y) == nobs(sento_measures) # TRUE
 #' x <- data.frame(runif(length(y)), rnorm(length(y))) # two other (random) x variables
 #' colnames(x) <- c("x1", "x2")
 #'
 #' # a linear model based on the Akaike information criterion
 #' ctrIC <- ctr_model(model = "gaussian", type = "AIC", do.iter = FALSE, h = 4,
 #'                    do.difference = TRUE)
-#' out1 <- sento_model(sentomeasures, y, x = x, ctr = ctrIC)
+#' out1 <- sento_model(sento_measures, y, x = x, ctr = ctrIC)
 #'
 #' # attribution and prediction as post-analysis
-#' attributions1 <- attributions(out1, sentomeasures,
-#'                               refDates = get_dates(sentomeasures)[20:25])
+#' attributions1 <- attributions(out1, sento_measures,
+#'                               refDates = get_dates(sento_measures)[20:25])
 #' plot(attributions1, "features")
 #'
-#' nx <- nmeasures(sentomeasures) + ncol(x)
-#' newx <- runif(nx) * cbind(get_measures(sentomeasures)[, -1], x)[30:40, ]
+#' nx <- nmeasures(sento_measures) + ncol(x)
+#' newx <- runif(nx) * cbind(as.data.table(sento_measures)[, -1], x)[30:40, ]
 #' preds <- predict(out1, newx = as.matrix(newx), type = "link")
 #'
 #' # an iterative out-of-sample analysis, parallelized
 #' ctrIter <- ctr_model(model = "gaussian", type = "BIC", do.iter = TRUE, h = 3,
 #'                      oos = 2, alphas = c(0.25, 0.75), nSample = 75, nCore = 2)
-#' out2 <- sento_model(sentomeasures, y, x = x, ctr = ctrIter)
+#' out2 <- sento_model(sento_measures, y, x = x, ctr = ctrIter)
 #' summary(out2)
 #'
 #' # plot predicted vs. realized values
@@ -295,23 +295,23 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' ctrCV <- ctr_model(model = "gaussian", type = "cv", do.iter = FALSE,
 #'                    h = 0, alphas = c(0.10, 0.50, 0.90), trainWindow = 70,
 #'                    testWindow = 10, oos = 0, do.progress = TRUE)
-#' out3 <- sento_model(sentomeasures, y, x = x, ctr = ctrCV)
+#' out3 <- sento_model(sento_measures, y, x = x, ctr = ctrCV)
 #' parallel::stopCluster(cl)
 #' foreach::registerDoSEQ()
 #' summary(out3)
 #'
 #' # a cross-validation based model for a binomial target
-#' yb <- epu[epu$date %in% get_dates(sentomeasures), "above"]
+#' yb <- epu[epu$date %in% get_dates(sento_measures), "above"]
 #' ctrCVb <- ctr_model(model = "binomial", type = "cv", do.iter = FALSE,
 #'                     h = 0, alphas = c(0.10, 0.50, 0.90), trainWindow = 70,
 #'                     testWindow = 10, oos = 0, do.progress = TRUE)
-#' out4 <- sento_model(sentomeasures, yb, x = x, ctr = ctrCVb)
+#' out4 <- sento_model(sento_measures, yb, x = x, ctr = ctrCVb)
 #' summary(out4)}
 #'
 #' @importFrom glmnet predict.glmnet predict.elnet predict.lognet predict.multnet
 #' @export
-sento_model <- function(sentomeasures, y, x = NULL, ctr) {
-  check_class(sentomeasures, "sentomeasures")
+sento_model <- function(sento_measures, y, x = NULL, ctr) {
+  check_class(sento_measures, "sento_measures")
 
   if (!is.null(x)) {
     stopifnot(is.data.frame(x) || is.matrix(x))
@@ -319,8 +319,8 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
     stopifnot(unique(apply(x, 2, class)) == "numeric")
   }
   if (any(is.na(y))) stop("No NA values are allowed in y.")
-  if (length(unique(c(nobs(sentomeasures), ifelse(is.null(nrow(y)), length(y), nrow(y)), nrow(x)))) != 1)
-    stop("Number of rows or length for y, x and measures in sentomeasures must be equal.")
+  if (length(unique(c(nobs(sento_measures), ifelse(is.null(nrow(y)), length(y), nrow(y)), nrow(x)))) != 1)
+    stop("Number of rows or length for y, x and measures in sento_measures must be equal.")
   if (ctr$model == "binomial" && ifelse(is.factor(y), nlevels(y), NCOL(y)) > 2)
     stop("At maximum two classes allowed in 'y' for a binomial model.")
   if (ctr$model == "multinomial" && !(ifelse(is.factor(y), nlevels(y), NCOL(y)) > 2))
@@ -351,13 +351,13 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
   } else do.shrinkage.x <- NULL
 
   if (do.iter == TRUE) {
-    out <- run_sento_model_iter(sentomeasures, y = y, x = x, h = h, family = family, do.intercept = do.intercept,
-                                alphas = alphas, lambdas = lambdas, type = type, nSample = nSample,
-                                start = start, oos = oos, trainWindow = trainWindow, testWindow = testWindow,
-                                do.progress = do.progress, nCore = nCore, do.iter = do.iter,
-                                do.difference = do.difference, do.shrinkage.x = do.shrinkage.x)
+    out <- run_sento_modelIter(sento_measures, y = y, x = x, h = h, family = family, do.intercept = do.intercept,
+                               alphas = alphas, lambdas = lambdas, type = type, nSample = nSample,
+                               start = start, oos = oos, trainWindow = trainWindow, testWindow = testWindow,
+                               do.progress = do.progress, nCore = nCore, do.iter = do.iter,
+                               do.difference = do.difference, do.shrinkage.x = do.shrinkage.x)
   } else {
-    out <- run_sento_model(sentomeasures, y = y, x = x, h = h, family = family, do.intercept = do.intercept,
+    out <- run_sento_model(sento_measures, y = y, x = x, h = h, family = family, do.intercept = do.intercept,
                            alphas = alphas, lambdas = lambdas, type = type, trainWindow = trainWindow,
                            testWindow = testWindow, oos = oos, do.progress = do.progress,
                            do.difference = do.difference, do.shrinkage.x = do.shrinkage.x, do.iter = do.iter)
@@ -366,7 +366,7 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
   return(out)
 }
 
-.run_sento_model <- function(sentomeasures, y, x, h, alphas, lambdas, do.intercept, trainWindow, testWindow,
+.run_sento_model <- function(sento_measures, y, x, h, alphas, lambdas, do.intercept, trainWindow, testWindow,
                              oos, type, do.progress, family, do.difference, do.shrinkage.x, ...) {
   # inputs i and nSample are NULL if one-shot model (not iterative)
   dots <- list(...)
@@ -374,8 +374,8 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
   nSample <- dots$nSample
 
   nx <- ifelse(is.null(x), 0, ncol(x))
-  nVar <- c(nmeasures(sentomeasures), nx) # number of explanatory variables (before cleaning)
-  alignedVars <- align_variables(y, sentomeasures, x, h, difference = do.difference, i = i, nSample = nSample)
+  nVar <- c(nmeasures(sento_measures), nx) # number of explanatory variables (before cleaning)
+  alignedVars <- align_variables(y, sento_measures, x, h, difference = do.difference, i = i, nSample = nSample)
   yy <- alignedVars$y
   xx <- alignedVars$x # xx includes sentiment measures and other variables
   cleaned <- clean_panel(xx, nx) # drop duplicated and too sparse sentiment variables
@@ -493,7 +493,7 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
                 discarded = discarded),
            outAdd)
 
-  class(out) <- "sentomodel"
+  class(out) <- "sento_model"
 
   return(out)
 }
@@ -502,9 +502,9 @@ sento_model <- function(sentomeasures, y, x = NULL, ctr) {
 run_sento_model <- compiler::cmpfun(.run_sento_model)
 
 #' @importFrom foreach %dopar%
-.run_sento_model_iter <- function(sentomeasures, y, x, h, family, do.intercept, alphas, lambdas,
-                                  type, nSample, start, trainWindow, testWindow, oos, do.progress,
-                                  nCore, do.iter, do.difference, do.shrinkage.x) {
+.run_sento_modelIter <- function(sento_measures, y, x, h, family, do.intercept, alphas, lambdas,
+                                 type, nSample, start, trainWindow, testWindow, oos, do.progress,
+                                 nCore, do.iter, do.difference, do.shrinkage.x) {
 
   nIter <- ifelse(is.null(nrow(y)), length(y), nrow(y)) - nSample - abs(h) - oos
   if (nIter <= 0 || start > nIter)
@@ -519,7 +519,7 @@ run_sento_model <- compiler::cmpfun(.run_sento_model)
     doParallel::registerDoParallel(cl)
     regsOpt <- foreach::foreach(i = start:nIter, .export = c("run_sento_model")) %dopar% {
       out <- run_sento_model(
-        sentomeasures, y, x, h, alphas = alphas, lambdas = lambdas, do.intercept = do.intercept,
+        sento_measures, y, x, h, alphas = alphas, lambdas = lambdas, do.intercept = do.intercept,
         trainWindow = trainWindow, testWindow = testWindow, oos = oos, type = type, do.progress = FALSE,
         family = family, do.iter = do.iter, do.difference = do.difference, do.shrinkage.x = do.shrinkage.x,
         nSample = nSample, i = i
@@ -532,7 +532,7 @@ run_sento_model <- compiler::cmpfun(.run_sento_model)
     regsOpt <- lapply(start:nIter, function(i) {
       if (do.progress == TRUE) cat("Iteration: ", (i - start + 1), " from ", (nIter - start + 1), "\n", sep = "")
       out <- run_sento_model(
-        sentomeasures, y, x, h, alphas = alphas, lambdas = lambdas, do.intercept = do.intercept,
+        sento_measures, y, x, h, alphas = alphas, lambdas = lambdas, do.intercept = do.intercept,
         trainWindow = trainWindow, testWindow = testWindow, oos = oos, type = type, do.progress = do.progress,
         family = family, do.iter = do.iter, do.difference = do.difference, do.shrinkage.x = do.shrinkage.x,
         nSample = nSample, i = i
@@ -546,7 +546,7 @@ run_sento_model <- compiler::cmpfun(.run_sento_model)
   lambdasOpt <- sapply(regsOpt, "[[", "lambda")
 
   # prepare for and get all predictions
-  alignedVarsAll <- align_variables(y, sentomeasures, x, h, difference = do.difference)
+  alignedVarsAll <- align_variables(y, sento_measures, x, h, difference = do.difference)
   oosRun <- start:nIter + nSample + oos
   xPred <- alignedVarsAll$x[oosRun, , drop = FALSE]
   yReal <- alignedVarsAll$y[oosRun, , drop = FALSE]
@@ -584,13 +584,13 @@ run_sento_model <- compiler::cmpfun(.run_sento_model)
               lambdas = lambdasOpt,
               performance = performance)
 
-  class(out) <- "sentomodeliter"
+  class(out) <- "sento_modelIter"
 
   return(out)
 }
 
 #' @importFrom compiler cmpfun
-run_sento_model_iter <- compiler::cmpfun(.run_sento_model_iter)
+run_sento_modelIter <- compiler::cmpfun(.run_sento_modelIter)
 
 model_performance <- function(yEst, yReal, family, dates, ...) {
 
@@ -629,32 +629,32 @@ model_performance <- function(yEst, yReal, family, dates, ...) {
 }
 
 #' @export
-summary.sentomodel <- function(object, ...) {
-  sentomodel <- object
-  reg <- sentomodel$reg
-  if ("ic" %in% names(sentomodel)) {
-    printCalib <- paste0("via ", sentomodel$ic[[1]], " information criterion")
+summary.sento_model <- function(object, ...) {
+  sento_model <- object
+  reg <- sento_model$reg
+  if ("ic" %in% names(sento_model)) {
+    printCalib <- paste0("via ", sento_model$ic[[1]], " information criterion")
   } else {
     printCalib <- paste0("via cross-validation; ",
-                         "ran through ", nrow(sentomodel$trained$resample), " samples of size ",
-                         length(sentomodel$trained$control$index[[1]]),
-                         ", selection based on ", sentomodel$trained$metric, " metric")
+                         "ran through ", nrow(sento_model$trained$resample), " samples of size ",
+                         length(sento_model$trained$control$index[[1]]),
+                         ", selection based on ", sento_model$trained$metric, " metric")
   }
   cat("Model specification \n")
   cat(rep("-", 20), "\n \n")
-  cat("Model type:", sentomodel$model, "\n")
+  cat("Model type:", sento_model$model, "\n")
   cat("Calibration:", printCalib, "\n")
   cat("Number of observations:", reg$nobs, "\n")
-  cat("Optimal elastic net alpha parameter:", round(sentomodel$alpha, 2), "\n")
+  cat("Optimal elastic net alpha parameter:", round(sento_model$alpha, 2), "\n")
   cat("Optimal elastic net lambda parameter:", round(reg$lambda, 2), "\n \n")
-  if (sentomodel$model != "multinomial") {
+  if (sento_model$model != "multinomial") {
     cat("Non-zero coefficients \n")
     cat(rep("-", 20), "\n")
     print(nonzero_coeffs(reg))
   } else {
     cat("Number of non-zero coefficients per level (excl. intercept, incl. non-sentiment variables) \n")
     cat(rep("-", 20), "\n")
-    nonZeros <- as.data.frame(sentomodel$reg$dfmat)
+    nonZeros <- as.data.frame(sento_model$reg$dfmat)
     colnames(nonZeros) <- NULL
     print(nonZeros)
   }
@@ -662,63 +662,63 @@ summary.sentomodel <- function(object, ...) {
 }
 
 #' @export
-print.sentomodel <- function(x, ...) {
-  cat("A sentomodel object.", "\n")
+print.sento_model <- function(x, ...) {
+  cat("A sento_model object.", "\n")
 }
 
 #' @export
-summary.sentomodeliter <- function(object, ...) {
-  sentomodeliter <- object
-  sentomodel <- sentomodeliter$models[[1]] # first sentomodel object as representative object
-  model <- sentomodel$model
-  reg <- sentomodel$reg
-  if ("ic" %in% names(sentomodel)) {
-    printCalib <- paste0("via ", sentomodel$ic[[1]], " information criterion")
+summary.sento_modelIter <- function(object, ...) {
+  sento_modelIter <- object
+  sento_model <- sento_modelIter$models[[1]] # first sento_model object as representative object
+  model <- sento_model$model
+  reg <- sento_model$reg
+  if ("ic" %in% names(sento_model)) {
+    printCalib <- paste0("via ", sento_model$ic[[1]], " information criterion")
   } else {
     printCalib <- paste0("via cross-validation; ",
-                         "Ran through ", nrow(sentomodel$trained$resample), " samples of size ",
-                         length(sentomodel$trained$control$index[[1]]),
-                         ", selection based on ", sentomodel$trained$metric, " metric")
+                         "Ran through ", nrow(sento_model$trained$resample), " samples of size ",
+                         length(sento_model$trained$control$index[[1]]),
+                         ", selection based on ", sento_model$trained$metric, " metric")
   }
   cat("Model specification \n")
   cat(rep("-", 20), "\n \n")
-  cat("Model type:", sentomodel$model, "\n")
+  cat("Model type:", sento_model$model, "\n")
   cat("Calibration:", printCalib, "\n")
   cat("Sample size:", reg$nobs, "\n")
-  cat("Total number of iterations/predictions:", length(sentomodeliter$models), "\n")
-  cat("Optimal average elastic net alpha parameter:", round(mean(sentomodeliter$alphas, na.rm = TRUE), 2), "\n")
-  cat("Optimal average elastic net lambda parameter:", round(mean(sentomodeliter$lambdas, na.rm = TRUE), 2), "\n \n")
+  cat("Total number of iterations/predictions:", length(sento_modelIter$models), "\n")
+  cat("Optimal average elastic net alpha parameter:", round(mean(sento_modelIter$alphas, na.rm = TRUE), 2), "\n")
+  cat("Optimal average elastic net lambda parameter:", round(mean(sento_modelIter$lambdas, na.rm = TRUE), 2), "\n \n")
   cat("Out-of-sample performance \n")
   cat(rep("-", 20), "\n \n")
   if (model == "gaussian") {
-    cat("Mean directional accuracy:", round(sentomodeliter$performance$MDA, 2), "% \n")
-    cat("Root mean squared prediction error:", round(sentomodeliter$performance$RMSFE, 2), "\n")
-    cat("Mean absolute deviation:", round(sentomodeliter$performance$MAD, 2))
+    cat("Mean directional accuracy:", round(sento_modelIter$performance$MDA, 2), "% \n")
+    cat("Root mean squared prediction error:", round(sento_modelIter$performance$RMSFE, 2), "\n")
+    cat("Mean absolute deviation:", round(sento_modelIter$performance$MAD, 2))
 
   } else {
-    cat("Accuracy:", sentomodeliter$performance$accuracy, "%")
+    cat("Accuracy:", sento_modelIter$performance$accuracy, "%")
   }
   cat("\n")
 }
 
 #' @export
-print.sentomodeliter <- function(x, ...) {
-  cat("A sentomodeliter object.", "\n")
+print.sento_modelIter <- function(x, ...) {
+  cat("A sento_modelIter object.", "\n")
 }
 
 #' Plot iterative predictions versus realized values
 #'
 #' @author Samuel Borms
 #'
-#' @method plot sentomodeliter
+#' @method plot sento_modelIter
 #'
 #' @description Displays a plot of all predictions made through the iterative model computation as incorporated in the
-#' input \code{sentomodeliter} object, as well as the corresponding true values.
+#' input \code{sento_modelIter} object, as well as the corresponding true values.
 #'
 #' @details See \code{\link{sento_model}} for an elaborate modelling example including the plotting of out-of-sample
 #' performance.
 #'
-#' @param x a \code{sentomodeliter} object created using \code{\link{sento_model}}.
+#' @param x a \code{sento_modelIter} object created using \code{\link{sento_model}}.
 #' @param ... not used.
 #'
 #' @return Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using
@@ -726,9 +726,9 @@ print.sentomodeliter <- function(x, ...) {
 #'
 #' @import ggplot2
 #' @export
-plot.sentomodeliter <- function(x, ...) {
-  sentomodeliter <- x
-  mF <- sentomodeliter$models[[1]]$model
+plot.sento_modelIter <- function(x, ...) {
+  sento_modelIter <- x
+  mF <- sento_modelIter$models[[1]]$model
   if (mF == "gaussian") {
     plotter <- geom_line()
     scaleY <- scale_y_continuous(name = "Response")
@@ -736,9 +736,9 @@ plot.sentomodeliter <- function(x, ...) {
     plotter <- geom_point()
     scaleY <- scale_y_discrete(name = "Response")
   }
-  data <- data.frame(date = row.names(sentomodeliter$performance$raw),
-                     realized = sentomodeliter$performance$raw$response,
-                     prediction = sentomodeliter$performance$raw$predicted)
+  data <- data.frame(date = row.names(sento_modelIter$performance$raw),
+                     realized = sento_modelIter$performance$raw$response,
+                     prediction = sento_modelIter$performance$raw$predicted)
   if (mF != "gaussian") data[, 2:3] <- lapply(data[, 2:3], as.character)
   melted <- melt(data, id.vars = "date")
   p <- ggplot(data = melted, aes(x = as.Date(date), y = value, color = variable)) +
@@ -750,18 +750,18 @@ plot.sentomodeliter <- function(x, ...) {
   p
 }
 
-#' Make predictions from a sentomodel object
+#' Make predictions from a sento_model object
 #'
 #' @author Samuel Borms
 #'
-#' @description Prediction method for \code{sentomodel} class, with usage along the lines of
+#' @description Prediction method for \code{sento_model} class, with usage along the lines of
 #' \code{predict.glmnet}, but simplified in terms of parameters.
 #'
-#' @param object a \code{sentomodel} object created with \code{\link{sento_model}}.
+#' @param object a \code{sento_model} object created with \code{\link{sento_model}}.
 #' @param newx a data \code{matrix} used for the prediction(s), row-by-row; see
-#' \code{\link{predict.glmnet}}. The number of columns should be equal to \code{sum(sentomodel$nVar)}, being the
+#' \code{\link{predict.glmnet}}. The number of columns should be equal to \code{sum(sento_model$nVar)}, being the
 #' number of original sentiment measures and other variables. The variables discarded in the regression process are
-#' dealt with within this function, based on \code{sentomodel$discarded}.
+#' dealt with within this function, based on \code{sento_model$discarded}.
 #' @param type type of prediction required, a value from \code{c("link", "response", "class")}, see documentation for
 #' \code{\link{predict.glmnet}}.
 #' @param offset not used.
@@ -772,12 +772,12 @@ plot.sentomodeliter <- function(x, ...) {
 #' @seealso \code{\link{predict.glmnet}}, \code{\link{sento_model}}
 #'
 #' @export
-predict.sentomodel <- function(object, newx, type = "response", offset = NULL, ...) {
+predict.sento_model <- function(object, newx, type = "response", offset = NULL, ...) {
   stopifnot(is.matrix(newx))
-  sentomodel <- object
-  reg <- sentomodel$reg
-  discarded <- sentomodel$discarded
-  n <- sum(sentomodel$nVar)
+  sento_model <- object
+  reg <- sento_model$reg
+  discarded <- sento_model$discarded
+  n <- sum(sento_model$nVar)
   if (n != ncol(newx)) stop("Number of columns in 'newx' not equal to the required number of input variables.")
   idx <- c(!discarded, rep(TRUE, (n - length(discarded)))) # TRUE means variable to keep for prediction
   newx <- newx[, idx, drop = FALSE]
@@ -789,11 +789,11 @@ predict.sentomodel <- function(object, newx, type = "response", offset = NULL, .
 #'
 #' @author Samuel Borms
 #'
-#' @description Structures specific performance data for a set of different \code{sentomodeliter} objects as loss data.
+#' @description Structures specific performance data for a set of different \code{sento_modelIter} objects as loss data.
 #' Can then be used, for instance, as an input to create a model confidence set (Hansen, Lunde and Nason, 2011) with
 #' the \pkg{MCS} package.
 #'
-#' @param models a named \code{list} of \code{sentomodeliter} objects. All models should be of the same family, being
+#' @param models a named \code{list} of \code{sento_modelIter} objects. All models should be of the same family, being
 #' either \code{"gaussian"}, \code{"binomial"} or \code{"multinomial"}, and have performance data of the same dimensions.
 #' @param loss a single \code{character} vector, either \code{"DA"} (directional \emph{in}accuracy), \code{"error"}
 #' (prediction minus realized response variable), \code{"errorSq"} (squared errors), \code{"AD"} (absolute errors) or
@@ -817,7 +817,7 @@ predict.sentomodel <- function(object, newx, type = "response", offset = NULL, .
 #'
 #' set.seed(505)
 #'
-#' # construct two sentomeasures objects
+#' # construct two sento_measures objects
 #' corpusAll <- sento_corpus(corpusdf = usnews)
 #' corpus <- quanteda::corpus_subset(corpusAll, date >= "1997-01-01" & date < "2014-10-01")
 #' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
@@ -852,8 +852,8 @@ get_loss_data <- function(models, loss = c("DA", "error", "errorSq", "AD", "accu
   stopifnot(is.list(models))
   stopifnot(loss %in% c("DA", "error", "errorSq", "AD", "accuracy"))
   if (length(loss) != 1) stop("The 'loss' argument should contain a single argument.")
-  checkClass <- sapply(models, function(m) return(!inherits(m, "sentomodeliter")))
-  if (any(checkClass)) stop("Not all elements of the 'models' list are sentomodeliter objects.")
+  checkClass <- sapply(models, function(m) return(!inherits(m, "sento_modelIter")))
+  if (any(checkClass)) stop("Not all elements of the 'models' list are sento_modelIter objects.")
   modelFamilies <- unlist(lapply(models, function(m) return(m$models[[1]]$model)))
   if (!(length(table(modelFamilies)) == 1)) stop("All models should come from the same family.")
   mF <- as.character(modelFamilies[1])
