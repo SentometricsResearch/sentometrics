@@ -315,7 +315,6 @@ as.data.table.sento_measures <- function(sento_measures, keep.rownames = FALSE, 
     stop("The 'format' argument should be 'wide' or 'long'.")
 }
 
-### TODO: update documentation
 #' Subset sentiment measures
 #'
 #' @author Samuel Borms
@@ -323,13 +322,16 @@ as.data.table.sento_measures <- function(sento_measures, keep.rownames = FALSE, 
 #' @description Subsets rows of the sentiment measures based on its columns.
 #'
 #' @param x a \code{sento_measures} object created using \code{\link{sento_measures}}.
-#' @param subset a logical expression indicating the rows to keep.
-#' @param select ...
-#' @param delete ...
+#' @param subset a logical (non-\code{character}) expression indicating the rows to keep. If a
+#' \code{numeric} input is given, it is used for row index subsetting.
+#' @param select a \code{character} vector of the lexicon, feature and time weighting scheme names, to indicate which
+#' measures need to be selected, or as a \code{list} of \code{character} vectors, possibly with separately specified
+#' combinations (consisting of one unique lexicon, one unique feature, and one unique time weighting scheme at maximum).
+#' @param delete see the \code{select} argument.
 #' @param ... not used.
 #'
-#' @return A modified \code{sento_measures} object, with only the kept rows, including updated information
-#' and statistics, but the original sentiment scores \code{data.table} untouched.
+#' @return A modified \code{sento_measures} object, with only the remaining rows and sentiment measures,
+#' including updated information and statistics, but the original sentiment scores \code{data.table} untouched.
 #'
 #' @examples
 #' data("usnews", package = "sentometrics")
@@ -339,14 +341,15 @@ as.data.table.sento_measures <- function(sento_measures, keep.rownames = FALSE, 
 #' # construct a sento_measures object to start with
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-#' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+#' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sm <- sento_measures(corpusSample, l, ctr)
 #'
 #' # different subsets
 #' sub1 <- subset(sm, HENRY_en--economy--equal_weight >= 0.01)
-#' sub2 <- subset(sm,
-#'    date %in% seq(as.Date("2000-01-01"), as.Date("2013-12-01"), by = "month"))
+#' sub2 <- subset(sm, date %in% get_dates(sm)[3:12])
+#' sub3 <- subset(sm, 3:12)
+#' sub4 <- subset(sm, 1:100) # warning
 #'
 #' # different selections
 #' sel1 <- subset(sm, select = c("equal_weight"))
@@ -365,20 +368,31 @@ subset.sento_measures <- function(x, subset = NULL, select = NULL, delete = NULL
   check_class(x, "sento_measures")
 
   ### subset
-  sub <- as.character(substitute(list(subset))[-1L])
-  if (length(sub) > 0 && sub != "NULL") {
+  sub <- as.character(substitute(list(subset))[-1L]) ### TODO: check if not more clean to have subset argument also as a character vector (cf. is.numeric() issue)
+  if (is.numeric(subset)) {
+    if (max(subset) > nobs(x)) {
+      warning("At least one row index is greater than nobs(x). Input sento_measures object is returned.")
+      return(x)
+    }
+    measuresNew <- as.data.table(x)[subset, ]
+    x <- update_info(x, measuresNew) # subset update
+    if (nobs(x) == 0) {
+      warning("No rows retained. Input sento_measures object is returned.")
+      return(x)
+    }
+  } else if (length(sub) > 0 && sub != "NULL") {
     sub <- stringi::stri_replace_all(sub, "", regex = " ")
     sub <- stringi::stri_replace_all(sub, "____", regex = "--")
     measures <- as.data.table(x)
     colnames(measures) <- stringi::stri_replace_all(colnames(measures), "____", regex = "--") # -- is problematic here
-    measuresNew <- tryCatch(measures[eval(parse(text = sub), parent.frame())], error = function(e) return(NULL))
+    measuresNew <- tryCatch(measures[eval(parse(text = sub), parent.frame())], error = function(e) NULL)
     if (is.null(measuresNew)) stop("The 'subset' argument must evaluate to logical.")
     colnames(measuresNew) <- stringi::stri_replace_all(colnames(measuresNew), "--", regex = "____")
     if (dim(measuresNew)[1] == 0) {
       warning("No rows selected in subset. Input sento_measures object is returned.")
       return(x)
     }
-    x <- update_info(x, measuresNew) # update 1
+    x <- update_info(x, measuresNew) # subset update
   }
 
   ### select
@@ -404,7 +418,7 @@ subset.sento_measures <- function(x, subset = NULL, select = NULL, delete = NULL
       return(x)
     }
     measuresNew <- measures[, c(TRUE, ind[-1]), with = FALSE]
-    x <- update_info(x, measuresNew) # update 2
+    x <- update_info(x, measuresNew) # select update
   }
 
   ### delete
@@ -430,21 +444,9 @@ subset.sento_measures <- function(x, subset = NULL, select = NULL, delete = NULL
       return(x)
     }
     measuresNew <- measures[, c(TRUE, !ind[-1]), with = FALSE]
-    x <- update_info(x, measuresNew) # update 3
+    x <- update_info(x, measuresNew) # delete update
   }
 
   return(x)
 }
-
-# #' @export ### TODO: possible given that sento_measures has mode(...) "list"?
-# `[.sento_measures` <- function(x, ...) { #_select + _delete ### TODO: also (error) functions for replacement etc.?
-#   check_class(sento_measures, "sento_measures")
-#
-#   measures <- as.data.table(sento_measures)
-#   measuresNew <- data.table::`[.data.table`(measures, ...)
-#
-#   sento_measures <- update_info(sento_measures, measuresNew) # update information in sento_measures object
-#
-#   return(sento_measures)
-# }
 

@@ -13,8 +13,9 @@ sentiment_bind(...)
 The new, combined, \code{sentiment} object.
 }
 \description{
-Combines multiple sentiment objects with the same column names into a new sentiment object. Duplicates
-in terms of document identifiers across input objects are removed.
+Combines multiple sentiment objects with the same column names into a new sentiment object.
+All entries with duplicate document identifiers across input objects are removed, except for the first
+occurrence.
 }
 \examples{
 data("usnews", package = "sentometrics")

@@ -61,11 +61,11 @@ ctrM9$nSample <- N - 1 - 2 + 1
 
 ctrM10 <- ctr_model(model = "gaussian", type = "Cp", h = 1, alphas = 0,
                     nSample = nSample, do.iter = TRUE, start = 2, nCore = 2)
-out10 <- sento_model(measures_select(sento_measures, c("GI_en")), y, ctr = ctrM10)
+out10 <- sento_model(subset(sento_measures, select = c("GI_en")), y, ctr = ctrM10)
 
 ctrM11 <- ctr_model(model = "gaussian", type = "Cp", h = 1, alphas = c(0, 0.4, 1),
                     nSample = nSample, do.iter = TRUE, start = 2)
-out11 <- sento_model(measures_select(sento_measures, c("LM_en", "wsj", "almon1")),
+out11 <- sento_model(subset(sento_measures, select = c("LM_en", "wsj", "almon1")),
                      y, x = cbind(x, measures_global(sento_measures)[, -1]), ctr = ctrM11)
 
 # sento_model
