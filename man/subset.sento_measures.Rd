@@ -10,17 +10,20 @@
 \arguments{
 \item{x}{a \code{sento_measures} object created using \code{\link{sento_measures}}.}
 
-\item{subset}{a logical expression indicating the rows to keep.}
+\item{subset}{a logical (non-\code{character}) expression indicating the rows to keep. If a
+\code{numeric} input is given, it is used for row index subsetting.}
 
-\item{select}{...}
+\item{select}{a \code{character} vector of the lexicon, feature and time weighting scheme names, to indicate which
+measures need to be selected, or as a \code{list} of \code{character} vectors, possibly with separately specified
+combinations (consisting of one unique lexicon, one unique feature, and one unique time weighting scheme at maximum).}
 
-\item{delete}{...}
+\item{delete}{see the \code{select} argument.}
 
 \item{...}{not used.}
 }
 \value{
-A modified \code{sento_measures} object, with only the kept rows, including updated information
-and statistics, but the original sentiment scores \code{data.table} untouched.
+A modified \code{sento_measures} object, with only the remaining rows and sentiment measures,
+including updated information and statistics, but the original sentiment scores \code{data.table} untouched.
 }
 \description{
 Subsets rows of the sentiment measures based on its columns.
@@ -33,14 +36,15 @@ data("list_valence_shifters", package = "sentometrics")
 # construct a sento_measures object to start with
 corpus <- sento_corpus(corpusdf = usnews)
 corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")])
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 sm <- sento_measures(corpusSample, l, ctr)
 
 # different subsets
 sub1 <- subset(sm, HENRY_en--economy--equal_weight >= 0.01)
-sub2 <- subset(sm,
-   date \%in\% seq(as.Date("2000-01-01"), as.Date("2013-12-01"), by = "month"))
+sub2 <- subset(sm, date \%in\% get_dates(sm)[3:12])
+sub3 <- subset(sm, 3:12)
+sub4 <- subset(sm, 1:100) # warning
 
 # different selections
 sel1 <- subset(sm, select = c("equal_weight"))

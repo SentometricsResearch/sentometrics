@@ -395,9 +395,9 @@ corpus_summarize <- function(x, by = "day", features = NULL) {
   return(summary)
 }
 
-### TODO: possibly use existing date metadata variable
+### TODO: possibly use existing "date" metadata variable
 #' @export
-as.sento_corpus.corpus <- function(x, dates, do.clean = FALSE, ...) { # to_sento_corpus
+as.sento_corpus.corpus <- function(x, dates = NULL, do.clean = FALSE, ...) {
   if (length(dates) != quanteda::ndoc(x))
     stop("The number of dates in 'dates' should be equal to the number of documents.")
   corpusdf <- as.data.table(data.frame(texts = quanteda::texts(x),
@@ -410,7 +410,7 @@ as.sento_corpus.corpus <- function(x, dates, do.clean = FALSE, ...) { # to_sento
 }
 
 ### TODO: check necessity of all NLP:: calls
-### TODO: integrate features if variables are found that comply with definition
+### TODO: integrate features if variables are found that comply with definition + in compute_sentiment()
 ### TODO: check necessity of as.POSIXct() for dates
 ### TODO: dummyFeature warning, be more smooth about this?
 #' @export

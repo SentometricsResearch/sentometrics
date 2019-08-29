@@ -13,11 +13,11 @@ inline void update_primary_shifters_sentence(std::vector< int >& shifters,
   if (valType == 1) shifters[0] += 1; // negators
   else if (valType == 2) shifters[1] += 1; // amplifiers
   else if (valType == 3) shifters[2] += 1; // deamplifiers
-  else if (valType == 4) {
-    if(position == 0) {
+  else if (valType == 4) { // adversative conjunction
+    if (position == 0) {
       shifters[3] += 1;
     }
-  } // adversative conjunction
+  }
 }
 
 inline double compute_sentence_impact(std::vector<int>& shifters, int& position) {

@@ -2,9 +2,9 @@
 % Please edit documentation in R/sentomeasures_main.R
 \name{aggregate.sentiment}
 \alias{aggregate.sentiment}
-\title{Aggregate textual sentiment across documents and time}
+\title{Aggregate textual sentiment across sentences, documents and time}
 \usage{
-\method{aggregate}{sentiment}(x, ctr, ...)
+\method{aggregate}{sentiment}(x, ctr, do.full = TRUE, ...)
 }
 \arguments{
 \item{x}{a \code{sentiment} object created using \code{\link{compute_sentiment}} (from a
@@ -12,15 +12,19 @@
 
 \item{ctr}{output from a \code{\link{ctr_agg}} call. The \code{howWithin} and \code{nCore} elements are ignored.}
 
+\item{do.full}{if \code{do.full = TRUE} (by default), does entire aggregation up to a \code{sento_measures}
+object, else only goes from sentence-level to document-level. Ignored if no \code{"sentence_id"} column in
+\code{sentiment} input object.}
+
 \item{...}{not used.}
 }
 \value{
-A \code{sento_measures} object.
+A document-level \code{sentiment} object or a fully aggregated \code{sento_measures} object.
 }
 \description{
-Condenses document-level textual sentiment scores into a panel of textual sentiment
-measures by aggregating across documents and time. This function is called within \code{\link{sento_measures}},
-applied on the output of \code{\link{compute_sentiment}}.
+Aggregates textual sentiment scores at sentence- or document-level into a panel of textual
+sentiment measures. Can also be used to aggregate sentence-level sentiment scores into
+document-level sentiment scores. This function is called within the \code{\link{sento_measures}} function.
 }
 \examples{
 data("usnews", package = "sentometrics")
@@ -30,12 +34,21 @@ data("list_valence_shifters", package = "sentometrics")
 # computation of sentiment
 corpus <- sento_corpus(corpusdf = usnews)
 corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
-sent <- compute_sentiment(corpusSample, l, how = "counts")
+l1 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")],
+                     list_valence_shifters[["en"]])
+l2 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")],
+                     list_valence_shifters[["en"]][, c("x", "t")])
+sent1 <- compute_sentiment(corpusSample, l1, how = "counts")
+sent2 <- compute_sentiment(corpusSample, l2, how = "counts", do.sentence = TRUE)
 ctr <- ctr_agg(howTime = c("linear"), by = "year", lag = 3)
 
-# aggregation into sentiment measures
-sento_measures <- aggregate(sent, ctr)
+# aggregate into sentiment measures
+sm1 <- aggregate(sent1, ctr)
+sm2 <- aggregate(sent2, ctr)
+
+# two-step aggregation (first into document-level sentiment)
+sent3 <- aggregate(sent2, ctr, do.full = FALSE)
+sm3 <- aggregate(sent3, ctr)
 
 }
 \seealso{

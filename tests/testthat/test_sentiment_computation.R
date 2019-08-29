@@ -91,9 +91,11 @@ test_that("Agreement between sentiment scores across input objects", {
   expect_true(all.equal(sentimentListOriginal, sentimentList[1:11])) # compare with old sentiment scores
 })
 
+### TODO: s3 is wrong, also gives feature columns...
 sentimentSentenceList <- list(
   s1 = compute_sentiment(quanteda::texts(corpus), lexClust, how = "counts", do.sentence = TRUE),
-  s2 = compute_sentiment(quanteda::corpus(usnews[1:250, "texts"]), lexClust, how = "counts", do.sentence = TRUE),
+  s2 = compute_sentiment(quanteda::corpus(usnews[1:250, "texts"]),
+                         lexClust, how = "counts", do.sentence = TRUE),
   s3 = compute_sentiment(quanteda::corpus(usnews[1:250, c("texts", "wsj", "economy")], text_field = "texts"),
                          lexClust, how = "counts", do.sentence = TRUE),
   s4 = compute_sentiment(corpus, lexClust, how = "exponential", do.sentence = TRUE),

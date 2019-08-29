@@ -9,8 +9,9 @@ compute_sentiment(x, lexicons, how = "proportional", tokens = NULL,
 }
 \arguments{
 \item{x}{either a \code{sento_corpus} object created with \code{\link{sento_corpus}}, a \pkg{quanteda}
-\code{\link[quanteda]{corpus}} object, or a \code{character} vector. The latter two do not incorporate a
-date dimension. In case of a \code{\link[quanteda]{corpus}} object, the \code{numeric} columns from the
+\code{\link[quanteda]{corpus}} object, a \pkg{tm} \code{\link[tm]{SimpleCorpus}} object, a \pkg{tm}
+\code{\link[tm]{VCorpus}} object, or a \code{character} vector. Only a \code{sento_corpus} object incorporates
+a date dimension. In case of a \code{\link[quanteda]{corpus}} object, the \code{numeric} columns from the
 \code{\link[quanteda]{docvars}} are considered as features over which sentiment will be computed. In
 case of a \code{character} vector, sentiment is only computed across lexicons.}
 
@@ -19,7 +20,8 @@ case of a \code{character} vector, sentiment is only computed across lexicons.}
 \item{how}{a single \code{character} vector defining how aggregation within documents should be performed. For currently
 available options on how aggregation can occur, see \code{\link{get_hows}()$words}.}
 
-\item{tokens}{a \code{list} of tokenized documents, to specify your own tokenization scheme. Can result from the
+\item{tokens}{a \code{list} of tokenized documents, or if \code{do.sentence = TRUE} a \code{list} of
+a \code{list} of tokenized sentences. This allows to specify your own tokenization scheme. Can result from the
 \pkg{quanteda}'s \code{\link[quanteda]{tokens}} function, the \pkg{tokenizers} package, or other. Make sure the tokens are
 constructed from (the texts from) the \code{x} argument, are unigrams, and preferably set to lowercase, otherwise, results
 may be spurious and errors could occur. By default set to \code{NULL}.}
@@ -36,27 +38,17 @@ sentence level follows the methodology defined in the \pkg{sentimentr} package.}
 \value{
 If \code{x} is a \code{sento_corpus} object, a \code{sentiment} object, i.e., a \code{data.table} containing
 the sentiment scores \code{data.table} with an \code{"id"}, a \code{"date"} and a \code{"word_count"} column,
-and all lexicon--feature sentiment scores columns. A \code{sentiment} object can be used for aggregation into
-time series with the \code{\link{aggregate.sentiment}} function.
+and all lexicon-feature sentiment scores columns. A \code{sentiment} object can be used for aggregation into
+time series with the \code{\link{aggregate.sentiment}} function. If \code{do.sentence = TRUE}, an additional
+\code{"sentence_id"} column along the \code{"id"} column is added.
 
 If \code{x} is a \pkg{quanteda} \code{\link[quanteda]{corpus}} object, a sentiment scores
-\code{data.table} with an \code{"id"} and a \code{"word_count"} column, and all lexicon--feature
+\code{data.table} with an \code{"id"} and a \code{"word_count"} column, and all lexicon-feature
 sentiment scores columns.
 
-If \code{x} is a \code{character} vector, a sentiment scores
-\code{data.table} with a \code{"word_count"} column, and all lexicon--feature sentiment scores columns.
-
-If \code{x} is a \code{SimpleCorpus} object, a sentiment scores
-\code{data.table} with a \code{"word_count"} column, and all lexicon--feature sentiment scores columns.
-
-If \code{x} is a \code{VCorpus} object, a sentiment scores
-\code{data.table} with an \code{"id"} and a \code{"word_count"} column, and all lexicon--feature
-sentiment scores columns.
-
-If \code{do.sentence = TRUE}, an additional column \code{"sentence_id"} along the \code{"id"}
-column is added. To use the resulting object for aggregation into time series with
-the \code{\link{aggregate.sentiment}} function, it should first be aggregated to document level with the
-\code{aggregate_sentences} function.
+If \code{x} is a \pkg{tm} \code{SimpleCorpus} object, a \pkg{tm} \code{VCorpus} object, or a \code{character} vector,
+a sentiment scores \code{data.table} with an auto-created \code{"id"} column, a \code{"word_count"} column,
+and all lexicon sentiment scores columns.
 }
 \description{
 Given a corpus of texts, computes (net) sentiment per document using the bag-of-words approach
@@ -108,7 +100,7 @@ gives the same weight as \code{"TF"} but logarithmically scaled. The \code{how =
 a bias towards longer documents. The weight is determined by dividing the raw frequency of a token by the raw frequency
 of the most occurring term in the document. The \code{how = "IDF"} option uses the logarithm of the division of the raw frequency of a word by the number of texts
 in which the word appears. By doing this, words appearing in multiple texts get a lower weight. The \code{how = "TFIDF"},
-\code{how = "logarithmicTFIDF"}, \code{how = "augmentedTFIDF"} options use the same weights as there \code{IDF}-variant
+\code{how = "logarithmicTFIDF"}, \code{how = "augmentedTFIDF"} options use the same weights as their \code{IDF}-variant
 but then multiplied with the \code{how = "IDF"} option. See the vignette for more details.
 }
 

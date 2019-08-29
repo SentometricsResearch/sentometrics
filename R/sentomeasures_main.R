@@ -1,4 +1,5 @@
 
+### TODO: check naming and assignment of alpha, alphasExp, etc.
 #' Set up control for aggregation into sentiment measures
 #'
 #' @author Samuel Borms, Keven Bluteau
@@ -7,19 +8,21 @@
 #' sentiment measures (indices).
 #'
 #' @details For currently available options on how aggregation can occur (via the \code{howWithin},
-#' \code{howDocs} and \code{howTime} arguments), call \code{\link{get_hows}}.
+#' \code{howDocs} and \code{howTime} arguments), call \code{\link{get_hows}}. The control parameters
+#' associated to \code{howDocs} are used both for aggregation across documents and across sentences.
 #'
 #' @param howWithin a single \code{character} vector defining how aggregation within documents will be performed. Should
 #' \code{length(howWithin) > 1}, the first element is used. For available options on how this aggregation can
 #' occur; see \code{\link{get_hows}()$words}.
-#' @param howDocs a single \code{character} vector defining how aggregation across documents per date will be performed.
-#' Should \code{length(howDocs) > 1}, the first element is used. For available options on how this aggregation
+#' @param howDocs a single \code{character} vector defining how aggregation across documents (and/or sentences) per date will
+#' be performed. Should \code{length(howDocs) > 1}, the first element is used. For available options on how this aggregation
 #' can occur; see \code{\link{get_hows}()$docs}.
 #' @param howTime a \code{character} vector defining how aggregation across dates will be performed. More than one choice
 #' is possible. For available options on how this aggregation can occur; see \code{\link{get_hows}()$time}.
 #' @param do.ignoreZeros a \code{logical} indicating whether zero sentiment values have to be ignored in the determination of
-#' the document weights while aggregating across documents. By default \code{do.ignoreZeros = TRUE}, such that documents with
-#' a raw sentiment score of zero or for which a given feature indicator is equal to zero are considered irrelevant.
+#' the document (and/or sentence) weights while aggregating across documents (and/or sentences). By default
+#' \code{do.ignoreZeros = TRUE}, such that documents (and/or sentences) with a raw sentiment score of zero or for which
+#' a given feature indicator is equal to zero are considered irrelevant.
 #' @param by a single \code{character} vector, either \code{"day", "week", "month"} or \code{"year"}, to indicate at what
 #' level the dates should be aggregated. Dates are displayed as the first day of the period, if applicable (e.g.,
 #' \code{"2017-03-01"} for March 2017).
@@ -30,7 +33,7 @@
 #' sentiment values across the continuum of dates considered are added. This impacts the aggregation across time,
 #' applying the \code{\link{measures_fill}} function before aggregating, except if \code{fill = "none"}. By default equal to
 #' \code{"zero"}, which sets the scores (and thus also the weights) of the added dates to zero in the time aggregation.
-#' @param alphasExp a \code{numeric} vector of all exponential smoothing factors to calculate weights for, used if
+#' @param alphasExp a \code{numeric} vector of all exponential weighting smoothing factors, used if
 #' \code{"exponential" \%in\% howTime}. Values should be between 0 and 1 (both excluded); see
 #' \code{\link{weights_exponential}}.
 #' @param ordersAlm a \code{numeric} vector of all Almon polynomial orders (positive) to calculate weights for, used if
@@ -45,7 +48,7 @@
 #' equal to the desired \code{lag}.
 #' @param tokens see \code{\link{compute_sentiment}}.
 #' @param nCore see \code{\link{compute_sentiment}}.
-#' @param alphaExpDocs a single \code{integer} vector. A smoothing factor to calculate weights for, used if
+#' @param alphaExpDocs a single \code{integer} vector. A weights smoothing factor, used if
 #' \code{"exponential" \%in\% howDocs} or \code{"inverseExponential" \%in\% howDocs}. Value should be between 0 and 1
 #' (both excluded); see \code{\link{weights_exponential}}.
 #
@@ -81,9 +84,10 @@
 #'
 #' @export
 ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTime = "equal_weight",
-                    do.ignoreZeros = TRUE, by = "day", lag = 1, fill = "zero", alphasExp = seq(0.1, 0.5, by = 0.1),
+                    do.ignoreZeros = TRUE, by = "day", lag = 1, fill = "zero",
+                    alphaExpDocs = 0.1, alphasExp = seq(0.1, 0.5, by = 0.1),
                     ordersAlm = 1:3, do.inverseAlm = TRUE, aBeta = 1:4, bBeta = 1:4, weights = NULL,
-                    tokens = NULL, nCore = 1, alphaExpDocs = 0.1) {
+                    tokens = NULL, nCore = 1) {
 
   if (length(howWithin) > 1) howWithin <- howWithin[1]
   if (length(howDocs) > 1) howDocs <- howDocs[1]
@@ -231,20 +235,24 @@ sento_measures <- function(sento_corpus, lexicons, ctr) {
   return(sento_measures)
 }
 
-#' Aggregate textual sentiment across documents and time
+### TODO: add sentence aggregation in unit tests
+#' Aggregate textual sentiment across sentences, documents and time
 #'
 #' @author Samuel Borms, Keven Bluteau
 #'
-#' @description Condenses document-level textual sentiment scores into a panel of textual sentiment
-#' measures by aggregating across documents and time. This function is called within \code{\link{sento_measures}},
-#' applied on the output of \code{\link{compute_sentiment}}.
+#' @description Aggregates textual sentiment scores at sentence- or document-level into a panel of textual
+#' sentiment measures. Can also be used to aggregate sentence-level sentiment scores into
+#' document-level sentiment scores. This function is called within the \code{\link{sento_measures}} function.
 #'
 #' @param x a \code{sentiment} object created using \code{\link{compute_sentiment}} (from a
 #' \code{sento_corpus} object), or an output from \code{\link{to_sentiment}}.
 #' @param ctr output from a \code{\link{ctr_agg}} call. The \code{howWithin} and \code{nCore} elements are ignored.
+#' @param do.full if \code{do.full = TRUE} (by default), does entire aggregation up to a \code{sento_measures}
+#' object, else only goes from sentence-level to document-level. Ignored if no \code{"sentence_id"} column in
+#' \code{sentiment} input object.
 #' @param ... not used.
 #'
-#' @return A \code{sento_measures} object.
+#' @return A document-level \code{sentiment} object or a fully aggregated \code{sento_measures} object.
 #'
 #' @seealso \code{\link{compute_sentiment}}, \code{\link{ctr_agg}}, \code{\link{sento_measures}}
 #'
@@ -256,40 +264,64 @@ sento_measures <- function(sento_corpus, lexicons, ctr) {
 #' # computation of sentiment
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-#' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
-#' sent <- compute_sentiment(corpusSample, l, how = "counts")
+#' l1 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")],
+#'                      list_valence_shifters[["en"]])
+#' l2 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")],
+#'                      list_valence_shifters[["en"]][, c("x", "t")])
+#' sent1 <- compute_sentiment(corpusSample, l1, how = "counts")
+#' sent2 <- compute_sentiment(corpusSample, l2, how = "counts", do.sentence = TRUE)
 #' ctr <- ctr_agg(howTime = c("linear"), by = "year", lag = 3)
 #'
-#' # aggregation into sentiment measures
-#' sento_measures <- aggregate(sent, ctr)
+#' # aggregate into sentiment measures
+#' sm1 <- aggregate(sent1, ctr)
+#' sm2 <- aggregate(sent2, ctr)
+#'
+#' # two-step aggregation (first into document-level sentiment)
+#' sent3 <- aggregate(sent2, ctr, do.full = FALSE)
+#' sm3 <- aggregate(sent3, ctr)
 #'
 #' @importFrom stats aggregate
 #' @export
-aggregate.sentiment <- function(x, ctr, ...) {
+aggregate.sentiment <- function(x, ctr, do.full = TRUE, ...) {
+  stopifnot(is.logical(do.full))
+
   howDocs <- ctr$docs$howDocs
   howTime <- ctr$time$howTime
   howWithin <- ctr$within$howWithin
   weightingParamDocs <- ctr$docs$weightingParam
   weightingParamTime <- ctr$time$weightingParam
-  by <- ctr$time$weightingParam$by
-  ctr <- ctr
+  by <- weightingParamTime$by
+
+  if ("sentence_id" %in% colnames(x)) {
+    x <- aggregate_sentences(x, how = howDocs, weightingParamDocs = weightingParamDocs)
+    if (do.full == FALSE) return(x)
+  }
   aggDocs <- aggregate_docs(x, by = by, how = howDocs, weightingParamDocs = weightingParamDocs)
   aggDocs$ctr <- ctr
   sento_measures <- aggregate_time(aggDocs, how = howTime, weightingParamTime = weightingParamTime)
+
   sento_measures
 }
 
-aggregate_docs <- function(sentiment, by, how = get_hows()$docs, weightingParamDocs) {
+aggregate_sentences <- function(sentiment, how, weightingParamDocs) {
+  wc <- sentiment[, .(word_count)]
+  dates <- sentiment[, .(date)]
+  do.ignoreZeros <- weightingParamDocs$do.ignoreZeros
+  alphaExpDocs <- weightingParamDocs$alphaExpDocs
+  weights <- weights_across(sentiment, how = how, do.ignoreZeros = do.ignoreZeros, alpha = alphaExpDocs, by = "id")
+  sw <- data.table(id = sentiment$id, sentiment[, -1:-4] * weights, wc, dates)
+  s <- sw[, lapply(.SD, function(x) sum(x, na.rm = TRUE)), by = eval(c("date", "id"))]
+  setcolorder(s, c("id", "date", "word_count"))
+  class(s) <- c("sentiment", class(s))
+  s
+}
 
-  names <- stringi::stri_split(colnames(sentiment)[4:ncol(sentiment)], regex = "--")
+aggregate_docs <- function(sent, by, how = get_hows()$docs, weightingParamDocs) {
+
+  names <- stringi::stri_split(colnames(sent)[4:ncol(sent)], regex = "--")
   lexNames <- unique(sapply(names, "[", 1))
   features <- unique(sapply(names, "[", 2))
 
-  if ("sentence_id" %in% colnames(sentiment)) {
-    stop("sentiment should be on document level. Aggregate sentiment on sentence level first to document level.")
-  }
-
-  sent <- sentiment
   setorder(sent, "date", na.last = FALSE)
   attribWeights <- list(W = NA, B = NA) # list with weights useful in later attribution analysis
 
@@ -308,12 +340,12 @@ aggregate_docs <- function(sentiment, by, how = get_hows()$docs, weightingParamD
   }
   sent$date <- dates
 
-  # ignore documents with zero sentiment in aggregation (if do.ignoreZeros is TRUE)
   do.ignoreZeros <- weightingParamDocs$do.ignoreZeros
-  if (do.ignoreZeros == TRUE)
+  if (do.ignoreZeros == TRUE) # ignore documents with zero sentiment in aggregation
     sent[, names(sent)] <- sent[, names(sent), with = FALSE][, lapply(.SD, function(x) replace(x, which(x == 0), NA))]
 
-  weights <- aggregate_across(sent, how = how, do.ignoreZeros = do.ignoreZeros, by = "date")
+  alphaExpDocs <- weightingParamDocs$alphaExpDocs
+  weights <- weights_across(sent, how = how, do.ignoreZeros = do.ignoreZeros, alpha = alphaExpDocs, by = "date")
   s <- sent[, !"id"]
   attribWeights[["W"]] <- data.table(id = sent$id, date = sent$date, weights)
   sw <- data.table(date = s$date, s[, -c(1:2)] * weights)
@@ -444,14 +476,10 @@ peakdates <- function(sento_measures, n = 10, type = "both", do.average = FALSE)
   peakDates
 }
 
-aggregate_across <- function(s, how = "proportional", do.ignoreZeros = TRUE, alphaExp = 0.1, by = "date") {
+weights_across <- function(s, how = "proportional", do.ignoreZeros = TRUE, alpha = 0.1, by = "date") {
 
-  if ("id" %in% colnames(s) && !"id" %in% by) {
-    s <- s[, !"id"]
-  }
-  if ("sentence_id" %in% colnames(s) && !"sentence_id" %in% by) {
-    s <- s[, !"sentence_id"][, !"date"]
-  }
+  if ("id" %in% colnames(s) && !"id" %in% by) s <- s[, !"id"]
+  if ("sentence_id" %in% colnames(s) && !"sentence_id" %in% by) s <- s[, !"sentence_id"][, !"date"]
 
   if (how == "equal_weight") {
     if (do.ignoreZeros == TRUE) {
@@ -482,7 +510,6 @@ aggregate_across <- function(s, how = "proportional", do.ignoreZeros = TRUE, alp
     }
   }  else if (how == "exponential") {
     # exponential w.r.t. words in document vs. total words in all documents per date
-    alpha <- alphaExp
     if (do.ignoreZeros == TRUE) {
       docsIn <- s[, lapply(.SD, function(x)
         (x * alpha * (1 - alpha) ^ (1 - word_count / mean(word_count)) /
@@ -496,7 +523,6 @@ aggregate_across <- function(s, how = "proportional", do.ignoreZeros = TRUE, alp
     }
   } else if (how == "inverseExponential") {
     # inverse exponential w.r.t. words in document vs. total words in all documents per date
-    alpha <- alphaExp
     if (do.ignoreZeros == TRUE) {
       docsIn <- s[, lapply(.SD, function(x)
         (x * (1 / (alpha * (1 - alpha) ^ (1 - word_count / mean(word_count)))) /

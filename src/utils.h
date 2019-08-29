@@ -8,11 +8,9 @@ using namespace std;
 #define UTILS_H
 
 inline bool is_frequency_weighting(std::string how) {
-
   return (how == "TF" || how =="logarithmicTF" || how == "augmentedTF" ||how == "IDF"
-       || how == "TFIDF" || how == "logarithmicTFIDF"
-       || how == "augmentedTFIDF");
-
+            || how == "TFIDF" || how == "logarithmicTFIDF"
+            || how == "augmentedTFIDF");
 }
 
 inline Rcpp::CharacterVector prepare_column_names(Rcpp::CharacterVector x, int n) {
@@ -189,18 +187,18 @@ inline void update_token_scores(std::vector< double >& scores,
   }
 
   for (int i = 0; i < nTokens; i ++) {
-    //std::cout<< "Tokenloop " << i << "\n";
+    // std::cout<< "Tokenloop " << i << "\n";
     for (int j = 0; j < nL; j++) {
-      //std::cout<< "Lexicon loop " << j << "\n";
+      // std::cout<< "Lexicon loop " << j << "\n";
       if (tokenScores[i].size() != 0) {
         double score = tokenScores[i][j];
        // std::cout<< "score within lexicon loop: " << score << "\n";
         if (score != 0) {
           if (how == "counts") {
-            //std::cout<< "tokenshifter: " << tokenShifters[i] << " & score: " << score << "\n";
-            //std::cout<< "score before: " <<scores[j]<< "\n";
+            // std::cout<< "tokenshifter: " << tokenShifters[i] << " & score: " << score << "\n";
+            // std::cout<< "score before: " <<scores[j]<< "\n";
             scores[j] += (tokenShifters[i] * score);
-            //std::cout<< "score after: " <<scores[j]<< "\n";
+            // std::cout<< "score after: " <<scores[j]<< "\n";
           } else if (how == "squareRootCounts") {
             scores[j] += (tokenShifters[i] * score / std::sqrt(nTokens));
           } else if (how == "proportional") {
