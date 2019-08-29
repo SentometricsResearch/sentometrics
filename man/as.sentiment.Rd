@@ -7,27 +7,34 @@
 as.sentiment(s)
 }
 \arguments{
-\item{s}{a \code{data.table} that can be converted into a \code{sentiment} object. It should have an \code{"id"},
-a \code{"date"} and a \code{"word_count"} column. If other column names are provided with a separating \code{"--"},
-the first part is considered the lexicon (or more generally, the sentiment computation method), and the second part
-the feature. For sentiment column names without any \code{"--"}, a \code{"dummyFeature"} component is added.}
+\item{s}{a \code{data.table} that can be converted into a \code{sentiment} object. It should have at least an \code{"id"},
+a \code{"date"}, a \code{"word_count"} and one sentiment scores column. If other column names are provided with a
+separating \code{"--"}, the first part is considered the lexicon (or more generally, the sentiment computation
+method), and the second part the feature. For sentiment column names without any \code{"--"}, a \code{"dummyFeature"}
+component is added.}
 }
 \value{
 A \code{sentiment} object.
 }
 \description{
 Converts a properly structured sentiment table into a \code{sentiment} object, that can be used
-for further aggregation with the \code{\link{aggregate.sentiment}} function. This allows to start from document-level
+for further aggregation with the \code{\link{aggregate.sentiment}} function. This allows to start from
 sentiment scores not necessarily computed with \code{\link{compute_sentiment}}.
 }
 \examples{
 set.seed(505)
 
+data("usnews", package = "sentometrics")
+data("list_lexicons", package = "sentometrics")
+
 ids <- paste0("id", 1:200)
-date <- sample(seq(as.Date("2015-01-01"), as.Date("2018-01-01"), by = "day"), 200, TRUE)
+dates <- sample(seq(as.Date("2015-01-01"), as.Date("2018-01-01"), by = "day"), 200, TRUE)
 word_count <- sample(150:850, 200, replace = TRUE)
 sent <- matrix(rnorm(200 * 8), nrow =  200)
-s1 <- s2 <- s3 <- data.table(id = ids, date = date, word_count = word_count, sent)
+s1 <- s2 <- s3 <- data.table(id = ids, date = dates, word_count = word_count, sent)
+s4 <- compute_sentiment(usnews$texts[201:400],
+                        sento_lexicons(list_lexicons["GI_en"]),
+                        "counts", do.sentence = TRUE)
 m <- "method"
 
 colnames(s1)[-c(1:3)] <- paste0(m, 1:8)
@@ -40,10 +47,12 @@ colnames(s3)[-c(1:3)] <- c(paste0(m, 1:3, "--", "feat1"), paste0(m, 1:3, "--", "
                            paste0(m, 4:5))
 sent3 <- as.sentiment(s3)
 
+s4[, "date" := rep(dates, s4[, max(sentence_id), by = id][[2]])]
+sent4 <- as.sentiment(s4)
+
 # further aggregation from then on is easy...
 sentMeas1 <- aggregate(sent1, ctr_agg(lag = 10))
-sentMeas2 <- aggregate(sent2, ctr_agg(lag = 7))
-sentMeas3 <- aggregate(sent3, ctr_agg(lag = 14))
+sent5 <- aggregate(sent4, ctr_agg(lag = 7), do.full = FALSE)
 
 }
 \author{

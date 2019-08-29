@@ -27,6 +27,8 @@ sentiment measures. Can also be used to aggregate sentence-level sentiment score
 document-level sentiment scores. This function is called within the \code{\link{sento_measures}} function.
 }
 \examples{
+set.seed(505)
+
 data("usnews", package = "sentometrics")
 data("list_lexicons", package = "sentometrics")
 data("list_valence_shifters", package = "sentometrics")

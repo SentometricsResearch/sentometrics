@@ -51,8 +51,9 @@ a sentiment scores \code{data.table} with an auto-created \code{"id"} column, a 
 and all lexicon sentiment scores columns.
 }
 \description{
-Given a corpus of texts, computes (net) sentiment per document using the bag-of-words approach
-based on the lexicons provided and a choice of aggregation across words per document.
+Given a corpus of texts, computes (net) sentiment per document (and sentences) using the
+bag-of-words approach based on the lexicons provided and a choice of aggregation across words per document
+(or sentence).
 }
 \details{
 For a separate calculation of positive (resp. negative) sentiment, one has to provide distinct positive (resp.
