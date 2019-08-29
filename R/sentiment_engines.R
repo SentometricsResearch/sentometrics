@@ -96,8 +96,9 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
 #'
 #' @author Samuel Borms, Jeroen Van Pelt, Andres Algaba
 #'
-#' @description Given a corpus of texts, computes (net) sentiment per document using the bag-of-words approach
-#' based on the lexicons provided and a choice of aggregation across words per document.
+#' @description Given a corpus of texts, computes (net) sentiment per document (and sentences) using the
+#' bag-of-words approach based on the lexicons provided and a choice of aggregation across words per document
+#' (or sentence).
 #'
 #' @details For a separate calculation of positive (resp. negative) sentiment, one has to provide distinct positive (resp.
 #' negative) lexicons. This can be done using the \code{do.split} option in the \code{\link{sento_lexicons}} function, which
@@ -484,24 +485,31 @@ peakdocs <- function(sentiment, n = 10, type = "both", do.average = FALSE) {
 #' @author Samuel Borms
 #'
 #' @description Converts a properly structured sentiment table into a \code{sentiment} object, that can be used
-#' for further aggregation with the \code{\link{aggregate.sentiment}} function. This allows to start from document-level
+#' for further aggregation with the \code{\link{aggregate.sentiment}} function. This allows to start from
 #' sentiment scores not necessarily computed with \code{\link{compute_sentiment}}.
 #'
-#' @param s a \code{data.table} that can be converted into a \code{sentiment} object. It should have an \code{"id"},
-#' a \code{"date"} and a \code{"word_count"} column. If other column names are provided with a separating \code{"--"},
-#' the first part is considered the lexicon (or more generally, the sentiment computation method), and the second part
-#' the feature. For sentiment column names without any \code{"--"}, a \code{"dummyFeature"} component is added.
+#' @param s a \code{data.table} that can be converted into a \code{sentiment} object. It should have at least an \code{"id"},
+#' a \code{"date"}, a \code{"word_count"} and one sentiment scores column. If other column names are provided with a
+#' separating \code{"--"}, the first part is considered the lexicon (or more generally, the sentiment computation
+#' method), and the second part the feature. For sentiment column names without any \code{"--"}, a \code{"dummyFeature"}
+#' component is added.
 #'
 #' @return A \code{sentiment} object.
 #'
 #' @examples
 #' set.seed(505)
 #'
+#' data("usnews", package = "sentometrics")
+#' data("list_lexicons", package = "sentometrics")
+#'
 #' ids <- paste0("id", 1:200)
-#' date <- sample(seq(as.Date("2015-01-01"), as.Date("2018-01-01"), by = "day"), 200, TRUE)
+#' dates <- sample(seq(as.Date("2015-01-01"), as.Date("2018-01-01"), by = "day"), 200, TRUE)
 #' word_count <- sample(150:850, 200, replace = TRUE)
 #' sent <- matrix(rnorm(200 * 8), nrow =  200)
-#' s1 <- s2 <- s3 <- data.table(id = ids, date = date, word_count = word_count, sent)
+#' s1 <- s2 <- s3 <- data.table(id = ids, date = dates, word_count = word_count, sent)
+#' s4 <- compute_sentiment(usnews$texts[201:400],
+#'                         sento_lexicons(list_lexicons["GI_en"]),
+#'                         "counts", do.sentence = TRUE)
 #' m <- "method"
 #'
 #' colnames(s1)[-c(1:3)] <- paste0(m, 1:8)
@@ -514,10 +522,12 @@ peakdocs <- function(sentiment, n = 10, type = "both", do.average = FALSE) {
 #'                            paste0(m, 4:5))
 #' sent3 <- as.sentiment(s3)
 #'
+#' s4[, "date" := rep(dates, s4[, max(sentence_id), by = id][[2]])]
+#' sent4 <- as.sentiment(s4)
+#'
 #' # further aggregation from then on is easy...
 #' sentMeas1 <- aggregate(sent1, ctr_agg(lag = 10))
-#' sentMeas2 <- aggregate(sent2, ctr_agg(lag = 7))
-#' sentMeas3 <- aggregate(sent3, ctr_agg(lag = 14))
+#' sent5 <- aggregate(sent4, ctr_agg(how = "proportional"), do.full = FALSE)
 #'
 #' @export
 as.sentiment <- function(s) {
@@ -525,24 +535,33 @@ as.sentiment <- function(s) {
 }
 
 #' @export
-as.sentiment.data.table <- function(s) { ### TODO: allow for "sentence_id" column?
+as.sentiment.data.table <- function(s) {
   stopifnot(is.data.table(s))
   colNames <- colnames(s)
   if (any(duplicated(colNames)))
     stop("No duplicated column names allowed.")
-  if (!all(colNames[1:3] == c("id", "date", "word_count")))
-    stop("The input object 's' should have an 'id', a 'date' and a 'word_count' column, in that order.")
+
+  nonSentCols <- c("id", "date", "word_count")
+  if ("sentence_id" %in% colNames) nonSentCols <- c(nonSentCols[1], "sentence_id", nonSentCols[2:3])
+  if (!all(c("id", "date", "word_count") %in% colNames))
+    stop("The input object 's' should have an 'id', a 'date' and a 'word_count' column.")
   if (!inherits(s[["id"]], "character"))
     stop("The 'id' column should be of type character.")
   if (!inherits(s[["date"]], "Date"))
     stop("The 'date' column should be of type Date.")
-  if (!all(sapply(4:ncol(s), function(i) inherits(s[[i]], "numeric"))))
+
+  sentCols <- colNames[!(colNames %in% nonSentCols)]
+  if (length(sentCols) == 0)
+    stop("There should be at least one sentiment scores column.")
+  if (!all(sapply(sentCols, function(i) inherits(s[[i]], "numeric"))))
     stop("All sentiment value columns should be of type numeric.")
-  newNames <- sapply(stringi::stri_split(colNames[4:ncol(s)], regex = "--"), function(name) {
+  newNames <- sapply(stringi::stri_split(sentCols, regex = "--"), function(name) {
     if (length(name) == 1) return(paste0(name, "--", "dummyFeature"))
     else if (length(name) >= 2) return(paste0(name[1], "--", name[2]))
   })
-  setnames(s, c("id", "date", "word_count", newNames))
+
+  setnames(s, sentCols, newNames)
+  setcolorder(s, nonSentCols)
   s <- s[order(date)]
   class(s) <- c("sentiment", class(s))
   s

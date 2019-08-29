@@ -367,7 +367,7 @@ as.data.table.sento_measures <- function(sento_measures, keep.rownames = FALSE, 
 subset.sento_measures <- function(x, subset = NULL, select = NULL, delete = NULL, ...) {
   check_class(x, "sento_measures")
 
-  ### subset
+  # subset
   sub <- as.character(substitute(list(subset))[-1L]) ### TODO: check if not more clean to have subset argument also as a character vector (cf. is.numeric() issue)
   if (is.numeric(subset)) {
     if (max(subset) > nobs(x)) {
@@ -395,7 +395,7 @@ subset.sento_measures <- function(x, subset = NULL, select = NULL, delete = NULL
     x <- update_info(x, measuresNew) # subset update
   }
 
-  ### select
+  # select
   if (!is.null(select)) {
     allOpts <- unlist(get_dimensions(x))
     valid <- unlist(select) %in% allOpts
@@ -421,7 +421,7 @@ subset.sento_measures <- function(x, subset = NULL, select = NULL, delete = NULL
     x <- update_info(x, measuresNew) # select update
   }
 
-  ### delete
+  # delete
   if (!is.null(delete)) {
     allOpts <- unlist(get_dimensions(x))
     valid <- unlist(delete) %in% allOpts

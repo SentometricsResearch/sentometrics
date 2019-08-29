@@ -1,5 +1,4 @@
 
-### TODO: check naming and assignment of alpha, alphasExp, etc.
 #' Set up control for aggregation into sentiment measures
 #'
 #' @author Samuel Borms, Keven Bluteau
@@ -48,7 +47,7 @@
 #' equal to the desired \code{lag}.
 #' @param tokens see \code{\link{compute_sentiment}}.
 #' @param nCore see \code{\link{compute_sentiment}}.
-#' @param alphaExpDocs a single \code{integer} vector. A weights smoothing factor, used if
+#' @param alphaExpDocs a single \code{integer} vector. A weighting smoothing factor, used if
 #' \code{"exponential" \%in\% howDocs} or \code{"inverseExponential" \%in\% howDocs}. Value should be between 0 and 1
 #' (both excluded); see \code{\link{weights_exponential}}.
 #
@@ -235,7 +234,6 @@ sento_measures <- function(sento_corpus, lexicons, ctr) {
   return(sento_measures)
 }
 
-### TODO: add sentence aggregation in unit tests
 #' Aggregate textual sentiment across sentences, documents and time
 #'
 #' @author Samuel Borms, Keven Bluteau
@@ -257,6 +255,8 @@ sento_measures <- function(sento_corpus, lexicons, ctr) {
 #' @seealso \code{\link{compute_sentiment}}, \code{\link{ctr_agg}}, \code{\link{sento_measures}}
 #'
 #' @examples
+#' set.seed(505)
+#'
 #' data("usnews", package = "sentometrics")
 #' data("list_lexicons", package = "sentometrics")
 #' data("list_valence_shifters", package = "sentometrics")
@@ -308,9 +308,10 @@ aggregate_sentences <- function(sentiment, how, weightingParamDocs) {
   dates <- sentiment[, .(date)]
   do.ignoreZeros <- weightingParamDocs$do.ignoreZeros
   alphaExpDocs <- weightingParamDocs$alphaExpDocs
-  weights <- weights_across(sentiment, how = how, do.ignoreZeros = do.ignoreZeros, alpha = alphaExpDocs, by = "id")
-  sw <- data.table(id = sentiment$id, sentiment[, -1:-4] * weights, wc, dates)
-  s <- sw[, lapply(.SD, function(x) sum(x, na.rm = TRUE)), by = eval(c("date", "id"))]
+  weights <- weights_across(sentiment, how, do.ignoreZeros, alphaExpDocs, by = "id")
+  sw <- data.table(id = sentiment[["id"]], sentiment[, -1:-4] * weights, wc, dates)
+  s <- sw[, lapply(.SD, function(x)
+    sum(x, na.rm = TRUE)), by = c("id", "date")] # implicitly assumes all id and date combinations are unique
   setcolorder(s, c("id", "date", "word_count"))
   class(s) <- c("sentiment", class(s))
   s
@@ -345,7 +346,7 @@ aggregate_docs <- function(sent, by, how = get_hows()$docs, weightingParamDocs) 
     sent[, names(sent)] <- sent[, names(sent), with = FALSE][, lapply(.SD, function(x) replace(x, which(x == 0), NA))]
 
   alphaExpDocs <- weightingParamDocs$alphaExpDocs
-  weights <- weights_across(sent, how = how, do.ignoreZeros = do.ignoreZeros, alpha = alphaExpDocs, by = "date")
+  weights <- weights_across(sent, how, do.ignoreZeros, alphaExpDocs, by = "date")
   s <- sent[, !"id"]
   attribWeights[["W"]] <- data.table(id = sent$id, date = sent$date, weights)
   sw <- data.table(date = s$date, s[, -c(1:2)] * weights)

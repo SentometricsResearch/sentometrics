@@ -410,9 +410,9 @@ as.sento_corpus.corpus <- function(x, dates = NULL, do.clean = FALSE, ...) {
 }
 
 ### TODO: check necessity of all NLP:: calls
-### TODO: integrate features if variables are found that comply with definition + in compute_sentiment()
+### TODO: integrate features if variables are found that comply with definition + in compute_sentiment.tm()?
 ### TODO: check necessity of as.POSIXct() for dates
-### TODO: dummyFeature warning, be more smooth about this?
+### TODO: be more smooth about dummyFeature warning?
 #' @export
 as.sento_corpus.VCorpus <- function(x, dates = NULL, do.clean = FALSE, ...) {
   metaData <- c(names(NLP::meta(x[[1]], type = "local")),
