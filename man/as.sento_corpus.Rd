@@ -4,25 +4,27 @@
 \alias{as.sento_corpus}
 \title{Convert a quanteda or tm corpus object into a sento_corpus object}
 \usage{
-as.sento_corpus(x, dates, do.clean = FALSE, ...)
+as.sento_corpus(x, dates = NULL, do.clean = FALSE)
 }
 \arguments{
-\item{x}{a quanteda \code{\link[quanteda]{corpus}} object, or a tm
-\code{\link[tm]{SimpleCorpus}} or \code{\link[tm]{VCorpus}} object.}
+\item{x}{a \pkg{quanteda} \code{\link[quanteda]{corpus}} object, a \pkg{tm}
+\code{\link[tm]{SimpleCorpus}} or a \pkg{tm} \code{\link[tm]{VCorpus}} object.}
 
-\item{dates}{a sequence of dates as \code{"yyyy-mm-dd"}, of the same length as the number of documents
-in the input \code{corpus}.}
+\item{dates}{an optional sequence of dates as \code{"yyyy-mm-dd"}, of the same length as the number
+of documents in the input corpus, to define the \code{"date"} column. If \code{dates = NULL}, the
+\code{"date"} metadata element in the input corpus, if available, will be used but should be in the
+same \code{"yyyy-mm-dd"} format.}
 
-\item{do.clean}{see \code{do.clean} argument from the \code{\link{sento_corpus}} function.}
-
-\item{...}{...}
+\item{do.clean}{see \code{\link{sento_corpus}}.}
 }
 \value{
 A \code{sento_corpus} object, as returned by the \code{\link{sento_corpus}} function.
 }
 \description{
-Converts a \pkg{quanteda} \code{\link[quanteda]{corpus}} object into a \code{sento_corpus} object, by
-adding user-supplied dates and doing proper rearranging.
+Converts most common \pkg{quanteda} and \pkg{tm} corpus objects into a
+\code{sento_corpus} object. Appropriate available metadata will be integrated as features.
+For a \pkg{quanteda} corpus, this can come from \code{docvars(x)}, for a \pkg{tm} corpus,
+only \code{meta(x, type = "indexed")} metadata is considered.
 }
 \examples{
 data("usnews", package = "sentometrics")
@@ -31,30 +33,30 @@ reut21578 <- system.file("texts", "crude", package = "tm")
 
 # reshuffle usnews data.frame for use in quanteda and tm
 dates <- usnews$date
-# usnews$date <- NULL ### TODO: remove or not?
 usnews$wrong <- "notNumeric"
 colnames(usnews)[c(1, 3)] <- c("doc_id", "text")
 
 # corpus conversion from a quanteda corpus
 qcorp <- quanteda::corpus(usnews,
                           text_field = "text", docid_field = "doc_id")
-corpus1 <- as.sento_corpus(qcorp, dates = dates)
+corpus1 <- as.sento_corpus(qcorp)
+corpus2 <- as.sento_corpus(qcorp, sample(dates)) # overwrites "date" column
 
 # corpus conversion from a tm SimpleCorpus corpus (DataframeSource)
-tmcorpSCdf <- tm::SimpleCorpus(tm::DataframeSource(usnews))
-corpus2 <- as.sento_corpus(tmcorpSCdf)
+tmSCdf <- tm::SimpleCorpus(tm::DataframeSource(usnews))
+corpus3 <- as.sento_corpus(tmSCdf)
 
 # corpus conversion from a tm SimpleCorpus corpus (DirSource)
-tmcorpSCdir <- tm::SimpleCorpus(tm::DirSource(txt))
-corpus3 <- as.sento_corpus(tmcorpSCdir, dates = dates[1:length(tmcorpSCdir)])
+tmSCdir <- tm::SimpleCorpus(tm::DirSource(txt))
+corpus4 <- as.sento_corpus(tmSCdir, dates[1:length(tmSCdir)])
 
 # corpus conversion from a tm VCorpus corpus (DataframeSource)
-tmcorpVdf <- tm::VCorpus(tm::DataframeSource(usnews))
-corpus4 <- as.sento_corpus(tmcorpVdf)
+tmVCdf <- tm::VCorpus(tm::DataframeSource(usnews))
+corpus5 <- as.sento_corpus(tmVCdf)
 
 # corpus conversion from a tm VCorpus corpus (DirSource)
-tmcorpVdir <- tm::VCorpus(tm::DirSource(reut21578, mode = "binary"))
-corpus5 <- as.sento_corpus(tmcorpVdir, dates = dates[1:length(tmcorpVdir)])
+tmVCdir <- tm::VCorpus(tm::DirSource(reut21578, mode = "binary"))
+corpus6 <- as.sento_corpus(tmVCdir, dates[1:length(tmVCdir)])
 
 }
 \seealso{
