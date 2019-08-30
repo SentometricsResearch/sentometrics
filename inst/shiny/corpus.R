@@ -86,7 +86,7 @@ render_corpus_server <- function(input, output, session, corpusFile) {
     corp <- data.table::as.data.table(corpusFile())
     cols <- colnames(corp[, sapply(corp,is.numeric), with = FALSE])
 
-    DT::datatable(corp, server = FALSE, options = list(
+    DT::datatable(corp, options = list(
       pageLength = 5,
       searching = TRUE,
       lengthMenu = c( 5, 10, 15, 20),
@@ -101,7 +101,7 @@ render_corpus_server <- function(input, output, session, corpusFile) {
       callback = JS("table.page(3).draw(false); "
       )
     ) %>% formatRound(columns = cols, digits = 2)
-  })
+  }, server = FALSE)
 
 }
 
