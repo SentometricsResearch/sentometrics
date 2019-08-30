@@ -22,8 +22,8 @@ A \code{sento_corpus} object, as returned by the \code{\link{sento_corpus}} func
 }
 \description{
 Converts most common \pkg{quanteda} and \pkg{tm} corpus objects into a
-\code{sento_corpus} object. Appropriate available metadata will be integrated as features.
-For a \pkg{quanteda} corpus, this can come from \code{docvars(x)}, for a \pkg{tm} corpus,
+\code{sento_corpus} object. Appropriate available metadata is integrated as features;
+for a \pkg{quanteda} corpus, this can come from \code{docvars(x)}, for a \pkg{tm} corpus,
 only \code{meta(x, type = "indexed")} metadata is considered.
 }
 \examples{

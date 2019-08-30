@@ -23,8 +23,8 @@ sentiment_server <- function(input, output, session, params, corpus, sentoLexico
     output$sentimentTable <- renderDataTable({
       tokeep <- which(sapply(sentiment(), is.numeric))
       cols <- colnames(sentiment()[, tokeep, with=FALSE])
-      DT::datatable(sentiment(), server = FALSE, options = list(searching = FALSE)) %>% formatRound(columns = cols, digits = 2)
-    })
+      DT::datatable(sentiment(), options = list(searching = FALSE)) %>% formatRound(columns = cols, digits = 2)
+    }, server = FALSE)
 
     fluidRow(
       dataTableOutput(session$ns("sentimentTable")),
