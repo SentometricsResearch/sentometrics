@@ -415,7 +415,6 @@ as.sento_corpus.corpus <- function(x, dates = NULL, do.clean = FALSE) {
 }
 
 ### TODO: check necessity of all NLP:: calls
-### TODO: document only "indexed" is used for metadata features
 #' @export
 as.sento_corpus.VCorpus <- function(x, dates = NULL, do.clean = FALSE) {
   mdLocal <- NLP::meta(x[[1]], type = "local")
@@ -453,8 +452,8 @@ to_sento_corpus_tm <- function(x, dates, do.clean, mdLocal = NULL) {
 #' @author Samuel Borms
 #'
 #' @description Converts most common \pkg{quanteda} and \pkg{tm} corpus objects into a
-#' \code{sento_corpus} object. Appropriate available metadata will be integrated as features.
-#' For a \pkg{quanteda} corpus, this can come from \code{docvars(x)}, for a \pkg{tm} corpus,
+#' \code{sento_corpus} object. Appropriate available metadata is integrated as features;
+#' for a \pkg{quanteda} corpus, this can come from \code{docvars(x)}, for a \pkg{tm} corpus,
 #' only \code{meta(x, type = "indexed")} metadata is considered.
 #'
 #' @param x a \pkg{quanteda} \code{\link[quanteda]{corpus}} object, a \pkg{tm}
