@@ -53,7 +53,7 @@ corpus_summary_server <- function(input, output, session, corpus) {
 
   output$corpusSummary <- renderUI({
 
-  if ("sentocorpus" %in% class(corpus())) {
+  if ("sento_corpus" %in% class(corpus())) {
 
     fluidRow(
       tags$div(
@@ -93,7 +93,7 @@ corpus_summary_server <- function(input, output, session, corpus) {
     )
 
   } else {
-   tags$p("A sentocorpus with the columns 'id', 'date' and 'texts' is needed for the summary.")
+   tags$p("A sento_corpus object with the columns 'id', 'date' and 'texts' is needed for the summary.")
   }
 
   })
