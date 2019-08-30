@@ -86,9 +86,8 @@ render_corpus_server <- function(input, output, session, corpusFile) {
     corp <- data.table::as.data.table(corpusFile())
     cols <- colnames(corp[, sapply(corp,is.numeric), with = FALSE])
 
-    DT::datatable(corp, options = list(
+    DT::datatable(corp, server = FALSE, options = list(
       pageLength = 5,
-      server = FALSE,
       searching = TRUE,
       lengthMenu = c( 5, 10, 15, 20),
       columnDefs = list(list(

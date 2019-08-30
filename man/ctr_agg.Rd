@@ -40,7 +40,7 @@ sentiment values across the continuum of dates considered are added. This impact
 applying the \code{\link{measures_fill}} function before aggregating, except if \code{fill = "none"}. By default equal to
 \code{"zero"}, which sets the scores (and thus also the weights) of the added dates to zero in the time aggregation.}
 
-\item{alphaExpDocs}{a single \code{integer} vector. A weights smoothing factor, used if
+\item{alphaExpDocs}{a single \code{integer} vector. A weighting smoothing factor, used if
 \code{"exponential" \%in\% howDocs} or \code{"inverseExponential" \%in\% howDocs}. Value should be between 0 and 1
 (both excluded); see \code{\link{weights_exponential}}.}
 

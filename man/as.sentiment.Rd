@@ -52,7 +52,7 @@ sent4 <- as.sentiment(s4)
 
 # further aggregation from then on is easy...
 sentMeas1 <- aggregate(sent1, ctr_agg(lag = 10))
-sent5 <- aggregate(sent4, ctr_agg(lag = 7), do.full = FALSE)
+sent5 <- aggregate(sent4, ctr_agg(howDocs = "proportional"), do.full = FALSE)
 
 }
 \author{

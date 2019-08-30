@@ -32,8 +32,8 @@ value of 1 (default) implies no parallelization. Parallelization is expected to 
 computation only for sufficiently large corpora.}
 
 \item{do.sentence}{a \code{logical} to indicate whether the sentiment computation should be done on
-sentence-level rather than document-level. By default \code{do.sentence = TRUE}. Sentiment computation on
-sentence level follows the methodology defined in the \pkg{sentimentr} package.}
+sentence-level rather than document-level. By default \code{do.sentence = TRUE}. The methodology defined
+in the \pkg{sentimentr} package is followed.}
 }
 \value{
 If \code{x} is a \code{sento_corpus} object, a \code{sentiment} object, i.e., a \code{data.table} containing

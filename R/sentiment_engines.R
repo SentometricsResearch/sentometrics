@@ -166,8 +166,8 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
 #' value of 1 (default) implies no parallelization. Parallelization is expected to improve speed of the sentiment
 #' computation only for sufficiently large corpora.
 #' @param do.sentence a \code{logical} to indicate whether the sentiment computation should be done on
-#' sentence-level rather than document-level. By default \code{do.sentence = TRUE}. Sentiment computation on
-#' sentence level follows the methodology defined in the \pkg{sentimentr} package.
+#' sentence-level rather than document-level. By default \code{do.sentence = TRUE}. The methodology defined
+#' in the \pkg{sentimentr} package is followed.
 #'
 #' @return If \code{x} is a \code{sento_corpus} object, a \code{sentiment} object, i.e., a \code{data.table} containing
 #' the sentiment scores \code{data.table} with an \code{"id"}, a \code{"date"} and a \code{"word_count"} column,
@@ -527,7 +527,7 @@ peakdocs <- function(sentiment, n = 10, type = "both", do.average = FALSE) {
 #'
 #' # further aggregation from then on is easy...
 #' sentMeas1 <- aggregate(sent1, ctr_agg(lag = 10))
-#' sent5 <- aggregate(sent4, ctr_agg(how = "proportional"), do.full = FALSE)
+#' sent5 <- aggregate(sent4, ctr_agg(howDocs = "proportional"), do.full = FALSE)
 #'
 #' @export
 as.sentiment <- function(s) {

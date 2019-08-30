@@ -11,8 +11,8 @@ sento_corpus(corpusdf, do.clean = FALSE)
 column (in \code{character} mode), a \code{"date"} column (as \code{"yyyy-mm-dd"}), a \code{"texts"} column
 (in \code{character} mode), an optional \code{"language"} column (in \code{character} mode), and a series of
 feature columns of type \code{numeric}, with values between 0 and 1 to specify the degree of connectedness of
-a feature to a document. Features could be topics (e.g., legal or economic), article sources (e.g., online or
-print), amongst many more options. When no feature column is provided, a feature named \code{"dummyFeature"}
+a feature to a document. Features could be for instance topics (e.g., legal or economic) or article sources (e.g., online or
+print). When no feature column is provided, a feature named \code{"dummyFeature"}
 is added. All spaces in the names of the features are replaced by \code{'_'}. Feature columns with values not
 between 0 and 1 are rescaled column-wise.}
 
@@ -26,11 +26,11 @@ with elements \code{"documents"}, \code{"metadata"}, and \code{"settings"} kept.
 the corpus represented as a \code{data.frame}.
 }
 \description{
-Formalizes a collection of texts into a well-defined corpus object derived from the
-\code{\link[quanteda]{corpus}} object. The \pkg{quanteda} package provides a robust text mining infrastructure,
-see \href{http://quanteda.io/index.html}{quanteda}. Their corpus structure brings for example a
-handy corpus manipulation toolset. This function performs a set of checks on the input data and prepares the
-corpus for further analysis.
+Formalizes a collection of texts into a \code{sento_corpus} object derived from the \pkg{quanteda}
+\code{\link[quanteda]{corpus}} object. The \pkg{quanteda} package provides a robust text mining infrastructure
+(see \href{http://quanteda.io/index.html}{quanteda}), including a handy corpus manipulation toolset. This function
+performs a set of checks on the input data and prepares the corpus for further analysis by structurally
+integrating a date dimension and numeric metadata features.
 }
 \details{
 A \code{sento_corpus} object is a specialized instance of a \pkg{quanteda} \code{\link[quanteda]{corpus}}. Any

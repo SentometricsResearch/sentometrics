@@ -18,7 +18,7 @@ corpus_summary_server <- function(input, output, session, corpus) {
   output$summaryStatsTable <- renderDataTable({
     tokeep <- which(sapply(corpusSummary()$stats, is.numeric))
     cols <- colnames(corpusSummary()$stats[, tokeep, with = FALSE])
-    DT::datatable(corpusSummary()$stats, options = list(searching = FALSE, server = FALSE)) %>% formatRound(columns = cols, digits = 0)
+    DT::datatable(corpusSummary()$stats, server = FALSE, options = list(searching = FALSE)) %>% formatRound(columns = cols, digits = 0)
   })
 
   output$downloadCorpusSummary <- downloadHandler(
