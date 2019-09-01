@@ -88,7 +88,6 @@ render_corpus_server <- function(input, output, session, corpusFile) {
 
     DT::datatable(corp, options = list(
       pageLength = 5,
-      searching = TRUE,
       lengthMenu = c( 5, 10, 15, 20),
       columnDefs = list(list(
         targets = colNumTexts(),

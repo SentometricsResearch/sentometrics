@@ -30,21 +30,15 @@ corpus_summary_server <- function(input, output, session, corpus) {
   )
 
   output$featurePlot <- renderPlot({
-    withProgress(message = 'Drawing feature plot', {
       corpusSummary()$plots$feature_plot
-    })
   })
 
   output$tokenPlot <- renderPlot({
-    withProgress(message = 'Drawing token plot', {
       corpusSummary()$plots$token_plot
-    })
   })
 
   output$docPlot <- renderPlot({
-    withProgress(message = 'Drawing document plot', {
       corpusSummary()$plots$doc_plot
-    })
   })
 
   observeEvent(input$selectSummaryFrequency, {
