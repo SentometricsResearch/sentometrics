@@ -3,10 +3,10 @@ library("shiny")
 library("shinyWidgets")
 library("shinythemes")
 library("DT")
-library("reactlog")
 library("shinycssloaders")
 library("sentometrics")
 library("quanteda")
+library("highcharter")
 
 source("corpus.R")
 source("lexicon.R")
@@ -15,6 +15,7 @@ source("valence.R")
 source("corpusSummary.R")
 source("sentiment.R")
 source("sento_lexicon.R")
+source("indices.R")
 
 data("list_lexicons", package = "sentometrics")
 data("list_valence_shifters", package = "sentometrics")
@@ -53,7 +54,14 @@ ui <- fluidPage(
                 tabPanel(
                     style = "margin: 15px",
                     title = "Sentiment",
-                    sentiment_ui("sentiment_ui")
+                    sentiment_ui("sentiment_ui"),
+                    value ="sentimentTab"
+                ),
+                tabPanel(
+                    style = "margin: 15px",
+                    title = "Indices",
+                    indices_ui("indices_ui"),
+                    value= "indicesTab"
                 )
             )
         )
@@ -67,10 +75,28 @@ myvals <- reactiveValues(
     lexiconList = list_lexicons,
     valenceList = list_valence_shifters,
     how = NULL,
-    valenceMethod = "Bigram"
+    valenceMethod = "Bigram",
+    sentomearues = NULL,
+    sentiment = NULL
 )
 
 server <- function(input, output, session) {
+
+    observe({
+        if(is.null(myvals$sentomeasures)) {
+            hideTab(inputId = "tabs", target = "indicesTab")
+        } else {
+            showTab(inputId = "tabs", target = "indicesTab")
+        }
+    })
+
+    observe({
+        if(is.null(myvals$sentiment)) {
+            hideTab(inputId = "tabs", target = "sentimentTab")
+        } else {
+            showTab(inputId = "tabs", target = "sentimentTab")
+        }
+    })
 
 
 
@@ -109,7 +135,7 @@ server <- function(input, output, session) {
              )
      })
 
-     observeEvent(input$calcSentimentButton, {
+     observeEvent(input$calcSentimentButton, ignoreInit = FALSE, {
 
             if(is.null(sentoLexicon())) {
                 showModal(modalDialog(
@@ -117,10 +143,28 @@ server <- function(input, output, session) {
                     "Select a corpus and lexicon first.."
                 ))
             } else {
-                updateTabsetPanel(session, "tabs", selected = "Sentiment")
-                callModule(sentiment_server, "sentiment_ui", myvals, corpus, sentoLexicon, input$calcSentimentButton )
+                showTab(inputId = "tabs", target = "sentimentTab")
+                updateTabsetPanel(session, "tabs", selected = "sentimentTab")
+                sentimentModule<- callModule(sentiment_server, "sentiment_ui", myvals, corpus, sentoLexicon, input$calcSentimentButton )
+                observe({
+                    if(!is.null(sentimentModule$sentoMeasures)) {
+                        myvals$sentomeasures <- as.data.table(sentimentModule$sentoMeasures)
+                    } else {
+                        myvals$sentomeasures <- NULL
+                    }
+                 })
+                observe({
+                    if(!is.null(sentimentModule$sentiment)) {
+                        myvals$sentiment <- as.data.table(sentimentModule$sentiment)
+                    } else {
+                        myvals$sentiment <- NULL
+                    }
+                })
             }
      })
+     callModule(indices_server,"indices_ui", reactive(myvals$sentomeasures))
+
+
 }
 
 # Run the application
