@@ -17,6 +17,6 @@ sento_app <- function() {
   if (appDir == "") {
     stop("Could not find example directory. Try re-installing `sentometrics`.", call. = FALSE)
   }
-  shiny::runApp(appDir, display.mode = "normal") ### TODO: add other suggests/imports?
+  shiny::runApp(appDir, display.mode = "normal")
 }
 

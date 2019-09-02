@@ -130,13 +130,13 @@ test_that("Correct or failed conversion to a sentiment object", {
   expect_error(as.sentiment(sAw3))
 })
 
-# sentiment_bind
+# merge.sentiment
 sB <- sA
 sB$id <- paste0("idNew", 1:nrow(sB))
 test_that("Correct binding of several sentiment objects", {
-  expect_true(nrow(sentiment_bind(sA, sB, sA)) == (2 * nrow(sA)))
-  expect_true(ncol(sentiment_bind(sentimentList$s7, sentimentList$s11)) == ncol(sentimentList$s7))
-  expect_error(sentiment_bind(sentimentList$s1, sentimentList$s2))
+  expect_true(nrow(merge(sA, sB, sA)) == (2 * nrow(sA)))
+  expect_true(ncol(merge(sentimentList$s7, sentimentList$s11)) == ncol(sentimentList$s7))
+  expect_error(merge(sentimentList$s1, sentimentList$s2))
 })
 
 # sentiment by sentence

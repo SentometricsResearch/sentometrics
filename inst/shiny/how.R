@@ -1,7 +1,7 @@
 
 how_ui <- function(id) {
   ns <- NS(id)
-  
+
   tags$table(
     id = "inputs-table",
     style = "width: 100%",
@@ -19,16 +19,16 @@ how_ui <- function(id) {
       )
     )
   )
-  
+
 }
 
 how_server <- function(input, output, session) {
-  
+
   myvals <- reactiveValues(
     selected = NULL,
     choices = sentometrics::get_hows()$words
   )
-  
+
   output$selectHowUI <- renderUI({
     selectInput(
       inputId =session$ns("selectHow"),
@@ -37,15 +37,13 @@ how_server <- function(input, output, session) {
       selected = myvals$selected,
       multiple = FALSE
     )
-    
+
   })
-  
+
   observeEvent(input$selectHow,{
     myvals$selected <- input$selectHow
-    
   })
-  
+
   return(myvals)
-  
 }
 

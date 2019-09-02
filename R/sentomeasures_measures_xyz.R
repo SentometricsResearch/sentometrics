@@ -80,10 +80,11 @@ measures_fill <- function(sento_measures, fill = "zero", dateBefore = NULL, date
   return(sento_measures)
 }
 
-check_merge_dimensions <- function(sento_measures, features = NULL, lexicons = NULL, time = NULL) {
+check_agg_dimensions <- function(sento_measures, features = NULL, lexicons = NULL, time = NULL) {
   check_class(sento_measures, "sento_measures")
 
-  # check if columns to merge exist (missings), and if merges have at least two columns to combine and are unique (tooFew)
+  # check if columns to aggregate exist (missings)
+  # check if aggregations have at least two columns to combine and are unique (tooFew)
   missings <- tooFew <- NULL
   if (!is.null(features)) {
     missings <- c(missings, unlist(features)[!(unlist(features) %in% sento_measures$features)])
@@ -110,11 +111,11 @@ check_merge_dimensions <- function(sento_measures, features = NULL, lexicons = N
   # assemble warning messages if any
   msg1 <- msg2 <- NULL
   if (length(missings) > 0) {
-    msg1 <- paste0("Following columns to merge are not found: ",
+    msg1 <- paste0("Following columns to aggregate are not found: ",
                    paste0(missings, collapse = ", "), ".")
   }
   if (length(tooFew) > 0) {
-    msg2 <- paste0("Following merges have less than two or not all unique columns: ",
+    msg2 <- paste0("Following aggregations have less than two or not all unique columns: ",
                    paste0(tooFew, collapse = ", "), ".")
   }
   if (length(msg1) > 0 | length((msg2) > 0)) stop <- TRUE else stop <- FALSE
@@ -122,25 +123,25 @@ check_merge_dimensions <- function(sento_measures, features = NULL, lexicons = N
   return(list(stop = stop, msg1 = msg1, msg2 = msg2))
 }
 
-#' Merge sentiment measures
+#' Aggregate sentiment measures
 #'
 #' @author Samuel Borms
 #'
-#' @description Merges sentiment measures by combining across provided lexicons, features, and time weighting schemes
-#' dimensions. The combination occurs by taking the mean of the relevant measures.
+#' @description Aggregates sentiment measures by combining across provided lexicons, features, and time weighting
+#' schemes dimensions. The combination occurs by taking the mean of the relevant measures.
 #'
-#' @param sento_measures a \code{sento_measures} object created using \code{\link{sento_measures}}. This is necessary to check
+#' @param x a \code{sento_measures} object created using \code{\link{sento_measures}}. This is necessary to check
 #' whether the other input arguments make sense.
-#' @param lexicons a \code{list} with unique lexicons to merge at given name, e.g., \cr
+#' @param lexicons a \code{list} with unique lexicons to aggregate at given name, e.g., \cr
 #' \code{list(lex12 = c("lex1", "lex2"))}. See \code{sento_measures$lexicons} for the exact names to use. Use \code{NULL}
 #' (default) to apply no merging across this dimension.
-#' @param features a \code{list} with unique features to merge at given name, e.g., \cr
+#' @param features a \code{list} with unique features to aggregate at given name, e.g., \cr
 #' \code{list(feat12 = c("feat1", "feat2"))}. See \code{sento_measures$features} for the exact names to use. Use \code{NULL}
 #' (default) to apply no merging across this dimension.
-#' @param time a \code{list} with unique time weighting schemes to merge at given name, e.g., \cr
+#' @param time a \code{list} with unique time weighting schemes to aggregate at given name, e.g., \cr
 #' \code{list(tw12 = c("tw1", "tw2"))}. See \code{sento_measures$time} for the exact names to use. Use \code{NULL} (default)
 #' to apply no merging across this dimension.
-#' @param do.keep a \code{logical} indicating if the original sentiment measures should be kept (i.e., the merged
+#' @param do.keep a \code{logical} indicating if the original sentiment measures should be kept (i.e., the aggregated
 #' sentiment measures will be added to the current sentiment measures as additional indices if \code{do.keep = TRUE}).
 #'
 #' @return A modified \code{sento_measures} object, with only the sentiment measures required, including updated information
@@ -158,46 +159,46 @@ check_merge_dimensions <- function(sento_measures, features = NULL, lexicons = N
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sento_measures <- sento_measures(corpusSample, l, ctr)
 #'
-#' # merging across specified components
-#' sento_measuresMerged <- measures_merge(sento_measures,
-#'                                       time = list(W = c("equal_weight", "linear")),
-#'                                       features = list(journals = c("wsj", "wapo")),
-#'                                       do.keep = TRUE)
+#' # aggregation across specified components
+#' smAgg <- aggregate(sento_measures,
+#'                    time = list(W = c("equal_weight", "linear")),
+#'                    features = list(journals = c("wsj", "wapo")),
+#'                    do.keep = TRUE)
 #'
-#' # merging in full
+#' # aggregation in full
 #' dims <- get_dimensions(sento_measures)
-#' sento_measuresFull <- measures_merge(sento_measures,
-#'                                     lexicons = list(L = dims[["lexicons"]]),
-#'                                     time = list(T = dims[["time"]]),
-#'                                     features = list(F = dims[["features"]]))
+#' smFull <- aggregate(sento_measures,
+#'                     lexicons = list(L = dims[["lexicons"]]),
+#'                     time = list(T = dims[["time"]]),
+#'                     features = list(F = dims[["features"]]))
 #'
 #' \dontrun{
-#' # this merging will not work, but produces an informative error message
-#' measures_merge(sento_measures,
-#'                time = list(W = c("equal_weight", "almon1")),
-#'                lexicons = list(LEX = c("LM_en")),
-#'                features = list(journals = c("notInHere", "wapo")))}
+#' # aggregation won't work, but produces informative error message
+#' aggregate(sento_measures,
+#'           time = list(W = c("equal_weight", "almon1")),
+#'           lexicons = list(LEX = c("LM_en")),
+#'           features = list(journals = c("notInHere", "wapo")))}
 #' @export
-measures_merge <- function(sento_measures, features = NULL, lexicons = NULL, time = NULL, do.keep = FALSE) {
+aggregate.sento_measures <- function(x, features = NULL, lexicons = NULL, time = NULL, do.keep = FALSE) {
 
   stopifnot(is.null(features) || is.list(features))
   stopifnot(is.null(lexicons) || is.list(lexicons))
   stopifnot(is.null(time) || is.list(time))
 
-  check <- check_merge_dimensions(sento_measures, features = features, lexicons = lexicons, time = time) # check inputs
+  check <- check_agg_dimensions(x, features = features, lexicons = lexicons, time = time) # check inputs
   if (check$stop == TRUE)
     stop(paste0(c("Wrong inputs.", check$msg1, check$msg2), collapse = " "))
 
-  measures <- as.data.table(sento_measures)
-  toMerge <- list(lexicons = lexicons, features = features, time = time)
+  measures <- as.data.table(x)
+  toAgg <- list(lexicons = lexicons, features = features, time = time)
 
   if (do.keep == TRUE) {
     measuresOld <- measures
     namesOld <- colnames(measures)
   }
   # loop over lexicons, features and time lists
-  for (across in toMerge) {
-    # loop over set of aggregation levels to merge (combine) into given name (e.g., lex12 = c("lex1", "lex2"))
+  for (across in toAgg) {
+    # loop over set of aggregation levels to combine into given name (e.g., lex12 = c("lex1", "lex2"))
     for (i in seq_along(across)) {
       name <- names(across)[i] # e.g. "lex12"
       cols <- across[[i]] # e.g. c("lex1", "lex2")
@@ -221,40 +222,40 @@ measures_merge <- function(sento_measures, features = NULL, lexicons = NULL, tim
       ls <- lapply(1:length(ls), function(k) {
         m <- ls[[k]]
         ind <- which(colnames(m) %in% common)
-        measures <<- measures[, !sels[[k]][ind], with = FALSE, drop = FALSE] # drop columns to merge
+        measures <<- measures[, !sels[[k]][ind], with = FALSE, drop = FALSE] # drop columns to aggregate
         m[, ind, with = FALSE, drop = FALSE]
       })
-      # take element-wise average for every row/column combination across columns to merge
+      # take element-wise average for every row/column combination across columns to aggregate
       if (ncol(ls[[1]]) >= 2) { # ncol across elements of ls is the same
         all <- array(NA, dim = c(nrow(ls[[1]]), ncol(ls[[2]]), length(ls)))
         for (k in 1:length(ls)) all[, , k] <- as.matrix(ls[[k]])
-        merged <- apply(all, c(1, 2), mean, na.rm = TRUE)
-        colnames(merged) <- colnames(ls[[length(ls)]])
+        aggr <- apply(all, c(1, 2), mean, na.rm = TRUE)
+        colnames(aggr) <- colnames(ls[[length(ls)]])
       } else {
-        merged <- as.matrix(rowMeans(do.call(cbind, ls)))
-        colnames(merged) <- colnames(ls[[length(ls)]])
+        aggr <- as.matrix(rowMeans(do.call(cbind, ls)))
+        colnames(aggr) <- colnames(ls[[length(ls)]])
       }
-      measures <- cbind(measures, merged) # add back merged columns
+      measures <- cbind(measures, aggr) # add back aggregated columns
     }
   }
-  # add old unmerged measures to merged measures (if do.keep is TRUE)
-  if (do.keep == TRUE) measures <- cbind(measures, measuresOld[, !(namesOld %in% colnames(measures)), with = FALSE])
+  # add old measures to aggregated measures (if do.keep is TRUE)
+  if (do.keep == TRUE)
+    measures <- cbind(measures, measuresOld[, !(namesOld %in% colnames(measures)), with = FALSE])
 
-  sento_measures <- update_info(sento_measures, measures,
-                               merges = toMerge) # update information in sento_measures object
+  sento_measures <- update_info(x, measures, aggs = toAgg) # update information in sento_measures object
 
   return(sento_measures)
 }
 
-#' Merge sentiment measures into multiple weighted global sentiment indices
+#' Aggregate sentiment measures into multiple weighted global sentiment indices
 #'
 #' @author Samuel Borms
 #'
-#' @description Merges all sentiment measures into a weighted global textual sentiment measure for each of the
+#' @description Aggregates all sentiment measures into a weighted global textual sentiment measure for each of the
 #' \code{lexicons}, \code{features}, and \code{time} dimensions.
 #'
-#' @details In contrast to other \code{measures_xyz} functions, this particular function returns no new \code{sento_measures}
-#' object. The measures are constructed from weights that indicate the importance (and sign) along each component from the
+#' @details This particular function returns no new \code{sento_measures} object. The measures are constructed
+#' from weights that indicate the importance (and sign) along each component from the
 #' \code{lexicons}, \code{features}, and \code{time} dimensions. There is no restriction in terms of allowed weights. For
 #' example, the global index based on the supplied lexicon weights (\code{"globLex"}) is obtained first by multiplying
 #' every sentiment measure with its corresponding weight (meaning, the weight given to the lexicon the sentiment is
@@ -286,7 +287,7 @@ measures_merge <- function(sento_measures, features = NULL, lexicons = NULL, tim
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sento_measures <- sento_measures(corpusSample, l, ctr)
 #'
-#' # merge into one global sentiment measure, with specified weighting for lexicons and features
+#' # aggregate into one global sentiment measure, with specified weighting for lexicons and features
 #' global <- measures_global(sento_measures,
 #'                           lexicons = c(0.40, 0.60),
 #'                           features = c(0.10, -0.20, 0.30, -1),
@@ -364,7 +365,7 @@ measures_update <- function(sento_measures, sento_corpus, lexicons) {
   partialCorpus <- quanteda::corpus_subset(sento_corpus, !quanteda::docnames(sento_corpus) %in% sentiment$id)
   if (length(quanteda::texts(partialCorpus)) > 0) {
     partialSentiment <- compute_sentiment(partialCorpus, lexicons, how = ctr$within$howWithin, nCore = ctr$nCore)
-    sentiment <- sentiment_bind(sentiment, partialSentiment)
+    sentiment <- merge(sentiment, partialSentiment)
   }
 
   sento_measuresUpdated <- aggregate(sentiment, ctr)

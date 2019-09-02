@@ -22,7 +22,7 @@ corpus_summary_server <- function(input, output, session, corpus) {
   }, server = FALSE)
 
   output$downloadCorpusSummary <- downloadHandler(
-    filename = function() paste('corpus_summary_stats', Sys.Date(), '.csv', sep = ''),
+    filename = function() paste("corpus_summary_stats", Sys.Date(), ".csv", sep = ""),
     content = function(con) {
       write.csv(corpusSummary()$stats, con)
     },
@@ -30,11 +30,11 @@ corpus_summary_server <- function(input, output, session, corpus) {
   )
 
   output$featurePlot <- renderPlot({
-      corpusSummary()$plots$feature_plot
+    corpusSummary()$plots$feature_plot
   })
 
   output$tokenPlot <- renderPlot({
-      corpusSummary()$plots$token_plot
+    corpusSummary()$plots$token_plot
   })
 
   output$docPlot <- renderPlot({
@@ -81,13 +81,13 @@ corpus_summary_server <- function(input, output, session, corpus) {
           style = "margin: 15px",
           title = "Stats",
           dataTableOutput(session$ns('summaryStatsTable')) %>% withSpinner(color = "#0dc5c1"),
-          downloadButton(session$ns("downloadCorpusSummary"), "Download Corpus Stats")
+          downloadButton(session$ns("downloadCorpusSummary"), "Download corpus statistics")
         )
       )
     )
 
   } else {
-   tags$p("A sento_corpus object with the columns 'id', 'date' and 'texts' is needed for the summary.")
+    tags$p("A sento_corpus object with the columns 'id', 'date' and 'texts' is needed for the summary.")
   }
 
   })

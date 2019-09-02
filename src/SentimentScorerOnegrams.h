@@ -31,7 +31,7 @@ struct SentimentScorerOnegrams : public RcppParallel::Worker {
     for (std::size_t i = begin; i < end; i++) {
 
       std::vector< std::string > tokens = texts[i];
-      std::vector< double > scores(nL, 0.0); // scores van 1 tekst voor verschillende lexicons
+      std::vector< double > scores(nL, 0.0); // scores for 1 texts for different lexicons
       std::vector< double > nPolarized(nL, 0.0);
       double normalizer = 0.0;
       int nTokens = tokens.size();

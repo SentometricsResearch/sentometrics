@@ -47,13 +47,13 @@ sub3 <- subset(sm, 3:12)
 sub4 <- subset(sm, 1:100) # warning
 
 # different selections
-sel1 <- subset(sm, select = c("equal_weight"))
+sel1 <- subset(sm, select = "equal_weight")
 sel2 <- subset(sm, select = c("equal_weight", "linear"))
 sel3 <- subset(sm, select = c("linear", "LM_en"))
 sel4 <- subset(sm, select = list(c("linear", "wsj"), c("linear", "economy")))
 
 # different deletions
-del1 <- subset(sm, delete = c("equal_weight"))
+del1 <- subset(sm, delete = "equal_weight")
 del2 <- subset(sm, delete = c("linear", "LM_en"))
 del3 <- subset(sm, delete = list(c("linear", "wsj"), c("linear", "economy")))
 del4 <- subset(sm, delete = c("equal_weight", "linear")) # warning

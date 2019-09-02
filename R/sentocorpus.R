@@ -414,24 +414,28 @@ as.sento_corpus.corpus <- function(x, dates = NULL, do.clean = FALSE) {
   sento_corpus(dt, do.clean)
 }
 
-### TODO: check necessity of all NLP:: calls
 #' @export
 as.sento_corpus.VCorpus <- function(x, dates = NULL, do.clean = FALSE) {
-  mdLocal <- NLP::meta(x[[1]], type = "local")
-  to_sento_corpus_tm(x, dates, do.clean, mdLocal)
+  texts <- unlist(lapply(x, "[", "content"))
+  hasLocalDate <- all(sapply(x, function(d) !is.null(NLP::meta(d, "date", type = "local"))))
+  to_sento_corpus_tm(x, dates, do.clean, texts, hasLocalDate)
 }
 
 #' @export
 as.sento_corpus.SimpleCorpus <- function(x, dates = NULL, do.clean = FALSE) {
-  to_sento_corpus_tm(x, dates, do.clean)
+  texts <- as.character(as.list(x))
+  to_sento_corpus_tm(x, dates, do.clean, texts)
 }
 
-to_sento_corpus_tm <- function(x, dates, do.clean, mdLocal = NULL) {
+to_sento_corpus_tm <- function(x, dates, do.clean, texts, hasLocalDate = FALSE) {
   features <- NLP::meta(x, type = "indexed")
+  if (length(x) != length(texts)) {
+    stop("The input corpus does not have a single 'content' character vector per corpus element.")
+  }
   if (is.null(dates)) {
-    if (!("date" %in% c(mdLocal, colnames(features)))) {
+    if (hasLocalDate == FALSE && !("date" %in% colnames(features))) {
       stop("There is no 'date' metadata element in the corpus and 'dates' = NULL.")
-    } else if ("date" %in% mdLocal && !("date" %in% colnames(features))) {
+    } else if (hasLocalDate == TRUE && !("date" %in% colnames(features))) {
       features$date <- do.call("c", NLP::meta(x, "date"))
     }
   } else {
@@ -440,13 +444,12 @@ to_sento_corpus_tm <- function(x, dates, do.clean, mdLocal = NULL) {
     features$date <- dates
   }
   dt <- data.table("id" = unlist(NLP::meta(x, "id")),
-                   "texts" = as.list(x), ### TODO: check content() + in compute_sentiment.tm()
+                   "texts" = texts,
                    features) # includes date column
   setcolorder(dt, c("id", "date", "texts"))
   sento_corpus(dt, do.clean)
 }
 
-### TODO: generalize and complete documentation
 #' Convert a quanteda or tm corpus object into a sento_corpus object
 #'
 #' @author Samuel Borms
@@ -457,7 +460,9 @@ to_sento_corpus_tm <- function(x, dates, do.clean, mdLocal = NULL) {
 #' only \code{meta(x, type = "indexed")} metadata is considered.
 #'
 #' @param x a \pkg{quanteda} \code{\link[quanteda]{corpus}} object, a \pkg{tm}
-#' \code{\link[tm]{SimpleCorpus}} or a \pkg{tm} \code{\link[tm]{VCorpus}} object.
+#' \code{\link[tm]{SimpleCorpus}} or a \pkg{tm} \code{\link[tm]{VCorpus}} object. For \pkg{tm}
+#' corpora, every corpus element should consist of a single \code{"content"} \code{character} vector
+#' as the document unit.
 #' @param dates an optional sequence of dates as \code{"yyyy-mm-dd"}, of the same length as the number
 #' of documents in the input corpus, to define the \code{"date"} column. If \code{dates = NULL}, the
 #' \code{"date"} metadata element in the input corpus, if available, will be used but should be in the
@@ -466,39 +471,41 @@ to_sento_corpus_tm <- function(x, dates, do.clean, mdLocal = NULL) {
 #'
 #' @return A \code{sento_corpus} object, as returned by the \code{\link{sento_corpus}} function.
 #'
-#' @seealso \code{\link[quanteda]{corpus}}, \code{\link{sento_corpus}}
+#' @seealso \code{\link[quanteda]{corpus}}, \code{\link[tm]{SimpleCorpus}}, \code{\link[tm]{VCorpus}},
+#' \code{\link{sento_corpus}}
 #'
 #' @examples
 #' data("usnews", package = "sentometrics")
 #' txt <- system.file("texts", "txt", package = "tm")
-#' reut21578 <- system.file("texts", "crude", package = "tm")
+#' reuters <- system.file("texts", "crude", package = "tm")
 #'
 #' # reshuffle usnews data.frame for use in quanteda and tm
 #' dates <- usnews$date
 #' usnews$wrong <- "notNumeric"
 #' colnames(usnews)[c(1, 3)] <- c("doc_id", "text")
 #'
-#' # corpus conversion from a quanteda corpus
+#' # conversion from a quanteda corpus
 #' qcorp <- quanteda::corpus(usnews,
 #'                           text_field = "text", docid_field = "doc_id")
-#' corpus1 <- as.sento_corpus(qcorp)
-#' corpus2 <- as.sento_corpus(qcorp, sample(dates)) # overwrites "date" column
+#' corp1 <- as.sento_corpus(qcorp)
+#' corp2 <- as.sento_corpus(qcorp, sample(dates)) # overwrites "date" column
 #'
-#' # corpus conversion from a tm SimpleCorpus corpus (DataframeSource)
+#' # conversion from a tm SimpleCorpus corpus (DataframeSource)
 #' tmSCdf <- tm::SimpleCorpus(tm::DataframeSource(usnews))
-#' corpus3 <- as.sento_corpus(tmSCdf)
+#' corp3 <- as.sento_corpus(tmSCdf)
 #'
-#' # corpus conversion from a tm SimpleCorpus corpus (DirSource)
+#' # conversion from a tm SimpleCorpus corpus (DirSource)
 #' tmSCdir <- tm::SimpleCorpus(tm::DirSource(txt))
-#' corpus4 <- as.sento_corpus(tmSCdir, dates[1:length(tmSCdir)])
+#' corp4 <- as.sento_corpus(tmSCdir, dates[1:length(tmSCdir)])
 #'
-#' # corpus conversion from a tm VCorpus corpus (DataframeSource)
+#' # conversion from a tm VCorpus corpus (DataframeSource)
 #' tmVCdf <- tm::VCorpus(tm::DataframeSource(usnews))
-#' corpus5 <- as.sento_corpus(tmVCdf)
+#' corp5 <- as.sento_corpus(tmVCdf)
 #'
-#' # corpus conversion from a tm VCorpus corpus (DirSource)
-#' tmVCdir <- tm::VCorpus(tm::DirSource(reut21578, mode = "binary"))
-#' corpus6 <- as.sento_corpus(tmVCdir, dates[1:length(tmVCdir)])
+#' # conversion from a tm VCorpus corpus (DirSource)
+#' tmVCdir <- tm::VCorpus(tm::DirSource(reuters),
+#'                        list(reader = readReut21578XMLasPlain))
+#' corp6 <- as.sento_corpus(tmVCdir, dates[1:length(tmVCdir)])
 #'
 #' @export
 as.sento_corpus <- function(x, dates = NULL, do.clean = FALSE) {

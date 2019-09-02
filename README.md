@@ -41,5 +41,6 @@ Please cite **`sentometrics`** in publications. Use `citation("sentometrics")`.
 ### Acknowledgements
 
 This software package originates from a
-[Google Summer of Code 2017](https://github.com/rstats-gsoc/gsoc2017/wiki/Sentometrics:-An-integrated-framework-for-text-based-multivariate-time-series-modeling-and-forecasting) project.
+[Google Summer of Code 2017](https://github.com/rstats-gsoc/gsoc2017/wiki/Sentometrics:-An-integrated-framework-for-text-based-multivariate-time-series-modeling-and-forecasting) project, was further developed 
+during a follow-up [Google Summer of Code 2019](https://github.com/rstats-gsoc/gsoc2019/wiki/sentometrics) project, and benefited generally from [Innoviris](https://innoviris.brussels), [IVADO](https://ivado.ca), [swissuniversities](https://www.swissuniversities.ch), and the [Swiss National Science Foundation](https://www.snf.ch) (grant #179281) financial support.
 

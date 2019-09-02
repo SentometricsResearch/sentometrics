@@ -71,7 +71,7 @@ valence_server <- function(input, output, session) {
       ))
     }
 
-    updateSelectizeInput(session = getDefaultReactiveDomain(), 
+    updateSelectizeInput(session = getDefaultReactiveDomain(),
                          inputId = "selectValence", selected = selected)
 
   })
@@ -85,7 +85,7 @@ valence_server <- function(input, output, session) {
           tags$td(
             tags$h4(
               style = "align-text: center",
-              "Choose Valence Shifter"
+              "Choose valence shifters"
             )
           )
         ),
@@ -144,7 +144,7 @@ valence_server <- function(input, output, session) {
               inputId = session$ns("valenceUpload"),
               label = "Choose .csv file",
               multiple = FALSE,
-              accept = c("text/csv", "text/comma-separated-values,text/plain",".csv")
+              accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")
             )
           ),
           tags$td(
@@ -169,9 +169,9 @@ valence_server <- function(input, output, session) {
     showModal(modalDialog(
       title = "Upload valence shiters",
       "The .csv file should contain two headers named 'x' and 'y' or 'x' and 't'. Only one set of valence shifters
-      can be uploaded at the same time. Once you have uploaded the file, the set of valence shifters will be 
+      can be uploaded at the same time. Once you have uploaded the file, the set of valence shifters will be
       available in the predefined list. The name of the set of valence shifters will be the filename of the uploaded
-      set of valence shifters."
+      set of valence shifters. Use ';' for the separation of columns in the file."
     ))
   })
 
@@ -185,7 +185,7 @@ valence_server <- function(input, output, session) {
     if(input$useValenceCheck) {
       myvals$selected <- input$selectValence
       colnames <- names(myvals$valenceList[[input$selectValence]])
-      if(all(c( "y","t") %in% colnames)) {
+      if(all(c( "y", "t") %in% colnames)) {
         myvals$methodChoices<- c("Bigram", "Cluster")
         myvals$method <- "Bigram"
       } else if("y" %in% colnames) {
@@ -209,7 +209,7 @@ valence_server <- function(input, output, session) {
 
   observeEvent(input$valenceMethodHelpButton, {
     showModal(modalDialog(
-      title = "Valence Shifting Method",
+      title = "Valence shifting method",
       "If both the columns 'y' and 't' are delivered, you need to choose between the bigram or the cluster approach.
       For the bigram approach column 'y' is used. For the cluster approach column 't' is used.
       If both columns are not delivered, only one of the two options will be available. "

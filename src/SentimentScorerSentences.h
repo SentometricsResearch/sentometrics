@@ -50,7 +50,6 @@ struct SentimentScorerSentences : public RcppParallel::Worker {
 
       for (int j = 0; j < nTokens; j++) {
         std::string token = tokens[j];
-
         check_for_commas(token, nPuncts, punctPosition, j, tokens);
 
         double tokenFrequency = 1.0, tokenInverseFrequency = 1.0;
@@ -64,7 +63,6 @@ struct SentimentScorerSentences : public RcppParallel::Worker {
           }
 
           if (hasValenceShifters) {
-
             int st = 0, en = 0, position = -1;
             set_cluster_bounds(st, en, nPuncts, punctPosition, nTokens, tokens, lB, nB, nA, j);
 

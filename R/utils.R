@@ -280,7 +280,7 @@ update_attribweights <- function(sento_measures, ...) {
   attribWeights <- sento_measures$attribWeights
   dims <- get_dimensions(sento_measures)
   dots <- list(...)
-  toMerge <- dots$merges
+  toAgg <- dots$aggs
 
   B <- attribWeights[["B"]]
   W <- attribWeights[["W"]]
@@ -290,14 +290,14 @@ update_attribweights <- function(sento_measures, ...) {
            function(x) paste0(x[1:2], collapse = "--"))
   )
 
-  if (!is.null(toMerge)) {
-    for (t in seq_along(toMerge[["time"]])) {
-      tt <- toMerge[["time"]][t]
+  if (!is.null(toAgg)) {
+    for (t in seq_along(toAgg[["time"]])) {
+      tt <- toAgg[["time"]][t]
       B[, names(tt)] <- rowMeans(B[, unlist(tt)])
     }
     lexs <- unique(sapply(stringi::stri_split(colnames(W)[-c(1:2)], regex = "--"), "[", 1))
-    for (f in seq_along(toMerge[["features"]])) {
-      ff <- toMerge[["features"]][f]
+    for (f in seq_along(toAgg[["features"]])) {
+      ff <- toAgg[["features"]][f]
       for (l in lexs) {
         cols <- paste0(l, "--", unlist(ff))
         WW <- W[, c("date", cols), with = FALSE]
@@ -306,8 +306,8 @@ update_attribweights <- function(sento_measures, ...) {
       }
     }
     feats <- unique(sapply(stringi::stri_split(colnames(W)[-c(1:2)], regex = "--"), "[", 2)) # updated columns
-    for (l in seq_along(toMerge[["lexicons"]])) {
-      ll <- toMerge[["lexicons"]][l]
+    for (l in seq_along(toAgg[["lexicons"]])) {
+      ll <- toAgg[["lexicons"]][l]
       for (f in feats) {
         cols <- paste0(unlist(ll), "--", f)
         WW <- W[, c("date", cols), with = FALSE]

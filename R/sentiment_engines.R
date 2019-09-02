@@ -81,13 +81,7 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
   }
 
   # merge subsets of sentiment
-  if ("sentence_id" %in% colnames(sentByLang[[1]])) {
-    s <- Reduce(function(...)
-      merge(..., by = c("id", "sentence_id", "date", "word_count"), all = TRUE), sentByLang)
-  } else {
-    s <- Reduce(function(...)
-      merge(..., by = c("id", "date", "word_count"), all = TRUE), sentByLang)
-  }
+  s <- do.call(merge, sentByLang)
 
   s[order(match(id, ids))]
 }
@@ -103,10 +97,10 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
 #' @details For a separate calculation of positive (resp. negative) sentiment, one has to provide distinct positive (resp.
 #' negative) lexicons. This can be done using the \code{do.split} option in the \code{\link{sento_lexicons}} function, which
 #' splits out the lexicons into a positive and a negative polarity counterpart. All \code{NA}s are converted to 0, under the
-#' assumption that this is equivalent to no sentiment. If \code{tokens = NULL} (as per default), texts are tokenized as
-#' unigrams using the \code{\link[tokenizers]{tokenize_words}} function. Punctuation and numbers are removed, but not
-#' stopwords. The number of words for each document is computed based on that same tokenization. All tokens are converted
-#' to lowercase, in line with what the \code{\link{sento_lexicons}} function does for the lexicons and valence shifters.
+#' assumption that this is equivalent to no sentiment. If \code{tokens = NULL} (as per default), texts are tokenized
+#' as unigrams. Punctuation and numbers are removed, but not stopwords. The number of words for each document is
+#' computed based on that same tokenization. All tokens are converted to lowercase, in line with what the
+#' \code{\link{sento_lexicons}} function does for the lexicons and valence shifters.
 #'
 #' @section Calculation:
 #' If the \code{lexicons} argument has no \code{"valence"} element, the sentiment computed corresponds to simple unigram
@@ -185,6 +179,8 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
 #'
 #' @examples
 #' data("usnews", package = "sentometrics")
+#' txt <- system.file("texts", "txt", package = "tm")
+#' reuters <- system.file("texts", "crude", package = "tm")
 #' data("list_lexicons", package = "sentometrics")
 #' data("list_valence_shifters", package = "sentometrics")
 #'
@@ -194,37 +190,38 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
 #' l3 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")],
 #'                      list_valence_shifters[["en"]][, c("x", "t")])
 #'
-#' # from a sento_corpus object, unigrams approach
+#' # from a sento_corpus object - unigrams approach
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 200)
 #' sent1 <- compute_sentiment(corpusSample, l1, how = "proportionalPol")
 #'
-#' # from a character vector, bigrams approach
+#' # from a character vector - bigrams approach
 #' sent2 <- compute_sentiment(usnews[["texts"]][1:200], l2, how = "counts")
 #'
-#' # from a corpus object, clusters approach
+#' # from a corpus object - clusters approach
 #' corpusQ <- quanteda::corpus(usnews, text_field = "texts")
 #' corpusQSample <- quanteda::corpus_sample(corpusQ, size = 200)
 #' sent3 <- compute_sentiment(corpusQSample, l3, how = "counts")
 #'
-#' # from an already tokenized corpus, using the 'tokens' argument
+#' # from an already tokenized corpus - using the 'tokens' argument
 #' toks <- as.list(quanteda::tokens(corpusQSample, what = "fastestword"))
 #' sent4 <- compute_sentiment(corpusQSample, l1[1], how = "counts", tokens = toks)
 #'
-#' # from a SimpleCorpus object, unigrams approach
-#' txt <- system.file("texts", "txt", package = "tm")
-#' sc <- tm::SimpleCorpus(tm::DirSource(txt, encoding = "UTF-8"))
-#' sent5 <- compute_sentiment(sc, l1, how = "proportional")
+#' # from a SimpleCorpus object - unigrams approach
+#' scorp <- tm::SimpleCorpus(tm::DirSource(txt, encoding = "UTF-8"))
+#' sent5 <- compute_sentiment(scorp, l1, how = "proportional")
 #'
-#' # from a VCorpus object, unigrams approach
-#' reut21578 <- system.file("texts", "crude", package = "tm")
-#' vcorp <- tm::VCorpus(tm::DirSource(reut21578, mode = "binary"))
+#' # from a VCorpus object - unigrams approach
+#' ## in contrast to what as.sento_corpus(vcorp) would do, the
+#' ## sentiment calculator handles multiple character vectors within
+#' ## a single corpus element as separate documents
+#' vcorp <- tm::VCorpus(tm::DirSource(reuters))
 #' sent6 <- compute_sentiment(vcorp, l1, how = "proportional")
 #'
-#' # from a sento_corpus object, unigrams approach with tf-idf weighting
+#' # from a sento_corpus object - unigrams approach with tf-idf weighting
 #' sent7 <- compute_sentiment(corpusSample, l1, how = "TFIDF")
 #'
-#' # tokenisation and computation sentence-by-sentence
+#' # sentence-by-sentence computation
 #' sent8 <- compute_sentiment(corpusSample, l1, how = "squareRootCounts",
 #'                            do.sentence = TRUE)
 #'
@@ -355,7 +352,8 @@ compute_sentiment.corpus <- compiler::cmpfun(.compute_sentiment.corpus)
 compute_sentiment.character <- compiler::cmpfun(.compute_sentiment.character)
 
 .compute_sentiment.VCorpus <- function(x, lexicons, how, tokens = NULL, nCore = 1, do.sentence = FALSE) {
-  compute_sentiment(as.character(x$content), lexicons, how, tokens, nCore, do.sentence)
+  compute_sentiment(unlist(lapply(x, "[", "content")),
+                    lexicons, how, tokens, nCore, do.sentence)
 }
 
 #' @importFrom compiler cmpfun
@@ -363,56 +361,78 @@ compute_sentiment.character <- compiler::cmpfun(.compute_sentiment.character)
 compute_sentiment.VCorpus <- compiler::cmpfun(.compute_sentiment.VCorpus)
 
 .compute_sentiment.SimpleCorpus <- function(x, lexicons, how, tokens = NULL, nCore = 1, do.sentence = FALSE) {
-  compute_sentiment(as.character(x$content), lexicons, how, tokens, nCore, do.sentence)
+  compute_sentiment(as.character(as.list(x)),
+                    lexicons, how, tokens, nCore, do.sentence)
 }
 
 #' @importFrom compiler cmpfun
 #' @export
 compute_sentiment.SimpleCorpus <- compiler::cmpfun(.compute_sentiment.SimpleCorpus)
 
-### TODO: check if functions applied to "sentiment" objects still work when do.sentence = TRUE
-### TODO: make it a merge method (+ also make one for sento_measures) instead of a row-wise bind?
-#' Bind sentiment objects row-wise
+#' Merge sentiment objects horizontally or vertically row-wise
 #'
 #' @author Samuel Borms
 #'
-#' @description Combines multiple sentiment objects with the same column names into a new sentiment object.
-#' All entries with duplicate document identifiers across input objects are removed, except for the first
-#' occurrence.
+#' @description Combines multiple sentiment objects with possibly different column names into a new
+#' sentiment object. Here, too, any resulting \code{NA} values are converted to zero.
 #'
-#' @param ... \code{sentiment} objects to combine in the order given.
+#' @param ... \code{sentiment} objects to merge.
 #'
-#' @return The new, combined, \code{sentiment} object.
+#' @return The new, combined, \code{sentiment} object, ordered by \code{"date"} and \code{"id"}.
 #'
 #' @examples
 #' data("usnews", package = "sentometrics")
 #' data("list_lexicons", package = "sentometrics")
 #' data("list_valence_shifters", package = "sentometrics")
 #'
-#' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")])
+#' l1 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")])
+#' l2 <- sento_lexicons(list_lexicons[c("FEEL_en_tr")])
 #'
 #' corp1 <- sento_corpus(corpusdf = usnews[1:200, ])
 #' corp2 <- sento_corpus(corpusdf = usnews[201:450, ])
 #' corp3 <- sento_corpus(corpusdf = usnews[401:700, ])
 #'
-#' sent1 <- compute_sentiment(corp1, l, how = "proportionalPol")
-#' sent2 <- compute_sentiment(corp2, l, how = "counts")
-#' sent3 <- compute_sentiment(corp3, l, how = "proportional")
+#' s1 <- compute_sentiment(corp1, l1, "proportionalPol")
+#' s2 <- compute_sentiment(corp2, l1, "counts")
+#' s3 <- compute_sentiment(corp3, l1, "counts")
+#' s4 <- compute_sentiment(corp2, l1, "counts", do.sentence = TRUE)
+#' s5 <- compute_sentiment(corp3, l2, "proportional", do.sentence = TRUE)
+#' s6 <- compute_sentiment(corp3, l1, "counts", do.sentence = TRUE)
 #'
-#' sent <- sentiment_bind(sent1, sent2, sent3)
-#' nrow(sent) # 700
+#' # straightforward row-wise merge
+#' sb1 <- merge(s1, s2, s3)
+#' nrow(sb1) # 700
+#'
+#' # another straightforward row-wise merge
+#' sb2 <- merge(s4, s6)
+#'
+#' # merge of sentence and non-sentence calculations
+#' sb3 <- merge(s3, s6)
+#'
+#' # different methods add rows and/or columns
+#' sb4 <- merge(s4, s5)
+#' nrow(sb4) > nrow(sb2) # TRUE
 #'
 #' @export
-sentiment_bind <- function(...) {
-  all <- list(...)
-  if (!all(sapply(all, inherits, "sentiment")))
+merge.sentiment <- function(...) {
+  inp <- list(...)
+  if (!all(sapply(inp, inherits, "sentiment")))
     stop("Not all inputs are sentiment objects.")
-  if (!length(unique(sapply(all, ncol))) == 1)
-    stop("Column dimensions of sentiment objects are not all the same.")
-  if (!all(duplicated(t(sapply(all, colnames)))[2:length(all)]))
-    stop("Column names of sentiment objects are not all the same.")
-  s <- data.table::rbindlist(all)[order(date)]
-  s <- unique(s, by = "id")
+  cols <- unique(do.call(c, lapply(inp, colnames)))
+  dts <- lapply(inp, function(dt) {
+    setDT(dt)
+    newCols <- setdiff(cols, colnames(dt))
+    if (length(newCols) > 0) dt[, setdiff(cols, colnames(dt)) := as.numeric(NA)]
+    dt
+  })
+  s <- Reduce(function(...) merge(..., all = TRUE), dts)[order(date, id)]
+  if ("sentence_id" %in% colnames(s)) {
+    s[, sentence_id := ifelse(is.na(sentence_id), 1, sentence_id)]
+    setcolorder(s, c("id", "sentence_id", "date"))
+  } else {
+    setcolorder(s, c("id", "date"))
+  }
+  for (j in seq_along(s)) set(s, i = which(is.na(s[[j]])), j = j, value = 0)
   class(s) <- c("sentiment", class(s))
   s
 }

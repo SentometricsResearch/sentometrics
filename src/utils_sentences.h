@@ -63,7 +63,7 @@ inline void update_token_scores_sentences(std::vector< double >& scores,
       // std:::cout << "Lexicon loop " << j << "\n";
       if (tokenScores[i].size() != 0) {
         double score = tokenScores[i][j];
-        // std::cout<< "score within lexicon loop: " << score << "\n";
+        // std::cout << "score within lexicon loop: " << score << "\n";
         if (score != 0) {
           if (how == "counts") {
             // std:::cout << "token shifter: " << tokenShifters[i] << " & score: " << score << "\n";
