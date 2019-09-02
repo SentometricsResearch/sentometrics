@@ -78,7 +78,7 @@ fill_measures <- function(...) {
 #'
 #' @export
 merge_measures <- function(...) {
-  .Defunct("measures_merge", package = "sentometrics")
+  .Defunct("aggregate.sento_measures", package = "sentometrics")
 }
 
 #' @rdname sentometrics-defunct
@@ -132,7 +132,7 @@ retrieve_attributions <- function(...) {
 #'
 #' @export
 perform_agg <- function(...) {
-  .Defunct("aggregate", package = "sentometrics")
+  .Defunct("aggregate.sentiment", package = "sentometrics")
 }
 
 #' @rdname sentometrics-defunct
@@ -214,5 +214,23 @@ measures_select <- function(...) {
 #' @export
 measures_delete <- function(...) {
   .Defunct("subset", package = "sentometrics")
+}
+
+#' @rdname sentometrics-defunct
+#'
+#' @param ... allowed input arguments.
+#'
+#' @export
+sentiment_bind <- function(...) {
+  .Defunct("merge", package = "sentometrics")
+}
+
+#' @rdname sentometrics-defunct
+#'
+#' @param ... allowed input arguments.
+#'
+#' @export
+measures_merge <- function(...) {
+  .Defunct("aggregate.sento_measures", package = "sentometrics")
 }
 

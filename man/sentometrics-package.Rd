@@ -20,17 +20,19 @@ Please cite the package in publications. Use \code{citation("sentometrics")}.
 \section{Main functions}{
 
 \itemize{
-\item Corpus features generation: \code{\link{sento_corpus}}, \code{\link{add_features}}
+\item Corpus features generation: \code{\link{sento_corpus}}, \code{\link{add_features}},
+\code{\link{as.sento_corpus}}
 \item Sentiment computation and aggregation into sentiment measures: \code{\link{ctr_agg}},
 \code{\link{sento_lexicons}}, \code{\link{compute_sentiment}}, \code{\link{aggregate.sentiment}},
 \code{\link{sento_measures}}, \code{\link{peakdocs}}, \code{\link{peakdates}}, and a series of
-\code{measures_xyz}, generic and extractor functions
+generic and extractor functions
 \item Sparse modelling: \code{\link{ctr_model}}, \code{\link{sento_model}}
 \item Prediction and post-modelling analysis: \code{\link{predict.sento_model}}, \code{\link{attributions}}
 }
 
-The \code{\link{sento_app}} function is a Shiny interface for fast document-level sentiment computation and
-downloading of the obtained scores.
+The \code{\link{sento_app}} function is a Shiny interface for fast document-level sentiment computation
+and aggregation, and downloading of the obtained values. It serves as a visualisation of part of what the
+package does.
 }
 
 \section{Update}{

@@ -352,13 +352,13 @@ as.data.table.sento_measures <- function(sento_measures, keep.rownames = FALSE, 
 #' sub4 <- subset(sm, 1:100) # warning
 #'
 #' # different selections
-#' sel1 <- subset(sm, select = c("equal_weight"))
+#' sel1 <- subset(sm, select = "equal_weight")
 #' sel2 <- subset(sm, select = c("equal_weight", "linear"))
 #' sel3 <- subset(sm, select = c("linear", "LM_en"))
 #' sel4 <- subset(sm, select = list(c("linear", "wsj"), c("linear", "economy")))
 #'
 #' # different deletions
-#' del1 <- subset(sm, delete = c("equal_weight"))
+#' del1 <- subset(sm, delete = "equal_weight")
 #' del2 <- subset(sm, delete = c("linear", "LM_en"))
 #' del3 <- subset(sm, delete = list(c("linear", "wsj"), c("linear", "economy")))
 #' del4 <- subset(sm, delete = c("equal_weight", "linear")) # warning
@@ -368,31 +368,35 @@ subset.sento_measures <- function(x, subset = NULL, select = NULL, delete = NULL
   check_class(x, "sento_measures")
 
   # subset
-  sub <- as.character(substitute(list(subset))[-1L]) ### TODO: check if not more clean to have subset argument also as a character vector (cf. is.numeric() issue)
-  if (is.numeric(subset)) {
+  isNumericSubset <- tryCatch(is.numeric(subset), error = function(e) FALSE)
+  if (isNumericSubset) {
     if (max(subset) > nobs(x)) {
       warning("At least one row index is greater than nobs(x). Input sento_measures object is returned.")
       return(x)
     }
     measuresNew <- as.data.table(x)[subset, ]
-    x <- update_info(x, measuresNew) # subset update
-    if (nobs(x) == 0) {
+    if (nrow(measuresNew) == 0) {
       warning("No rows retained. Input sento_measures object is returned.")
       return(x)
+    } else {
+      x <- update_info(x, measuresNew) # subset update
     }
-  } else if (length(sub) > 0 && sub != "NULL") {
-    sub <- stringi::stri_replace_all(sub, "", regex = " ")
-    sub <- stringi::stri_replace_all(sub, "____", regex = "--")
-    measures <- as.data.table(x)
-    colnames(measures) <- stringi::stri_replace_all(colnames(measures), "____", regex = "--") # -- is problematic here
-    measuresNew <- tryCatch(measures[eval(parse(text = sub), parent.frame())], error = function(e) NULL)
-    if (is.null(measuresNew)) stop("The 'subset' argument must evaluate to logical.")
-    colnames(measuresNew) <- stringi::stri_replace_all(colnames(measuresNew), "--", regex = "____")
-    if (dim(measuresNew)[1] == 0) {
-      warning("No rows selected in subset. Input sento_measures object is returned.")
-      return(x)
+  } else {
+    sub <- as.character(substitute(list(subset))[-1L])
+    if (length(sub) > 0 && sub != "NULL") {
+      sub <- stringi::stri_replace_all(sub, "", regex = " ")
+      sub <- stringi::stri_replace_all(sub, "____", regex = "--")
+      measures <- as.data.table(x)
+      colnames(measures) <- stringi::stri_replace_all(colnames(measures), "____", regex = "--") # -- is problematic here
+      measuresNew <- tryCatch(measures[eval(parse(text = sub), parent.frame(2))], error = function(e) NULL)
+      if (is.null(measuresNew)) stop("The 'subset' argument must evaluate to logical.")
+      colnames(measuresNew) <- stringi::stri_replace_all(colnames(measuresNew), "--", regex = "____")
+      if (dim(measuresNew)[1] == 0) {
+        warning("No rows selected in subset. Input sento_measures object is returned.")
+        return(x)
+      }
+      x <- update_info(x, measuresNew) # subset update
     }
-    x <- update_info(x, measuresNew) # subset update
   }
 
   # select

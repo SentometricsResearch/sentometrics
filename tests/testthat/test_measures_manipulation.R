@@ -50,22 +50,22 @@ test_that("Consistency of measures_fill() function", {
 })
 
 # merge
-sentMeasMerge <- measures_merge(
+sentMeasMerge <- aggregate(
   sentMeas,
   features = list(ECO = c("economy", "noneconomy")),
   lexicons = list(LEX = c("GI_en", "LM_en")),
   time = list(B2 = c("beta21", "beta22"), A1 = c("almon1", "almon1_inv"), A3 = c("almon3", "almon3_inv"))
 )
 dimsMerge <- get_dimensions(sentMeasMerge)
-test_that("Consistency of measures_merge() function", {
+test_that("Consistency of aggregate.sento_measures() function", {
   expect_equal(nmeasures(sentMeasMerge), (length(dims$features) - 1) * (length(dims$lexicons) - 1) * (length(dims$time) - 3))
   expect_true(all(dimsMerge$features %in% c("wsj", "wapo", "ECO")))
   expect_true(all(dimsMerge$lexicons %in% c("LEX")))
   expect_true(all(dimsMerge$time %in%
                     c("linear", "beta11", "beta12", "B2", "beta31", "beta32", "A1", "almon2", "almon2_inv", "A3")))
-  expect_error(measures_merge(sentMeas, features = list(journals = c("notInHere", "wapo"))))
-  expect_error(measures_merge(sentMeas, lexicons = list(journals = c("LM_en", "notInHere"))))
-  expect_error(measures_merge(sentMeas, time = list(journals = c("linear", "notInHere", "beta12"))))
+  expect_error(aggregate(sentMeas, features = list(journals = c("notInHere", "wapo"))))
+  expect_error(aggregate(sentMeas, lexicons = list(journals = c("LM_en", "notInHere"))))
+  expect_error(aggregate(sentMeas, time = list(journals = c("linear", "notInHere", "beta12"))))
   expect_true(all(colnames(sentMeasMerge$attribWeights$B) %in%
                     c("linear", "beta11", "beta12", "B2", "beta31", "beta32", "A1", "almon2", "almon2_inv", "A3")))
   expect_true(all(colnames(sentMeasMerge$attribWeights$W)[-c(1:2)] %in% c("LEX--wsj", "LEX--wapo", "LEX--ECO")))

@@ -59,10 +59,10 @@ bag-of-words approach based on the lexicons provided and a choice of aggregation
 For a separate calculation of positive (resp. negative) sentiment, one has to provide distinct positive (resp.
 negative) lexicons. This can be done using the \code{do.split} option in the \code{\link{sento_lexicons}} function, which
 splits out the lexicons into a positive and a negative polarity counterpart. All \code{NA}s are converted to 0, under the
-assumption that this is equivalent to no sentiment. If \code{tokens = NULL} (as per default), texts are tokenized as
-unigrams using the \code{\link[tokenizers]{tokenize_words}} function. Punctuation and numbers are removed, but not
-stopwords. The number of words for each document is computed based on that same tokenization. All tokens are converted
-to lowercase, in line with what the \code{\link{sento_lexicons}} function does for the lexicons and valence shifters.
+assumption that this is equivalent to no sentiment. If \code{tokens = NULL} (as per default), texts are tokenized
+as unigrams. Punctuation and numbers are removed, but not stopwords. The number of words for each document is
+computed based on that same tokenization. All tokens are converted to lowercase, in line with what the
+\code{\link{sento_lexicons}} function does for the lexicons and valence shifters.
 }
 \section{Calculation}{
 
@@ -107,6 +107,8 @@ but then multiplied with the \code{how = "IDF"} option. See the vignette for mor
 
 \examples{
 data("usnews", package = "sentometrics")
+txt <- system.file("texts", "txt", package = "tm")
+reuters <- system.file("texts", "crude", package = "tm")
 data("list_lexicons", package = "sentometrics")
 data("list_valence_shifters", package = "sentometrics")
 
@@ -116,37 +118,38 @@ l2 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")],
 l3 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")],
                      list_valence_shifters[["en"]][, c("x", "t")])
 
-# from a sento_corpus object, unigrams approach
+# from a sento_corpus object - unigrams approach
 corpus <- sento_corpus(corpusdf = usnews)
 corpusSample <- quanteda::corpus_sample(corpus, size = 200)
 sent1 <- compute_sentiment(corpusSample, l1, how = "proportionalPol")
 
-# from a character vector, bigrams approach
+# from a character vector - bigrams approach
 sent2 <- compute_sentiment(usnews[["texts"]][1:200], l2, how = "counts")
 
-# from a corpus object, clusters approach
+# from a corpus object - clusters approach
 corpusQ <- quanteda::corpus(usnews, text_field = "texts")
 corpusQSample <- quanteda::corpus_sample(corpusQ, size = 200)
 sent3 <- compute_sentiment(corpusQSample, l3, how = "counts")
 
-# from an already tokenized corpus, using the 'tokens' argument
+# from an already tokenized corpus - using the 'tokens' argument
 toks <- as.list(quanteda::tokens(corpusQSample, what = "fastestword"))
 sent4 <- compute_sentiment(corpusQSample, l1[1], how = "counts", tokens = toks)
 
-# from a SimpleCorpus object, unigrams approach
-txt <- system.file("texts", "txt", package = "tm")
-sc <- tm::SimpleCorpus(tm::DirSource(txt, encoding = "UTF-8"))
-sent5 <- compute_sentiment(sc, l1, how = "proportional")
+# from a SimpleCorpus object - unigrams approach
+scorp <- tm::SimpleCorpus(tm::DirSource(txt, encoding = "UTF-8"))
+sent5 <- compute_sentiment(scorp, l1, how = "proportional")
 
-# from a VCorpus object, unigrams approach
-reut21578 <- system.file("texts", "crude", package = "tm")
-vcorp <- tm::VCorpus(tm::DirSource(reut21578, mode = "binary"))
+# from a VCorpus object - unigrams approach
+## in contrast to what as.sento_corpus(vcorp) would do, the
+## sentiment calculator handles multiple character vectors within
+## a single corpus element as separate documents
+vcorp <- tm::VCorpus(tm::DirSource(reuters))
 sent6 <- compute_sentiment(vcorp, l1, how = "proportional")
 
-# from a sento_corpus object, unigrams approach with tf-idf weighting
+# from a sento_corpus object - unigrams approach with tf-idf weighting
 sent7 <- compute_sentiment(corpusSample, l1, how = "TFIDF")
 
-# tokenisation and computation sentence-by-sentence
+# sentence-by-sentence computation
 sent8 <- compute_sentiment(corpusSample, l1, how = "squareRootCounts",
                            do.sentence = TRUE)
 

@@ -353,12 +353,12 @@ aggregate_docs <- function(sent, by, how = get_hows()$docs, weightingParamDocs) 
   measures <- sw[, lapply(.SD, function(x) sum(x, na.rm = TRUE)), by = date]
 
   sento_measures <- list(measures = measures,
-                        features = features,
-                        lexicons = lexNames,
-                        time = NA,
-                        sentiment = sent, # zeros replaced by NAs if do.ignoreZeros = TRUE
-                        stats = NA,
-                        attribWeights = attribWeights)
+                         features = features,
+                         lexicons = lexNames,
+                         time = NA,
+                         sentiment = sent, # zeros replaced by NAs if do.ignoreZeros = TRUE
+                         stats = NA,
+                         attribWeights = attribWeights)
 
   class(sento_measures) <- "sento_measures"
 

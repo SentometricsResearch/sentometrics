@@ -1,4 +1,6 @@
 
+### TODO: add other suggests/imports?
+
 library("shiny")
 library("shinyWidgets")
 library("shinythemes")
@@ -48,7 +50,7 @@ ui <- fluidPage(
                 ),
                 tabPanel(
                     style = "margin: 15px",
-                    title = "Corpus Summary",
+                    title = "Corpus summary",
                     corpus_summary_ui("corpus_summary_ui")
                 ),
                 tabPanel(
@@ -76,14 +78,14 @@ myvals <- reactiveValues(
     valenceList = list_valence_shifters,
     how = NULL,
     valenceMethod = "Bigram",
-    sentomearues = NULL,
+    sentomeasures = NULL,
     sentiment = NULL
 )
 
 server <- function(input, output, session) {
 
     observe({
-        if(is.null(myvals$sentomeasures)) {
+        if (is.null(myvals$sentomeasures)) {
             hideTab(inputId = "tabs", target = "indicesTab")
         } else {
             showTab(inputId = "tabs", target = "indicesTab")
@@ -91,53 +93,51 @@ server <- function(input, output, session) {
     })
 
     observe({
-        if(is.null(myvals$sentiment)) {
+        if (is.null(myvals$sentiment)) {
             hideTab(inputId = "tabs", target = "sentimentTab")
         } else {
             showTab(inputId = "tabs", target = "sentimentTab")
         }
     })
 
+    corpusFile <- callModule(load_corpus_server, "load_corpus_csv")
+    corpus <- callModule(create_corpus_server, "", corpusFile)
+    callModule(render_corpus_server, "corpus_table", corpusFile)
 
+    lexModule <- callModule(lexicon_server , "lexicon_ui")
+    observe({
+        myvals$selectedLexicons <- lexModule$selected
+        myvals$lexiconList <- lexModule$lexiconList
+    })
 
-     corpusFile <- callModule(load_corpus_server, "load_corpus_csv")
-     corpus <- callModule(create_corpus_server,"", corpusFile)
-     callModule(render_corpus_server,"corpus_table", corpusFile)
+    valenceModule <- callModule(valence_server, "valence_ui")
+    observe({
+        myvals$selectedValence <- valenceModule$selected
+        myvals$useValence <- valenceModule$useValence
+        myvals$valenceMethod <- valenceModule$method
+        myvals$valenceList <- valenceModule$valenceList
+    })
 
-     lexModule <- callModule(lexicon_server , "lexicon_ui")
-     observe({
-         myvals$selectedLexicons <- lexModule$selected
-         myvals$lexiconList <- lexModule$lexiconList
-     })
+    howModule <- callModule(how_server, "how_ui")
+    observe({
+        myvals$how <- howModule$selected
+    })
 
-     valenceModule <- callModule(valence_server, "valence_ui")
-     observe({
-         myvals$selectedValence <- valenceModule$selected
-         myvals$useValence <- valenceModule$useValence
-         myvals$valenceMethod <- valenceModule$method
-         myvals$valenceList <- valenceModule$valenceList
-     })
+    corpusSummaryModule <- callModule(corpus_summary_server, "corpus_summary_ui", corpus)
 
-     howModule <- callModule(how_server, "how_ui")
-     observe({
-         myvals$how <- howModule$selected
-     })
+    sentoLexicon <- callModule(build_sento_lexicon, "", myvals)
 
-     corpusSummaryModule <- callModule(corpus_summary_server, "corpus_summary_ui", corpus)
-
-     sentoLexicon <- callModule(build_sento_lexicon, "",myvals)
-
-     output$calculateSentimentButton <- renderUI({
-             actionButton(
+    output$calculateSentimentButton <- renderUI({
+            actionButton(
                  inputId = "calcSentimentButton",
-                 label = "Calculate Sentiment",
+                 label = "Calculate sentiment",
                  icon = icon("rocket")
-             )
-     })
+            )
+    })
 
-     observeEvent(input$calcSentimentButton, ignoreInit = FALSE, {
+    observeEvent(input$calcSentimentButton, ignoreInit = FALSE, {
 
-            if(is.null(sentoLexicon())) {
+            if (is.null(sentoLexicon())) {
                 showModal(modalDialog(
                     title = "Error",
                     "Select a corpus and lexicon first.."
@@ -145,26 +145,25 @@ server <- function(input, output, session) {
             } else {
                 showTab(inputId = "tabs", target = "sentimentTab")
                 updateTabsetPanel(session, "tabs", selected = "sentimentTab")
-                sentimentModule<- callModule(sentiment_server, "sentiment_ui", myvals, corpus, sentoLexicon, input$calcSentimentButton )
+                sentimentModule <- callModule(sentiment_server, "sentiment_ui", myvals,
+                                              corpus, sentoLexicon, input$calcSentimentButton)
                 observe({
-                    if(!is.null(sentimentModule$sentoMeasures)) {
-                        myvals$sentomeasures <- as.data.table(sentimentModule$sentoMeasures)
+                    if (!is.null(sentimentModule$sentomeasures)) {
+                        myvals$sentomeasures <- as.data.table(sentimentModule$sentomeasures)
                     } else {
                         myvals$sentomeasures <- NULL
                     }
-                 })
+                })
                 observe({
-                    if(!is.null(sentimentModule$sentiment)) {
+                    if (!is.null(sentimentModule$sentiment)) {
                         myvals$sentiment <- as.data.table(sentimentModule$sentiment)
                     } else {
                         myvals$sentiment <- NULL
                     }
                 })
             }
-     })
-     callModule(indices_server,"indices_ui", reactive(myvals$sentomeasures))
-
-
+    })
+    callModule(indices_server, "indices_ui", reactive(myvals$sentomeasures))
 }
 
 # Run the application

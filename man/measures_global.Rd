@@ -2,7 +2,7 @@
 % Please edit documentation in R/sentomeasures_measures_xyz.R
 \name{measures_global}
 \alias{measures_global}
-\title{Merge sentiment measures into multiple weighted global sentiment indices}
+\title{Aggregate sentiment measures into multiple weighted global sentiment indices}
 \usage{
 measures_global(sento_measures, lexicons = 1, features = 1, time = 1)
 }
@@ -24,12 +24,12 @@ A \code{data.table} with the different types of weighted global sentiment measur
 of the the three other measures.
 }
 \description{
-Merges all sentiment measures into a weighted global textual sentiment measure for each of the
+Aggregates all sentiment measures into a weighted global textual sentiment measure for each of the
 \code{lexicons}, \code{features}, and \code{time} dimensions.
 }
 \details{
-In contrast to other \code{measures_xyz} functions, this particular function returns no new \code{sento_measures}
-object. The measures are constructed from weights that indicate the importance (and sign) along each component from the
+This particular function returns no new \code{sento_measures} object. The measures are constructed
+from weights that indicate the importance (and sign) along each component from the
 \code{lexicons}, \code{features}, and \code{time} dimensions. There is no restriction in terms of allowed weights. For
 example, the global index based on the supplied lexicon weights (\code{"globLex"}) is obtained first by multiplying
 every sentiment measure with its corresponding weight (meaning, the weight given to the lexicon the sentiment is
@@ -47,7 +47,7 @@ l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 sento_measures <- sento_measures(corpusSample, l, ctr)
 
-# merge into one global sentiment measure, with specified weighting for lexicons and features
+# aggregate into one global sentiment measure, with specified weighting for lexicons and features
 global <- measures_global(sento_measures,
                           lexicons = c(0.40, 0.60),
                           features = c(0.10, -0.20, 0.30, -1),

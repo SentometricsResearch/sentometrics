@@ -7,9 +7,9 @@ sentiment_ui <- function(id) {
 
 sentiment_server <- function(input, output, session, params, corpus, sentoLexicon, calculate) {
 
-  vals <-reactiveValues(
+  vals <- reactiveValues(
     selectedColumn = NULL,
-    sentoMeasures= NULL,
+    sentomeasures = NULL,
     sentiment = NULL
   )
 
@@ -29,20 +29,20 @@ sentiment_server <- function(input, output, session, params, corpus, sentoLexico
 
     output$sentimentTable <- renderDataTable({
       tokeep <- which(sapply(vals$sentiment, is.numeric))
-      cols <- colnames(vals$sentiment[, tokeep, with=FALSE])
+      cols <- colnames(vals$sentiment[, tokeep, with = FALSE])
       DT::datatable(vals$sentiment, options = list(searching = FALSE)) %>% formatRound(columns = cols, digits = 2)
     }, server = FALSE)
 
 
     output$sentimentChart <-  renderHighchart({
       colname <- colnamesSentiment()[vals$selectedColumn]
-      y <-as.data.table(vals$sentiment[,colname, with=FALSE])
-      if(length(names(y) >0)) {
+      y <- as.data.table(vals$sentiment[,colname, with = FALSE])
+      if (length(names(y) > 0)) {
         names(y)<-"sentiment"
         y[is.na(y)] <- 0
         hc <- highchart() %>%
           hc_xAxis(categories = vals$sentiment$date) %>%
-          hc_add_series(name = vals$selectedColumn, data =y$sentiment)
+          hc_add_series(name = vals$selectedColumn, data = y$sentiment)
         hc
       }
 
@@ -69,7 +69,7 @@ sentiment_server <- function(input, output, session, params, corpus, sentoLexico
           style = "margin: 15px",
           title = "Table",
           tagList(
-            dataTableOutput(session$ns("sentimentTable")) ,
+            dataTableOutput(session$ns("sentimentTable")),
             uiOutput(session$ns("downloadButtonConditional"))
           )
         ),
@@ -77,40 +77,36 @@ sentiment_server <- function(input, output, session, params, corpus, sentoLexico
           style = "margin: 15px",
           title = "Graph",
           tagList(
-            uiOutput(session$ns("selectSentiment")) ,
-            highchartOutput(session$ns("sentimentChart"))  %>% withSpinner(color = "#0dc5c1")
+            uiOutput(session$ns("selectSentiment")),
+            highchartOutput(session$ns("sentimentChart")) %>% withSpinner(color = "#0dc5c1")
           )
         )
-
       )
-
     )
-
   })
 
-  observeEvent(calculate,{
-    if("sento_corpus" %in% class(corpus())) {
+  observeEvent(calculate, {
+    if ("sento_corpus" %in% class(corpus())) {
       ctr <- sentometrics::ctr_agg( by ="month" , howWithin = params$how, howTime = c("equal_weight", "exponential"), lag = 4)
       measures<- sentometrics::sento_measures(corpus(), sentoLexicon(), ctr)
-      vals$sentoMeasures <- measures
+      vals$sentomeasures <- measures
       vals$sentiment <- measures$sentiment
       measures
     } else {
       sentiment <- compute_sentiment(corpus(), sentoLexicon(), params$how)
       vals$sentiment <- sentiment
-      vals$sentoMeasures <- NULL
+      vals$sentomeasures <- NULL
       return(NULL)
     }
   })
 
-
   colnamesSentiment <- reactive({
     sent <- vals$sentiment
     if ("id" %in% colnames(sent)) {
-      sent[,id:=NULL]
+      sent[, id := NULL]
     }
     if ("date" %in% colnames(sent)) {
-      sent[,date:=NULL]
+      sent[, date := NULL]
     }
     col <- colnames(sent)
     names(col) <- col
@@ -118,6 +114,5 @@ sentiment_server <- function(input, output, session, params, corpus, sentoLexico
   })
 
   return(vals)
-
 }
 

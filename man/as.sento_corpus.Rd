@@ -8,7 +8,9 @@ as.sento_corpus(x, dates = NULL, do.clean = FALSE)
 }
 \arguments{
 \item{x}{a \pkg{quanteda} \code{\link[quanteda]{corpus}} object, a \pkg{tm}
-\code{\link[tm]{SimpleCorpus}} or a \pkg{tm} \code{\link[tm]{VCorpus}} object.}
+\code{\link[tm]{SimpleCorpus}} or a \pkg{tm} \code{\link[tm]{VCorpus}} object. For \pkg{tm}
+corpora, every corpus element should consist of a single \code{"content"} \code{character} vector
+as the document unit.}
 
 \item{dates}{an optional sequence of dates as \code{"yyyy-mm-dd"}, of the same length as the number
 of documents in the input corpus, to define the \code{"date"} column. If \code{dates = NULL}, the
@@ -29,38 +31,40 @@ only \code{meta(x, type = "indexed")} metadata is considered.
 \examples{
 data("usnews", package = "sentometrics")
 txt <- system.file("texts", "txt", package = "tm")
-reut21578 <- system.file("texts", "crude", package = "tm")
+reuters <- system.file("texts", "crude", package = "tm")
 
 # reshuffle usnews data.frame for use in quanteda and tm
 dates <- usnews$date
 usnews$wrong <- "notNumeric"
 colnames(usnews)[c(1, 3)] <- c("doc_id", "text")
 
-# corpus conversion from a quanteda corpus
+# conversion from a quanteda corpus
 qcorp <- quanteda::corpus(usnews,
                           text_field = "text", docid_field = "doc_id")
-corpus1 <- as.sento_corpus(qcorp)
-corpus2 <- as.sento_corpus(qcorp, sample(dates)) # overwrites "date" column
+corp1 <- as.sento_corpus(qcorp)
+corp2 <- as.sento_corpus(qcorp, sample(dates)) # overwrites "date" column
 
-# corpus conversion from a tm SimpleCorpus corpus (DataframeSource)
+# conversion from a tm SimpleCorpus corpus (DataframeSource)
 tmSCdf <- tm::SimpleCorpus(tm::DataframeSource(usnews))
-corpus3 <- as.sento_corpus(tmSCdf)
+corp3 <- as.sento_corpus(tmSCdf)
 
-# corpus conversion from a tm SimpleCorpus corpus (DirSource)
+# conversion from a tm SimpleCorpus corpus (DirSource)
 tmSCdir <- tm::SimpleCorpus(tm::DirSource(txt))
-corpus4 <- as.sento_corpus(tmSCdir, dates[1:length(tmSCdir)])
+corp4 <- as.sento_corpus(tmSCdir, dates[1:length(tmSCdir)])
 
-# corpus conversion from a tm VCorpus corpus (DataframeSource)
+# conversion from a tm VCorpus corpus (DataframeSource)
 tmVCdf <- tm::VCorpus(tm::DataframeSource(usnews))
-corpus5 <- as.sento_corpus(tmVCdf)
+corp5 <- as.sento_corpus(tmVCdf)
 
-# corpus conversion from a tm VCorpus corpus (DirSource)
-tmVCdir <- tm::VCorpus(tm::DirSource(reut21578, mode = "binary"))
-corpus6 <- as.sento_corpus(tmVCdir, dates[1:length(tmVCdir)])
+# conversion from a tm VCorpus corpus (DirSource)
+tmVCdir <- tm::VCorpus(tm::DirSource(reuters),
+                       list(reader = readReut21578XMLasPlain))
+corp6 <- as.sento_corpus(tmVCdir, dates[1:length(tmVCdir)])
 
 }
 \seealso{
-\code{\link[quanteda]{corpus}}, \code{\link{sento_corpus}}
+\code{\link[quanteda]{corpus}}, \code{\link[tm]{SimpleCorpus}}, \code{\link[tm]{VCorpus}},
+\code{\link{sento_corpus}}
 }
 \author{
 Samuel Borms
