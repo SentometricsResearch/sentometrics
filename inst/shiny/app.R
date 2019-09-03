@@ -1,6 +1,4 @@
 
-### TODO: add other suggests/imports?
-
 library("shiny")
 library("shinyWidgets")
 library("shinythemes")
@@ -8,7 +6,6 @@ library("DT")
 library("shinycssloaders")
 library("sentometrics")
 library("quanteda")
-library("highcharter")
 
 source("corpus.R")
 source("lexicon.R")
@@ -78,14 +75,14 @@ myvals <- reactiveValues(
     valenceList = list_valence_shifters,
     how = NULL,
     valenceMethod = "Bigram",
-    sentomeasures = NULL,
+    sento_measures = NULL,
     sentiment = NULL
 )
 
 server <- function(input, output, session) {
 
     observe({
-        if (is.null(myvals$sentomeasures)) {
+        if (is.null(myvals$sento_measures)) {
             hideTab(inputId = "tabs", target = "indicesTab")
         } else {
             showTab(inputId = "tabs", target = "indicesTab")
@@ -140,7 +137,7 @@ server <- function(input, output, session) {
             if (is.null(sentoLexicon())) {
                 showModal(modalDialog(
                     title = "Error",
-                    "Select a corpus and lexicon first.."
+                    "Select a corpus and lexicon first..."
                 ))
             } else {
                 showTab(inputId = "tabs", target = "sentimentTab")
@@ -148,10 +145,10 @@ server <- function(input, output, session) {
                 sentimentModule <- callModule(sentiment_server, "sentiment_ui", myvals,
                                               corpus, sentoLexicon, input$calcSentimentButton)
                 observe({
-                    if (!is.null(sentimentModule$sentomeasures)) {
-                        myvals$sentomeasures <- as.data.table(sentimentModule$sentomeasures)
+                    if (!is.null(sentimentModule$sento_measures)) {
+                        myvals$sento_measures <- sentimentModule$sento_measures
                     } else {
-                        myvals$sentomeasures <- NULL
+                        myvals$sento_measures <- NULL
                     }
                 })
                 observe({
@@ -163,7 +160,7 @@ server <- function(input, output, session) {
                 })
             }
     })
-    callModule(indices_server, "indices_ui", reactive(myvals$sentomeasures))
+    callModule(indices_server, "indices_ui", reactive(myvals$sento_measures))
 }
 
 # Run the application

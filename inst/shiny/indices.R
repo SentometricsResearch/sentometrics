@@ -1,24 +1,32 @@
 
-indices_server <- function(input, output, session, sentomeasures) {
+indices_ui <- function(id) {
+  ns <- NS(id)
+  tagList(
+    uiOutput(ns("selectIndex")),
+    plotOutput(ns("indexPlot")) %>% withSpinner(color = "#0dc5c1")
+  )
+}
+
+indices_server <- function(input, output, session, sento_measures) {
   ns <- session$ns
 
   vals <- reactiveValues(
-    measures = NULL,
+    sento_measures = NULL,
     selectedIndex = NULL
   )
 
   observe({
-    vals$measures <- sentomeasures()
+    vals$sento_measures <- sento_measures()
   })
 
   output$selectIndex <- renderUI({
 
-    if (is.null(sentomeasures())) {
+    if (is.null(sento_measures())) {
       tags$p("Calculate sentiment first...")
     } else {
       selectizeInput(
         inputId = ns("select_index"),
-        label = "Select an index to display",
+        label = "Select a sentiment measure to display",
         choices = as.list(colnamesMeasures()),
         multiple = TRUE
       )
@@ -29,34 +37,18 @@ indices_server <- function(input, output, session, sentomeasures) {
     vals$selectedIndex <- input$select_index
   })
 
-  output$indexChart <- renderHighchart({
-    xName <- c("date")
-    names(xName) <- xName
-    colnames <- c(colnamesMeasures()[c(vals$selectedIndex)], xName)
-    if (length(colnames) > 1) {
-      dataMelted <- melt(as.data.table(vals$measures[, colnames, with = FALSE]),
-                         id = "date", value.name = "sentiment", variable.name = "PARAMS")
-      dataMelted$date <- datetime_to_timestamp(dataMelted$date)
-      hchart(dataMelted, type = 'line', hcaes(y = sentiment, group = PARAMS, x = date)) %>%
-        hc_xAxis(type = "datetime")
-    }
+  output$indexPlot <- renderPlot({
+    sel <- as.list(stringi::stri_split(vals$selectedIndex, regex = "--"))
+    sm <- subset(vals$sento_measures, select = sel)
+    plot(sm)
   })
 
   colnamesMeasures <- reactive({
-    if (!is.null(sentomeasures())) {
-      col <- colnames(vals$measures[, !"date"])
+    if (!is.null(sento_measures())) {
+      col <- colnames(as.data.table(vals$sento_measures)[, !"date"])
       names(col) <- col
       col
     }
   })
-}
-
-indices_ui <- function(id) {
-  ns <- NS(id)
-  tagList(
-    uiOutput(ns("selectIndex")),
-    highchartOutput(ns("indexChart"))
-  )
-
 }
 

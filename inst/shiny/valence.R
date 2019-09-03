@@ -1,19 +1,18 @@
 
 valence_ui <- function(id) {
   ns <- NS(id)
-
   tagList(
     checkboxInput(
       inputId = ns("useValenceCheck"),
-      label ="Use valence shifters",
+      label ="Use valence shifters?",
       FALSE
     ),
     uiOutput(ns("valenceUI"))
   )
-
 }
 
 valence_server <- function(input, output, session) {
+  ns <- session$ns
 
   myvals <- reactiveValues(
     valenceList = list_valence_shifters,
@@ -40,7 +39,8 @@ valence_server <- function(input, output, session) {
                    header = TRUE,
                    sep = ";",
                    quote = '"',
-                   fileEncoding = "UTF-8")
+                   fileEncoding = "UTF-8",
+                   stringsAsFactors = FALSE)
 
     if (all(c("x", "y") %in% colnames(df)) && !"t" %in% colnames(df) ||
         all(c("x", "t") %in% colnames(df)) && !"y" %in% colnames(df) ) {
@@ -77,7 +77,7 @@ valence_server <- function(input, output, session) {
   })
 
   output$valenceUI <- renderUI({
-    if(input$useValenceCheck) {
+    if (input$useValenceCheck) {
       tags$table(
         id = "inputs-table",
         style = "width: 100%",
@@ -93,8 +93,8 @@ valence_server <- function(input, output, session) {
           tags$td(
             style = "width: 90%",
             selectizeInput(
-              inputId = session$ns("selectValence"),
-              label = "Select valence Shifters from list",
+              inputId = ns("selectValence"),
+              label = "Select valence shifters from list",
               choices = myvals$choices,
               selected = NULL,
               multiple = FALSE
@@ -102,13 +102,13 @@ valence_server <- function(input, output, session) {
           ),
           tags$td(
             style = "width: 10%; ",
-            uiOutput(session$ns("loadValenceUI"))
+            uiOutput(ns("loadValenceUI"))
           )
         ),tags$tr(
           tags$td(
             style = "width: 90%",
             radioGroupButtons(
-              inputId = session$ns("valenceMethod"),
+              inputId = ns("valenceMethod"),
               label = "Method",
               choices = c("Bigram", "Cluster"),
               justified = TRUE
@@ -119,7 +119,7 @@ valence_server <- function(input, output, session) {
             div(class = "form-group shiny-input-container",
                 style = "margin-top: 25px;"
                 , actionButton(
-                  inputId = session$ns("valenceMethodHelpButton"),
+                  inputId = ns("valenceMethodHelpButton"),
                   label = NULL,
                   icon = icon("question")
                 )
@@ -141,7 +141,7 @@ valence_server <- function(input, output, session) {
           tags$td(
             style = "width: 90%",
             fileInput(
-              inputId = session$ns("valenceUpload"),
+              inputId = ns("valenceUpload"),
               label = "Choose .csv file",
               multiple = FALSE,
               accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")
@@ -151,7 +151,7 @@ valence_server <- function(input, output, session) {
             style = "width: 10%; ",
             div(class = "form-group shiny-input-container"
                 , actionButton(
-                  inputId = session$ns("valenceHelpButton"),
+                  inputId = ns("valenceHelpButton"),
                   label = NULL,
                   icon = icon("question")
                 )
@@ -182,13 +182,13 @@ valence_server <- function(input, output, session) {
 
   observeEvent(input$selectValence, {
 
-    if(input$useValenceCheck) {
+    if (input$useValenceCheck) {
       myvals$selected <- input$selectValence
       colnames <- names(myvals$valenceList[[input$selectValence]])
-      if(all(c( "y", "t") %in% colnames)) {
+      if (all(c( "y", "t") %in% colnames)) {
         myvals$methodChoices<- c("Bigram", "Cluster")
         myvals$method <- "Bigram"
-      } else if("y" %in% colnames) {
+      } else if ("y" %in% colnames) {
         myvals$methodChoices <- c("Bigram")
         myvals$method <- "Bigram"
       } else {
@@ -210,9 +210,9 @@ valence_server <- function(input, output, session) {
   observeEvent(input$valenceMethodHelpButton, {
     showModal(modalDialog(
       title = "Valence shifting method",
-      "If both the columns 'y' and 't' are delivered, you need to choose between the bigram or the cluster approach.
-      For the bigram approach column 'y' is used. For the cluster approach column 't' is used.
-      If both columns are not delivered, only one of the two options will be available. "
+      "If both the columns 'y' and 't' are delivered, you need to choose between the bigram
+      or the cluster approach. For the bigram approach column 'y' is used. For the cluster
+      approach column 't' is used."
     ))
   })
 

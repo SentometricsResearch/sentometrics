@@ -69,7 +69,7 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
   names(idxs) <- languages
 
   # compute sentiment for each language subcorpus
-  sentByLang <- setNames(as.list(languages), languages)
+  sentByLang <- stats::setNames(as.list(languages), languages)
   for (l in languages) {
     corpus <- quanteda::corpus_subset(x, language == l)
     quanteda::docvars(corpus, field = "language") <- NULL
@@ -427,7 +427,7 @@ merge.sentiment <- function(...) {
   })
   s <- Reduce(function(...) merge(..., all = TRUE), dts)[order(date, id)]
   if ("sentence_id" %in% colnames(s)) {
-    s[, sentence_id := ifelse(is.na(sentence_id), 1, sentence_id)]
+    s[, "sentence_id" := ifelse(is.na(sentence_id), 1, sentence_id)]
     setcolorder(s, c("id", "sentence_id", "date"))
   } else {
     setcolorder(s, c("id", "date"))

@@ -284,7 +284,7 @@ get_dimensions <- function(sento_measures) {
 #' @description Extracts the sentiment measures \code{data.table} in either wide (by default)
 #' or long format.
 #'
-#' @param sento_measures a \code{sento_measures} object created using \code{\link{sento_measures}}.
+#' @param x a \code{sento_measures} object created using \code{\link{sento_measures}}.
 #' @param keep.rownames see \code{\link{as.data.table}}.
 #' @param format a single \code{character} vector, one of \code{c("wide", "long")}.
 #' @param ... not used.
@@ -305,12 +305,11 @@ get_dimensions <- function(sento_measures) {
 #' as.data.table(sm, "long")
 #'
 #' @export
-as.data.table.sento_measures <- function(sento_measures, keep.rownames = FALSE, format = "wide", ...) {
-  check_class(sento_measures, "sento_measures")
+as.data.table.sento_measures <- function(x, keep.rownames = FALSE, format = "wide", ...) {
   if (format == "wide")
-    sento_measures[["measures"]]
+    x[["measures"]]
   else if (format == "long")
-    measures_to_long(sento_measures[["measures"]])
+    measures_to_long(x[["measures"]])
   else
     stop("The 'format' argument should be 'wide' or 'long'.")
 }
@@ -345,6 +344,13 @@ as.data.table.sento_measures <- function(sento_measures, keep.rownames = FALSE, 
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sm <- sento_measures(corpusSample, l, ctr)
 #'
+#' # three specified indices in required list format
+#' three <- as.list(stringi::stri_split(
+#'   c("LM_en--economy--linear",
+#'     "HENRY_en--wsj--equal_weight",
+#'     "HENRY_en--wapo--equal_weight"), regex = "--")
+#' )
+#'
 #' # different subsets
 #' sub1 <- subset(sm, HENRY_en--economy--equal_weight >= 0.01)
 #' sub2 <- subset(sm, date %in% get_dates(sm)[3:12])
@@ -356,12 +362,14 @@ as.data.table.sento_measures <- function(sento_measures, keep.rownames = FALSE, 
 #' sel2 <- subset(sm, select = c("equal_weight", "linear"))
 #' sel3 <- subset(sm, select = c("linear", "LM_en"))
 #' sel4 <- subset(sm, select = list(c("linear", "wsj"), c("linear", "economy")))
+#' sel5 <- subset(sm, select = three)
 #'
 #' # different deletions
 #' del1 <- subset(sm, delete = "equal_weight")
 #' del2 <- subset(sm, delete = c("linear", "LM_en"))
 #' del3 <- subset(sm, delete = list(c("linear", "wsj"), c("linear", "economy")))
 #' del4 <- subset(sm, delete = c("equal_weight", "linear")) # warning
+#' del5 <- subset(sm, delete = three)
 #'
 #' @export
 subset.sento_measures <- function(x, subset = NULL, select = NULL, delete = NULL, ...) {
@@ -452,5 +460,129 @@ subset.sento_measures <- function(x, subset = NULL, select = NULL, delete = NULL
   }
 
   return(x)
+}
+
+#' Aggregate sentiment measures
+#'
+#' @author Samuel Borms
+#'
+#' @description Aggregates sentiment measures by combining across provided lexicons, features, and time weighting
+#' schemes dimensions. The combination occurs by taking the mean of the relevant measures.
+#'
+#' @param x a \code{sento_measures} object created using \code{\link{sento_measures}}.
+#' @param lexicons a \code{list} with unique lexicons to aggregate at given name, e.g., \cr
+#' \code{list(lex12 = c("lex1", "lex2"))}. See \code{sento_measures$lexicons} for the exact names to use. Use \code{NULL}
+#' (default) to apply no merging across this dimension.
+#' @param features a \code{list} with unique features to aggregate at given name, e.g., \cr
+#' \code{list(feat12 = c("feat1", "feat2"))}. See \code{sento_measures$features} for the exact names to use. Use \code{NULL}
+#' (default) to apply no merging across this dimension.
+#' @param time a \code{list} with unique time weighting schemes to aggregate at given name, e.g., \cr
+#' \code{list(tw12 = c("tw1", "tw2"))}. See \code{sento_measures$time} for the exact names to use. Use \code{NULL} (default)
+#' to apply no merging across this dimension.
+#' @param do.keep a \code{logical} indicating if the original sentiment measures should be kept (i.e., the aggregated
+#' sentiment measures will be added to the current sentiment measures as additional indices if \code{do.keep = TRUE}).
+#' @param ... not used.
+#'
+#' @return A modified \code{sento_measures} object, with only the sentiment measures required, including updated information
+#' and statistics, but the original sentiment scores \code{data.table} untouched.
+#'
+#' @examples
+#' data("usnews", package = "sentometrics")
+#' data("list_lexicons", package = "sentometrics")
+#' data("list_valence_shifters", package = "sentometrics")
+#'
+#' # construct a sento_measures object to start with
+#' corpus <- sento_corpus(corpusdf = usnews)
+#' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
+#' l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+#' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
+#' sento_measures <- sento_measures(corpusSample, l, ctr)
+#'
+#' # aggregation across specified components
+#' smAgg <- aggregate(sento_measures,
+#'                    time = list(W = c("equal_weight", "linear")),
+#'                    features = list(journals = c("wsj", "wapo")),
+#'                    do.keep = TRUE)
+#'
+#' # aggregation in full
+#' dims <- get_dimensions(sento_measures)
+#' smFull <- aggregate(sento_measures,
+#'                     lexicons = list(L = dims[["lexicons"]]),
+#'                     time = list(T = dims[["time"]]),
+#'                     features = list(F = dims[["features"]]))
+#'
+#' \dontrun{
+#' # aggregation won't work, but produces informative error message
+#' aggregate(sento_measures,
+#'           time = list(W = c("equal_weight", "almon1")),
+#'           lexicons = list(LEX = c("LM_en")),
+#'           features = list(journals = c("notInHere", "wapo")))}
+#' @export
+aggregate.sento_measures <- function(x, features = NULL, lexicons = NULL, time = NULL, do.keep = FALSE, ...) {
+
+  stopifnot(is.null(features) || is.list(features))
+  stopifnot(is.null(lexicons) || is.list(lexicons))
+  stopifnot(is.null(time) || is.list(time))
+
+  check <- check_agg_dimensions(x, features = features, lexicons = lexicons, time = time) # check inputs
+  if (check$stop == TRUE)
+    stop(paste0(c("Wrong inputs.", check$msg1, check$msg2), collapse = " "))
+
+  measures <- as.data.table(x)
+  toAgg <- list(lexicons = lexicons, features = features, time = time)
+
+  if (do.keep == TRUE) {
+    measuresOld <- measures
+    namesOld <- colnames(measures)
+  }
+  # loop over lexicons, features and time lists
+  for (across in toAgg) {
+    # loop over set of aggregation levels to combine into given name (e.g., lex12 = c("lex1", "lex2"))
+    for (i in seq_along(across)) {
+      name <- names(across)[i] # e.g. "lex12"
+      cols <- across[[i]] # e.g. c("lex1", "lex2")
+      # find all sentiment columns aggregated at one of the 'cols' aggregation levels and stack them into ls
+      ls <- sels <- as.list(1:length(cols))
+      names(ls) <- names(sels) <- cols
+      for (elem in cols) {
+        sel <- colnames(measures)[stringi::stri_detect(colnames(measures), regex = paste0("\\b", elem, "\\b"))] # exact match
+        selMeas <- measures[, sel, with = FALSE, drop = FALSE]
+        nms <- stringi::stri_split(colnames(selMeas), regex = "--")
+        loc <- which(stringi::stri_detect(nms[[1]], regex = elem))[1]
+        nmsNew <- sapply(nms, function(x) {
+          x[loc] <- name
+          paste0(x, collapse = "--")
+        })
+        colnames(selMeas) <- nmsNew
+        ls[[elem]] <- selMeas
+        sels[[elem]] <- sel
+      }
+      common <- Reduce(intersect, lapply(ls, colnames))
+      ls <- lapply(1:length(ls), function(k) {
+        m <- ls[[k]]
+        ind <- which(colnames(m) %in% common)
+        measures <<- measures[, !sels[[k]][ind], with = FALSE, drop = FALSE] # drop columns to aggregate
+        m[, ind, with = FALSE, drop = FALSE]
+      })
+      # take element-wise average for every row/column combination across columns to aggregate
+      if (ncol(ls[[1]]) >= 2) { # ncol across elements of ls is the same
+        all <- array(NA, dim = c(nrow(ls[[1]]), ncol(ls[[2]]), length(ls)))
+        for (k in 1:length(ls)) all[, , k] <- as.matrix(ls[[k]])
+        aggr <- apply(all, c(1, 2), mean, na.rm = TRUE)
+        colnames(aggr) <- colnames(ls[[length(ls)]])
+      } else {
+        aggr <- as.matrix(rowMeans(do.call(cbind, ls)))
+        colnames(aggr) <- colnames(ls[[length(ls)]])
+      }
+      measures <- cbind(measures, aggr) # add back aggregated columns
+    }
+  }
+  # add old measures to aggregated measures (if do.keep is TRUE)
+  if (do.keep == TRUE)
+    measures <- cbind(measures, measuresOld[, !(namesOld %in% colnames(measures)), with = FALSE])
+
+  sento_measures <- update_info(x, measures, aggs = toAgg) # update information in sento_measures object
+
+  return(sento_measures)
 }
 

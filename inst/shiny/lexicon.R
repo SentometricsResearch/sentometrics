@@ -23,7 +23,8 @@ lexicon_server <- function(input, output, session) {
                    header = TRUE,
                    sep = ";",
                    quote = '"',
-                   fileEncoding = "UTF-8")
+                   fileEncoding = "UTF-8",
+                   stringsAsFactors = FALSE)
 
     if (all(c("x", "y") %in% colnames(df))) {
       existingLexiconsNames <-  myvals$choices

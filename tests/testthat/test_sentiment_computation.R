@@ -14,8 +14,8 @@ corpus <- sento_corpus(corpusdf = usnews[1:250, ])
 # SimpleCorpus creation
 txt <- system.file("texts", "txt", package = "tm")
 scorp <- SimpleCorpus(DirSource(txt, encoding = "UTF-8"), control = list(language = "en"))
-scorp$content[1] <- "This is a text for which we want to calculate above average sentiment."
-scorp$content[2] <- "This is a text for which we want to calculate below average sentiment."
+# scorp$content[1] <- "This is a text for which we want to calculate above average sentiment."
+# scorp$content[2] <- "This is a text for which we want to calculate below average sentiment."
 scorp$content[3] <- corpus$documents$text[3]
 
 # VCorpus creation
@@ -52,7 +52,7 @@ sentimentList <- list(
                          lex, how = "counts"),
   s7 = compute_sentiment(corpus, lex, how = "counts"),
   s8 = compute_sentiment(quanteda::texts(corpus), lexSplit, how = "counts"),
-  # s9 = compute_sentiment(quanteda::texts(corpus), lex, how = "TF", nCore = 2), # no multicore computation for CRAN
+  # s9 = compute_sentiment(quanteda::texts(corpus), lex, how = "TF", nCore = 2), # no multicore computation because of CRAN checks
   s10 = compute_sentiment(quanteda::texts(corpus), lexClust, how = "counts"),
   s11 = compute_sentiment(corpus, lexClust, how = "proportional"),
   s12 = compute_sentiment(quanteda::texts(corpus), lexClust, how = "proportionalPol"),
@@ -71,7 +71,7 @@ sentimentList <- list(
 )
 
 # compute_sentiment
-test_that("Agreement between sentiment scores across input objects", {
+test_that("Agreement between sentiment scores on document-level across input objects", {
   expect_true(all(unlist(lapply(sentimentList, function(s) nrow(s) == 250))))
   expect_true(all(unlist(lapply(sentimentList[-1], function(s) all(s$word_count == sentimentList$s1$word_count)))))
   expect_true(all(sentimentList$s8[, c("GI_en_POS", "LM_en_POS", "HENRY_en_POS")] >= 0))
@@ -83,7 +83,8 @@ test_that("Agreement between sentiment scores across input objects", {
   expect_error(compute_sentiment(quanteda::texts(corpus), lex, how = "notAnOption"))
   expect_warning(compute_sentiment(quanteda::texts(corpus), lex, how = "counts", nCore = -1))
   expect_error(compute_sentiment(quanteda::texts(corpus), list_lexicons))
-  expect_true(all.equal(sentimentList$s3[3],compute_sentiment(scorp[3], lex, how = "proportional")))
+  expect_true(all.equal(sentimentList$s3[3, -1],
+                        compute_sentiment(scorp[3], lex, how = "proportional")[, -1]))
   # expect_warning(compute_sentiment(vcorp, lex, how = "proportional"))
   expect_error(compute_sentiment(corpusLang, lex, how = "proportional"))
   expect_true("language" %in% colnames(quanteda::docvars(corpusLang)))
@@ -91,7 +92,6 @@ test_that("Agreement between sentiment scores across input objects", {
   expect_true(all.equal(sentimentListOriginal, sentimentList[1:11])) # compare with old sentiment scores
 })
 
-### TODO: s3 is wrong, also gives feature columns...
 sentimentSentenceList <- list(
   s1 = compute_sentiment(quanteda::texts(corpus), lexClust, how = "counts", do.sentence = TRUE),
   s2 = compute_sentiment(quanteda::corpus(usnews[1:250, "texts"]),
@@ -102,11 +102,14 @@ sentimentSentenceList <- list(
   s5 = compute_sentiment(corpusLang, lexiconsLang, how = "proportional", do.sentence = TRUE)
 )
 
-test_that("Agreement between sentiment scores on sentence level across input objects", {
+test_that("Agreement between sentiment scores on sentence-level across input objects", {
   expect_true(all(unlist(lapply(sentimentSentenceList, function(s) nrow(s) == 2658))))
-  expect_true(all(unlist(lapply(sentimentSentenceList[1:4], function(s) all(s$word_count == sentimentSentenceList$s1$word_count)))))
-  expect_true(all(unlist(lapply(sentimentSentenceList, function(s) sum(s$word_count) == sum(sentimentSentenceList$s1$word_count)))))
-  expect_true(all(c("GI_en", "LM_en", "HENRY_en") %in% colnames(compute_sentiment(scorp[3], lexClust, how = "proportional", do.sentence = TRUE)) ))
+  expect_true(all(unlist(lapply(sentimentSentenceList[1:4], function(s)
+    all(s$word_count == sentimentSentenceList$s1$word_count)))))
+  expect_true(all(unlist(lapply(sentimentSentenceList, function(s)
+    sum(s$word_count) == sum(sentimentSentenceList$s1$word_count)))))
+  expect_true(all(c("GI_en", "LM_en", "HENRY_en") %in%
+                    colnames(compute_sentiment(scorp[3], lexClust, how = "counts", do.sentence = TRUE)) ))
   # expect_warning(compute_sentiment(vcorp, lexClust, how = "proportional", do.sentence = TRUE))
 })
 
@@ -134,14 +137,14 @@ test_that("Correct or failed conversion to a sentiment object", {
 sB <- sA
 sB$id <- paste0("idNew", 1:nrow(sB))
 test_that("Correct binding of several sentiment objects", {
+  expect_true(inherits(merge(sentimentList$s1, sentimentList$s2), "data.table"))
   expect_true(nrow(merge(sA, sB, sA)) == (2 * nrow(sA)))
   expect_true(ncol(merge(sentimentList$s7, sentimentList$s11)) == ncol(sentimentList$s7))
-  expect_error(merge(sentimentList$s1, sentimentList$s2))
 })
 
 # sentiment by sentence
 sentiment <- compute_sentiment(corpus, lexClust, how = "squareRootCounts", do.sentence = TRUE)
-sentimentAgg <- aggregate_sentences(sentiment)
+sentimentAgg <- aggregate(sentiment, ctr_agg(lag = 7), do.full = FALSE)
 wc <- cbind(sentimentAgg[, "word_count"], sentimentList$s1[, "word_count"])
 test_that("Check word count after aggregation", {
   expect_true(all.equal(wc[, 1], wc[, 2]))

@@ -40,6 +40,13 @@ l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")])
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 sm <- sento_measures(corpusSample, l, ctr)
 
+# three specified indices in required list format
+three <- as.list(stringi::stri_split(
+  c("LM_en--economy--linear",
+    "HENRY_en--wsj--equal_weight",
+    "HENRY_en--wapo--equal_weight"), regex = "--")
+)
+
 # different subsets
 sub1 <- subset(sm, HENRY_en--economy--equal_weight >= 0.01)
 sub2 <- subset(sm, date \%in\% get_dates(sm)[3:12])
@@ -51,12 +58,14 @@ sel1 <- subset(sm, select = "equal_weight")
 sel2 <- subset(sm, select = c("equal_weight", "linear"))
 sel3 <- subset(sm, select = c("linear", "LM_en"))
 sel4 <- subset(sm, select = list(c("linear", "wsj"), c("linear", "economy")))
+sel5 <- subset(sm, select = three)
 
 # different deletions
 del1 <- subset(sm, delete = "equal_weight")
 del2 <- subset(sm, delete = c("linear", "LM_en"))
 del3 <- subset(sm, delete = list(c("linear", "wsj"), c("linear", "economy")))
 del4 <- subset(sm, delete = c("equal_weight", "linear")) # warning
+del5 <- subset(sm, delete = three)
 
 }
 \author{
