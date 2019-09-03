@@ -5,6 +5,7 @@ corpus_summary_ui <- function(id) {
 }
 
 corpus_summary_server <- function(input, output, session, corpus) {
+  ns <- session$ns
 
   myvals <- reactiveValues(
     frequency = "day"
@@ -18,7 +19,8 @@ corpus_summary_server <- function(input, output, session, corpus) {
   output$summaryStatsTable <- renderDataTable({
     tokeep <- which(sapply(corpusSummary()$stats, is.numeric))
     cols <- colnames(corpusSummary()$stats[, tokeep, with = FALSE])
-    DT::datatable(corpusSummary()$stats, options = list(searching = FALSE)) %>% formatRound(columns = cols, digits = 0)
+    DT::datatable(corpusSummary()$stats, options = list(searching = FALSE)) %>%
+      formatRound(columns = cols, digits = 0)
   }, server = FALSE)
 
   output$downloadCorpusSummary <- downloadHandler(
@@ -38,7 +40,7 @@ corpus_summary_server <- function(input, output, session, corpus) {
   })
 
   output$docPlot <- renderPlot({
-      corpusSummary()$plots$doc_plot
+    corpusSummary()$plots$doc_plot
   })
 
   observeEvent(input$selectSummaryFrequency, {
@@ -53,8 +55,8 @@ corpus_summary_server <- function(input, output, session, corpus) {
       tags$div(
         style = "margin-bottom: 15px",
         selectizeInput(
-          inputId = session$ns("selectSummaryFrequency"),
-          label = "Select the frequency of the summary",
+          inputId = ns("selectSummaryFrequency"),
+          label = "Select frequency",
           choices = c("day", "week", "month", "year"),
           selected = "day",
           multiple = FALSE
@@ -65,23 +67,24 @@ corpus_summary_server <- function(input, output, session, corpus) {
         tabPanel(
           style = "margin: 15px",
           title = "Documents",
-          plotOutput(session$ns("docPlot")) %>% withSpinner(color = "#0dc5c1")
+          plotOutput(ns("docPlot")) %>% withSpinner(color = "#0dc5c1")
         ),
         tabPanel(
           style = "margin: 15px",
           title = "Tokens",
-          plotOutput(session$ns("tokenPlot")) %>% withSpinner(color = "#0dc5c1")
+          plotOutput(ns("tokenPlot")) %>% withSpinner(color = "#0dc5c1")
         ),
         tabPanel(
           style = "margin: 15px",
           title = "Features",
-          plotOutput(session$ns("featurePlot")) %>% withSpinner(color = "#0dc5c1")
+          plotOutput(ns("featurePlot")) %>% withSpinner(color = "#0dc5c1")
         ),
         tabPanel(
           style = "margin: 15px",
-          title = "Stats",
-          dataTableOutput(session$ns('summaryStatsTable')) %>% withSpinner(color = "#0dc5c1"),
-          downloadButton(session$ns("downloadCorpusSummary"), "Download corpus statistics")
+          title = "Statistics",
+          div(dataTableOutput(ns("summaryStatsTable")) %>%
+            withSpinner(color = "#0dc5c1"), style = "font-size:80%"),
+          downloadButton(ns("downloadCorpusSummary"), "Download corpus statistics")
         )
       )
     )
@@ -91,6 +94,5 @@ corpus_summary_server <- function(input, output, session, corpus) {
   }
 
   })
-
 }
 

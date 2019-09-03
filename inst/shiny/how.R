@@ -1,7 +1,6 @@
 
 how_ui <- function(id) {
   ns <- NS(id)
-
   tags$table(
     id = "inputs-table",
     style = "width: 100%",
@@ -19,10 +18,10 @@ how_ui <- function(id) {
       )
     )
   )
-
 }
 
 how_server <- function(input, output, session) {
+  ns <- session$ns
 
   myvals <- reactiveValues(
     selected = NULL,
@@ -31,7 +30,7 @@ how_server <- function(input, output, session) {
 
   output$selectHowUI <- renderUI({
     selectInput(
-      inputId =session$ns("selectHow"),
+      inputId = ns("selectHow"),
       label = "Select within-document aggregation",
       choices = myvals$choices,
       selected = myvals$selected,

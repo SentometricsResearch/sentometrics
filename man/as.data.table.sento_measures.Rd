@@ -4,11 +4,11 @@
 \alias{as.data.table.sento_measures}
 \title{Get the sentiment measures}
 \usage{
-\method{as.data.table}{sento_measures}(sento_measures,
-  keep.rownames = FALSE, format = "wide", ...)
+\method{as.data.table}{sento_measures}(x, keep.rownames = FALSE,
+  format = "wide", ...)
 }
 \arguments{
-\item{sento_measures}{a \code{sento_measures} object created using \code{\link{sento_measures}}.}
+\item{x}{a \code{sento_measures} object created using \code{\link{sento_measures}}.}
 
 \item{keep.rownames}{see \code{\link{as.data.table}}.}
 

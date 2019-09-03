@@ -36,15 +36,21 @@ load_corpus_ui <- function(id) {
 
 load_corpus_server <- function(input, output, session) {
 
-  corpusFile <- reactiveVal(usnews)
+  corpusFile <- reactiveVal(as.data.table(usnews))
 
   observeEvent(input$corpusUpload, ignoreNULL = TRUE, ignoreInit = TRUE, {
 
-    df <- read.csv(input$corpusUpload$datapath,
-                   header = TRUE,
-                   sep = ";",
-                   quote = '"',
-                   fileEncoding = "UTF-8")
+    df <- as.data.table(
+      read.csv(input$corpusUpload$datapath,
+               header = TRUE,
+               sep = ";",
+               quote = '"',
+               fileEncoding = "UTF-8",
+               stringsAsFactors = FALSE)
+    )
+
+    w <- match(c("id", "date", "texts"), names(df), nomatch = 0)
+    setcolorder(df, colnames(df)[w])
 
     if ("texts" %in% colnames(df)) {
       corpusFile(df)
@@ -59,9 +65,10 @@ load_corpus_server <- function(input, output, session) {
   observeEvent(input$corpusHelpButton, {
     showModal(modalDialog(
       title = "Upload a corpus",
-      "The .csv file should at a very minimun contain a header named 'texts'. However, it is recommended to
-      have an 'id' and 'date' column so a sento_corpus can be created. The file can also contain additional
-      columns for (numeric) features. Use ';' for the separation of columns in the file."
+      "The .csv file should at a very minimun contain a header named 'texts'. However, it is recommended
+      to also have an 'id' and a properly formatted 'date' column so a sento_corpus can be created. The
+      file can also contain additional columns for (numeric) features. Use ';' for the separation of
+      columns in the file."
     ))
   })
 
@@ -71,7 +78,7 @@ load_corpus_server <- function(input, output, session) {
 render_corpus_ui <- function(id) {
   ns <- NS(id)
   tagList(
-    DT::dataTableOutput(ns("corpus_table"))
+    div(DT::dataTableOutput(ns("corpus_table")), style = "font-size:80%")
   )
 }
 
@@ -83,12 +90,12 @@ render_corpus_server <- function(input, output, session, corpusFile) {
 
   output$corpus_table <- DT::renderDataTable({
 
-    corp <- data.table::as.data.table(corpusFile())
+    corp <- corpusFile()
     cols <- colnames(corp[, sapply(corp,is.numeric), with = FALSE])
 
     DT::datatable(corp, options = list(
-      pageLength = 5,
-      lengthMenu = c( 5, 10, 15, 20),
+      pageLength = 10,
+      lengthMenu = c(5, 10, 15, 20),
       columnDefs = list(list(
         targets = colNumTexts(),
         render = JS(
@@ -105,16 +112,16 @@ render_corpus_server <- function(input, output, session, corpusFile) {
 }
 
 create_corpus_server <- function(input, output, session, corpusFile) {
-
   corpusData <- reactive({
     df <- corpusFile()
     if (all(c("texts", "id", "date") %in% colnames(df))) {
+      df$id <- as.character(df$id)
+      df$date <- as.character(df$date)
       df$texts <- as.character(df$texts)
       corp <- sentometrics::sento_corpus(df)
     } else {
       corp <- as.character(df$texts)
     }
-
   })
 }
 

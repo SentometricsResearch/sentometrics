@@ -58,7 +58,7 @@ corp5 <- as.sento_corpus(tmVCdf)
 
 # conversion from a tm VCorpus corpus (DirSource)
 tmVCdir <- tm::VCorpus(tm::DirSource(reuters),
-                       list(reader = readReut21578XMLasPlain))
+                       list(reader = tm::readReut21578XMLasPlain))
 corp6 <- as.sento_corpus(tmVCdir, dates[1:length(tmVCdir)])
 
 }

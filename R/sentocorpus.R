@@ -300,11 +300,11 @@ add_features <- function(corpus, featuresdf = NULL, keywords = NULL, do.binary =
 #'
 #' @author Jeroen Van Pelt, Samuel Borms, Andres Algaba
 #'
-#' @description Summarizes the sento_corpus object and returns insights about features and tokens over time.
+#' @description Summarizes the \code{sento_corpus} object and returns insights about features and tokens over time.
 #'
-#' @details This function summarizes the sento_corpus object by generating statistics about features and tokens over
-#' time. The insights can be narrowed down to a chosen set of metadata features. The same tokenizer as in the sentiment
-#' calculation in \code{\link{compute_sentiment}} is used.
+#' @details This function summarizes the \code{sento_corpus} object by generating statistics about features and tokens over
+#' time. The insights can be narrowed down to a chosen set of metadata features. The same tokenization as in the
+#' sentiment calculation in \code{\link{compute_sentiment}} is used.
 #'
 #' @param x is a \code{sento_corpus} object created with \code{\link{sento_corpus}}
 #' @param by a single \code{character} vector to specify the frequency time interval over which the statistics
@@ -504,7 +504,7 @@ to_sento_corpus_tm <- function(x, dates, do.clean, texts, hasLocalDate = FALSE) 
 #'
 #' # conversion from a tm VCorpus corpus (DirSource)
 #' tmVCdir <- tm::VCorpus(tm::DirSource(reuters),
-#'                        list(reader = readReut21578XMLasPlain))
+#'                        list(reader = tm::readReut21578XMLasPlain))
 #' corp6 <- as.sento_corpus(tmVCdir, dates[1:length(tmVCdir)])
 #'
 #' @export

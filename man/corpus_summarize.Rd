@@ -21,12 +21,12 @@ number of tokens and the number of texts per features for each date.}
 \item{plots}{a \code{list} with three plots representing the above statistics.}
 }
 \description{
-Summarizes the sento_corpus object and returns insights about features and tokens over time.
+Summarizes the \code{sento_corpus} object and returns insights about features and tokens over time.
 }
 \details{
-This function summarizes the sento_corpus object by generating statistics about features and tokens over
-time. The insights can be narrowed down to a chosen set of metadata features. The same tokenizer as in the sentiment
-calculation in \code{\link{compute_sentiment}} is used.
+This function summarizes the \code{sento_corpus} object by generating statistics about features and tokens over
+time. The insights can be narrowed down to a chosen set of metadata features. The same tokenization as in the
+sentiment calculation in \code{\link{compute_sentiment}} is used.
 }
 \examples{
 data("usnews", package = "sentometrics")
