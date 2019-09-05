@@ -28,7 +28,7 @@ tokenize_texts <- function(x, tokens = NULL, type = "word") { # x embeds a chara
   tok
 }
 
-compute_sentiment_lexicons <- function(x, tokens, dv, lexicons, how, nCore = 1, do.sentence) {
+compute_sentiment_lexicons <- function(x, tokens, dv, lexicons, how, do.sentence, nCore = 1) {
   threads <- min(RcppParallel::defaultNumThreads(), nCore)
   RcppParallel::setThreadOptions(numThreads = threads)
   if (is.character(x)) x <- quanteda::corpus(x)
@@ -60,7 +60,7 @@ compute_sentiment_lexicons <- function(x, tokens, dv, lexicons, how, nCore = 1, 
 }
 
 compute_sentiment_multiple_languages <- function(x, lexicons, languages, features, how,
-                                                 tokens = NULL, nCore = 1, do.sentence = FALSE) {
+                                                 tokens = NULL, do.sentence = FALSE, nCore = 1) {
   ids <- quanteda::docnames(x) # original ids to keep same order in output
 
   # split corpus by language
@@ -76,7 +76,7 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
     if (!(l %in% names(lexicons))) {
       stop(paste0("No lexicon found for language: ", l))
     }
-    s <- compute_sentiment(corpus, lexicons[[l]], how, tokens[idxs[[l]]], nCore, do.sentence)
+    s <- compute_sentiment(corpus, lexicons[[l]], how, tokens[idxs[[l]]], do.sentence, nCore)
     sentByLang[[l]] <- s
   }
 
@@ -160,8 +160,8 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
 #' value of 1 (default) implies no parallelization. Parallelization is expected to improve speed of the sentiment
 #' computation only for sufficiently large corpora.
 #' @param do.sentence a \code{logical} to indicate whether the sentiment computation should be done on
-#' sentence-level rather than document-level. By default \code{do.sentence = TRUE}. The methodology defined
-#' in the \pkg{sentimentr} package is followed.
+#' sentence-level rather than document-level. By default \code{do.sentence = FALSE}. The methodology defined
+#' in the \pkg{sentimentr} package is followed to carry out the computation.
 #'
 #' @return If \code{x} is a \code{sento_corpus} object, a \code{sentiment} object, i.e., a \code{data.table} containing
 #' the sentiment scores \code{data.table} with an \code{"id"}, a \code{"date"} and a \code{"word_count"} column,
@@ -299,11 +299,11 @@ compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, 
     features <- names(quanteda::docvars(x))[-1] # drop date column
     dv <- setDT(quanteda::docvars(x)[c("date", features)])
     lexNames <- names(lexicons)[names(lexicons) != "valence"]
-    s <- compute_sentiment_lexicons(x, tokens, dv, lexicons, how, nCore, do.sentence)
+    s <- compute_sentiment_lexicons(x, tokens, dv, lexicons, how, do.sentence, nCore)
     s <- spread_sentiment_features(s, features, lexNames) # there is always at least one feature
   } else {
     features <- names(quanteda::docvars(x))[-c(1:2)] # drop date and language column
-    s <- compute_sentiment_multiple_languages(x, lexicons, languages, features, how, tokens, nCore, do.sentence)
+    s <- compute_sentiment_multiple_languages(x, lexicons, languages, features, how, tokens, do.sentence, nCore)
   }
 
   s <- s[order(date)] # order by date
@@ -326,7 +326,7 @@ compute_sentiment.sento_corpus <- compiler::cmpfun(.compute_sentiment.sento_corp
     dv <- setDT(quanteda::docvars(x)[features])
   }
 
-  s <- compute_sentiment_lexicons(x, tokens, dv, lexicons, how, nCore, do.sentence)
+  s <- compute_sentiment_lexicons(x, tokens, dv, lexicons, how, do.sentence, nCore)
 
   if (!is.null(features)) { # spread sentiment across numeric features if present and reformat
     lexNames <- names(lexicons)[names(lexicons) != "valence"]
@@ -342,7 +342,7 @@ compute_sentiment.corpus <- compiler::cmpfun(.compute_sentiment.corpus)
 
 .compute_sentiment.character <- function(x, lexicons, how, tokens = NULL, do.sentence = FALSE, nCore = 1) {
   nCore <- check_nCore(nCore)
-  s <- compute_sentiment_lexicons(x, tokens, dv = NULL, lexicons, how, nCore, do.sentence)
+  s <- compute_sentiment_lexicons(x, tokens, dv = NULL, lexicons, how, do.sentence, nCore)
 
   s
 }
@@ -353,7 +353,7 @@ compute_sentiment.character <- compiler::cmpfun(.compute_sentiment.character)
 
 .compute_sentiment.VCorpus <- function(x, lexicons, how, tokens = NULL, do.sentence = FALSE, nCore = 1) {
   compute_sentiment(unlist(lapply(x, "[", "content")),
-                    lexicons, how, tokens, nCore, do.sentence)
+                    lexicons, how, tokens, do.sentence, nCore)
 }
 
 #' @importFrom compiler cmpfun
@@ -362,7 +362,7 @@ compute_sentiment.VCorpus <- compiler::cmpfun(.compute_sentiment.VCorpus)
 
 .compute_sentiment.SimpleCorpus <- function(x, lexicons, how, tokens = NULL, do.sentence = FALSE, nCore = 1) {
   compute_sentiment(as.character(as.list(x)),
-                    lexicons, how, tokens, nCore, do.sentence)
+                    lexicons, how, tokens, do.sentence, nCore)
 }
 
 #' @importFrom compiler cmpfun
