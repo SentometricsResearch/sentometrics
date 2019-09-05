@@ -23,7 +23,7 @@ inline void update_primary_shifters_sentence(std::vector< int >& shifters,
 inline double compute_sentence_impact(std::vector<int>& shifters, int& position) {
   int n = shifters[0] % 2; // 0 if even number of negators, 1 if odd number of negators
   double wA = (1 - n) * shifters[1] * 0.8; // amplification impact
-  double wD =  (-n * shifters[1] - shifters[2]) * 0.8; // deamplification impact
+  double wD = (-n * shifters[1] - shifters[2]) * 0.8; // deamplification impact
 
   if (position != -1) {
     double b = (1 + shifters[3] * 0.25);

@@ -1,15 +1,15 @@
 
-#' Shiny App
+#' Shiny application for sentiment computation and visualisation
 #'
-#' @author Jeroen Van Pelt, Samuel Borms, Andres Algaba
+#' @author Jeroen Van Pelt, Samuel Borms
 #'
-#' @description Shiny app to visually set-up sentiment computation.
+#' @description A Shiny application to showcase many of the package's functionalities.
 #'
-#' @details The Shiny app is a visual wrapper around the \code{compute_sentiment} function. You can upload texts or a corpus in csv
-#' format, choose built-in lexicons/valence shifters or upload your own lexicons/valence shifters in csv format. All the available
-#' weighting schemas that are available in the sentometrics package can be selected and with one click on a button, you can calculate
-#' the sentiment. Once calculated, the sentiment can be calculated as a CSV file. Additionally, there is some functionality coming
-#' from the \code{corpus_summarize} function to gain insights in the corpus that you have uploaded.
+#' @details This Shiny application demonstrates mainly the \code{compute_sentiment}, \code{corpus_summarize} and
+#' \code{aggregate.sentiment} functions to gain insights in an uploaded corpus. The corpus should be uploaded in
+#' .csv format (by default the \code{\link{usnews}} dataset is displayed). Lexicons and valence shifters can
+#' be chosen from the built-in options or uploaded, and the weighting schemes are those available in the package.
+#' All calculated values and statistics can be downloaded as a .csv file also.
 #'
 #' @export
 sento_app <- function() {

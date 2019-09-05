@@ -5,7 +5,7 @@
 \title{Compute document-level sentiment across features and lexicons}
 \usage{
 compute_sentiment(x, lexicons, how = "proportional", tokens = NULL,
-  nCore = 1, do.sentence = FALSE)
+  do.sentence = FALSE, nCore = 1)
 }
 \arguments{
 \item{x}{either a \code{sento_corpus} object created with \code{\link{sento_corpus}}, a \pkg{quanteda}
@@ -26,14 +26,14 @@ a \code{list} of tokenized sentences. This allows to specify your own tokenizati
 constructed from (the texts from) the \code{x} argument, are unigrams, and preferably set to lowercase, otherwise, results
 may be spurious and errors could occur. By default set to \code{NULL}.}
 
+\item{do.sentence}{a \code{logical} to indicate whether the sentiment computation should be done on
+sentence-level rather than document-level. By default \code{do.sentence = TRUE}. The methodology defined
+in the \pkg{sentimentr} package is followed.}
+
 \item{nCore}{a positive \code{numeric} that will be passed on to the \code{numThreads} argument of the
 \code{\link[RcppParallel]{setThreadOptions}} function, to parallelize the sentiment computation across texts. A
 value of 1 (default) implies no parallelization. Parallelization is expected to improve speed of the sentiment
 computation only for sufficiently large corpora.}
-
-\item{do.sentence}{a \code{logical} to indicate whether the sentiment computation should be done on
-sentence-level rather than document-level. By default \code{do.sentence = TRUE}. The methodology defined
-in the \pkg{sentimentr} package is followed.}
 }
 \value{
 If \code{x} is a \code{sento_corpus} object, a \code{sentiment} object, i.e., a \code{data.table} containing
@@ -85,24 +85,24 @@ the input either the unigrams, bigrams or clusters approach is used. For the lat
 the default \pkg{sentimentr} package method, with a cluster of five words before and two words after the polarized
 word. If there are commas around the polarized word, the cluster is limited (extended) to the words after
 the previous comma and before the next comma. Adversative conjunctions (\eqn{adv}, \code{t = 4})
-are accounted for here. If the value \eqn{(1 + 0.25adv)} is greater than 1, it is added to the overall
-amplification weight, if smaller, it is subtracted from the total deamplification weight.
+are accounted for here. If the value \eqn{1 + 0.25adv} is greater (resp. smaller) than 1, it is added to
+(resp. substracted from) the total amplification weight.
 
 The \code{how = "proportionalPol"} option divides each document's sentiment
 score by the number of detected polarized words (counting words that appear multiple times by their frequency), instead
 of the total number of words which the \code{how = "proportional"} option gives. The \code{how = "counts"} option
 does no normalization. The \code{squareRootCounts} divides the sentiment by the square root of the number of tokens in each text.
-The \code{how = "UShaped"} option, gives a higher weight to words at the beginning and end of the texts.
+The \code{how = "UShaped"} option gives a higher weight to words at the beginning and end of the texts.
 The \code{how = "invertedUShaped"} option gives a lower weight to words at the beginning
 and the end of the texts. The \code{how = "exponential"} option gives gradually more weight the later the word appears in the text.
-The \code{ how = "invertedExponential"} option gives gradually less weight, the later the words appears in the text. The \code{
+The \code{ how = "invertedExponential"} option gives gradually less weight the later the words appears in the text. The \code{
 how = "TF"} option gives a weight proportional to the number of times a word appears in a text. The \code{how = "logarithmicTF"} option
-gives the same weight as \code{"TF"} but logarithmically scaled. The \code{how = "augmentedTF"} option can be used to prevent
-a bias towards longer documents. The weight is determined by dividing the raw frequency of a token by the raw frequency
-of the most occurring term in the document. The \code{how = "IDF"} option uses the logarithm of the division of the raw frequency of a word by the number of texts
-in which the word appears. By doing this, words appearing in multiple texts get a lower weight. The \code{how = "TFIDF"},
-\code{how = "logarithmicTFIDF"}, \code{how = "augmentedTFIDF"} options use the same weights as their \code{IDF}-variant
-but then multiplied with the \code{how = "IDF"} option. See the vignette for more details.
+gives the same weight as \code{"TF"} but logarithmically scaled. The \code{how = "augmentedTF"} option can
+be used to prevent a bias towards longer documents. The weight is determined by dividing the raw frequency of a token by the raw frequency
+of the most occurring term in the document. The \code{how = "IDF"} option uses the logarithm of the division of the raw frequency of
+a word by the number of texts in which the word appears. By doing this, words appearing in multiple texts get a lower weight. The
+\code{how = "TFIDF"}, \code{how = "logarithmicTFIDF"} and \code{how = "augmentedTFIDF"} options use the same weights as their
+\code{IDF}-variant but then multiplied with the \code{how = "IDF"} option. See the vignette for more details.
 }
 
 \examples{

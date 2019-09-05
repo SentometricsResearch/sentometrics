@@ -3,43 +3,9 @@ You collected a large number of texts and think it is a good idea to summarize y
 
 ## The R package **sentometrics**: What?
 
-The **`sentometrics`** package is **an integrated framework for textual sentiment time series aggregation and prediction**. It accounts for the intrinsic challenge that, for a given text, sentiment can be computed in many different ways, as well as the large number of possibilities to pool sentiment across texts and time. This additional layer of manipulation does not exist in standard text mining and time series analysis packages. The package also provides an interface to econometrically model the impact of sentiment in texts on a given variable, as part of one coherent workflow. The package therefore integrates the fast _qualification_ of sentiment from texts, the _aggregation_ into different sentiment measures and the optimized _prediction_ based on these measures.
+The **`sentometrics`** package is **an integrated framework for textual sentiment time series aggregation and prediction**. It accounts for the intrinsic challenge that, for a given text, sentiment can be computed in many different ways, as well as the large number of possibilities to pool sentiment across texts and time. This additional layer of manipulation does not exist in standard text mining and time series analysis packages. The package also provides an interface to econometrically model the impact of sentiment in texts on a given variable, as part of one coherent workflow. The package therefore integrates the fast _quantification_ of sentiment from texts, the _aggregation_ into different sentiment measures and the optimized _prediction_ based on these measures.
 
-## Typical workflow
-
-Below represent the typical **`sentometrics`** package workflow, and the associated output objects and functions. The steps are generally carried out linearly, but not necessarily so. For example, the model information from steps 4 and 5 can be exploited to further merge the sentiment measures in step 3. This serves as a broad taxonomy of what can be done and with which functions.
-
-**Step 1**: Acquire and pre--process a selection of texts and generate relevant features
-
-Functions: `sento_corpus()`, `add_features()`, and `to_sentocorpus()`. 
-
-Outputs a _`sentocorpus`_ object.
-
-**Step 2**: Choose lexicons and compute document--level textual sentiment
-
-Functions: `sento_lexicons()`, `compute_sentiment()`, `to_sentiment()`, `sentiment_bind()` and `peakdocs()`.
-
-Outputs a _`sentolexicons`_ object, and a _`sentiment`_ object or a sentiment scores `data.table`.
-
-**Step 3**: Aggregate the sentiment into multiple textual sentiment time series
-
-Functions: `ctr_agg()`, `sento_measures()`, `plot()`, `aggregate()`, `peakdates()`, `diff()`, `scale()`, and `summary()`.
-
-A bunch of functions to manipulate the sentiment measures are available (`measures_merge()`, `measures_global()`, `measures_subset()`, `measures_select()`, `measures_delete()`, and `measures_fill()`), as well as a number of convenient extractor functions (`nobs()`, `nmeasures()`, `get_dimensions()`, `get_dates()` and `get_measures()`). Make use of them to facilitate your analysis!
-
-Outputs a _`sentomeasures`_ object.
-
-**Step 4**: Calibrate (sparse) regression model and perform (out--of--sample) predictions
-
-Functions: `ctr_model()`, and `sento_model()`.
-
-Outputs a _`sentomodel`_ or a _`sentomodeliter`_ object.
-
-**Step 5**: Evaluate prediction performance and retrieve sentiment attributions
-
-Functions: `predict()`, `attributions()` (which outputs a _`attributions`_ object), `get_loss_data()`, `summary()`, and `plot()`.
-
-## For you to read
+### For you to read
 
 Our [vignette](https://ssrn.com/abstract=3067734) explains the ins and outs of the software package, and has an accompanying code example (see the `run_vignette.R` script under the _/examples_ folder on our GitHub repository). The complete documentation can be found on CRAN's [sentometrics](https://CRAN.R-project.org/package=sentometrics) page. 
 
@@ -63,7 +29,13 @@ When installed, you are ready to load the package...
 library("sentometrics")
 ```
 
-... and have some fun!
+... and have some fun! Maybe start with the Shiny application that displays many of the package's functionalities?
+
+```R
+sento_app()
+```
+
+Enjoy!
 
 ## Media
 

@@ -40,7 +40,7 @@ lexiconsWrong <- list(en = lEn, frr = lFr)
 
 ### tests from here ###
 
-load(system.file("extdata", "test_data.rda", package = "sentometrics"))
+test_data <- readRDS(system.file("extdata", "test_data.rds", package = "sentometrics")) # benchmark sentiment scores
 
 sentimentList <- list(
   s1 = compute_sentiment(quanteda::texts(corpus), lex, how = "counts"),
@@ -89,7 +89,7 @@ test_that("Agreement between sentiment scores on document-level across input obj
   expect_error(compute_sentiment(corpusLang, lex, how = "proportional"))
   expect_true("language" %in% colnames(quanteda::docvars(corpusLang)))
   expect_error(compute_sentiment(corpusLang, lexiconsWrong, how = "proportional"))
-  expect_true(all.equal(sentimentListOriginal, sentimentList[1:11])) # compare with old sentiment scores
+  expect_true(all.equal(test_data, sentimentList[1:11])) # compare with old sentiment scores
 })
 
 sentimentSentenceList <- list(

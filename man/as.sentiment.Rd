@@ -7,11 +7,11 @@
 as.sentiment(s)
 }
 \arguments{
-\item{s}{a \code{data.table} that can be converted into a \code{sentiment} object. It should have at least an \code{"id"},
-a \code{"date"}, a \code{"word_count"} and one sentiment scores column. If other column names are provided with a
-separating \code{"--"}, the first part is considered the lexicon (or more generally, the sentiment computation
-method), and the second part the feature. For sentiment column names without any \code{"--"}, a \code{"dummyFeature"}
-component is added.}
+\item{s}{a \code{data.table} or \code{data.frame} that can be converted into a \code{sentiment} object. It
+should have at least an \code{"id"}, a \code{"date"}, a \code{"word_count"} and one sentiment scores column.
+If other column names are provided with a separating \code{"--"}, the first part is considered the lexicon
+(or more generally, the sentiment computation method), and the second part the feature. For sentiment column
+names without any \code{"--"}, a \code{"dummyFeature"} component is added.}
 }
 \value{
 A \code{sentiment} object.
@@ -31,7 +31,9 @@ ids <- paste0("id", 1:200)
 dates <- sample(seq(as.Date("2015-01-01"), as.Date("2018-01-01"), by = "day"), 200, TRUE)
 word_count <- sample(150:850, 200, replace = TRUE)
 sent <- matrix(rnorm(200 * 8), nrow =  200)
-s1 <- s2 <- s3 <- data.table(id = ids, date = dates, word_count = word_count, sent)
+s1 <- s2 <- data.table(id = ids, date = dates, word_count = word_count, sent)
+s3 <- data.frame(id = ids, date = dates, word_count = word_count, sent,
+                 stringsAsFactors = FALSE)
 s4 <- compute_sentiment(usnews$texts[201:400],
                         sento_lexicons(list_lexicons["GI_en"]),
                         "counts", do.sentence = TRUE)

@@ -1,7 +1,7 @@
 
-## submission (version 0.6) [xx/08/2019]
+## submission (version 0.7) [xx/09/2019]
 
-**new**: ...
+**new**: increased the flexibility in the sentiment calculation (sentence-level calculation and more weighting schemes), simplified certain functionalities to allow for a more R-based workflow, added a Shiny application
 
 <!--- ## submission (version 0.5.6) [17/12/2018]
 

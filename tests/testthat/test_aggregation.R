@@ -16,11 +16,12 @@ lex <- sento_lexicons(list_lexicons[c("GI_en", "LM_en")])
 ### tests from here ###
 
 ctr1 <- ctr_agg(howWithin = "proportionalPol", howDocs = "equal_weight", howTime = "almon", by = "month",
-               lag = 5, ordersAlm = 1:3, do.inverseAlm = TRUE)
+                lag = 5, ordersAlm = 1:3, do.inverseAlm = TRUE)
 sentMeas1 <- sento_measures(corpus, lex, ctr1)
 
-ctr2 <- ctr_agg(howWithin = "counts", howDocs = "proportional", howTime = c("equal_weight", "linear", "own"), by = "year",
-               lag = 2, weights = data.frame(q1 = c(0.25, 0.75), q3 = c(0.75, 0.25)), do.ignoreZeros = FALSE)
+ctr2 <- ctr_agg(howWithin = "counts", howDocs = "proportional", howTime = c("equal_weight", "linear", "own"),
+                by = "year", lag = 2, weights = data.frame(q1 = c(0.25, 0.75), q3 = c(0.75, 0.25)),
+                do.ignoreZeros = FALSE, do.sentence = TRUE)
 sentMeas2 <- sento_measures(corpus, lex, ctr2)
 
 ctr3 <- ctr_agg(howWithin = "counts", howDocs = "proportional", howTime = c("equal_weight", "linear", "own"), by = "year",

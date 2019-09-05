@@ -5,10 +5,11 @@
 \title{Set up control for aggregation into sentiment measures}
 \usage{
 ctr_agg(howWithin = "proportional", howDocs = "equal_weight",
-  howTime = "equal_weight", do.ignoreZeros = TRUE, by = "day",
-  lag = 1, fill = "zero", alphaExpDocs = 0.1, alphasExp = seq(0.1,
-  0.5, by = 0.1), ordersAlm = 1:3, do.inverseAlm = TRUE, aBeta = 1:4,
-  bBeta = 1:4, weights = NULL, tokens = NULL, nCore = 1)
+  howTime = "equal_weight", do.sentence = FALSE,
+  do.ignoreZeros = TRUE, by = "day", lag = 1, fill = "zero",
+  alphaExpDocs = 0.1, alphasExp = seq(0.1, 0.5, by = 0.1),
+  ordersAlm = 1:3, do.inverseAlm = TRUE, aBeta = 1:4, bBeta = 1:4,
+  weights = NULL, tokens = NULL, nCore = 1)
 }
 \arguments{
 \item{howWithin}{a single \code{character} vector defining how aggregation within documents will be performed. Should
@@ -21,6 +22,8 @@ can occur; see \code{\link{get_hows}()$docs}.}
 
 \item{howTime}{a \code{character} vector defining how aggregation across dates will be performed. More than one choice
 is possible. For available options on how this aggregation can occur; see \code{\link{get_hows}()$time}.}
+
+\item{do.sentence}{see \code{\link{compute_sentiment}}.}
 
 \item{do.ignoreZeros}{a \code{logical} indicating whether zero sentiment values have to be ignored in the determination of
 the document (and/or sentence) weights while aggregating across documents (and/or sentences). By default
@@ -40,7 +43,7 @@ sentiment values across the continuum of dates considered are added. This impact
 applying the \code{\link{measures_fill}} function before aggregating, except if \code{fill = "none"}. By default equal to
 \code{"zero"}, which sets the scores (and thus also the weights) of the added dates to zero in the time aggregation.}
 
-\item{alphaExpDocs}{a single \code{integer} vector. A weighting smoothing factor, used if
+\item{alphaExpDocs}{a single \code{integer} vector. A weighting smoothing factor, used if \cr
 \code{"exponential" \%in\% howDocs} or \code{"inverseExponential" \%in\% howDocs}. Value should be between 0 and 1
 (both excluded); see \code{\link{weights_exponential}}.}
 
@@ -103,7 +106,8 @@ ctr2 <- ctr_agg(howWithin = "proportionalPol",
 # set up control function with one linear and two chosen Almon weighting schemes
 a <- weights_almon(n = 70, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE)
 ctr3 <- ctr_agg(howTime = c("linear", "own"), by = "year", lag = 70,
-                weights = data.frame(a1 = a[, 1], a2 = a[, 3]))
+                weights = data.frame(a1 = a[, 1], a2 = a[, 3]),
+                do.sentence = TRUE)
 
 }
 \seealso{
