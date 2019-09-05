@@ -163,7 +163,7 @@ check_agg_dimensions <- function(sento_measures, features = NULL, lexicons = NUL
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 #' sento_measures <- sento_measures(corpusSample, l, ctr)
 #'
-#' # aggregate into one global sentiment measure, with specified weighting for lexicons and features
+#' # aggregate into one global sentiment measure given a weighting for lexicons and features
 #' global <- measures_global(sento_measures,
 #'                           lexicons = c(0.40, 0.60),
 #'                           features = c(0.10, -0.20, 0.30, -1),

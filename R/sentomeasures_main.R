@@ -47,9 +47,10 @@
 #' equal to the desired \code{lag}.
 #' @param tokens see \code{\link{compute_sentiment}}.
 #' @param nCore see \code{\link{compute_sentiment}}.
-#' @param alphaExpDocs a single \code{integer} vector. A weighting smoothing factor, used if
+#' @param alphaExpDocs a single \code{integer} vector. A weighting smoothing factor, used if \cr
 #' \code{"exponential" \%in\% howDocs} or \code{"inverseExponential" \%in\% howDocs}. Value should be between 0 and 1
 #' (both excluded); see \code{\link{weights_exponential}}.
+#' @param do.sentence see \code{\link{compute_sentiment}}.
 #
 #' @return A \code{list} encapsulating the control parameters.
 #'
@@ -79,11 +80,12 @@
 #' # set up control function with one linear and two chosen Almon weighting schemes
 #' a <- weights_almon(n = 70, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE)
 #' ctr3 <- ctr_agg(howTime = c("linear", "own"), by = "year", lag = 70,
-#'                 weights = data.frame(a1 = a[, 1], a2 = a[, 3]))
+#'                 weights = data.frame(a1 = a[, 1], a2 = a[, 3]),
+#'                 do.sentence = TRUE)
 #'
 #' @export
 ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTime = "equal_weight",
-                    do.ignoreZeros = TRUE, by = "day", lag = 1, fill = "zero",
+                    do.sentence = FALSE, do.ignoreZeros = TRUE, by = "day", lag = 1, fill = "zero",
                     alphaExpDocs = 0.1, alphasExp = seq(0.1, 0.5, by = 0.1),
                     ordersAlm = 1:3, do.inverseAlm = TRUE, aBeta = 1:4, bBeta = 1:4, weights = NULL,
                     tokens = NULL, nCore = 1) {
@@ -148,14 +150,17 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
   if (!is.null(tokens) && !is.list(tokens)) {
     err <- c(err, "The 'tokens' argument, if not NULL, must be a list.")
   }
-  if(howDocs == "exponential" || howDocs =="inverseExponential"){
-    if(alphaExpDocs >= 1 || alphaExpDocs <= 0){
+  if (howDocs == "exponential" || howDocs =="inverseExponential") {
+    if (alphaExpDocs >= 1 || alphaExpDocs <= 0) {
       err <- c(err, "Alpha must be a number between 0 and 1 (both excluded).")
     }
   }
+  if (!is.logical(do.sentence)) {
+    err <- c(err, "Argument 'do.sentence' should be a logical.")
+  }
   if (!is.null(err)) stop("Wrong inputs. See below for specifics. \n", paste0(err, collapse = "\n"))
 
-  ctr <- list(within = list(howWithin = howWithin),
+  ctr <- list(within = list(howWithin = howWithin, do.sentence = do.sentence),
               docs = list(howDocs = howDocs,
                           weightingParam = list(alphaExpDocs = alphaExpDocs,
                                                 do.ignoreZeros = do.ignoreZeros)),
@@ -196,9 +201,10 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #' \item{time}{a \code{character} vector of the different time weighting schemes used.}
 #' \item{stats}{a \code{data.frame} with a series of elementary statistics (mean, standard deviation, maximum, minimum, and
 #' average correlation with all other measures) for each individual sentiment measure.}
-#' \item{sentiment}{the sentiment scores \code{data.table} with \code{"date"}, \code{"word_count"} and lexicon--feature
-#' sentiment scores columns. The \code{"date"} column has the dates converted at the frequency for
-#' across-document aggregation. All zeros are replaced by \code{NA} if \code{ctr$docs$weightingParam$do.ignoreZeros = TRUE}.}
+#' \item{sentiment}{the document-level sentiment scores \code{data.table} with \code{"date"},
+#' \code{"word_count"} and lexicon-feature sentiment scores columns. The \code{"date"} column has the
+#' dates converted at the frequency for across-document aggregation. All zeros are replaced by \code{NA}
+#' if \code{ctr$docs$weightingParam$do.ignoreZeros = TRUE}.}
 #' \item{attribWeights}{a \code{list} of document and time weights used in the \code{\link{attributions}} function.
 #' Serves further no direct purpose.}
 #' \item{ctr}{a \code{list} encapsulating the control parameters.}
@@ -228,8 +234,8 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #' @export
 sento_measures <- function(sento_corpus, lexicons, ctr) {
   check_class(sento_corpus, "sento_corpus")
-  sentiment <- compute_sentiment(sento_corpus, lexicons, how = ctr$within$howWithin,
-                                 tokens = ctr$tokens, nCore = ctr$nCore)
+  sentiment <- compute_sentiment(sento_corpus, lexicons, how = ctr$within$howWithin, tokens = ctr$tokens,
+                                 do.sentence = ctr$within$do.sentence, nCore = ctr$nCore)
   sento_measures <- aggregate(sentiment, ctr)
   return(sento_measures)
 }

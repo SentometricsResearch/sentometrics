@@ -122,24 +122,24 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
 #' the default \pkg{sentimentr} package method, with a cluster of five words before and two words after the polarized
 #' word. If there are commas around the polarized word, the cluster is limited (extended) to the words after
 #' the previous comma and before the next comma. Adversative conjunctions (\eqn{adv}, \code{t = 4})
-#' are accounted for here. If the value \eqn{(1 + 0.25adv)} is greater than 1, it is added to the overall
-#' amplification weight, if smaller, it is subtracted from the total deamplification weight.
+#' are accounted for here. If the value \eqn{1 + 0.25adv} is greater (resp. smaller) than 1, it is added to
+#' (resp. substracted from) the total amplification weight.
 #'
 #' The \code{how = "proportionalPol"} option divides each document's sentiment
 #' score by the number of detected polarized words (counting words that appear multiple times by their frequency), instead
 #' of the total number of words which the \code{how = "proportional"} option gives. The \code{how = "counts"} option
 #' does no normalization. The \code{squareRootCounts} divides the sentiment by the square root of the number of tokens in each text.
-#' The \code{how = "UShaped"} option, gives a higher weight to words at the beginning and end of the texts.
+#' The \code{how = "UShaped"} option gives a higher weight to words at the beginning and end of the texts.
 #' The \code{how = "invertedUShaped"} option gives a lower weight to words at the beginning
 #' and the end of the texts. The \code{how = "exponential"} option gives gradually more weight the later the word appears in the text.
-#' The \code{ how = "invertedExponential"} option gives gradually less weight, the later the words appears in the text. The \code{
+#' The \code{ how = "invertedExponential"} option gives gradually less weight the later the words appears in the text. The \code{
 #' how = "TF"} option gives a weight proportional to the number of times a word appears in a text. The \code{how = "logarithmicTF"} option
-#' gives the same weight as \code{"TF"} but logarithmically scaled. The \code{how = "augmentedTF"} option can be used to prevent
-#' a bias towards longer documents. The weight is determined by dividing the raw frequency of a token by the raw frequency
-#' of the most occurring term in the document. The \code{how = "IDF"} option uses the logarithm of the division of the raw frequency of a word by the number of texts
-#' in which the word appears. By doing this, words appearing in multiple texts get a lower weight. The \code{how = "TFIDF"},
-#' \code{how = "logarithmicTFIDF"}, \code{how = "augmentedTFIDF"} options use the same weights as their \code{IDF}-variant
-#' but then multiplied with the \code{how = "IDF"} option. See the vignette for more details.
+#' gives the same weight as \code{"TF"} but logarithmically scaled. The \code{how = "augmentedTF"} option can
+#' be used to prevent a bias towards longer documents. The weight is determined by dividing the raw frequency of a token by the raw frequency
+#' of the most occurring term in the document. The \code{how = "IDF"} option uses the logarithm of the division of the raw frequency of
+#' a word by the number of texts in which the word appears. By doing this, words appearing in multiple texts get a lower weight. The
+#' \code{how = "TFIDF"}, \code{how = "logarithmicTFIDF"} and \code{how = "augmentedTFIDF"} options use the same weights as their
+#' \code{IDF}-variant but then multiplied with the \code{how = "IDF"} option. See the vignette for more details.
 #'
 #' @param x either a \code{sento_corpus} object created with \code{\link{sento_corpus}}, a \pkg{quanteda}
 #' \code{\link[quanteda]{corpus}} object, a \pkg{tm} \code{\link[tm]{SimpleCorpus}} object, a \pkg{tm}
@@ -236,7 +236,7 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
 #'
 #' @importFrom compiler cmpfun
 #' @export
-compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, nCore = 1, do.sentence = FALSE) {
+compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, do.sentence = FALSE, nCore = 1) {
   if (!(how %in% get_hows()[["words"]]))
     stop("Please select an appropriate aggregation 'how'.")
   if (length(nCore) != 1 || !is.numeric(nCore))
@@ -291,7 +291,7 @@ compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, 
   UseMethod("compute_sentiment", x)
 }
 
-.compute_sentiment.sento_corpus <- function(x, lexicons, how, tokens = NULL, nCore = 1, do.sentence = FALSE) {
+.compute_sentiment.sento_corpus <- function(x, lexicons, how, tokens = NULL, do.sentence = FALSE, nCore = 1) {
   nCore <- check_nCore(nCore)
 
   languages <- tryCatch(unique(quanteda::docvars(x, field = "language")), error = function(e) NULL)
@@ -315,7 +315,7 @@ compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, 
 #' @export
 compute_sentiment.sento_corpus <- compiler::cmpfun(.compute_sentiment.sento_corpus)
 
-.compute_sentiment.corpus <- function(x, lexicons, how, tokens = NULL, nCore = 1, do.sentence = FALSE) {
+.compute_sentiment.corpus <- function(x, lexicons, how, tokens = NULL, do.sentence = FALSE, nCore = 1) {
   nCore <- check_nCore(nCore)
 
   if (ncol(quanteda::docvars(x)) == 0) {
@@ -340,7 +340,7 @@ compute_sentiment.sento_corpus <- compiler::cmpfun(.compute_sentiment.sento_corp
 #' @export
 compute_sentiment.corpus <- compiler::cmpfun(.compute_sentiment.corpus)
 
-.compute_sentiment.character <- function(x, lexicons, how, tokens = NULL, nCore = 1, do.sentence = FALSE) {
+.compute_sentiment.character <- function(x, lexicons, how, tokens = NULL, do.sentence = FALSE, nCore = 1) {
   nCore <- check_nCore(nCore)
   s <- compute_sentiment_lexicons(x, tokens, dv = NULL, lexicons, how, nCore, do.sentence)
 
@@ -351,7 +351,7 @@ compute_sentiment.corpus <- compiler::cmpfun(.compute_sentiment.corpus)
 #' @export
 compute_sentiment.character <- compiler::cmpfun(.compute_sentiment.character)
 
-.compute_sentiment.VCorpus <- function(x, lexicons, how, tokens = NULL, nCore = 1, do.sentence = FALSE) {
+.compute_sentiment.VCorpus <- function(x, lexicons, how, tokens = NULL, do.sentence = FALSE, nCore = 1) {
   compute_sentiment(unlist(lapply(x, "[", "content")),
                     lexicons, how, tokens, nCore, do.sentence)
 }
@@ -360,7 +360,7 @@ compute_sentiment.character <- compiler::cmpfun(.compute_sentiment.character)
 #' @export
 compute_sentiment.VCorpus <- compiler::cmpfun(.compute_sentiment.VCorpus)
 
-.compute_sentiment.SimpleCorpus <- function(x, lexicons, how, tokens = NULL, nCore = 1, do.sentence = FALSE) {
+.compute_sentiment.SimpleCorpus <- function(x, lexicons, how, tokens = NULL, do.sentence = FALSE, nCore = 1) {
   compute_sentiment(as.character(as.list(x)),
                     lexicons, how, tokens, nCore, do.sentence)
 }
@@ -508,11 +508,11 @@ peakdocs <- function(sentiment, n = 10, type = "both", do.average = FALSE) {
 #' for further aggregation with the \code{\link{aggregate.sentiment}} function. This allows to start from
 #' sentiment scores not necessarily computed with \code{\link{compute_sentiment}}.
 #'
-#' @param s a \code{data.table} that can be converted into a \code{sentiment} object. It should have at least an \code{"id"},
-#' a \code{"date"}, a \code{"word_count"} and one sentiment scores column. If other column names are provided with a
-#' separating \code{"--"}, the first part is considered the lexicon (or more generally, the sentiment computation
-#' method), and the second part the feature. For sentiment column names without any \code{"--"}, a \code{"dummyFeature"}
-#' component is added.
+#' @param s a \code{data.table} or \code{data.frame} that can be converted into a \code{sentiment} object. It
+#' should have at least an \code{"id"}, a \code{"date"}, a \code{"word_count"} and one sentiment scores column.
+#' If other column names are provided with a separating \code{"--"}, the first part is considered the lexicon
+#' (or more generally, the sentiment computation method), and the second part the feature. For sentiment column
+#' names without any \code{"--"}, a \code{"dummyFeature"} component is added.
 #'
 #' @return A \code{sentiment} object.
 #'
@@ -526,7 +526,9 @@ peakdocs <- function(sentiment, n = 10, type = "both", do.average = FALSE) {
 #' dates <- sample(seq(as.Date("2015-01-01"), as.Date("2018-01-01"), by = "day"), 200, TRUE)
 #' word_count <- sample(150:850, 200, replace = TRUE)
 #' sent <- matrix(rnorm(200 * 8), nrow =  200)
-#' s1 <- s2 <- s3 <- data.table(id = ids, date = dates, word_count = word_count, sent)
+#' s1 <- s2 <- data.table(id = ids, date = dates, word_count = word_count, sent)
+#' s3 <- data.frame(id = ids, date = dates, word_count = word_count, sent,
+#'                  stringsAsFactors = FALSE)
 #' s4 <- compute_sentiment(usnews$texts[201:400],
 #'                         sento_lexicons(list_lexicons["GI_en"]),
 #'                         "counts", do.sentence = TRUE)
@@ -552,6 +554,11 @@ peakdocs <- function(sentiment, n = 10, type = "both", do.average = FALSE) {
 #' @export
 as.sentiment <- function(s) {
   UseMethod("as.sentiment", s)
+}
+
+#' @export
+as.sentiment.data.frame <- function(s) {
+  as.sentiment(as.data.table(s))
 }
 
 #' @export

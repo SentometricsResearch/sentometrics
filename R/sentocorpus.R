@@ -319,8 +319,9 @@ add_features <- function(corpus, featuresdf = NULL, keywords = NULL, do.binary =
 #' @examples
 #' data("usnews", package = "sentometrics")
 #'
-#' # summary of corpus by day
 #' corpus <- sento_corpus(usnews)
+#'
+#' # summary of corpus by day
 #' summary1 <- corpus_summarize(corpus)
 #'
 #' # summary of corpus by month

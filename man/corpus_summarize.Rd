@@ -31,8 +31,9 @@ sentiment calculation in \code{\link{compute_sentiment}} is used.
 \examples{
 data("usnews", package = "sentometrics")
 
-# summary of corpus by day
 corpus <- sento_corpus(usnews)
+
+# summary of corpus by day
 summary1 <- corpus_summarize(corpus)
 
 # summary of corpus by month

@@ -21,9 +21,10 @@ A \code{sento_measures} object, which is a \code{list} containing:
 \item{time}{a \code{character} vector of the different time weighting schemes used.}
 \item{stats}{a \code{data.frame} with a series of elementary statistics (mean, standard deviation, maximum, minimum, and
 average correlation with all other measures) for each individual sentiment measure.}
-\item{sentiment}{the sentiment scores \code{data.table} with \code{"date"}, \code{"word_count"} and lexicon--feature
-sentiment scores columns. The \code{"date"} column has the dates converted at the frequency for
-across-document aggregation. All zeros are replaced by \code{NA} if \code{ctr$docs$weightingParam$do.ignoreZeros = TRUE}.}
+\item{sentiment}{the document-level sentiment scores \code{data.table} with \code{"date"},
+\code{"word_count"} and lexicon-feature sentiment scores columns. The \code{"date"} column has the
+dates converted at the frequency for across-document aggregation. All zeros are replaced by \code{NA}
+if \code{ctr$docs$weightingParam$do.ignoreZeros = TRUE}.}
 \item{attribWeights}{a \code{list} of document and time weights used in the \code{\link{attributions}} function.
 Serves further no direct purpose.}
 \item{ctr}{a \code{list} encapsulating the control parameters.}
