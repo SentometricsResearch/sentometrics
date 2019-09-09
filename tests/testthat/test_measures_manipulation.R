@@ -21,7 +21,7 @@ sentMeas <- sento_measures(corpus, lex, ctr)
 
 dims <- get_dimensions(sentMeas)
 
-# delete
+# deletion
 sentMeasDelete <- subset(sentMeas, delete = list("wsj", c("linear", "wapo"), "beta31"))
 test_that("Consistency of deletion through subset() function", {
   expect_false("wsj" %in% sentMeasDelete$features)
@@ -49,7 +49,7 @@ test_that("Consistency of measures_fill() function", {
   expect_length(sentMeasFill$attribWeights$W[[1]], 1000)
 })
 
-# merge
+# aggregate.sento_measures
 sentMeasMerge <- aggregate(
   sentMeas,
   features = list(ECO = c("economy", "noneconomy")),
@@ -72,7 +72,7 @@ test_that("Consistency of aggregate.sento_measures() function", {
   expect_length(sentMeasMerge$attribWeights$W[[1]], 1000)
 })
 
-# select
+# selection
 sentMeasSelect <- subset(sentMeas, select = list(c("wsj", "almon3", "LM_en"), c("wapo", "almon2_inv")))
 test_that("Consistency of selection through subset() function", {
   expect_false(all(dims$features %in% sentMeasSelect$features))
@@ -88,7 +88,7 @@ test_that("Consistency of selection through subset() function", {
   expect_length(sentMeasSelect$attribWeights$W[[1]], 1000)
 })
 
-# subset
+# subsetting
 sentMeasSubset <- subset(sentMeas, date > "2003-05-04" & GI_en--wsj--almon1_inv <= 0)
 test_that("Consistency of subsetting through subset() function", {
   expect_true(min(get_dates(sentMeasSubset)) >= "2003-05-04")

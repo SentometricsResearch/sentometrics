@@ -29,14 +29,16 @@ corpusLang <- sento_corpus(corpusdf = usnews[1:250, ])
 
 # lexicons creation
 data("list_lexicons")
-lex <- sento_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+lex <- sento_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")],
+                      list_valence_shifters[["en"]])
 # lexSimple <- sento_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")]) # same as lex[1:3]
 lexSplit <- sento_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")], do.split = TRUE)
-lexClust <- sento_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")], list_valence_shifters[["en"]][, c("x", "t")])
+lexClust <- sento_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")],
+                           list_valence_shifters[["en"]][, c("x", "t")])
 lEn <- sento_lexicons(list("HENRY_en" = list_lexicons$HENRY_en))
 lFr <- sento_lexicons(list("HENRY_fr" = list_lexicons$HENRY_en))
-lexiconsLang <- list(en = lEn, fr = lFr )
-lexiconsWrong <- list(en = lEn, frr = lFr)
+lexLang <- list(en = lEn, fr = lFr)
+lexWrong <- list(en = lEn, frr = lFr)
 
 ### tests from here ###
 
@@ -67,7 +69,7 @@ sentimentList <- list(
   s21 = compute_sentiment(corpus, lex, how = "TFIDF"),
   s22 = compute_sentiment(corpus, lex, how = "logarithmicTFIDF"),
   s23 = compute_sentiment(corpus, lex, how = "augmentedTFIDF"),
-  s24 = compute_sentiment(corpusLang, lexiconsLang, how = "squareRootCounts")
+  s24 = compute_sentiment(corpusLang, lexLang, how = "squareRootCounts")
 )
 
 # compute_sentiment
@@ -88,7 +90,7 @@ test_that("Agreement between sentiment scores on document-level across input obj
   # expect_warning(compute_sentiment(vcorp, lex, how = "proportional"))
   expect_error(compute_sentiment(corpusLang, lex, how = "proportional"))
   expect_true("language" %in% colnames(quanteda::docvars(corpusLang)))
-  expect_error(compute_sentiment(corpusLang, lexiconsWrong, how = "proportional"))
+  expect_error(compute_sentiment(corpusLang, lexWrong, how = "proportional"))
   expect_true(all.equal(test_data, sentimentList[1:11])) # compare with old sentiment scores
 })
 
@@ -98,8 +100,8 @@ sentimentSentenceList <- list(
                          lexClust, how = "counts", do.sentence = TRUE),
   s3 = compute_sentiment(quanteda::corpus(usnews[1:250, c("texts", "wsj", "economy")], text_field = "texts"),
                          lexClust, how = "counts", do.sentence = TRUE),
-  s4 = compute_sentiment(corpus, lexClust, how = "exponential", do.sentence = TRUE),
-  s5 = compute_sentiment(corpusLang, lexiconsLang, how = "proportional", do.sentence = TRUE)
+  s4 = compute_sentiment(corpus, lexClust, how = "squareRootCounts", do.sentence = TRUE),
+  s5 = compute_sentiment(corpusLang, lexLang, how = "proportional", do.sentence = TRUE)
 )
 
 test_that("Agreement between sentiment scores on sentence-level across input objects", {
@@ -140,13 +142,5 @@ test_that("Correct binding of several sentiment objects", {
   expect_true(inherits(merge(sentimentList$s1, sentimentList$s2), "data.table"))
   expect_true(nrow(merge(sA, sB, sA)) == (2 * nrow(sA)))
   expect_true(ncol(merge(sentimentList$s7, sentimentList$s11)) == ncol(sentimentList$s7))
-})
-
-# sentiment by sentence
-sentiment <- compute_sentiment(corpus, lexClust, how = "squareRootCounts", do.sentence = TRUE)
-sentimentAgg <- aggregate(sentiment, ctr_agg(lag = 7), do.full = FALSE)
-wc <- cbind(sentimentAgg[, "word_count"], sentimentList$s1[, "word_count"])
-test_that("Check word count after aggregation", {
-  expect_true(all.equal(wc[, 1], wc[, 2]))
 })
 
