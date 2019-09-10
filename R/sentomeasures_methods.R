@@ -139,8 +139,8 @@ nmeasures <- function(sento_measures) {
 #' @param ... not used.
 #'
 #' @return The number of rows (observations/data points) in \code{sento_measures[["measures"]]}.
-#'
-#' @keywords internal
+# #'
+# #' @keywords internal
 #'
 #' @importFrom stats nobs
 #' @export
