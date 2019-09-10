@@ -21,7 +21,6 @@ data("list_valence_shifters", package = "sentometrics")
 options(scipen = 999)
 options(shiny.maxRequestSize = 50*1024^2)
 
-# Define UI for application that draws a histogram
 ui <- fluidPage(
         theme = shinytheme("cerulean"),
     tags$head(
@@ -163,6 +162,5 @@ server <- function(input, output, session) {
     callModule(indices_server, "indices_ui", reactive(myvals$sento_measures))
 }
 
-# Run the application
 shinyApp(ui = ui, server = server)
 
