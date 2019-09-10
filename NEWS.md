@@ -1,10 +1,10 @@
 
 ## sentometrics 0.7.0
 
-- handled reverse dependency issue raised by quanteda developers regarding their new corpus object
-- renamed the class objects coming from any `sento_xyz()` function into the name of the function (e.g., the `sento_measures()` function now gives a `sento_measures` object instead of a `sentomeasures` object)
-- new functions: `measures_update()`, `subset.sento_measures()`, `as.sentiment()`, `as.sento_measures()`, `as.data.table.sentiment()`, `corpus_summarize()`, `sento_app()`?, and `aggregate.sento_measures()`, 
+- new functions: `measures_update()`, `subset.sento_measures()`, `as.sentiment()`, `as.sento_measures()`, `as.data.table.sentiment()`, `corpus_summarize()`, `sento_app()`, and `aggregate.sento_measures()`
 - defunct all deprecated functions as well as the functions replaced by the new functions (_wiping the slate clean..._) 
+- handled reverse dependency issue raised by **quanteda** developers regarding their new corpus object
+- renamed the class objects coming from any `sento_xyz()` function into the name of the function (e.g., the `sento_measures()` function now gives a `sento_measures` object instead of a `sentomeasures` object)
 - fixed a small bug in the `aggregate.sento_measures()` (previously `measures_merge()`) function to take the mean instead of the sum in a particular case
 - added many more within- and across-document weighting schemes (see the `get_hows()` function for an overview)
 - added the flexibility to do an explicit sentence-by-sentence sentiment computation (see `do.sentence` argument in the `compute_sentiment()` function)

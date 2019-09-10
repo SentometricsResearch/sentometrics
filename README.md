@@ -4,11 +4,11 @@
 # sentometrics
 
 <!--- comment out when submitting to CRAN until CRAN/pandoc issues (e.g. handshake) solved --->
-[![CRAN](http://www.r-pkg.org/badges/version/sentometrics)](https://cran.r-project.org/package=sentometrics)
-[![Build Status](https://travis-ci.org/sborms/sentometrics.svg?branch=master)](https://travis-ci.org/sborms/sentometrics)
-[![codecov](https://codecov.io/github/sborms/sentometrics/branch/master/graphs/badge.svg)](https://codecov.io/github/sborms/sentometrics)
-[![Downloads](http://cranlogs.r-pkg.org/badges/sentometrics?color=brightgreen)](http://www.r-pkg.org/pkg/sentometrics)
-[![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/sentometrics?color=brightgreen)](http://www.r-pkg.org/pkg/sentometrics)
+<!--- [![CRAN](http://www.r-pkg.org/badges/version/sentometrics)](https://cran.r-project.org/package=sentometrics) --->
+<!--- [![Build Status](https://travis-ci.org/sborms/sentometrics.svg?branch=master)](https://travis-ci.org/sborms/sentometrics) --->
+<!--- [![codecov](https://codecov.io/github/sborms/sentometrics/branch/master/graphs/badge.svg)](https://codecov.io/github/sborms/sentometrics) --->
+<!--- [![Downloads](http://cranlogs.r-pkg.org/badges/sentometrics?color=brightgreen)](http://www.r-pkg.org/pkg/sentometrics) --->
+<!--- [![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/sentometrics?color=brightgreen)](http://www.r-pkg.org/pkg/sentometrics) --->
 <!--- [![Pending Pull-Requests](http://githubbadges.herokuapp.com/sborms/sentometrics/pulls.svg?style=flat)](https://github.com/sborms/sentometrics/pulls) --->
 <!--- [![Github Issues](http://githubbadges.herokuapp.com/sborms/sentometrics/issues.svg)](https://github.com/sborms/sentometrics/issues) --->
 
@@ -42,5 +42,5 @@ Please cite **`sentometrics`** in publications. Use `citation("sentometrics")`.
 
 This software package originates from a
 [Google Summer of Code 2017](https://github.com/rstats-gsoc/gsoc2017/wiki/Sentometrics:-An-integrated-framework-for-text-based-multivariate-time-series-modeling-and-forecasting) project, was further developed 
-during a follow-up [Google Summer of Code 2019](https://github.com/rstats-gsoc/gsoc2019/wiki/sentometrics) project, and benefited generally from [Innoviris](https://innoviris.brussels), [IVADO](https://ivado.ca), [swissuniversities](https://www.swissuniversities.ch), and the [Swiss National Science Foundation](https://www.snf.ch) (grant #179281) financial support.
+during a follow-up [Google Summer of Code 2019](https://github.com/rstats-gsoc/gsoc2019/wiki/sentometrics) project, and benefited generally from financial support by [Innoviris](https://innoviris.brussels), [IVADO](https://ivado.ca), [swissuniversities](https://www.swissuniversities.ch), and the [Swiss National Science Foundation](https://www.snf.ch) (grant #179281).
 
