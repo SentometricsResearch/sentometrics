@@ -20,4 +20,3 @@ Returns the number of data points available in the sentiment measures.
 \author{
 Samuel Borms
 }
-\keyword{internal}
