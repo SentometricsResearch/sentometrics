@@ -1,4 +1,8 @@
 
+## sentometrics 0.7.5
+
+In development.
+
 ## sentometrics 0.7.0
 
 - new functions: `measures_update()`, `subset.sento_measures()`, `as.sentiment()`, `as.sento_measures()`, `as.data.table.sentiment()`, `corpus_summarize()`, `sento_app()`, and `aggregate.sento_measures()`
