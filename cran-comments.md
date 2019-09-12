@@ -1,4 +1,8 @@
 
+<!--- ## submission (version 0.7.5) [12/09/2019]
+
+**new**: ... --->
+
 ## submission (version 0.7) [12/09/2019]
 
 **new**: increased the flexibility in the sentiment calculation (sentence-level calculation and more weighting schemes), simplified certain functionalities to allow for a more R-based workflow, added a Shiny application
@@ -49,7 +53,7 @@
 
 **new**: several additional functions and arguments, small bug fixes and clarifications in documentation 
 
-- marked UTF-8 strings will remain; this is intentional and comes from the built--in French (mostly) and Dutch word lists --->
+- marked UTF-8 strings will remain; this is intentional and comes from the built-in French (mostly) and Dutch word lists --->
 
 <!--- ## Re-submission (version 0.2) [12/11/2017]
 
