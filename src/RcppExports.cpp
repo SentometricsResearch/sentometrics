@@ -71,12 +71,12 @@ BEGIN_RCPP
 END_RCPP
 }
 // make_frequency_maps
-List make_frequency_maps(std::vector< std::vector<std::string>> texts, std::vector<std::string> ids, bool byText);
+List make_frequency_maps(std::vector<std::vector<std::string>> texts, std::vector<std::string> ids, bool byText);
 RcppExport SEXP _sentometrics_make_frequency_maps(SEXP textsSEXP, SEXP idsSEXP, SEXP byTextSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::vector< std::vector<std::string>> >::type texts(textsSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::vector<std::string>> >::type texts(textsSEXP);
     Rcpp::traits::input_parameter< std::vector<std::string> >::type ids(idsSEXP);
     Rcpp::traits::input_parameter< bool >::type byText(byTextSEXP);
     rcpp_result_gen = Rcpp::wrap(make_frequency_maps(texts, ids, byText));

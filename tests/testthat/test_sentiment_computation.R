@@ -111,7 +111,7 @@ test_that("Agreement between sentiment scores on sentence-level across input obj
   expect_true(all(unlist(lapply(sentimentSentenceList, function(s)
     sum(s$word_count) == sum(sentimentSentenceList$s1$word_count)))))
   expect_true(all(c("GI_en", "LM_en", "HENRY_en") %in%
-                    colnames(compute_sentiment(scorp[3], lexClust, how = "counts", do.sentence = TRUE)) ))
+                    colnames(compute_sentiment(scorp[3], lexClust, how = "counts", do.sentence = TRUE))))
   # expect_warning(compute_sentiment(vcorp, lexClust, how = "proportional", do.sentence = TRUE))
 })
 

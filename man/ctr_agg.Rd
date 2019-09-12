@@ -47,7 +47,7 @@ applying the \code{\link{measures_fill}} function before aggregating, except if 
 \code{"exponential" \%in\% howDocs} or \code{"inverseExponential" \%in\% howDocs}. Value should be between 0 and 1
 (both excluded); see \code{\link{weights_exponential}}.}
 
-\item{alphasExp}{a \code{numeric} vector of all exponential weighting smoothing factors, used if
+\item{alphasExp}{a \code{numeric} vector of all exponential weighting smoothing factors, used if \cr
 \code{"exponential" \%in\% howTime}. Values should be between 0 and 1 (both excluded); see
 \code{\link{weights_exponential}}.}
 
