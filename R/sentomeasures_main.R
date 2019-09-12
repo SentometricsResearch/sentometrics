@@ -32,7 +32,7 @@
 #' sentiment values across the continuum of dates considered are added. This impacts the aggregation across time,
 #' applying the \code{\link{measures_fill}} function before aggregating, except if \code{fill = "none"}. By default equal to
 #' \code{"zero"}, which sets the scores (and thus also the weights) of the added dates to zero in the time aggregation.
-#' @param alphasExp a \code{numeric} vector of all exponential weighting smoothing factors, used if
+#' @param alphasExp a \code{numeric} vector of all exponential weighting smoothing factors, used if \cr
 #' \code{"exponential" \%in\% howTime}. Values should be between 0 and 1 (both excluded); see
 #' \code{\link{weights_exponential}}.
 #' @param ordersAlm a \code{numeric} vector of all Almon polynomial orders (positive) to calculate weights for, used if

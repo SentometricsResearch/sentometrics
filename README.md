@@ -11,7 +11,7 @@
 <!--- [![Pending Pull-Requests](http://githubbadges.herokuapp.com/sborms/sentometrics/pulls.svg?style=flat)](https://github.com/sborms/sentometrics/pulls) --->
 <!--- [![Github Issues](http://githubbadges.herokuapp.com/sborms/sentometrics/issues.svg)](https://github.com/sborms/sentometrics/issues) --->
 
-<a href='https://sentometrics.org'><img src='man/figures/logo.png' align="right" height="138.5" /></a>
+<a href='https://www.sentometrics.org'><img src='man/figures/logo.png' align="right" height="138.5" /></a>
 
 ### Introduction
 
@@ -41,5 +41,5 @@ Please cite **`sentometrics`** in publications. Use `citation("sentometrics")`.
 
 This software package originates from a
 [Google Summer of Code 2017](https://github.com/rstats-gsoc/gsoc2017/wiki/Sentometrics:-An-integrated-framework-for-text-based-multivariate-time-series-modeling-and-forecasting) project, was further developed 
-during a follow-up [Google Summer of Code 2019](https://github.com/rstats-gsoc/gsoc2019/wiki/sentometrics) project, and benefited generally from financial support by [Innoviris](https://innoviris.brussels), [IVADO](https://ivado.ca), [swissuniversities](https://www.swissuniversities.ch), and the [Swiss National Science Foundation](https://www.snf.ch) (grant #179281).
+during a follow-up [Google Summer of Code 2019](https://github.com/rstats-gsoc/gsoc2019/wiki/sentometrics) project, and benefited generally from financial support by [Innoviris](https://innoviris.brussels), [IVADO](https://www.ivado.ca), [swissuniversities](https://www.swissuniversities.ch), and the [Swiss National Science Foundation](http://www.snf.ch) (grant #179281).
 

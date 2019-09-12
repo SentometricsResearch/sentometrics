@@ -28,7 +28,7 @@ tokenize_texts <- function(x, tokens = NULL, type = "word") { # x embeds a chara
   tok
 }
 
-compute_sentiment_lexicons <- function(x, tokens, dv, lexicons, how, do.sentence, nCore = 1) {
+compute_sentiment_lexicons <- function(x, tokens, dv, lexicons, how, do.sentence = FALSE, nCore = 1) {
   threads <- min(RcppParallel::defaultNumThreads(), nCore)
   RcppParallel::setThreadOptions(numThreads = threads)
   if (is.character(x)) x <- quanteda::corpus(x)
