@@ -12,7 +12,7 @@ get_loss_data(models, loss = c("DA", "error", "errorSq", "AD",
 either \code{"gaussian"}, \code{"binomial"} or \code{"multinomial"}, and have performance data of the same dimensions.}
 
 \item{loss}{a single \code{character} vector, either \code{"DA"} (directional \emph{in}accuracy), \code{"error"}
-(prediction minus realized response variable), \code{"errorSq"} (squared errors), \code{"AD"} (absolute errors) or
+(predicted minus realized response variable), \code{"errorSq"} (squared errors), \code{"AD"} (absolute errors) or
 \code{"accuracy"} (\emph{in}accurate class predictions). This argument defines on what basis the model confidence set
 is calculated. The first four options are available for \code{"gaussian"} models, the last option applies only to
 \code{"binomial"} and \code{"multinomial"} models.}
@@ -54,8 +54,8 @@ ctrM <- ctr_model(model = "gaussian", type = "AIC", do.iter = TRUE,
                  h = 0, nSample = 120, start = 50)
 out1 <- sento_model(sentMeas, y, x = x, ctr = ctrM)
 out2 <- sento_model(sentMeas, y, x = NULL, ctr = ctrM)
-out3 <- sento_model(measures_select(sentMeas, "linear"), y, x = x, ctr = ctrM)
-out4 <- sento_model(measures_select(sentMeas, "linear"), y, x = NULL, ctr = ctrM)
+out3 <- sento_model(subset(sentMeas, select = "linear"), y, x = x, ctr = ctrM)
+out4 <- sento_model(subset(sentMeas, select = "linear"), y, x = NULL, ctr = ctrM)
 
 lossData <- get_loss_data(models = list(m1 = out1, m2 = out2, m3 = out3, m4 = out4),
                           loss = "errorSq")

@@ -28,7 +28,7 @@ attributions_docs <- function(sento_measures, s, sentDates, seqDates, W, cols, r
 
 attributions_lags <- function(s, sentDates, seqDates, W, cols, sento_measures, measures, coeffs,
                               attribsDocs, tNames, do.normalize) {
-  B <- sento_measures$attribWeights$B
+  B <- sento_measures$attribWeights[["B"]]
   nLags <- nrow(B)
   namesLags <- get_names_lags(nLags)
   attribsLag <- lapply(names(attribsDocs), function(d) {
@@ -287,15 +287,18 @@ attributions <- function(model, sento_measures, do.lags = TRUE, do.normalize = F
 plot.attributions <- function(x, group = "features", ...) {
   if (!(group %in% c("lags", "lexicons", "features", "time")))
     stop("The 'group' argument should be either 'lags', 'lexicons', 'features' or 'time'.")
-  attributions <- x
-  attributions <- attributions[[group]]
+  attributions <- x[[group]]
   if (group == "lags" && is.null(attributions))
     stop("No 'lags' attribution is calculated. Set the 'do.lags' argument in the attributions() function to TRUE.")
   attributionsMelt <- melt(attributions, id.vars = "date", variable.factor = FALSE)
+  attributionsMelt[, pos := ifelse(value >= 0, value, 0)][, neg := ifelse(value < 0, value, -1e-36)]
   attributionsMelt <- attributionsMelt[order(rank(as.character(variable)))]
   legendPos <- ifelse(length(unique(attributionsMelt[["variable"]])) <= 12, "top", "none")
-  p <- ggplot(data = attributionsMelt, aes(x = date, y = value, group = variable, color = variable)) +
-    geom_area(aes(fill = variable), alpha = 1) +
+  p <- ggplot(data = attributionsMelt, aes(x = date, fill = variable, color = variable)) +
+    # geom_area(aes(fill = variable), alpha = 1) +
+    geom_area(aes(y = pos), alpha = 1) +
+    geom_area(aes(y = neg), alpha = 1) +
+    # geom_ribbon(aes(ymin = 0, ymax = value), alpha = 0.5)
     geom_hline(yintercept = 0, size = 0.50, linetype = "dotted") +
     scale_fill_grey(start = 0, end = 1) +
     scale_x_date(name = "Date", date_labels = "%m-%Y") +

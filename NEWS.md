@@ -1,7 +1,11 @@
 
 ## sentometrics 0.7.5
 
-In development.
+(In development.)
+
+- embedded a small workaround in the `plot.attributions()` function to guaranty same plotting behaviour after update of **`ggplot2`** package that gave buggy output for the `geom_area()` layer
+- integrated for overall consistency the `measures_global()` function into the `aggregate.sento_measures()` function, adding a `do.global` argument to enact it
+- clarified the documentation for the `peakdates()` and `peakdocs()` functions
 
 ## sentometrics 0.7.0
 
@@ -12,6 +16,7 @@ In development.
 - fixed a small bug in the `aggregate.sento_measures()` (previously `measures_merge()`) function to take the mean instead of the sum in a particular case
 - added many more within- and across-document weighting schemes (see the `get_hows()` function for an overview)
 - added the flexibility to do an explicit sentence-by-sentence sentiment computation (see `do.sentence` argument in the `compute_sentiment()` function)
+- added the flexibility to create a multi-language `sento_corpus` object to do a multi-language sentiment computation (applying different lexicons to texts written in different languages)
 - expanded the `compute_sentiment()` function to also take **`tm`** `SimpleCorpus` and `VCorpus` objects
 
 ## sentometrics 0.5.6

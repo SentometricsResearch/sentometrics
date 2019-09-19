@@ -8,9 +8,9 @@
 ### This code is used in the vignette paper 'The R Package sentometrics to Compute,
 ### Aggregate and Predict with Textual Sentiment' (Ardia, Bluteau, Borms and Boudt, 2018)
 ### See the paper for the results and setup details
-### Download the package first before you run this script...
-### install.packages("sentometrics") # from CRAN (version 0.5.6), OR
-### install.packages("sentometrics_0.5.6.tar.gz", repos = NULL) # from the tar
+### Download the package and its dependencies first before you run this script...
+### install.packages("sentometrics", dependencies = TRUE) # from CRAN (version 0.7.5), OR
+### install.packages("sentometrics_0.7.5.tar.gz", repos = NULL, dependencies = TRUE) # from the tar
 
 ###### SESSION INFO ######
 
@@ -125,7 +125,7 @@ ctrAgg <- ctr_agg(howWithin = "counts",
 
 sentMeas <- sento_measures(uscorpus, lexicons = lex, ctr = ctrAgg)
 
-get_measures(sentMeas)[, c(1, 23)]
+as.data.table(sentMeas)[, c(1, 23)]
 cat("\n")
 
 pT <- plot(sentMeas, group = "time")
@@ -133,15 +133,15 @@ pT
 
 cat("### SECTION 3.4 ####################### \n \n")
 
-measures_delete(sentMeas, list(c("LM_en"),
+subset(sentMeas, delete = list(c("LM_en"),
                                c("SENTICNET", "economy", "equal_weight")))
 cat("\n")
 
-measures_subset(sentMeas, date %in% get_dates(sentMeas)[50:149])
+subset(sentMeas, date %in% get_dates(sentMeas)[50:149])
 cat("\n")
 
 sentMeasFill <- measures_fill(sentMeas, fill = "latest", dateBefore = "1995-07-01")
-head(get_measures(sentMeasFill)[, 1:3])
+head(as.data.table(sentMeasFill)[, 1:3])
 cat("\n")
 
 corpusPlain <- sento_corpus(usnews[, 1:3])
@@ -159,12 +159,12 @@ pL <- plot(sentMeasLex, group = "lexicons") +
   guides(colour = guide_legend(nrow = 1))
 pL
 
-sentMeasMerged <- measures_merge(sentMeas,
-                                 time = list(W = c("equal_weight", "exponential_0.2")),
-                                 lexicons = list(LEX = c("LM_en", "HENRY_en", "GI_en")),
-                                 features = list(JOUR = c("wsj", "wapo"),
-                                                 NEW = c("uncertainty", "election")),
-                                 do.keep = FALSE)
+sentMeasMerged <- aggregate(sentMeas,
+                            time = list(W = c("equal_weight", "exponential_0.2")),
+                            lexicons = list(LEX = c("LM_en", "HENRY_en", "GI_en")),
+                            features = list(JOUR = c("wsj", "wapo"),
+                                            NEW = c("uncertainty", "election")),
+                            do.keep = FALSE)
 get_dimensions(sentMeasMerged)
 
 glob <- measures_global(sentMeas,
@@ -190,7 +190,7 @@ attrFit <- attributions(fit, sentMeas)
 head(attrFit[["features"]])
 cat("\n")
 
-X <- as.matrix(get_measures(sentMeas)[, -1])
+X <- as.matrix(as.data.table(sentMeas)[, -1])
 yFit <- predict(fit, newx = X)
 attrSum <- rowSums(attrFit[["lexicons"]][, -1]) + fit[["reg"]][["a0"]]
 all.equal(as.numeric(yFit), attrSum)
@@ -225,7 +225,7 @@ pF
 
 load("vix.rda")
 data("epu", package = "sentometrics")
-sentMeasIn <- measures_subset(sentMeasPred, date %in% vix$date)
+sentMeasIn <- subset(sentMeasPred, date %in% vix$date)
 datesIn <- get_dates(sentMeasIn)
 datesEPU <- floor_date(datesIn, "month") %m-% months(1)
 xEPU <- epu[epu$date %in% datesEPU, "index"]
@@ -306,7 +306,8 @@ cat("\n")
 
 r <- plot(out) +
   geom_line(data = melt(data.table(date = names(out$models),
-                                   "M-epu" = preds, "M-ar" = predsAR, check.names = FALSE), id.vars = "date"))
+                                   "M-epu" = preds, "M-ar" = predsAR, check.names = FALSE),
+                        id.vars = "date"))
 r
 
 attr <- attributions(out, sentMeasIn, do.lags = FALSE, do.normalize = FALSE)

@@ -26,8 +26,16 @@ ctr2 <- ctr_agg(howWithin = "counts", howDocs = "proportional", howTime = c("equ
                 do.ignoreZeros = FALSE, do.sentence = TRUE)
 sentMeas2 <- sento_measures(corpus, lex, ctr2)
 
-ctr3 <- ctr_agg(howWithin = "counts", howDocs = "proportional", howTime = c("equal_weight", "linear", "own"), by = "year",
-                lag = 3, weights = data.frame(GI_en = c(0.3, 0.6, 0.1)))
+ctr3 <- ctr_agg(howWithin = "counts", howDocs = "inverseProportional", howTime = c("equal_weight", "own"),
+                by = "year", lag = 3, weights = data.frame(GI_en = c(0.3, 0.6, 0.1)))
+
+ctr4 <- ctr_agg(howWithin = "UShaped", howDocs = "inverseProportional", howTime = "linear", by = "day", lag = 20)
+
+ctr5 <- ctr_agg(howWithin = "counts", howDocs = "exponential", alphaExpDocs = 0.2,
+                howTime = "linear", by = "year", lag = 3)
+
+ctr6 <- ctr_agg(howWithin = "augmentedTF", howDocs = "inverseExponential", alphaExpDocs = 0.1,
+                howTime = "equal_weight", by = "week", lag = 7)
 
 # sento_measures
 test_that("Number of columns coincide with provided dimensions", {
@@ -61,6 +69,9 @@ test_that("Test input and output of sentiment aggregation function", {
   expect_true(inherits(aggregate(s3, ctr1, do.full = FALSE), "sentiment"))
   expect_error(aggregate(s2, ctr2))
   expect_error(sento_measures(corpus, lex, ctr3))
+  expect_true(inherits(sento_measures(corpus, lex, ctr4), "sento_measures"))
+  expect_true(inherits(sento_measures(corpus, lex, ctr5), "sento_measures"))
+  expect_true(inherits(sento_measures(corpus, lex, ctr6), "sento_measures"))
   expect_true(all.equal(wc[, 1], wc[, 2]))
 })
 
