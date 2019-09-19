@@ -17,8 +17,9 @@ measures_update(sento_measures, sento_corpus, lexicons)
 An updated \code{sento_measures} object.
 }
 \description{
-Updates a sento_measures object based on a new corpus provided. Sentiment for the unseen corpus
-texts calculated and aggregated applying the control variables from the input sento_measures object.
+Updates a \code{sento_measures} object based on a new \code{sento_corpus} provided.
+Sentiment for the unseen corpus texts calculated and aggregated applying the control variables
+from the input \code{sento_measures} object.
 }
 \examples{
 data("usnews", package = "sentometrics")

@@ -66,7 +66,7 @@ out10 <- sento_model(subset(sento_measures, select = c("GI_en")), y, ctr = ctrM1
 ctrM11 <- ctr_model(model = "gaussian", type = "Cp", h = 1, alphas = c(0, 0.4, 1),
                     nSample = nSample, do.iter = TRUE, start = 2)
 out11 <- sento_model(subset(sento_measures, select = c("LM_en", "wsj", "almon1")),
-                     y, x = cbind(x, measures_global(sento_measures)[, -1]), ctr = ctrM11)
+                     y, x = cbind(x, aggregate(sento_measures, do.global = TRUE)[, -1]), ctr = ctrM11)
 
 # sento_model
 test_that("Different model specifications give specified output", {

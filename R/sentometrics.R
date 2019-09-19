@@ -15,8 +15,8 @@
 #' \code{\link{as.sento_corpus}}
 #' \item Sentiment computation and aggregation into sentiment measures: \code{\link{ctr_agg}},
 #' \code{\link{sento_lexicons}}, \code{\link{compute_sentiment}}, \code{\link{aggregate.sentiment}},
-#' \code{\link{peakdocs}}, \code{\link{sento_measures}}, \code{\link{peakdates}},
-#' \code{\link{aggregate.sento_measures}}, and a series of manipulation functions
+#' \code{\link{sento_measures}}, \code{\link{aggregate.sento_measures}}, \code{\link{peakdocs}},
+#' \code{\link{peakdates}} and a series of manipulation functions
 #' \item Sparse modelling: \code{\link{ctr_model}}, \code{\link{sento_model}}
 #' \item Prediction and post-modelling analysis: \code{\link{predict.sento_model}}, \code{\link{attributions}}
 #' }
@@ -29,8 +29,8 @@
 #'
 #' @references Ardia, Bluteau and Boudt (2019). ``Questioning the news about economic growth: Sparse forecasting using
 #' thousands of news-based sentiment values''. \emph{International Journal of Forecasting, forthcoming},
-#' \url{https://doi.org/10.2139/ssrn.2976084}.
-#' @references Ardia, Bluteau, Borms and Boudt (2018). ``The R package sentometrics to compute, aggregate and
+#' \url{https://doi.org/10.1016/j.ijforecast.2018.10.010}.
+#' @references Ardia, Bluteau, Borms and Boudt (2019). ``The R package sentometrics to compute, aggregate and
 #' predict with textual sentiment''. \emph{Working paper}, \url{https://doi.org/10.2139/ssrn.3067734}.
 "_PACKAGE"
 

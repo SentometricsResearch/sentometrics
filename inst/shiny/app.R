@@ -2,8 +2,9 @@
 library("shiny")
 library("shinyWidgets")
 library("shinythemes")
-library("DT")
 library("shinycssloaders")
+library("DT")
+
 library("sentometrics")
 library("quanteda")
 

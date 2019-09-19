@@ -23,7 +23,7 @@ value per date.}
 A vector of type \code{"Date"} corresponding to the \code{n} extracted sentiment peak dates.
 }
 \description{
-This function extracts the dates for which aggregated sentiment is most
+This function extracts the dates for which aggregated time series sentiment is most
 extreme (lowest, highest or both in absolute terms). The extracted dates are unique, even when,
 for example, all most extreme sentiment values (for different sentiment measures) occur on only
 one date.

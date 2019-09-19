@@ -10,15 +10,16 @@ peakdocs(sentiment, n = 10, type = "both", do.average = FALSE)
 \item{sentiment}{a \code{sentiment} object created using \code{\link{compute_sentiment}} or
 \code{\link{to_sentiment}}.}
 
-\item{n}{a positive \code{numeric} value to indicate the number of dates associated to sentiment peaks to extract.
-If \code{n < 1}, it is interpreted as a quantile (for example, 0.07 would mean the 7\% most extreme dates).}
+\item{n}{a positive \code{numeric} value to indicate the number of documents associated to sentiment
+peaks to extract. If \code{n < 1}, it is interpreted as a quantile (for example, 0.07 would mean the
+7\% most extreme documents).}
 
 \item{type}{a \code{character} value, either \code{"pos"}, \code{"neg"} or \code{"both"}, respectively to look
-for the \code{n} dates related to the most positive, most negative or most extreme (in absolute terms) sentiment
+for the \code{n} documents related to the most positive, most negative or most extreme (in absolute terms) sentiment
 occurrences.}
 
 \item{do.average}{a \code{logical} to indicate whether peaks should be selected based on the average sentiment
-value per date.}
+value per document.}
 }
 \value{
 A vector of type \code{"character"} corresponding to the \code{n} extracted document identifiers.

@@ -13,9 +13,15 @@
 #'
 #' @export
 sento_app <- function() {
+  suggests <- sapply(c("shiny", "shinyWidgets", "shinythemes", "shinycssloaders", "DT"),
+                     function(pkg) !requireNamespace(pkg, quietly = TRUE))
+  if (any(suggests)) {
+    stop("Make sure to have installed following packages before running the app: ",
+         paste0(names(suggests)[suggests], collapse = ", "), ".")
+  }
   appDir <- system.file("shiny", package = "sentometrics")
   if (appDir == "") {
-    stop("Could not find example directory. Try re-installing `sentometrics`.", call. = FALSE)
+    stop("Could not find app directory. Try re-installing the sentometrics package.", call. = FALSE)
   }
   shiny::runApp(appDir, display.mode = "normal")
 }

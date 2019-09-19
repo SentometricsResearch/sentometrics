@@ -87,7 +87,7 @@ merge_measures <- function(...) {
 #'
 #' @export
 to_global <- function(...) {
-  .Defunct("measures_global", package = "sentometrics")
+  .Defunct("aggregate.sento_measures", package = "sentometrics")
 }
 
 #' @rdname sentometrics-defunct
@@ -231,6 +231,15 @@ sentiment_bind <- function(...) {
 #'
 #' @export
 measures_merge <- function(...) {
+  .Defunct("aggregate.sento_measures", package = "sentometrics")
+}
+
+#' @rdname sentometrics-defunct
+#'
+#' @param ... allowed input arguments.
+#'
+#' @export
+measures_global <- function(...) {
   .Defunct("aggregate.sento_measures", package = "sentometrics")
 }
 

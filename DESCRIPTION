@@ -3,7 +3,7 @@ Type: Package
 Title: An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction
 Version: 0.7.5
 Authors@R: c(person("Samuel", "Borms", email = "samuel.borms@unine.ch", role = c("aut", "cre")),
-  person("David", "Ardia", email = "david.ardia@unine.ch", role = c("aut")),
+  person("David", "Ardia", email = "david.ardia@hec.ca", role = c("aut")),
   person("Keven", "Bluteau", email = "keven.bluteau@unine.ch", role = c("aut")),
   person("Kris", "Boudt", email = "kris.boudt@vub.be", role = c("aut")),
   person("Jeroen", "Van Pelt", email = "jeroenvanpelt@hotmail.com", role = c("ctb")),
@@ -15,7 +15,7 @@ Author: Samuel Borms [aut, cre],
   Jeroen Van Pelt [ctb],
   Andres Algaba [ctb]
 Maintainer: Samuel Borms <samuel.borms@unine.ch>
-Description: Optimized prediction based on textual sentiment, accounting for the intrinsic challenge that sentiment can be computed and pooled across texts and time in various ways. See Ardia et al. (2018) <doi:10.2139/ssrn.3067734>.
+Description: Optimized prediction based on textual sentiment, accounting for the intrinsic challenge that sentiment can be computed and pooled across texts and time in various ways. See Ardia et al. (2019) <doi:10.2139/ssrn.3067734>.
 Depends: R (>= 3.3.0), 
   data.table
 License: GPL (>= 2)
@@ -26,12 +26,16 @@ LazyData: true
 Suggests: covr, 
   doParallel, 
   e1071, 
+  DT,
+  NLP,
   parallel, 
   randomForest, 
+  shiny,
+  shinycssloaders,
+  shinythemes,
+  shinyWidgets,
   testthat,
-  tm,
-  NLP,
-  shiny
+  tm
 Imports: caret,
   compiler,
   foreach,

@@ -12,7 +12,7 @@
 \item{...}{not used.}
 }
 \value{
-The number of rows (observations/data points) in \code{sento_measures[["measures"]]}.
+The number of rows (observations/data points) in \code{object[["measures"]]}.
 }
 \description{
 Returns the number of data points available in the sentiment measures.
