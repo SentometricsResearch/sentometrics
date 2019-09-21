@@ -6,6 +6,7 @@
 - embedded a small workaround in the `plot.attributions()` function to guaranty same plotting behaviour after update of **`ggplot2`** package that gave buggy output for the `geom_area()` layer
 - integrated for overall consistency the `measures_global()` function into the `aggregate.sento_measures()` function, adding a `do.global` argument to enact it
 - clarified the documentation for the `peakdates()` and `peakdocs()` functions
+- put the Shiny application made available in previous package update (i.e., the `sento_app()` function) in a separate sole-purpose package **sentometrics.app** (see https://github.com/sborms/sentometrics.app)
 
 ## sentometrics 0.7.0
 

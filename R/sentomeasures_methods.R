@@ -28,7 +28,7 @@
 #' corpus <- sento_corpus(corpusdf = usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
 #' l <- sento_lexicons(list_lexicons[c("LM_en")], list_valence_shifters[["en"]])
-#' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
+#' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "month", lag = 3)
 #' sento_measures <- sento_measures(corpusSample, l, ctr)
 #'
 #' # plot sentiment measures
@@ -39,7 +39,7 @@
 #' library("ggplot2")
 #' p <- plot(sento_measures)
 #' p <- p +
-#'   scale_x_date(name = "month-year") +
+#'   scale_x_date(name = "year", date_labels = "%Y") +
 #'   scale_y_continuous(name = "newName")
 #' p}
 #'

@@ -249,7 +249,7 @@ sento_measures <- function(sento_corpus, lexicons, ctr) {
 #' document-level sentiment scores. This function is called within the \code{\link{sento_measures}} function.
 #'
 #' @param x a \code{sentiment} object created using \code{\link{compute_sentiment}} (from a
-#' \code{sento_corpus} object), or an output from \code{\link{to_sentiment}}.
+#' \code{sento_corpus} object), or an output from \code{\link{as.sentiment}}.
 #' @param ctr output from a \code{\link{ctr_agg}} call. The \code{howWithin} and \code{nCore} elements are ignored.
 #' @param do.full if \code{do.full = TRUE} (by default), does entire aggregation up to a \code{sento_measures}
 #' object, else only goes from sentence-level to document-level. Ignored if no \code{"sentence_id"} column in

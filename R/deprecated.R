@@ -243,3 +243,12 @@ measures_global <- function(...) {
   .Defunct("aggregate.sento_measures", package = "sentometrics")
 }
 
+#' @rdname sentometrics-defunct
+#'
+#' @param ... allowed input arguments.
+#'
+#' @export
+sento_app <- function(...) {
+  stop("Use the sento_app() function now put into the sentometrics.app package.")
+}
+
