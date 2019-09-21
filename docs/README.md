@@ -29,7 +29,11 @@ When installed, you are ready to load the package...
 library("sentometrics")
 ```
 
-... and have some fun! You might also want to have a look at the [**`sentometrics.app`**](https://github.com/sborms/sentometrics.app) package. Its `sento_app()` function embeds a Shiny application that displays many of **`sentometrics`**' functionalities. Enjoy!
+... and have some fun! 
+
+## Shiny application
+
+You might also want to have a look at the [**`sentometrics.app`**](https://github.com/sborms/sentometrics.app) package. Its `sento_app()` function embeds a Shiny application that displays many of **`sentometrics`**' functionalities. Enjoy!
 
 ## Media
 

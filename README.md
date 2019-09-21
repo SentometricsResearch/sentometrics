@@ -34,7 +34,7 @@ devtools::install_github("sborms/sentometrics")
 
 ### Shiny application
 
-For a visual interface of the package's core functionalities, install the [**`sentometrics.app`**](https://github.com/sborms/sentometrics.app) package, and run the `sento_app()` function.
+For a visual interface as a Shiny application of the package's core functionalities, install the [**`sentometrics.app`**](https://github.com/sborms/sentometrics.app) package, and run the `sento_app()` function.
 
 ### References
 
