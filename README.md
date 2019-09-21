@@ -1,6 +1,6 @@
 
 # sentometrics
-## An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction
+### An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction
 
 <!--- comment out when submitting to CRAN until CRAN/pandoc issues (e.g. handshake) solved --->
 [![CRAN](http://www.r-pkg.org/badges/version/sentometrics)](https://cran.r-project.org/package=sentometrics)
@@ -32,6 +32,10 @@ The latest development version of **`sentometrics`** is available at [https://gi
 ```R
 devtools::install_github("sborms/sentometrics")
 ```
+
+### Shiny application
+
+For a visual interface of the packages's core functionalities, install the [**`sentometrics.app`**](https://github.com/sborms/sentometrics.app) package, and run the `sento_app()` function.
 
 ### References
 
