@@ -8,7 +8,7 @@
 }
 \arguments{
 \item{x}{a \code{sentiment} object created using \code{\link{compute_sentiment}} (from a
-\code{sento_corpus} object), or an output from \code{\link{to_sentiment}}.}
+\code{sento_corpus} object), or an output from \code{\link{as.sentiment}}.}
 
 \item{ctr}{output from a \code{\link{ctr_agg}} call. The \code{howWithin} and \code{nCore} elements are ignored.}
 

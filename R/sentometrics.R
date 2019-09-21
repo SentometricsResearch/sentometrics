@@ -21,10 +21,6 @@
 #' \item Prediction and post-modelling analysis: \code{\link{predict.sento_model}}, \code{\link{attributions}}
 #' }
 #'
-#' The \code{\link{sento_app}} function is a Shiny interface for fast document-level sentiment computation
-#' and aggregation, and downloading of the obtained values. It serves as a visualisation of part of what the
-#' package does.
-#'
 #' @note Please cite the package in publications. Use \code{citation("sentometrics")}.
 #'
 #' @references Ardia, Bluteau and Boudt (2019). ``Questioning the news about economic growth: Sparse forecasting using

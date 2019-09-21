@@ -24,6 +24,7 @@
 \alias{sentiment_bind}
 \alias{measures_merge}
 \alias{measures_global}
+\alias{sento_app}
 \title{Defunct functions}
 \usage{
 ctr_merge(...)
@@ -70,8 +71,12 @@ measures_merge(...)
 
 measures_global(sento_measures, lexicons = NULL, features = NULL,
   time = NULL)
+
+sento_app(...)
 }
 \arguments{
+\item{...}{allowed input arguments.}
+
 \item{...}{allowed input arguments.}
 
 \item{...}{allowed input arguments.}

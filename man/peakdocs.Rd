@@ -8,7 +8,7 @@ peakdocs(sentiment, n = 10, type = "both", do.average = FALSE)
 }
 \arguments{
 \item{sentiment}{a \code{sentiment} object created using \code{\link{compute_sentiment}} or
-\code{\link{to_sentiment}}.}
+\code{\link{as.sentiment}}.}
 
 \item{n}{a positive \code{numeric} value to indicate the number of documents associated to sentiment
 peaks to extract. If \code{n < 1}, it is interpreted as a quantile (for example, 0.07 would mean the
