@@ -51,8 +51,8 @@ a sentiment scores \code{data.table} with an auto-created \code{"id"} column, a 
 and all lexicon sentiment scores columns.
 }
 \description{
-Given a corpus of texts, computes sentiment per document or sentences using the valence shifting
-augmented bag-of-words approach based on the lexicons provided and a choice of aggregation across words.
+Given a corpus of texts, computes sentiment per document or sentence using the valence shifting
+augmented bag-of-words approach, based on the lexicons provided and a choice of aggregation across words.
 }
 \details{
 For a separate calculation of positive (resp. negative) sentiment, provide distinct positive (resp.
