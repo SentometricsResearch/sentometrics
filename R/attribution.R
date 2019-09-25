@@ -291,7 +291,7 @@ plot.attributions <- function(x, group = "features", ...) {
   if (group == "lags" && is.null(attributions))
     stop("No 'lags' attribution is calculated. Set the 'do.lags' argument in the attributions() function to TRUE.")
   attributionsMelt <- melt(attributions, id.vars = "date", variable.factor = FALSE)
-  attributionsMelt[, pos := ifelse(value >= 0, value, 0)][, neg := ifelse(value < 0, value, -1e-36)]
+  attributionsMelt[, "pos" := ifelse(value >= 0, value, 0)][, "neg" := ifelse(value < 0, value, -1e-36)]
   attributionsMelt <- attributionsMelt[order(rank(as.character(variable)))]
   legendPos <- ifelse(length(unique(attributionsMelt[["variable"]])) <= 12, "top", "none")
   p <- ggplot(data = attributionsMelt, aes(x = date, fill = variable, color = variable)) +

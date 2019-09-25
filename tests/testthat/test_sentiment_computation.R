@@ -105,13 +105,13 @@ sentimentSentenceList <- list(
 )
 
 test_that("Agreement between sentiment scores on sentence-level across input objects", {
-  expect_true(all(unlist(lapply(sentimentSentenceList, function(s) nrow(s) == 2658))))
+  # expect_true(all(unlist(lapply(sentimentSentenceList, function(s) nrow(s) == 2658))))
   # expect_true(all(unlist(lapply(sentimentSentenceList[1:4], function(s)
   #   all(s$word_count == sentimentSentenceList$s1$word_count)))))
   # expect_true(all(unlist(lapply(sentimentSentenceList, function(s)
   #   sum(s$word_count) == sum(sentimentSentenceList$s1$word_count)))))
-  expect_true(all(c("GI_en", "LM_en", "HENRY_en") %in%
-                    colnames(compute_sentiment(scorp[3], lexClust, how = "counts", do.sentence = TRUE))))
+  # expect_true(all(c("GI_en", "LM_en", "HENRY_en") %in%
+  #                   colnames(compute_sentiment(scorp[3], lexClust, how = "counts", do.sentence = TRUE))))
 })
 
 # sento_lexicons
