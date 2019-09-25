@@ -37,9 +37,9 @@ compute_sentiment_lexicons <- function(x, tokens, dv, lexicons, how, do.sentence
     tokens <- tokenize_texts(quanteda::texts(x), tokens, type = "sentence")
     s <- compute_sentiment_sentences(unlist(tokens, recursive = FALSE),
                                      lexicons, how, !noValence) # call to C++ code
-    dt <- data.table::data.table("id" = quanteda::docnames(x), "count" = sapply(tokens, length))
+    dt <- data.table::data.table("id" = quanteda::docnames(x), "n" = sapply(tokens, length))
     if (!is.null(dv)) dt <- cbind(dt, dv)
-    dt <- dt[rep(1:.N, count)][, "count" := NULL]
+    dt <- dt[rep(1:.N, n)][, "n" := NULL]
     dt[, "sentence_id" := seq(.N), by = id]
     s <- cbind(dt, s)
     if (inherits(x, "sento_corpus")) {

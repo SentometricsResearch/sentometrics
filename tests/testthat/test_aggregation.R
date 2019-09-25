@@ -59,10 +59,6 @@ s1 <- compute_sentiment(corpus, lex, how = "proportional")
 s2 <- compute_sentiment(quanteda::texts(corpus), lex, how = "counts")
 s3 <- compute_sentiment(corpus, lexClust, how = "squareRootCounts", do.sentence = TRUE)
 sentimentAgg <- aggregate(s3, ctr_agg(lag = 7), do.full = FALSE)
-
-head(s1[[3]])
-head(sentimentAgg[[3]])
-
 test_that("Test input and output of sentiment aggregation function", {
   expect_true(inherits(s1, "sentiment"))
   expect_true(inherits(s2, "data.table"))
