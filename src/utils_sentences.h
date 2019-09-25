@@ -36,7 +36,7 @@ inline double compute_sentence_impact(std::vector<int>& shifters, int& position)
   }
 
   double impact = (1 + (wA + wD));
-  if (n == 1){
+  if (n == 1) {
     impact *= -1.0;
   }
 
@@ -57,7 +57,7 @@ inline void update_token_scores_sentences(std::vector< double >& scores,
     scale_token_weights(tokenWeights, normalizer, nPolarized, how, nTokens, nL);
   }
 
-  for (int i = 0; i < nTokens; i ++) {
+  for (int i = 0; i < nTokens; i++) {
     // std:::cout << "token loop " << i << "\n";
     for (int j = 0; j < nL; j++) {
       // std:::cout << "Lexicon loop " << j << "\n";
@@ -75,7 +75,7 @@ inline void update_token_scores_sentences(std::vector< double >& scores,
           } else if (how == "proportional") {
             scores[j] += (tokenShifters[i] * score / nTokens);
           } else if (how == "proportionalPol") {
-            if (nPolarized[j] > 0)  scores[j] += (tokenShifters[i] * score) * (tokenWeights[i] / nPolarized[j]);
+            if (nPolarized[j] > 0) scores[j] += (tokenShifters[i] * score) * (tokenWeights[i] / nPolarized[j]);
           } else {
             scores[j] += (tokenShifters[j] * score) * tokenWeights[i];
           }
@@ -106,7 +106,7 @@ inline void set_cluster_bounds(int& st,
                                int& nB,
                                int& nA,
                                int& j) {
-  if (nPuncts != 0 ){
+  if (nPuncts != 0 ) {
     st = punctPosition;
   } else {
     st = std::max(lB, j - nB);

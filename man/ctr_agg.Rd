@@ -12,16 +12,16 @@ ctr_agg(howWithin = "proportional", howDocs = "equal_weight",
   weights = NULL, tokens = NULL, nCore = 1)
 }
 \arguments{
-\item{howWithin}{a single \code{character} vector defining how aggregation within documents will be performed. Should
-\code{length(howWithin) > 1}, the first element is used. For available options on how this aggregation can
-occur; see \code{\link{get_hows}()$words}.}
+\item{howWithin}{a single \code{character} vector defining how to perform aggregation within
+documents or sentences. Coincides with the \code{how} argument in the \code{\link{compute_sentiment}} function. Should
+\code{length(howWithin) > 1}, the first element is used. For available options see \code{\link{get_hows}()$words}.}
 
 \item{howDocs}{a single \code{character} vector defining how aggregation across documents (and/or sentences) per date will
-be performed. Should \code{length(howDocs) > 1}, the first element is used. For available options on how this aggregation
-can occur; see \code{\link{get_hows}()$docs}.}
+be performed. Should \code{length(howDocs) > 1}, the first element is used. For available options
+see \code{\link{get_hows}()$docs}.}
 
 \item{howTime}{a \code{character} vector defining how aggregation across dates will be performed. More than one choice
-is possible. For available options on how this aggregation can occur; see \code{\link{get_hows}()$time}.}
+is possible. For available options see \code{\link{get_hows}()$time}.}
 
 \item{do.sentence}{see \code{\link{compute_sentiment}}.}
 
@@ -78,8 +78,8 @@ Sets up control object for aggregation of document-level textual sentiment into 
 sentiment measures (indices).
 }
 \details{
-For currently available options on how aggregation can occur (via the \code{howWithin},
-\code{howDocs} and \code{howTime} arguments), call \code{\link{get_hows}}. The control parameters
+For available options on how aggregation can occur (via the \code{howWithin},
+\code{howDocs} and \code{howTime} arguments), inspect \code{\link{get_hows}}. The control parameters
 associated to \code{howDocs} are used both for aggregation across documents and across sentences.
 }
 \examples{

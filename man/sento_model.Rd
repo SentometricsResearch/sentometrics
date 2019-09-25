@@ -105,7 +105,7 @@ attributions1 <- attributions(out1, sento_measures,
 plot(attributions1, "features")
 
 nx <- nmeasures(sento_measures) + ncol(x)
-newx <- runif(nx) * cbind(as.data.table(sento_measures)[, -1], x)[30:40, ]
+newx <- runif(nx) * cbind(data.table::as.data.table(sento_measures)[, -1], x)[30:40, ]
 preds <- predict(out1, newx = as.matrix(newx), type = "link")
 
 # an iterative out-of-sample analysis, parallelized

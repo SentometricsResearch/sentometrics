@@ -35,7 +35,7 @@ struct SentimentScorerSentences : public RcppParallel::Worker {
 
       std::vector< std::string > tokens = texts[i];
       double normalizer = 0.0, maxTokenFrequency = 1.0;
-      int nTokens = tokens.size(), nPuncts = 0,punctPosition = 0, lB = 0, nB = 5, nA = 2;
+      int nTokens = tokens.size(), nPuncts = 0, punctPosition = 0, lB = 0, nB = 5, nA = 2;
       std::vector< double > scores(nL, 0.0);
       std::vector< double > nPolarized(nL, 0.0);
       std::vector< double > tokenWeights(nTokens, std::sqrt((double) nTokens));
@@ -58,7 +58,7 @@ struct SentimentScorerSentences : public RcppParallel::Worker {
           tokenScores[j] = lexiconMap.at(token);
           std::vector<int> shifters(4);
 
-          if (how != "proportional"  && how != "counts" && how != "squareRootCounts") {
+          if (how != "proportional" && how != "counts" && how != "squareRootCounts") {
             update_token_weights(tokenWeights, normalizer, nPolarized, j, nTokens, how, nL, tokenScores, tokenFrequency, tokenInverseFrequency, maxTokenFrequency); //step 3 and 4: get token Weights
           }
 

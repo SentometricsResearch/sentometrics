@@ -33,8 +33,8 @@ sm <- sento_measures(sento_corpus(corpusdf = usnews[1:200, ]),
                      sento_lexicons(list_lexicons["LM_en"]),
                      ctr_agg(lag = 3))
 
-as.data.table(sm)
-as.data.table(sm, "long")
+data.table::as.data.table(sm)
+data.table::as.data.table(sm, "long")
 
 }
 \author{

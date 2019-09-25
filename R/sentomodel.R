@@ -61,7 +61,7 @@
 #' @seealso \code{\link{sento_model}}
 #'
 #' @references Tibshirani and Taylor (2012). ``Degrees of freedom in LASSO problems''.
-#' \emph{The Annals of Statistics 40, 1198-12}, \url{https://doi.org/10.1214/12-AOS1003}.
+#' \emph{The Annals of Statistics 40, 1198-1232}, \url{https://doi.org/10.1214/12-AOS1003}.
 #' @references Zou, Hastie and Tibshirani (2007). ``On the `degrees of freedom' of the LASSO''.
 #' \emph{The Annals of Statistics 35, 2173-2192}, \url{https://doi.org/10.1214/009053607000000127}.
 #'
@@ -276,7 +276,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' plot(attributions1, "features")
 #'
 #' nx <- nmeasures(sento_measures) + ncol(x)
-#' newx <- runif(nx) * cbind(as.data.table(sento_measures)[, -1], x)[30:40, ]
+#' newx <- runif(nx) * cbind(data.table::as.data.table(sento_measures)[, -1], x)[30:40, ]
 #' preds <- predict(out1, newx = as.matrix(newx), type = "link")
 #'
 #' # an iterative out-of-sample analysis, parallelized
