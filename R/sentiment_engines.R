@@ -92,8 +92,8 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
 #'
 #' @author Samuel Borms, Jeroen Van Pelt, Andres Algaba
 #'
-#' @description Given a corpus of texts, computes sentiment per document or sentences using the valence shifting
-#' augmented bag-of-words approach based on the lexicons provided and a choice of aggregation across words.
+#' @description Given a corpus of texts, computes sentiment per document or sentence using the valence shifting
+#' augmented bag-of-words approach, based on the lexicons provided and a choice of aggregation across words.
 #'
 #' @details For a separate calculation of positive (resp. negative) sentiment, provide distinct positive (resp.
 #' negative) lexicons (see the \code{do.split} option in the \code{\link{sento_lexicons}} function). All \code{NA}s
