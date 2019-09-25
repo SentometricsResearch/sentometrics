@@ -61,18 +61,21 @@ measures_fill <- function(sento_measures, fill = "zero", dateBefore = NULL, date
   }
 
   ts <- seq.Date(start, end, by = by) # continuous date series
-  dt <- data.table(date = ts)
+  dt <- data.table::data.table(date = ts)
 
   # join and fill as provided into new measures
-  measures <- as.data.table(sento_measures)
+  measures <- data.table::as.data.table(sento_measures)
   measuresFill <- merge(dt, measures, by = "date", all = TRUE) # fills with NA
   if (fill == "zero") {
     measuresFill[is.na(measuresFill)] <- 0
   } else if (fill == "latest") {
     if (!is.null(dateBefore)) measuresFill[1, 2:ncol(measures)] <- measures[1, -1]
-    measuresFill <- cbind(dt, as.data.table(fill_NAs(as.matrix(measuresFill[, -1]))))
+    measuresFill <- cbind(dt, data.table::as.data.table(fill_NAs(as.matrix(measuresFill[, -1]))))
   } else stop("Input variable 'fill' should be either 'zero' or 'latest'.")
-  measuresFill <- data.table(date = ts, measuresFill[, lapply(.SD, as.numeric), .SDcols = colnames(measures)[-1]])
+  measuresFill <- data.table::data.table(
+    date = ts,
+    measuresFill[, lapply(.SD, as.numeric), .SDcols = colnames(measures)[-1]]
+  )
 
   sento_measures$measures <- measuresFill
   sento_measures$stats <- compute_stats(sento_measures) # will be overwritten at end of aggregate_time() call
@@ -144,7 +147,7 @@ measures_global <- function(sento_measures, lexicons = NULL, features = NULL, ti
     return(w)
   })
 
-  measuresLong <- as.data.table(sento_measures, format = "long")
+  measuresLong <- data.table::as.data.table(sento_measures, format = "long")
   measuresLong[, "wFeat" := unlist(weights[[1]][measuresLong[["features"]]])] # weights features
   measuresLong[, "wLex" := unlist(weights[[2]][measuresLong[["lexicons"]]])] # weights lexicon
   measuresLong[, "wTime" :=- unlist(weights[[3]][measuresLong[["time"]]])] # weights time

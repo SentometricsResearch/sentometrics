@@ -6,18 +6,18 @@
 #' @description Sets up control object for aggregation of document-level textual sentiment into textual
 #' sentiment measures (indices).
 #'
-#' @details For currently available options on how aggregation can occur (via the \code{howWithin},
-#' \code{howDocs} and \code{howTime} arguments), call \code{\link{get_hows}}. The control parameters
+#' @details For available options on how aggregation can occur (via the \code{howWithin},
+#' \code{howDocs} and \code{howTime} arguments), inspect \code{\link{get_hows}}. The control parameters
 #' associated to \code{howDocs} are used both for aggregation across documents and across sentences.
 #'
-#' @param howWithin a single \code{character} vector defining how aggregation within documents will be performed. Should
-#' \code{length(howWithin) > 1}, the first element is used. For available options on how this aggregation can
-#' occur; see \code{\link{get_hows}()$words}.
+#' @param howWithin a single \code{character} vector defining how to perform aggregation within
+#' documents or sentences. Coincides with the \code{how} argument in the \code{\link{compute_sentiment}} function. Should
+#' \code{length(howWithin) > 1}, the first element is used. For available options see \code{\link{get_hows}()$words}.
 #' @param howDocs a single \code{character} vector defining how aggregation across documents (and/or sentences) per date will
-#' be performed. Should \code{length(howDocs) > 1}, the first element is used. For available options on how this aggregation
-#' can occur; see \code{\link{get_hows}()$docs}.
+#' be performed. Should \code{length(howDocs) > 1}, the first element is used. For available options
+#' see \code{\link{get_hows}()$docs}.
 #' @param howTime a \code{character} vector defining how aggregation across dates will be performed. More than one choice
-#' is possible. For available options on how this aggregation can occur; see \code{\link{get_hows}()$time}.
+#' is possible. For available options see \code{\link{get_hows}()$time}.
 #' @param do.ignoreZeros a \code{logical} indicating whether zero sentiment values have to be ignored in the determination of
 #' the document (and/or sentence) weights while aggregating across documents (and/or sentences). By default
 #' \code{do.ignoreZeros = TRUE}, such that documents (and/or sentences) with a raw sentiment score of zero or for which
@@ -315,10 +315,10 @@ aggregate_sentences <- function(sentiment, how, weightingParamDocs) {
   do.ignoreZeros <- weightingParamDocs$do.ignoreZeros
   alphaExpDocs <- weightingParamDocs$alphaExpDocs
   weights <- weights_across(sentiment, how, do.ignoreZeros, alphaExpDocs, by = "id")
-  sw <- data.table(id = sentiment[["id"]], sentiment[, -1:-4] * weights, wc, dates)
+  sw <- data.table::data.table(id = sentiment[["id"]], sentiment[, -1:-4] * weights, wc, dates)
   s <- sw[, lapply(.SD, function(x)
     sum(x, na.rm = TRUE)), by = c("id", "date")] # implicitly assumes all id and date combinations are unique
-  setcolorder(s, c("id", "date", "word_count"))
+  data.table::setcolorder(s, c("id", "date", "word_count"))
   class(s) <- c("sentiment", class(s))
   s
 }
@@ -329,7 +329,7 @@ aggregate_docs <- function(sent, by, how = get_hows()$docs, weightingParamDocs) 
   lexNames <- unique(sapply(names, "[", 1))
   features <- unique(sapply(names, "[", 2))
 
-  setorder(sent, "date", na.last = FALSE)
+  data.table::setorder(sent, "date", na.last = FALSE)
   attribWeights <- list(W = NA, B = NA) # list with weights useful in later attribution analysis
 
   # reformat dates so they can be aggregated at the specified 'by' level, and cast to Date format
@@ -354,8 +354,8 @@ aggregate_docs <- function(sent, by, how = get_hows()$docs, weightingParamDocs) 
   alphaExpDocs <- weightingParamDocs$alphaExpDocs
   weights <- weights_across(sent, how, do.ignoreZeros, alphaExpDocs, by = "date")
   s <- sent[, !"id"]
-  attribWeights[["W"]] <- data.table(id = sent$id, date = sent$date, weights)
-  sw <- data.table(date = s$date, s[, -c(1:2)] * weights)
+  attribWeights[["W"]] <- data.table::data.table(id = sent$id, date = sent$date, weights)
+  sw <- data.table::data.table(date = s$date, s[, -c(1:2)] * weights)
   measures <- sw[, lapply(.SD, function(x) sum(x, na.rm = TRUE)), by = date]
 
   sento_measures <- list(measures = measures,
@@ -393,7 +393,7 @@ aggregate_time <- function(sento_measures, how = get_hows()$time, weightingParam
 
   # apply rolling time window, if not too large, for every weights column and combine all new measures column-wise
   if (!(fill %in% "none")) sento_measures <- measures_fill(sento_measures, fill = fill)
-  measures <- as.data.table(sento_measures)
+  measures <- data.table::as.data.table(sento_measures)
   toRoll <- measures[, -1]
   m <- nrow(measures)
   if (lag > m)
@@ -407,11 +407,11 @@ aggregate_time <- function(sento_measures, how = get_hows()$time, weightingParam
     if (i == 1) measuresAggTime <- add
     else measuresAggTime <- cbind(measuresAggTime, add)
   }
-  measuresAggTime <- as.data.table(measuresAggTime)
+  measuresAggTime <- data.table::as.data.table(measuresAggTime)
   if (lag > 1) date <- measures$date[-1:-(lag-1)]
   else date <- measures$date
-  measuresAggTime$date <- date
-  measuresAggTime <- setcolorder(measuresAggTime, c("date", colnames(measuresAggTime)[-ncol(measuresAggTime)]))
+  measuresAggTime[, "date" := date]
+  data.table::setcolorder(measuresAggTime, c("date", colnames(measuresAggTime)[-ncol(measuresAggTime)]))
 
   sento_measures$measures <- measuresAggTime
   sento_measures$time <- colnames(weights)
@@ -471,7 +471,7 @@ peakdates <- function(sento_measures, n = 10, type = "both", do.average = FALSE)
   n <- floor(n)
   if (n >= nMax) stop("The 'n' argument asks for too many dates.")
 
-  measures <- as.data.table(sento_measures)[, -1] # drop dates
+  measures <- data.table::as.data.table(sento_measures)[, -1] # drop dates
   m <- nmeasures(sento_measures)
   if (do.average == TRUE) {
     measures <- rowMeans(measures, na.rm = TRUE)

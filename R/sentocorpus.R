@@ -335,8 +335,10 @@ corpus_summarize <- function(x, by = "day", features = NULL) {
   }
 
   # statistics
-  dt <- data.table(quanteda::docvars(x),
-                   "nTokens" = as.numeric(sapply(tokenize_texts(quanteda::texts(x)), length)))
+  dt <- data.table::data.table(
+    quanteda::docvars(x),
+    "nTokens" = as.numeric(sapply(tokenize_texts(quanteda::texts(x)), length))
+  )
 
   if (!is.null(features)) {
     dt <- dt[, c(features, "date", "nTokens"), with = FALSE]
@@ -408,9 +410,9 @@ as.sento_corpus.corpus <- function(x, dates = NULL, do.clean = FALSE) {
       stop("The number of dates in 'dates' should be equal to the number of documents.")
     features$date <- dates # avoids accidental duplication
   }
-  dt <- data.table("id" = quanteda::docnames(x),
-                   "texts" = quanteda::texts(x),
-                   features) # includes date column
+  dt <- data.table::data.table("id" = quanteda::docnames(x),
+                               "texts" = quanteda::texts(x),
+                               features) # includes date column
   setcolorder(dt, c("id", "date", "texts"))
   sento_corpus(dt, do.clean)
 }
@@ -444,9 +446,9 @@ to_sento_corpus_tm <- function(x, dates, do.clean, texts, hasLocalDate = FALSE) 
       stop("The number of dates in 'dates' should be equal to the number of documents.")
     features$date <- dates
   }
-  dt <- data.table("id" = unlist(NLP::meta(x, "id")),
-                   "texts" = texts,
-                   features) # includes date column
+  dt <- data.table::data.table("id" = unlist(NLP::meta(x, "id")),
+                               "texts" = texts,
+                               features) # includes date column
   setcolorder(dt, c("id", "date", "texts"))
   sento_corpus(dt, do.clean)
 }

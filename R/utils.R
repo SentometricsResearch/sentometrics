@@ -154,7 +154,30 @@ setup_time_weights <- function(how, param) {
 #' @description Outputs the supported aggregation arguments. Call for information purposes only. Used within
 #' \code{\link{ctr_agg}} to check if supplied aggregation hows are supported.
 #'
-#' @details See the package's \href{https://ssrn.com/abstract=3067734}{vignette} for a detailed explanation of all
+#' @details
+#' Weighting within documents or sentences (\code{"words"}):
+#' \describe{
+#' \item{\code{"proportional"}}{divides each sentiment score by the total number of words.}
+#' \item{\code{"proportionalPol"}}{divides each sentiment score by the number of detected
+#' polarized words (counting words that appear multiple times by their frequency).}
+#' \item{\code{"counts"}}{no normalisation.}
+#' \item{\code{"squareRootCounts"}}{divides the sentiment by the square root of the number of tokens in each text.}
+#' \item{\code{"UShaped"}}{gives a higher weight to words at the beginning and end of the texts.}
+#' \item{\code{"invertedUShaped"}}{gives a lower weight to words at the beginning and the end of the texts.}
+#' \item{\code{"exponential"}}{gives gradually more weight the later the word appears in the text.}
+#' \item{\code{"invertedExponential"}}{gives gradually less weight the later the words appears in the text.}
+#' \item{\code{"TF"}}{gives a weight proportional to the number of times a word appears in a text.}
+#' \item{\code{"logarithmicTF"}}{gives the same weight as \code{"TF"} but logarithmically scaled.}
+#' \item{\code{"augmentedTF"}}{weight is determined by dividing the raw frequency of a token by the raw frequency
+#' of the most occurring term in the document (can be used to prevent a bias towards longer documents).}
+#' \item{\code{"IDF"}}{uses the logarithm of the division of the raw frequency of a word by the number of
+#' texts in which the word appears (words appearing in multiple texts get thus a lower weight).}
+#' \item{\code{"TFIDF"}}{same weights as \code{"TF"}-variant but multiplied with \code{"IDF"} weights.}
+#' \item{\code{"logarithmicTFIDF"}}{same weights as \code{"TF"}-variant but multiplied with \code{"IDF"} weights.}
+#' \item{\code{"augmentedTFIDF"}}{same weights as \code{"TF"}-variant but multiplied with \code{"IDF"} weights.}
+#' }
+#'
+#' See the package's \href{https://ssrn.com/abstract=3067734}{vignette} for a detailed explanation of all
 #' aggregation options.
 #'
 #' @return A list with the supported aggregation hows for arguments \code{howWithin} (\code{"words"}), \code{howDows}
@@ -206,7 +229,7 @@ align_variables <- function(y, sento_measures, x, h, difference, i = 1, nSample 
   }
 
   datesX <- get_dates(sento_measures)
-  sent <- as.data.table(sento_measures)[, -1] # drop dates
+  sent <- data.table::as.data.table(sento_measures)[, -1] # drop dates
   if (is.null(x)) x <- sent
   else x <- cbind(sent, x)
   x <- as.matrix(x)
@@ -286,7 +309,7 @@ update_attribweights <- function(sento_measures, ...) {
   W <- attribWeights[["W"]]
 
   lexFeats <- unique(
-    sapply(stringi::stri_split(colnames(as.data.table(sento_measures))[-1], regex = "--"),
+    sapply(stringi::stri_split(colnames(data.table::as.data.table(sento_measures))[-1], regex = "--"),
            function(x) paste0(x[1:2], collapse = "--"))
   )
 
@@ -330,7 +353,7 @@ check_class <- function(x, class) {
 }
 
 compute_stats <- function(sento_measures) {
-  measures <- as.data.table(sento_measures)[, -1] # drop dates
+  measures <- data.table::as.data.table(sento_measures)[, -1] # drop dates
   names <- c("mean", "sd", "max", "min", "meanCorr")
   stats <- data.frame(matrix(NA, nrow = length(names), ncol = length(measures), dimnames = list(names)))
   colnames(stats) <- colnames(measures)
@@ -366,7 +389,7 @@ measures_to_long <- function(measures) { # changes format of sentiment measures 
   dates <- measures[["date"]]
   n <- length(dates)
   names <- colnames(measures)[-1]
-  measuresTrans <- as.data.table(t(measures[, -1]))
+  measuresTrans <- data.table::as.data.table(t(measures[, -1]))
   colnames(measuresTrans) <- as.character(1:n)
   triplets <- stringi::stri_split(names, regex = "--")
   measuresTrans[, "lexicons" := sapply(triplets, "[", 1)]

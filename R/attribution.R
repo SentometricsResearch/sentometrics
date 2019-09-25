@@ -19,7 +19,7 @@ attributions_docs <- function(sento_measures, s, sentDates, seqDates, W, cols, r
       return(colAttr)
     })
     attribs <- Reduce(`+`, lapply(sentFull, rowSums, na.rm = TRUE)) # sum document values over time weighting schemes
-    out <- data.table(sents[, c("id")], date = sents$date, attrib = attribs)
+    out <- data.table::data.table(sents[, c("id")], date = sents$date, attrib = attribs)
     return(out)
   })
   names(attribsDocs) <- refDates
@@ -33,7 +33,7 @@ attributions_lags <- function(s, sentDates, seqDates, W, cols, sento_measures, m
   namesLags <- get_names_lags(nLags)
   attribsLag <- lapply(names(attribsDocs), function(d) {
     if (is.null(attribsDocs[[d]])) {
-      doc <- data.table(date = "xxxx-yy-zz", attrib = 0) # throw-away template
+      doc <- data.table::data.table(date = "xxxx-yy-zz", attrib = 0) # throw-away template
     } else {
       doc <- attribsDocs[[d]][, list(attrib = sum(attrib)), by = date]
     }
@@ -64,10 +64,10 @@ attributions_lags <- function(s, sentDates, seqDates, W, cols, sento_measures, m
         attribFill <- sum(unlist(sentFull), na.rm = TRUE)
         return(attribFill)
       })
-      doc <- rbind(doc, data.table(lag = namesLags[lagsMissing], attrib = attribFills))
+      doc <- rbind(doc, data.table::data.table(lag = namesLags[lagsMissing], attrib = attribFills))
       doc <- doc[order(match(lag, namesLags))][lag %in% namesLags]
     } else {
-      doc <- rbind(doc, data.table(lag = namesLags[lagsMissing], attrib = 0))
+      doc <- rbind(doc, data.table::data.table(lag = namesLags[lagsMissing], attrib = 0))
       doc <- doc[order(match(lag, namesLags))][lag %in% namesLags]
     }
     return(doc)
@@ -89,9 +89,9 @@ attributions_dims <- function(sento_measures, measures, cols, refDates, loc, coe
                               do.normalize, dimNames, missingNames, type) {
   attribsDim <- lapply(dimNames, function(x) {
     sel <- cols[stringi::stri_detect(cols, regex = paste0("\\b", x, "\\b"))]
-    coeffsIn <- data.table(matrix(coeffs[sel], nrow = length(loc), ncol = length(coeffs[sel]), byrow = TRUE))
+    coeffsIn <- data.table::data.table(matrix(coeffs[sel], nrow = length(loc), ncol = length(coeffs[sel]), byrow = TRUE))
     attribs <- rowSums(coeffsIn * measures[loc, sel, with = FALSE, drop = FALSE], na.rm = TRUE)
-    attr <- data.table(date = refDates, attrib = attribs)
+    attr <- data.table::data.table(date = refDates, attrib = attribs)
     return(attr)
   })
   names(attribsDim) <- dimNames
@@ -115,7 +115,7 @@ attributions_dims <- function(sento_measures, measures, cols, refDates, loc, coe
 
   # get appropriate sentiment measures from sento_measures input object
   discarded <- sento_model$discarded
-  measures <- as.data.table(sento_measures)[, c(TRUE, !discarded), with = FALSE]
+  measures <- data.table::as.data.table(sento_measures)[, c(TRUE, !discarded), with = FALSE]
 
   # set dates at which to do attribution
   sampleDates <- sento_model$dates

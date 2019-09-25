@@ -36,7 +36,7 @@
 #' l1 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")])
 #'
 #' # including a self-made lexicon, with and without valence shifters
-#' lexIn <- c(list(myLexicon = data.table(w = c("nice", "boring"), s = c(2, -1))),
+#' lexIn <- c(list(myLexicon = data.table::data.table(w = c("nice", "boring"), s = c(2, -1))),
 #'            list_lexicons[c("GI_en")])
 #' valIn <- list_valence_shifters[["en"]]
 #' l2 <- sento_lexicons(lexIn)

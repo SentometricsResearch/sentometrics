@@ -31,7 +31,7 @@ ids <- paste0("id", 1:200)
 dates <- sample(seq(as.Date("2015-01-01"), as.Date("2018-01-01"), by = "day"), 200, TRUE)
 word_count <- sample(150:850, 200, replace = TRUE)
 sent <- matrix(rnorm(200 * 8), nrow =  200)
-s1 <- s2 <- data.table(id = ids, date = dates, word_count = word_count, sent)
+s1 <- s2 <- data.table::data.table(id = ids, date = dates, word_count = word_count, sent)
 s3 <- data.frame(id = ids, date = dates, word_count = word_count, sent,
                  stringsAsFactors = FALSE)
 s4 <- compute_sentiment(usnews$texts[201:400],

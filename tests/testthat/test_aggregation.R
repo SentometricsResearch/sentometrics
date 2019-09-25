@@ -59,7 +59,10 @@ s1 <- compute_sentiment(corpus, lex, how = "proportional")
 s2 <- compute_sentiment(quanteda::texts(corpus), lex, how = "counts")
 s3 <- compute_sentiment(corpus, lexClust, how = "squareRootCounts", do.sentence = TRUE)
 sentimentAgg <- aggregate(s3, ctr_agg(lag = 7), do.full = FALSE)
-wc <- cbind(sentimentAgg[, "word_count"], s1[, "word_count"])
+
+head(s1[[3]])
+head(sentimentAgg[[3]])
+
 test_that("Test input and output of sentiment aggregation function", {
   expect_true(inherits(s1, "sentiment"))
   expect_true(inherits(s2, "data.table"))
@@ -72,7 +75,7 @@ test_that("Test input and output of sentiment aggregation function", {
   expect_true(inherits(sento_measures(corpus, lex, ctr4), "sento_measures"))
   expect_true(inherits(sento_measures(corpus, lex, ctr5), "sento_measures"))
   expect_true(inherits(sento_measures(corpus, lex, ctr6), "sento_measures"))
-  expect_true(all.equal(wc[, 1], wc[, 2]))
+  expect_true(all.equal(sentimentAgg[["word_count"]], s1[["word_count"]]))
 })
 
 # peakdocs

@@ -48,8 +48,7 @@
 plot.sento_measures <- function(x, group = "all", ...) {
   if (!(group %in% c("lexicons", "features", "time", "all")))
     stop("The 'group' argument should be either 'lexicons', 'features', 'time' or 'all'.")
-  sento_measures <- x
-  measures <- as.data.table(sento_measures)
+  measures <- data.table::as.data.table(x)
   if (group == "all") {
     measuresMelt <- melt(measures, id.vars = "date", variable.factor = FALSE)
     legendPos <- "none"
@@ -102,9 +101,9 @@ plot.sento_measures <- function(x, group = "all", ...) {
 diff.sento_measures <- function(x, lag = 1, differences = 1, ...) {
   sento_measures <- x
   dates <- get_dates(sento_measures)[-1:-(lag * differences)]
-  measures <- as.data.table(sento_measures)[, -1] # drop dates
+  measures <- data.table::as.data.table(sento_measures)[, -1] # drop dates
   measuresDiff <- diff(as.matrix(measures), lag = lag, differences = differences)
-  sento_measures$measures <- data.table(date = dates, measuresDiff)
+  sento_measures$measures <- data.table::data.table(date = dates, measuresDiff)
   sento_measures$stats <- compute_stats(sento_measures)
   return(sento_measures)
 }
@@ -199,7 +198,7 @@ nobs.sento_measures <- function(object, ...) {
 scale.sento_measures <- function(x, center = TRUE, scale = TRUE) {
   sento_measures <- x
   dates <- get_dates(sento_measures)
-  measures <- as.data.table(sento_measures)[, -1] # drop dates
+  measures <- data.table::as.data.table(sento_measures)[, -1] # drop dates
   if (is.matrix(center)) {
     if (nrow(center) != nobs(sento_measures) || !(ncol(center) %in% c(1, nmeasures(sento_measures))))
       stop("The matrix dimensions of the 'center' argument are not correct.")
@@ -214,7 +213,7 @@ scale.sento_measures <- function(x, center = TRUE, scale = TRUE) {
   }
 
   measuresNorm <- scale(measures, center = center, scale = scale)
-  sento_measures$measures <- data.table(date = dates, measuresNorm)
+  sento_measures$measures <- data.table::data.table(date = dates, measuresNorm)
   sento_measures$stats <- compute_stats(sento_measures)
   return(sento_measures)
 }
@@ -301,8 +300,8 @@ get_dimensions <- function(sento_measures) {
 #'                      sento_lexicons(list_lexicons["LM_en"]),
 #'                      ctr_agg(lag = 3))
 #'
-#' as.data.table(sm)
-#' as.data.table(sm, "long")
+#' data.table::as.data.table(sm)
+#' data.table::as.data.table(sm, "long")
 #'
 #' @export
 as.data.table.sento_measures <- function(x, keep.rownames = FALSE, format = "wide", ...) {
@@ -382,7 +381,7 @@ subset.sento_measures <- function(x, subset = NULL, select = NULL, delete = NULL
       warning("At least one row index is greater than nobs(x). Input sento_measures object is returned.")
       return(x)
     }
-    measuresNew <- as.data.table(x)[subset, ]
+    measuresNew <- data.table::as.data.table(x)[subset, ]
     if (nrow(measuresNew) == 0) {
       warning("No rows retained. Input sento_measures object is returned.")
       return(x)
@@ -394,7 +393,7 @@ subset.sento_measures <- function(x, subset = NULL, select = NULL, delete = NULL
     if (length(sub) > 0 && sub != "NULL") {
       sub <- stringi::stri_replace_all(sub, "", regex = " ")
       sub <- stringi::stri_replace_all(sub, "____", regex = "--")
-      measures <- as.data.table(x)
+      measures <- data.table::as.data.table(x)
       colnames(measures) <- stringi::stri_replace_all(colnames(measures), "____", regex = "--") # -- is problematic here
       measuresNew <- tryCatch(measures[eval(parse(text = sub), parent.frame(2))], error = function(e) NULL)
       if (is.null(measuresNew)) stop("The 'subset' argument must evaluate to logical.")
@@ -416,7 +415,7 @@ subset.sento_measures <- function(x, subset = NULL, select = NULL, delete = NULL
                   paste0(unique(unlist(select)[!valid]), collapse = ', '), "."))
     }
 
-    measures <- as.data.table(x)
+    measures <- data.table::as.data.table(x)
     namesList <- stringi::stri_split(colnames(measures), regex = "--")
     if (is.list(select)) {
       ind <- rep(FALSE, length(namesList))
@@ -442,7 +441,7 @@ subset.sento_measures <- function(x, subset = NULL, select = NULL, delete = NULL
                   paste0(unique(unlist(delete)[!valid]), collapse = ', '), "."))
     }
 
-    measures <- as.data.table(x)
+    measures <- data.table::as.data.table(x)
     namesList <- stringi::stri_split(colnames(measures), regex = "--")
     if (is.list(delete)) {
       ind <- rep(FALSE, length(namesList))
@@ -554,7 +553,7 @@ aggregate.sento_measures <- function(x, features = NULL, lexicons = NULL, time =
     stopifnot(is.null(lexicons) || is.numeric(lexicons))
     stopifnot(is.null(time) || is.numeric(time))
     measures <- measures_global(x, lexicons, features, time)
-    if (do.keep == TRUE) measures <- cbind(measures, as.data.table(x)[, -1])
+    if (do.keep == TRUE) measures <- cbind(measures, data.table::as.data.table(x)[, -1])
     return(measures)
   }
 
@@ -567,7 +566,7 @@ aggregate.sento_measures <- function(x, features = NULL, lexicons = NULL, time =
   if (check$stop == TRUE)
     stop(paste0(c("Wrong inputs.", check$msg1, check$msg2), collapse = " "))
 
-  measures <- as.data.table(x)
+  measures <- data.table::as.data.table(x)
   toAgg <- list(lexicons = lexicons, features = features, time = time)
 
   if (do.keep == TRUE) {
