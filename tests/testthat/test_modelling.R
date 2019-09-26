@@ -2,6 +2,7 @@
 context("Model specification")
 
 library("sentometrics")
+library("data.table")
 library("quanteda")
 
 set.seed(123)

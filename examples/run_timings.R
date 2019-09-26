@@ -5,20 +5,20 @@
 
 ###### DESCRIPTION ######
 
-### This code is used in the vignette paper 'The R Package sentometrics to Compute,
-### Aggregate and Predict with Textual Sentiment' (Ardia, Bluteau, Borms and Boudt, 2018)
-### See the paper for the results and setup details
-### Download the package first before you run this script...
-### install.packages("sentometrics") # from CRAN (version 0.5.6), OR
-### install.packages("sentometrics_0.5.6.tar.gz", repos = NULL) # from the tar
+### This code was used in a previous version of the vignette paper 'The R Package sentometrics
+### to Compute, Aggregate and Predict with Textual Sentiment' (Ardia, Bluteau, Borms and Boudt, 2019),
+### comparing various textual sentiment computation tools in R.
+### Download the package and its dependencies first before you run this script...
+### install.packages("sentometrics", dependencies = TRUE) # from CRAN (version 0.7.5), OR
+### install.packages("sentometrics_0.7.5.tar.gz", repos = NULL, dependencies = TRUE) # from the tar
 
 ###### WARNING ######
 
 ### We run the SentimentAnalysis function separately (cf. timingsSentimentAnalysis <- ...)
 ### to avoid a memory error for a corpus of 100,000 texts
-### It might be that this memory error already occurs for a smaller corpus size
+### It might be that on your machine this memory error already occurs for a smaller corpus size
 
-###### SESSION INFO ###### ### TODO: update!
+###### SESSION INFO ###### ### TODO: update
 
 ### R version 3.5.1 (2018-07-02)
 ### Platform: x86_64-w64-mingw32/x64 (64-bit)

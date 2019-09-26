@@ -2,6 +2,7 @@
 context("Methods sentomeasures")
 
 library("sentometrics")
+library("data.table")
 library("quanteda")
 
 set.seed(123)

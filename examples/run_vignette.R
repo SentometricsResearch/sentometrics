@@ -6,13 +6,13 @@
 ###### DESCRIPTION ######
 
 ### This code is used in the vignette paper 'The R Package sentometrics to Compute,
-### Aggregate and Predict with Textual Sentiment' (Ardia, Bluteau, Borms and Boudt, 2018)
-### See the paper for the results and setup details
+### Aggregate and Predict with Textual Sentiment' (Ardia, Bluteau, Borms and Boudt, 2018).
+### See the paper for the results and setup details.
 ### Download the package and its dependencies first before you run this script...
 ### install.packages("sentometrics", dependencies = TRUE) # from CRAN (version 0.7.5), OR
 ### install.packages("sentometrics_0.7.5.tar.gz", repos = NULL, dependencies = TRUE) # from the tar
 
-###### SESSION INFO ######
+###### SESSION INFO ###### ### TODO: update
 
 ### R version 3.5.1 (2018-07-02)
 ### Platform: x86_64-w64-mingw32/x64 (64-bit)

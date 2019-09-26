@@ -36,19 +36,21 @@ value of 1 (default) implies no parallelization. Parallelization is expected to 
 computation only for sufficiently large corpora.}
 }
 \value{
-If \code{x} is a \code{sento_corpus} object, a \code{sentiment} object, i.e., a \code{data.table} containing
+If \code{x} is a \code{sento_corpus} object: a \code{sentiment} object, i.e., a \code{data.table} containing
 the sentiment scores \code{data.table} with an \code{"id"}, a \code{"date"} and a \code{"word_count"} column,
-and all lexicon-feature sentiment scores columns. A \code{sentiment} object can be used for aggregation into
-time series with the \code{\link{aggregate.sentiment}} function. If \code{do.sentence = TRUE}, an additional
-\code{"sentence_id"} column along the \code{"id"} column is added.
+and all lexicon-feature sentiment scores columns. If \code{do.sentence = TRUE}, an additional
+\code{"sentence_id"} column along the \code{"id"} column is added. The tokenized sentences are not
+provided but can be obtained as \code{stringi::stri_split_boundaries(texts, type = "sentence")}.
+A \code{sentiment} object can be aggregated (into time series) with the \code{\link{aggregate.sentiment}}
+function.
 
-If \code{x} is a \pkg{quanteda} \code{\link[quanteda]{corpus}} object, a sentiment scores
+If \code{x} is a \pkg{quanteda} \code{\link[quanteda]{corpus}} object: a sentiment scores
 \code{data.table} with an \code{"id"} and a \code{"word_count"} column, and all lexicon-feature
 sentiment scores columns.
 
-If \code{x} is a \pkg{tm} \code{SimpleCorpus} object, a \pkg{tm} \code{VCorpus} object, or a \code{character} vector,
-a sentiment scores \code{data.table} with an auto-created \code{"id"} column, a \code{"word_count"} column,
-and all lexicon sentiment scores columns.
+If \code{x} is a \pkg{tm} \code{SimpleCorpus} object, a \pkg{tm} \code{VCorpus} object, or a \code{character}
+vector: a sentiment scores \code{data.table} with an auto-created \code{"id"} column, a \code{"word_count"}
+column, and all lexicon sentiment scores columns.
 }
 \description{
 Given a corpus of texts, computes sentiment per document or sentence using the valence shifting

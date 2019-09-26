@@ -2,6 +2,7 @@
 context("Corpus building")
 
 library("sentometrics")
+library("data.table")
 library("quanteda")
 
 # load built-in corpus

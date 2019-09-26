@@ -16,8 +16,7 @@ Author: Samuel Borms [aut, cre],
   Andres Algaba [ctb]
 Maintainer: Samuel Borms <samuel.borms@unine.ch>
 Description: Optimized prediction based on textual sentiment, accounting for the intrinsic challenge that sentiment can be computed and pooled across texts and time in various ways. See Ardia et al. (2019) <doi:10.2139/ssrn.3067734>.
-Depends: R (>= 3.3.0), 
-  data.table
+Depends: R (>= 3.3.0)
 License: GPL (>= 2)
 BugReports: https://github.com/sborms/sentometrics/issues
 URL: https://github.com/sborms/sentometrics
@@ -33,6 +32,7 @@ Suggests: covr,
   tm
 Imports: caret,
   compiler,
+  data.table,
   foreach,
   ggplot2, 
   glmnet,

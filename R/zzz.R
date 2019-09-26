@@ -7,7 +7,7 @@
         "attrib", "feature", "id", "i", "wLex",
         "wFeat", "wTime", "x", "identifier",
         ".", "documents", "language", "nTokens",
-        "lag", "sentence_id", "count")
+        "lag", "sentence_id", "n", "pos", "neg")
     )
   invisible()
 }
