@@ -58,6 +58,7 @@ sink(file = "output_timings.txt", append = FALSE, split = TRUE) # output printed
 
 library("sentometrics")
 
+library("data.table")
 library("quanteda")
 library("tidytext")
 library("meanr")

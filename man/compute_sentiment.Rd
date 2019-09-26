@@ -117,7 +117,7 @@ toks <- as.list(quanteda::tokens(corpusQSample, what = "fastestword"))
 sent4 <- compute_sentiment(corpusQSample, l1[1], how = "counts", tokens = toks)
 
 # from a SimpleCorpus object - unigrams approach
-scorp <- tm::SimpleCorpus(tm::DirSource(txt, encoding = "UTF-8"))
+scorp <- tm::SimpleCorpus(tm::DirSource(txt))
 sent5 <- compute_sentiment(scorp, l1, how = "proportional")
 
 # from a VCorpus object - unigrams approach

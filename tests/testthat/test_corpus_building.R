@@ -4,9 +4,12 @@ context("Corpus building")
 library("sentometrics")
 library("data.table")
 library("quanteda")
+library("tm")
 
-# load built-in corpus
+# load corpus data
 data("usnews")
+txt <- system.file("texts", "txt", package = "tm")
+reuters <- system.file("texts", "crude", package = "tm")
 
 ### tests from here ###
 
@@ -31,6 +34,22 @@ test_that("Conversion to sento_corpus from quanteda corpus", {
   )
   expect_warning(as.sento_corpus(
     quanteda::corpus(cbind(usnews, wrong = "nutNumeric"),  text_field = "texts", docid_field = "id"), dates = usnews$date))
+})
+
+colnames(usnews)[c(1, 3)] <- c("doc_id", "text") # original usnews data not used any further
+tmSCdf <- tm::SimpleCorpus(tm::DataframeSource(usnews))
+tmSCdir <- tm::SimpleCorpus(tm::DirSource(txt))
+tmVCdf <- tm::VCorpus(tm::DataframeSource(usnews))
+tmVCdir <- tm::VCorpus(tm::DirSource(reuters), list(reader = tm::readReut21578XMLasPlain))
+tmVCdir_decomp <- tm::VCorpus(tm::DirSource(reuters))
+test_that("Conversion to sento_corpus from tm corpora", {
+  expect_true(inherits(as.sento_corpus(tmSCdf), "sento_corpus"))
+  expect_error(as.sento_corpus(tmSCdir))
+  expect_true(inherits(suppressWarnings(as.sento_corpus(tmSCdir, dates = usnews$date[1:5])), "sento_corpus"))
+  expect_true(inherits(as.sento_corpus(tmVCdf), "sento_corpus"))
+  expect_error(as.sento_corpus(tmVCdir))
+  expect_true(inherits(suppressWarnings(as.sento_corpus(tmVCdir, dates = usnews$date[1:20])), "sento_corpus"))
+  expect_error(as.sento_corpus(tmVCdir_decomp))
 })
 
 # add_features

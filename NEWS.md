@@ -6,6 +6,7 @@
 - clarified the documentation for the `peakdates()` and `peakdocs()` functions
 - put the Shiny application made available in previous package update (i.e., the `sento_app()` function) in a separate sole-purpose package **`sentometrics.app`** (see https://github.com/sborms/sentometrics.app) 
 - moved the **`data.table`** package from Depends to Imports (see https://github.com/Rdatatable/data.table/issues/3076)
+- no change by reference of input sentiment objects in the `merge.sentiment()` function anymore
 - improved documentation
 
 ## sentometrics 0.7.0
