@@ -2,7 +2,7 @@
 % Please edit documentation in R/sentiment_engines.R
 \name{merge.sentiment}
 \alias{merge.sentiment}
-\title{Merge sentiment objects horizontally or vertically row-wise}
+\title{Merge sentiment objects horizontally and/or vertically}
 \usage{
 \method{merge}{sentiment}(...)
 }
@@ -36,18 +36,18 @@ s5 <- compute_sentiment(corp3, l2, "proportional", do.sentence = TRUE)
 s6 <- compute_sentiment(corp3, l1, "counts", do.sentence = TRUE)
 
 # straightforward row-wise merge
-sb1 <- merge(s1, s2, s3)
-nrow(sb1) # 700
+m1 <- merge(s1, s2, s3)
+nrow(m1) # 700
 
 # another straightforward row-wise merge
-sb2 <- merge(s4, s6)
+m2 <- merge(s4, s6)
 
 # merge of sentence and non-sentence calculations
-sb3 <- merge(s3, s6)
+m3 <- merge(s3, s6)
 
 # different methods add rows and/or columns
-sb4 <- merge(s4, s5)
-nrow(sb4) > nrow(sb2) # TRUE
+m4 <- merge(s4, s5)
+nrow(m4) > nrow(m2) # TRUE
 
 }
 \author{

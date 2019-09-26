@@ -46,6 +46,7 @@ sink(file = "output_vignette.txt", append = FALSE, split = TRUE) # output printe
 
 library("sentometrics")
 
+library("data.table")
 library("ggplot2")
 library("gridExtra")
 library("lexicon")

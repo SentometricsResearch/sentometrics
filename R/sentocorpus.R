@@ -361,7 +361,7 @@ corpus_summarize <- function(x, by = "day", features = NULL) {
   freqAll <- merge(freqTexts, freqFeatures, by = "date")
 
   stats <- merge(tokensDT, freqAll, by = "date")
-  setcolorder(stats, c("date", "documents"))
+  data.table::setcolorder(stats, c("date", "documents"))
 
   # plots
   docPlot <- ggplot(melt(freqAll[, .(date, documents)], id = "date", all = TRUE)) +
@@ -413,7 +413,7 @@ as.sento_corpus.corpus <- function(x, dates = NULL, do.clean = FALSE) {
   dt <- data.table::data.table("id" = quanteda::docnames(x),
                                "texts" = quanteda::texts(x),
                                features) # includes date column
-  setcolorder(dt, c("id", "date", "texts"))
+  data.table::setcolorder(dt, c("id", "date", "texts"))
   sento_corpus(dt, do.clean)
 }
 
@@ -449,7 +449,7 @@ to_sento_corpus_tm <- function(x, dates, do.clean, texts, hasLocalDate = FALSE) 
   dt <- data.table::data.table("id" = unlist(NLP::meta(x, "id")),
                                "texts" = texts,
                                features) # includes date column
-  setcolorder(dt, c("id", "date", "texts"))
+  data.table::setcolorder(dt, c("id", "date", "texts"))
   sento_corpus(dt, do.clean)
 }
 

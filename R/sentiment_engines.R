@@ -191,7 +191,7 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
 #' sent4 <- compute_sentiment(corpusQSample, l1[1], how = "counts", tokens = toks)
 #'
 #' # from a SimpleCorpus object - unigrams approach
-#' scorp <- tm::SimpleCorpus(tm::DirSource(txt, encoding = "UTF-8"))
+#' scorp <- tm::SimpleCorpus(tm::DirSource(txt))
 #' sent5 <- compute_sentiment(scorp, l1, how = "proportional")
 #'
 #' # from a VCorpus object - unigrams approach
@@ -280,7 +280,7 @@ compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, 
   languages <- tryCatch(unique(quanteda::docvars(x, field = "language")), error = function(e) NULL)
   if (is.null(languages)) {
     features <- names(quanteda::docvars(x))[-1] # drop date column
-    dv <- setDT(quanteda::docvars(x)[c("date", features)])
+    dv <- data.table::as.data.table(quanteda::docvars(x)[c("date", features)])
     lexNames <- names(lexicons)[names(lexicons) != "valence"]
     s <- compute_sentiment_lexicons(x, tokens, dv, lexicons, how, do.sentence, nCore)
     s <- spread_sentiment_features(s, features, lexNames) # there is always at least one feature
@@ -306,7 +306,7 @@ compute_sentiment.sento_corpus <- compiler::cmpfun(.compute_sentiment.sento_corp
   } else {
     isNumeric <- sapply(quanteda::docvars(x), is.numeric)
     if (sum(isNumeric) == 0) features <- NULL else features <- names(isNumeric[isNumeric])
-    dv <- setDT(quanteda::docvars(x)[features])
+    dv <- data.table::as.data.table(quanteda::docvars(x)[features])
   }
 
   s <- compute_sentiment_lexicons(x, tokens, dv, lexicons, how, do.sentence, nCore)
@@ -352,7 +352,7 @@ compute_sentiment.VCorpus <- compiler::cmpfun(.compute_sentiment.VCorpus)
 #' @export
 compute_sentiment.SimpleCorpus <- compiler::cmpfun(.compute_sentiment.SimpleCorpus)
 
-#' Merge sentiment objects horizontally or vertically row-wise
+#' Merge sentiment objects horizontally and/or vertically
 #'
 #' @author Samuel Borms
 #'
@@ -383,18 +383,18 @@ compute_sentiment.SimpleCorpus <- compiler::cmpfun(.compute_sentiment.SimpleCorp
 #' s6 <- compute_sentiment(corp3, l1, "counts", do.sentence = TRUE)
 #'
 #' # straightforward row-wise merge
-#' sb1 <- merge(s1, s2, s3)
-#' nrow(sb1) # 700
+#' m1 <- merge(s1, s2, s3)
+#' nrow(m1) # 700
 #'
 #' # another straightforward row-wise merge
-#' sb2 <- merge(s4, s6)
+#' m2 <- merge(s4, s6)
 #'
 #' # merge of sentence and non-sentence calculations
-#' sb3 <- merge(s3, s6)
+#' m3 <- merge(s3, s6)
 #'
 #' # different methods add rows and/or columns
-#' sb4 <- merge(s4, s5)
-#' nrow(sb4) > nrow(sb2) # TRUE
+#' m4 <- merge(s4, s5)
+#' nrow(m4) > nrow(m2) # TRUE
 #'
 #' @export
 merge.sentiment <- function(...) {
@@ -403,10 +403,10 @@ merge.sentiment <- function(...) {
     stop("Not all inputs are sentiment objects.")
   cols <- unique(do.call(c, lapply(inp, colnames)))
   dts <- lapply(inp, function(dt) {
-    setDT(dt)
+    dt <- data.table::data.table(dt) # no change by reference as also impacts input sentiment objects
     newCols <- setdiff(cols, colnames(dt))
     if (length(newCols) > 0) dt[, setdiff(cols, colnames(dt)) := as.numeric(NA)]
-    dt
+    dt[]
   })
   s <- Reduce(function(...) merge(..., all = TRUE), dts)[order(date, id)]
   if ("sentence_id" %in% colnames(s)) {

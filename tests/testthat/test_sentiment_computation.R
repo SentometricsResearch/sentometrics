@@ -14,14 +14,14 @@ corpus <- sento_corpus(corpusdf = usnews[1:250, ])
 
 # SimpleCorpus creation
 txt <- system.file("texts", "txt", package = "tm")
-scorp <- SimpleCorpus(DirSource(txt, encoding = "UTF-8"), control = list(language = "en"))
-# scorp$content[1] <- "This is a text for which we want to calculate above average sentiment."
-# scorp$content[2] <- "This is a text for which we want to calculate below average sentiment."
+scorp <- tm::SimpleCorpus(tm::DirSource(txt))
+# scorp$content[1] <- "A text for which we want to calculate above average sentiment."
+# scorp$content[2] <- "A text for which we want to calculate below average sentiment."
 scorp$content[3] <- corpus$documents$text[3]
 
 # VCorpus creation
 reuters <- system.file("texts", "crude", package = "tm")
-vcorp <- VCorpus(DirSource(reuters))
+vcorp <- tm::VCorpus(tm::DirSource(reuters))
 
 # corpus with multiple languages
 usnews[["language"]] <- "en"
@@ -38,8 +38,8 @@ lexClust <- sento_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")],
                            list_valence_shifters[["en"]][, c("x", "t")])
 lEn <- sento_lexicons(list("HENRY_en" = list_lexicons$HENRY_en))
 lFr <- sento_lexicons(list("HENRY_fr" = list_lexicons$HENRY_en))
-lexLang <- list(en = lEn, fr = lFr)
-lexWrong <- list(en = lEn, frr = lFr)
+lexLang <- lexWrong <- list(en = lEn, fr = lFr)
+names(lexWrong)[2] <- "frr"
 
 ### tests from here ###
 
@@ -121,6 +121,19 @@ test_that("Proper fails when issues with lexicons and valence shifters input", {
   expect_error(sento_lexicons(list_lexicons["GI_en"], valenceIn = data.table(x = rep("w", 10))))
   expect_error(sento_lexicons(list_lexicons["GI_en"], valenceIn = data.table(x = "w", wrong = 1:3)))
   expect_error(sento_lexicons(list_lexicons["GI_en"], valenceIn = data.table(x = "w", t = 2:5)))
+  expect_error(sento_lexicons(list_lexicons$FEEL_nl_tr))
+  expect_error(sento_lexicons(list(list_lexicons$LM_en, list_lexicons$GI_en)))
+  expect_error(sento_lexicons(list(a = list_lexicons[[1]], b = list_lexicons[[2]], a = list_lexicons[[3]])))
+  expect_error(sento_lexicons(list_lexicons[1:3], valenceIn = letters))
+})
+
+test_that("Proper fails when trying to modify a sento_lexicons object", {
+  expect_error(lex["valence"])
+  expect_error(lex[0])
+  expect_error(lex[length(lex) + 1])
+  expect_error(lex[1] <- lexSplit[3])
+  expect_error(lex[[1]] <- lexSplit[[1]])
+  expect_error(lex$HENRY_en <- lexSplit$HENRY_en_POS)
 })
 
 # as.sentiment
