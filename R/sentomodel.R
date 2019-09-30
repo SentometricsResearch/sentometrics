@@ -232,10 +232,10 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' \item{lambdas}{calibrated lambdas.}
 #' \item{performance}{a \code{data.frame} with performance-related measures, being "\code{RMSFE}" (root mean squared
 #' forecasting error), "\code{MAD}" (mean absolute deviation), "\code{MDA}" (mean directional accuracy, in which's calculation
-#' zero is considered as a positive; in percentage points), "\code{accuracy}" (proportion of correctly predicted classes in case
-#' of a logistic regression; in percentage points), and each's respective individual values in the sample. Directional accuracy
+#' zero is considered as a positive; in p.p.), "\code{accuracy}" (proportion of correctly predicted classes in case
+#' of a logistic regression; in p.p.), and each's respective individual values in the sample. Directional accuracy
 #' is measured by comparing the change in the realized response with the change in the prediction between two consecutive time
-#' points (omitting the very first prediction, resulting in \code{NA}). Only the relevant performance statistics are given
+#' points (omitting the very first prediction as \code{NA}). Only the relevant performance statistics are given
 #' depending on the type of regression. Dates are as in the \code{"models"} output element, i.e., from the perspective of the
 #' sentiment measures.}
 #'

@@ -88,7 +88,7 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
   s[order(match(id, ids))]
 }
 
-#' Compute document-level sentiment across features and lexicons
+#' Compute textual sentiment across features and lexicons
 #'
 #' @author Samuel Borms, Jeroen Van Pelt, Andres Algaba
 #'
@@ -138,7 +138,7 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
 #' may be spurious and errors could occur. By default set to \code{NULL}.
 #' @param nCore a positive \code{numeric} that will be passed on to the \code{numThreads} argument of the
 #' \code{\link[RcppParallel]{setThreadOptions}} function, to parallelize the sentiment computation across texts. A
-#' value of 1 (default) implies no parallelization. Parallelization is expected to improve speed of the sentiment
+#' value of 1 (default) implies no parallelization. Parallelization may improve speed of the sentiment
 #' computation only for sufficiently large corpora.
 #' @param do.sentence a \code{logical} to indicate whether the sentiment computation should be done on
 #' sentence-level rather than document-level. By default \code{do.sentence = FALSE}. The methodology defined

@@ -134,6 +134,7 @@ test_that("Proper fails when trying to modify a sento_lexicons object", {
   expect_error(lex[1] <- lexSplit[3])
   expect_error(lex[[1]] <- lexSplit[[1]])
   expect_error(lex$HENRY_en <- lexSplit$HENRY_en_POS)
+  expect_error(names(lex)[1] <- names(lex)[2])
 })
 
 # as.sentiment

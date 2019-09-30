@@ -74,8 +74,8 @@ equal to the desired \code{lag}.}
 A \code{list} encapsulating the control parameters.
 }
 \description{
-Sets up control object for aggregation of document-level textual sentiment into textual
-sentiment measures (indices).
+Sets up control object for (computation of textual sentiment and) aggregation into textual
+sentiment measures.
 }
 \details{
 For available options on how aggregation can occur (via the \code{howWithin},

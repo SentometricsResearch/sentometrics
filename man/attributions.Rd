@@ -25,12 +25,12 @@ if \code{model} is a \code{sento_model} object). All dates should also be in \co
 \code{NULL} (default), attribution is calculated for all in-sample dates. Ignored if \code{model} is a \code{sento_modelIter}
 object, for which attribution is calculated for all out-of-sample prediction dates.}
 
-\item{factor}{the factor level as a single \code{character} vector for which attribution has to be calculated in
-case of (a) multinomial model(s). Ignored for linear and binomial models.}
+\item{factor}{the factor level as a single \code{character} vector to calculate attribution
+for in case of (a) multinomial model(s). Ignored for linear and binomial models.}
 }
 \value{
 A \code{list} of class \code{attributions}, with \code{"documents"}, \code{"lags"}, \code{"lexicons"},
-\code{"features"} and \code{"time"} as dimensions for which aggregation is computed. The last four dimensions are
+\code{"features"} and \code{"time"} as attribution dimensions. The last four dimensions are
 \code{data.table}s having a \code{"date"} column and the other columns the different components of the dimension, with
 the attributions as values. Document-level attribution is further decomposed into a \code{data.table} per date, with
 \code{"id"}, \code{"date"} and \code{"attrib"} columns. If \code{do.lags = FALSE}, the \code{"lags"} element is set
