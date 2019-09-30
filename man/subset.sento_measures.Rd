@@ -41,10 +41,11 @@ ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 sm <- sento_measures(corpusSample, l, ctr)
 
 # three specified indices in required list format
-three <- as.list(stringi::stri_split(
-  c("LM_en--economy--linear",
-    "HENRY_en--wsj--equal_weight",
-    "HENRY_en--wapo--equal_weight"), regex = "--")
+three <- as.list(
+  stringi::stri_split(c("LM_en--economy--linear",
+                        "HENRY_en--wsj--equal_weight",
+                        "HENRY_en--wapo--equal_weight"),
+                      regex = "--")
 )
 
 # different subsets

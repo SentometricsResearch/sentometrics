@@ -344,10 +344,11 @@ as.data.table.sento_measures <- function(x, keep.rownames = FALSE, format = "wid
 #' sm <- sento_measures(corpusSample, l, ctr)
 #'
 #' # three specified indices in required list format
-#' three <- as.list(stringi::stri_split(
-#'   c("LM_en--economy--linear",
-#'     "HENRY_en--wsj--equal_weight",
-#'     "HENRY_en--wapo--equal_weight"), regex = "--")
+#' three <- as.list(
+#'   stringi::stri_split(c("LM_en--economy--linear",
+#'                         "HENRY_en--wsj--equal_weight",
+#'                         "HENRY_en--wapo--equal_weight"),
+#'                       regex = "--")
 #' )
 #'
 #' # different subsets
@@ -478,17 +479,17 @@ subset.sento_measures <- function(x, subset = NULL, select = NULL, delete = NULL
 #'
 #' @param x a \code{sento_measures} object created using \code{\link{sento_measures}}.
 #' @param lexicons a \code{list} with unique lexicons to aggregate at given name, e.g., \cr
-#' \code{list(lex12 = c("lex1", "lex2"))}. See \code{sento_measures$lexicons} for the exact names to use. Use \code{NULL}
+#' \code{list(lex12 = c("lex1", "lex2"))}. See \code{x$lexicons} for the exact names to use. Use \code{NULL}
 #' (default) to apply no merging across this dimension. If \code{do.global = TRUE}, should be a \code{numeric} vector of
-#' weights, of size \code{length(sento_measures$lexicons)}, in the same order. A value of \code{NULL} means equally weighted.
+#' weights, of size \code{length(x$lexicons)}, in the same order. A value of \code{NULL} means equally weighted.
 #' @param features a \code{list} with unique features to aggregate at given name, e.g., \cr
-#' \code{list(feat12 = c("feat1", "feat2"))}. See \code{sento_measures$features} for the exact names to use. Use \code{NULL}
+#' \code{list(feat12 = c("feat1", "feat2"))}. See \code{x$features} for the exact names to use. Use \code{NULL}
 #' (default) to apply no merging across this dimension. If \code{do.global = TRUE}, should be a \code{numeric} vector of
-#' weights, of size \code{length(sento_measures$features)}, in the same order. A value of \code{NULL} means equally weighted.
+#' weights, of size \code{length(x$features)}, in the same order. A value of \code{NULL} means equally weighted.
 #' @param time a \code{list} with unique time weighting schemes to aggregate at given name, e.g., \cr
-#' \code{list(tw12 = c("tw1", "tw2"))}. See \code{sento_measures$time} for the exact names to use. Use \code{NULL} (default)
+#' \code{list(tw12 = c("tw1", "tw2"))}. See \code{x$time} for the exact names to use. Use \code{NULL} (default)
 #' to apply no merging across this dimension. If \code{do.global = TRUE}, should be a \code{numeric} vector of
-#' weights, of size \code{length(sento_measures$time)}, in the same order. A value of \code{NULL} means equally weighted.
+#' weights, of size \code{length(x$time)}, in the same order. A value of \code{NULL} means equally weighted.
 #' @param do.global a \code{logical} indicating if the sentiment measures should be aggregated into weighted
 #' global sentiment indices.
 #' @param do.keep a \code{logical} indicating if the original sentiment measures should be kept (i.e., the aggregated

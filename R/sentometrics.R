@@ -18,7 +18,8 @@
 #' \code{\link{sento_measures}}, \code{\link{aggregate.sento_measures}}, \code{\link{peakdocs}},
 #' \code{\link{peakdates}} and a series of manipulation functions
 #' \item Sparse modelling: \code{\link{ctr_model}}, \code{\link{sento_model}}
-#' \item Prediction and post-modelling analysis: \code{\link{predict.sento_model}}, \code{\link{attributions}}
+#' \item Prediction and post-modelling analysis: \code{\link{predict.sento_model}},
+#' \code{\link{attributions}}
 #' }
 #'
 #' @note Please cite the package in publications. Use \code{citation("sentometrics")}.

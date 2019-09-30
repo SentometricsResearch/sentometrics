@@ -3,8 +3,8 @@
 #'
 #' @author Samuel Borms, Keven Bluteau
 #'
-#' @description Sets up control object for aggregation of document-level textual sentiment into textual
-#' sentiment measures (indices).
+#' @description Sets up control object for (computation of textual sentiment and) aggregation into textual
+#' sentiment measures.
 #'
 #' @details For available options on how aggregation can occur (via the \code{howWithin},
 #' \code{howDocs} and \code{howTime} arguments), inspect \code{\link{get_hows}}. The control parameters

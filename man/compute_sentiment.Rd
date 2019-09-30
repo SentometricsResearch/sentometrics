@@ -2,7 +2,7 @@
 % Please edit documentation in R/sentiment_engines.R
 \name{compute_sentiment}
 \alias{compute_sentiment}
-\title{Compute document-level sentiment across features and lexicons}
+\title{Compute textual sentiment across features and lexicons}
 \usage{
 compute_sentiment(x, lexicons, how = "proportional", tokens = NULL,
   do.sentence = FALSE, nCore = 1)
@@ -32,7 +32,7 @@ in the \pkg{sentimentr} package is followed to carry out the computation.}
 
 \item{nCore}{a positive \code{numeric} that will be passed on to the \code{numThreads} argument of the
 \code{\link[RcppParallel]{setThreadOptions}} function, to parallelize the sentiment computation across texts. A
-value of 1 (default) implies no parallelization. Parallelization is expected to improve speed of the sentiment
+value of 1 (default) implies no parallelization. Parallelization may improve speed of the sentiment
 computation only for sufficiently large corpora.}
 }
 \value{

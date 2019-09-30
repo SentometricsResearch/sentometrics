@@ -11,19 +11,19 @@
 \item{x}{a \code{sento_measures} object created using \code{\link{sento_measures}}.}
 
 \item{features}{a \code{list} with unique features to aggregate at given name, e.g., \cr
-\code{list(feat12 = c("feat1", "feat2"))}. See \code{sento_measures$features} for the exact names to use. Use \code{NULL}
+\code{list(feat12 = c("feat1", "feat2"))}. See \code{x$features} for the exact names to use. Use \code{NULL}
 (default) to apply no merging across this dimension. If \code{do.global = TRUE}, should be a \code{numeric} vector of
-weights, of size \code{length(sento_measures$features)}, in the same order. A value of \code{NULL} means equally weighted.}
+weights, of size \code{length(x$features)}, in the same order. A value of \code{NULL} means equally weighted.}
 
 \item{lexicons}{a \code{list} with unique lexicons to aggregate at given name, e.g., \cr
-\code{list(lex12 = c("lex1", "lex2"))}. See \code{sento_measures$lexicons} for the exact names to use. Use \code{NULL}
+\code{list(lex12 = c("lex1", "lex2"))}. See \code{x$lexicons} for the exact names to use. Use \code{NULL}
 (default) to apply no merging across this dimension. If \code{do.global = TRUE}, should be a \code{numeric} vector of
-weights, of size \code{length(sento_measures$lexicons)}, in the same order. A value of \code{NULL} means equally weighted.}
+weights, of size \code{length(x$lexicons)}, in the same order. A value of \code{NULL} means equally weighted.}
 
 \item{time}{a \code{list} with unique time weighting schemes to aggregate at given name, e.g., \cr
-\code{list(tw12 = c("tw1", "tw2"))}. See \code{sento_measures$time} for the exact names to use. Use \code{NULL} (default)
+\code{list(tw12 = c("tw1", "tw2"))}. See \code{x$time} for the exact names to use. Use \code{NULL} (default)
 to apply no merging across this dimension. If \code{do.global = TRUE}, should be a \code{numeric} vector of
-weights, of size \code{length(sento_measures$time)}, in the same order. A value of \code{NULL} means equally weighted.}
+weights, of size \code{length(x$time)}, in the same order. A value of \code{NULL} means equally weighted.}
 
 \item{do.global}{a \code{logical} indicating if the sentiment measures should be aggregated into weighted
 global sentiment indices.}
