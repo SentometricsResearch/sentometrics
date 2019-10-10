@@ -9,8 +9,8 @@ compute_sentiment_onegrams <- function(texts, lexicons, how) {
     .Call(`_sentometrics_compute_sentiment_onegrams`, texts, lexicons, how)
 }
 
-compute_sentiment_sentences <- function(texts, lexicons, how, hasValenceShifters) {
-    .Call(`_sentometrics_compute_sentiment_sentences`, texts, lexicons, how, hasValenceShifters)
+compute_sentiment_sentences <- function(texts, lexicons, how, valenceType) {
+    .Call(`_sentometrics_compute_sentiment_sentences`, texts, lexicons, how, valenceType)
 }
 
 compute_sentiment_valence <- function(texts, lexicons, how) {
@@ -21,7 +21,7 @@ fill_NAs <- function(x) {
     .Call(`_sentometrics_fill_NAs`, x)
 }
 
-make_frequency_maps <- function(texts, ids, byText) {
-    .Call(`_sentometrics_make_frequency_maps`, texts, ids, byText)
+get_dtf_vectors <- function(texts) {
+    .Call(`_sentometrics_get_dtf_vectors`, texts)
 }
 

@@ -238,7 +238,7 @@ save(list_lexicons, file = "data/list_lexicons.rda")
 load("data-raw/valence-raw/valShifters.rda")
 names(valShifters) <- c("en", "fr", "nl")
 valShifters <- lapply(valShifters, function(v) {
-  v <- v[t != 4]
+  # v <- v[t != 4]
   v$y <- -1
   v$t <- as.numeric(v$t)
   v[t == 2, "y"] <- 1.8
@@ -249,11 +249,12 @@ valShifters <- lapply(valShifters, function(v) {
   # v$t <- NULL
   v <- v[!stringi::stri_detect(v$x, regex = "\\s+"), ]
   setcolorder(v, c("x", "y", "t"))
-  return(v)
+  setkey(v, "x")
+  v
 })
 list_valence_shifters <- valShifters
 
-save(list_valence_shifters, file = "data/list_valence_shifters.rda")
+save(list_valence_shifters, file = "data/list_valence_shifters.rda", version = 2)
 
 ######################### ISO CODES TABLE
 

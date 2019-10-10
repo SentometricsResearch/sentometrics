@@ -4,12 +4,17 @@
 \alias{weights_exponential}
 \title{Compute exponential weighting curves}
 \usage{
-weights_exponential(n, alphas = seq(0.1, 0.5, by = 0.1))
+weights_exponential(n, alphas = seq(0.1, 0.5, by = 0.1),
+  do.inverse = FALSE, do.normalize = TRUE)
 }
 \arguments{
 \item{n}{a single \code{numeric} to indicate the lag length.}
 
 \item{alphas}{a \code{numeric} vector of decay factors.}
+
+\item{do.inverse}{\code{TRUE} if the inverse exponential curves should be calculated as well.}
+
+\item{do.normalize}{a \code{logical}, if \code{TRUE} weights are normalized to unity.}
 }
 \value{
 A \code{data.frame} of exponential weighting curves per value of \code{alphas}.

@@ -51,6 +51,8 @@
 #' \code{"exponential" \%in\% howDocs} or \code{"inverseExponential" \%in\% howDocs}. Value should be between 0 and 1
 #' (both excluded); see \code{\link{weights_exponential}}.
 #' @param do.sentence see \code{\link{compute_sentiment}}.
+#' @param do.inverseExp a \code{logical} indicating if for every exponential curve its inverse has to be added,
+#' used if \code{"exponential" \%in\% howTime}; see \code{\link{weights_exponential}}.
 #
 #' @return A \code{list} encapsulating the control parameters.
 #'
@@ -86,7 +88,7 @@
 #' @export
 ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTime = "equal_weight",
                     do.sentence = FALSE, do.ignoreZeros = TRUE, by = "day", lag = 1, fill = "zero",
-                    alphaExpDocs = 0.1, alphasExp = seq(0.1, 0.5, by = 0.1),
+                    alphaExpDocs = 0.1, alphasExp = seq(0.1, 0.5, by = 0.1), do.inverseExp = FALSE,
                     ordersAlm = 1:3, do.inverseAlm = TRUE, aBeta = 1:4, bBeta = 1:4, weights = NULL,
                     tokens = NULL, nCore = 1) {
 
@@ -150,13 +152,19 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
   if (!is.null(tokens) && !is.list(tokens)) {
     err <- c(err, "The 'tokens' argument, if not NULL, must be a list.")
   }
-  if (howDocs == "exponential" || howDocs =="inverseExponential") {
+  if (howDocs == "exponential" || howDocs == "inverseExponential") {
     if (alphaExpDocs >= 1 || alphaExpDocs <= 0) {
       err <- c(err, "Alpha must be a number between 0 and 1 (both excluded).")
     }
   }
   if (!is.logical(do.sentence)) {
     err <- c(err, "Argument 'do.sentence' should be a logical.")
+  }
+  if (!is.logical(do.inverseAlm)) {
+    err <- c(err, "Argument 'do.inverseAlm' should be a logical.")
+  }
+  if (!is.logical(do.inverseExp)) {
+    err <- c(err, "Argument 'do.inverseExp' should be a logical.")
   }
   if (!is.null(err)) stop("Wrong inputs. See below for specifics. \n", paste0(err, collapse = "\n"))
 
@@ -173,6 +181,7 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
                                                 aBeta = aBeta,
                                                 bBeta = bBeta,
                                                 alphasExp = alphasExp,
+                                                do.inverseExp = do.inverseExp,
                                                 weights = weights)),
               tokens = tokens,
               nCore = nCore)
@@ -512,15 +521,14 @@ weights_across <- function(s, how = "proportional", do.ignoreZeros = TRUE, alpha
       docsIn <- s[, lapply(.SD, function(x) (x * (1 / word_count)) / x), by = eval(by)]
       weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = eval(by)][, -c(1:2)]
     } else {
-      weights <- s[, w := word_count / sum(1 / word_count, na.rm = TRUE), by = eval(by)][, "w"]
+      weights <- s[, w := (1 / word_count) / sum(1 / word_count, na.rm = TRUE), by = eval(by)][, "w"]
       weights <- weights[, colnames(s)[-c(1:2)] := weights][, -1]
     }
   }  else if (how == "exponential") {
     # exponential w.r.t. words in document vs. total words in all documents per date
     if (do.ignoreZeros == TRUE) {
       docsIn <- s[, lapply(.SD, function(x)
-        (x * alpha * (1 - alpha) ^ (1 - word_count / mean(word_count)) /
-           sum(alpha * (1 - alpha) ^ (1 - word_count / mean(word_count))) / x)), by = eval(by)]
+        x * (alpha * (1 - alpha) ^ (1 - word_count / mean(word_count))) / x), by = eval(by)]
       weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = eval(by)][, -c(1:2)]
     } else {
       weights <- s[, w := alpha * (1 - alpha) ^ (1 - word_count / mean(word_count, na.rm = TRUE)) /
@@ -532,8 +540,7 @@ weights_across <- function(s, how = "proportional", do.ignoreZeros = TRUE, alpha
     # inverse exponential w.r.t. words in document vs. total words in all documents per date
     if (do.ignoreZeros == TRUE) {
       docsIn <- s[, lapply(.SD, function(x)
-        (x * (1 / (alpha * (1 - alpha) ^ (1 - word_count / mean(word_count)))) /
-           sum(alpha * (1 - alpha) ^ (1 - word_count / mean(word_count))) / x)), by = eval(by)]
+        x * (1 / (alpha * (1 - alpha) ^ (1 - word_count / mean(word_count)))) / x), by = eval(by)]
       weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = eval(by)][, -c(1:2)]
     } else {
       weights <- s[, w := (1 / (alpha * (1 - alpha) ^ (1 - word_count / mean(word_count, na.rm = TRUE)))) /

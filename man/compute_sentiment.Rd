@@ -68,8 +68,8 @@ lexicons and valence shifters. Word counts are based on that same tokenization.
 
 If the \code{lexicons} argument has no \code{"valence"} element, the sentiment computed corresponds to simple unigram
 matching with the lexicons [\emph{unigrams} approach]. If valence shifters are included in \code{lexicons} with a
-corresponding \code{"y"} column, these have the effect of modifying the polarity of a word detected from the lexicon if
-appearing right before such word (examples: not good or can't defend) [\emph{bigrams} approach]. If the valence
+corresponding \code{"y"} column, the polarity of a word detected from a lexicon gets multiplied with the associated
+value of a valence shifter if it appears right before the detected word (examples: not good or can't defend) [\emph{bigrams} approach]. If the valence
 table contains a \code{"t"} column, valence shifters are searched for in a cluster centered around a detected polarity
 word [\emph{clusters} approach]. The latter approach is a simplified version of the one utilized by the \pkg{sentimentr}
 package. A cluster amounts to four words before and two words after a polarity word. A cluster never overlaps with
@@ -79,11 +79,11 @@ the difference between the number of amplifiers (\code{t = 2}) and the number of
 is an odd number of negators (\code{t = 1}), \eqn{n = -1} and amplifiers are counted as deamplifiers, else \eqn{n = 1}.
 
 The sentence-level sentiment calculation approaches each sentence as if it is a document. Depending on the input either
-the unigrams, bigrams or clusters approach is used. For the latter, we replicated the default \pkg{sentimentr} package
-approach, with a cluster of five words before and two words after a polarized word. The cluster is limited to the words
-after a previous comma and before a next comma. Adversative conjunctions (\eqn{adv}, \code{t = 4}) are accounted for here.
-If the value \eqn{1 + 0.25adv} is greater (resp. smaller) than 1, it is added to (resp. substracted from) the net
-amplification weight.
+the unigrams, bigrams or clusters approach is used. We enhanced latter approach following more closely the default
+\pkg{sentimentr} settings. They use a cluster of five words before and two words after a polarized word. The cluster
+is limited to the words after a previous comma and before a next comma. Adversative conjunctions (\code{t = 4}) are
+accounted for here. The cluster is reweighted based on the value \eqn{1 + 0.25adv}, where \eqn{adv} is the difference
+between the number of adversative conjunctions found before and after the polarized word.
 }
 
 \examples{
@@ -125,21 +125,21 @@ sent5 <- compute_sentiment(scorp, l1, how = "proportional")
 ## sentiment calculator handles multiple character vectors within
 ## a single corpus element as separate documents
 vcorp <- tm::VCorpus(tm::DirSource(reuters))
-sent6 <- compute_sentiment(vcorp, l1, how = "proportional")
+sent6 <- compute_sentiment(vcorp, l1)
 
 # from a sento_corpus object - unigrams approach with tf-idf weighting
 sent7 <- compute_sentiment(corpusSample, l1, how = "TFIDF")
 
 # sentence-by-sentence computation
-sent8 <- compute_sentiment(corpusSample, l1, how = "squareRootCounts",
+sent8 <- compute_sentiment(corpusSample, l1, how = "proportionalSquareRoot",
                            do.sentence = TRUE)
 
 # from an artificially constructed multilingual corpus
 usnews[["language"]] <- "en" # add language column
 usnews$language[1:100] <- "fr"
-l_en <- sento_lexicons(list("FEEL_en" = list_lexicons$FEEL_en_tr))
-l_fr <- sento_lexicons(list("FEEL_fr" = list_lexicons$FEEL_fr))
-lexicons <- list(en = l_en, fr = l_fr)
+lEn <- sento_lexicons(list("FEEL_en" = list_lexicons$FEEL_en_tr))
+lFr <- sento_lexicons(list("FEEL_fr" = list_lexicons$FEEL_fr))
+lexicons <- list(en = lEn, fr = lFr)
 corpusLang <- sento_corpus(corpusdf = usnews[1:250, ])
 sent9 <- compute_sentiment(corpusLang, lexicons, how = "proportional")
 

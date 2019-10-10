@@ -33,16 +33,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // compute_sentiment_sentences
-Rcpp::NumericMatrix compute_sentiment_sentences(std::vector<std::vector<std::string>> texts, Rcpp::List lexicons, std::string how, bool hasValenceShifters);
-RcppExport SEXP _sentometrics_compute_sentiment_sentences(SEXP textsSEXP, SEXP lexiconsSEXP, SEXP howSEXP, SEXP hasValenceShiftersSEXP) {
+Rcpp::NumericMatrix compute_sentiment_sentences(std::vector<std::vector<std::string>> texts, Rcpp::List lexicons, std::string how, int valenceType);
+RcppExport SEXP _sentometrics_compute_sentiment_sentences(SEXP textsSEXP, SEXP lexiconsSEXP, SEXP howSEXP, SEXP valenceTypeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::vector<std::vector<std::string>> >::type texts(textsSEXP);
     Rcpp::traits::input_parameter< Rcpp::List >::type lexicons(lexiconsSEXP);
     Rcpp::traits::input_parameter< std::string >::type how(howSEXP);
-    Rcpp::traits::input_parameter< bool >::type hasValenceShifters(hasValenceShiftersSEXP);
-    rcpp_result_gen = Rcpp::wrap(compute_sentiment_sentences(texts, lexicons, how, hasValenceShifters));
+    Rcpp::traits::input_parameter< int >::type valenceType(valenceTypeSEXP);
+    rcpp_result_gen = Rcpp::wrap(compute_sentiment_sentences(texts, lexicons, how, valenceType));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -70,16 +70,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// make_frequency_maps
-List make_frequency_maps(std::vector<std::vector<std::string>> texts, std::vector<std::string> ids, bool byText);
-RcppExport SEXP _sentometrics_make_frequency_maps(SEXP textsSEXP, SEXP idsSEXP, SEXP byTextSEXP) {
+// get_dtf_vectors
+List get_dtf_vectors(std::vector<std::vector<std::string>> texts);
+RcppExport SEXP _sentometrics_get_dtf_vectors(SEXP textsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::vector<std::vector<std::string>> >::type texts(textsSEXP);
-    Rcpp::traits::input_parameter< std::vector<std::string> >::type ids(idsSEXP);
-    Rcpp::traits::input_parameter< bool >::type byText(byTextSEXP);
-    rcpp_result_gen = Rcpp::wrap(make_frequency_maps(texts, ids, byText));
+    rcpp_result_gen = Rcpp::wrap(get_dtf_vectors(texts));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -90,7 +88,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_sentometrics_compute_sentiment_sentences", (DL_FUNC) &_sentometrics_compute_sentiment_sentences, 4},
     {"_sentometrics_compute_sentiment_valence", (DL_FUNC) &_sentometrics_compute_sentiment_valence, 3},
     {"_sentometrics_fill_NAs", (DL_FUNC) &_sentometrics_fill_NAs, 1},
-    {"_sentometrics_make_frequency_maps", (DL_FUNC) &_sentometrics_make_frequency_maps, 3},
+    {"_sentometrics_get_dtf_vectors", (DL_FUNC) &_sentometrics_get_dtf_vectors, 1},
     {NULL, NULL, 0}
 };
 

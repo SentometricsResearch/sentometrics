@@ -3,11 +3,21 @@
 
 - embedded a small workaround in the `plot.attributions()` function to guaranty same plotting behaviour after update of **`ggplot2`** package that gave buggy output for the `geom_area()` layer
 - integrated for overall consistency the `measures_global()` function into the `aggregate.sento_measures()` function, adding a `do.global` argument to enact it
+- slightly changed the clusters-based sentence-level sentiment computation (different weighting of
+adversative conjunctions)
 - clarified the documentation for the `peakdates()` and `peakdocs()` functions
 - put the Shiny application made available in previous package update (i.e., the `sento_app()` function) in a separate sole-purpose package **`sentometrics.app`** (see https://github.com/sborms/sentometrics.app) 
 - moved the **`data.table`** package from Depends to Imports (see https://github.com/Rdatatable/data.table/issues/3076)
 - no change by reference of input sentiment objects in the `merge.sentiment()` function anymore
+- correct pass-through of default `how` argument in the `compute_sentiment()` function
 - improved documentation
+- corrected small bugs in the weighting schemes and made the naming and options more coherent
+- added a few adversative conjunctions to all word lists in `list_valence_shifters`
+- added a `do.normalize` option to the `weights_beta()` and `weights_exponential()` functions
+- added a `do.inverse` option to the `weights_exponential()` function and associated `do.inverseExp` argument in the `ctr_agg()` function
+- modified some names of options for within-document or within-sentence aggregation (i.e., across tokens): `"squareRootCounts"'` into `"proportionalSquareRoot"'`, `"invertedExponential"'` into `"inverseExponential"'`, and `"invertedUShaped"'` into `"inverseUShaped"'`
+- corrected the numerator (number of documents or sentences instead of token frequency) in all weighting schemes involving the inverse document frequency (IDF)
+- the `compute_sentiment()` function also allows now for a sentence-level calculation using the bigrams valence shifting approach
 
 ## sentometrics 0.7.0
 
@@ -86,7 +96,7 @@
 
 - new functions: `measures_delete()`, `nmeasures()`, `nobs()`, and `to_sentocorpus()`
 - renamed following functions: any `xyz_measures()` to `measures_xyz()`, `extract_peakdocs()` to `peakdocs()`
-- dropped `do.normalizeAlm` argument in the `ctr_agg()` function, but kept in the `almons()` function
+- dropped `do.normalizeAlm` argument in the `ctr_agg()` function (but kept in the `almons()` function)
 - inverted order of rows in output of the `almons()` function to be consistent with Ardia et al. (2017) paper
 - renamed `lexicons` to `list_lexicons`, and `valence` to `list_valence_shifters` 
 - the `stats` element of a `sentomeasures` object is now also updated in `measures_fill()`

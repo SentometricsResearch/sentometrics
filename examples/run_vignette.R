@@ -1,12 +1,12 @@
 
-###############################
-#######  VIGNETTE CODE  #######
-###############################
+#################################################
+################# VIGNETTE CODE #################
+#################################################
 
 ###### DESCRIPTION ######
 
 ### This code is used in the vignette paper 'The R Package sentometrics to Compute,
-### Aggregate and Predict with Textual Sentiment' (Ardia, Bluteau, Borms and Boudt, 2018).
+### Aggregate and Predict with Textual Sentiment' (Ardia, Bluteau, Borms and Boudt, 2019).
 ### See the paper for the results and setup details.
 ### Download the package and its dependencies first before you run this script...
 ### install.packages("sentometrics", dependencies = TRUE) # from CRAN (version 0.7.5), OR
@@ -53,11 +53,14 @@ library("lexicon")
 library("quanteda")
 library("stm")
 library("lubridate")
+library("zoo")
 
 info <- sessionInfo()
 cat(info$locale, "\n \n")
 print(info)
 cat("\n")
+
+set.seed(505)
 
 ##################
 ###### CODE ######
@@ -113,6 +116,16 @@ sentScores <- compute_sentiment(usnews[["texts"]], lexicons = lex, how = "propor
 head(sentScores[, c("word_count", "GI_en", "SENTIWORD", "SOCAL")])
 cat("\n")
 
+usnewsLang <- usnews[1:5, 1:3]
+usnewsLang[["language"]] <- c("fr", "en", "en", "fr", "en")
+lEn <- sento_lexicons(list("GI_en" = list_lexicons$GI_en))
+lFr <- sento_lexicons(list("GI_fr" = list_lexicons$GI_fr_tr))
+corpusLang <- sento_corpus(corpusdf = usnewsLang)
+sLang <- compute_sentiment(corpusLang,
+                           list(en = sento_lexicons(list("GI_en" = list_lexicons$GI_en)),
+                                fr = sento_lexicons(list("GI_fr" = list_lexicons$GI_fr_tr))))
+head(sLang)
+
 cat("### SECTION 3.3 ####################### \n \n")
 
 ctrAgg <- ctr_agg(howWithin = "counts",
@@ -131,6 +144,11 @@ cat("\n")
 
 pT <- plot(sentMeas, group = "time")
 pT
+
+sSentences <- compute_sentiment(uscorpus, lex, do.sentence = TRUE)
+sSentences[1:12, 1:7]
+aggDocuments <- aggregate(sSentences, ctr_agg(howDocs = "equal_weight"), do.full = FALSE)
+aggDocuments[1:2, 1:7]
 
 cat("### SECTION 3.4 ####################### \n \n")
 
@@ -168,18 +186,24 @@ sentMeasMerged <- aggregate(sentMeas,
                             do.keep = FALSE)
 get_dimensions(sentMeasMerged)
 
-glob <- measures_global(sentMeas,
-                        lexicons = c(0.10, 0.40, 0.05, 0.05, 0.08, 0.08, 0.08, 0.08, 0.08),
-                        features = c(0.20, 0.20, 0.20, 0.20, 0.10, 0.10),
-                        time = c(1/2, 1/2))
+glob <- aggregate(sentMeas,
+                  lexicons = c(0.10, 0.40, 0.05, 0.05, 0.08, 0.08, 0.08, 0.08, 0.08),
+                  features = c(0.20, 0.20, 0.20, 0.20, 0.10, 0.10),
+                  time = c(1/2, 1/2),
+                  do.global = TRUE)
 
 peakdates(sentMeas, n = 1, type = "neg")
 cat("\n")
 
 cat("### SECTION 3.5 ####################### \n \n")
 
-set.seed(505)
 y <- rnorm(nobs(sentMeas))
+dt <- as.data.table(sentMeas)
+z <- zoo::zoo(dt[, !"date"], order.by = dt[["date"]])
+reg <- lm(y ~ z[, 1:6])
+# plot(z[, 1:6], main = "Sentiment", xlab = "", ylab = paste0("s", 1:6))
+# plot(reg, 1, sub.caption = "")
+
 ctrInSample <- ctr_model(model = "gaussian",
                          type = "BIC",
                          h = 0,

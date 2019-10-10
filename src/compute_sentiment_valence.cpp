@@ -15,7 +15,7 @@ Rcpp::NumericMatrix compute_sentiment_valence(std::vector< std::vector<std::stri
                                               Rcpp::List lexicons,
                                               std::string how) {
 
-  int nTexts = texts.size(); // already tokenized texts
+  int N = texts.size(); // already tokenized texts
   int nL = lexicons.size() - 1; // the last one is the valence shifter
   bool isFreqWeighting = is_frequency_weighting(how);
   Rcpp::CharacterVector colNames = prepare_column_names(lexicons.names(), nL);
@@ -31,13 +31,13 @@ Rcpp::NumericMatrix compute_sentiment_valence(std::vector< std::vector<std::stri
     make_frequency_maps(frequencyMap, inverseFrequencyMap, texts);
   }
 
-  Rcpp::NumericMatrix sentScores(nTexts, nL + 1); // output matrix of word count and sentiment scores
+  Rcpp::NumericMatrix sentScores(N, nL + 1); // output matrix of word count and sentiment scores
   if (valenceCols[1] == "y") {
-    SentimentScorerBigrams sentimentScorer(texts, lexiconMap, valenceMap, how, nL, frequencyMap, inverseFrequencyMap, isFreqWeighting, sentScores);
-    parallelFor(0, nTexts, sentimentScorer);
+    SentimentScorerBigrams sentimentScorer(texts, lexiconMap, valenceMap, how, nL, N, frequencyMap, inverseFrequencyMap, isFreqWeighting, sentScores);
+    parallelFor(0, N, sentimentScorer);
   } else if (valenceCols[1] == "t") {
-    SentimentScorerClusters sentimentScorer(texts, lexiconMap, valenceMap, how, nL, frequencyMap, inverseFrequencyMap, isFreqWeighting, sentScores);
-    parallelFor(0, nTexts, sentimentScorer);
+    SentimentScorerClusters sentimentScorer(texts, lexiconMap, valenceMap, how, nL, N, frequencyMap, inverseFrequencyMap, isFreqWeighting, sentScores);
+    parallelFor(0, N, sentimentScorer);
   }
 
   colnames(sentScores) = colNames;

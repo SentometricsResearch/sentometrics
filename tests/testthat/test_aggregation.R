@@ -30,7 +30,8 @@ sentMeas2 <- sento_measures(corpus, lex, ctr2)
 ctr3 <- ctr_agg(howWithin = "counts", howDocs = "inverseProportional", howTime = c("equal_weight", "own"),
                 by = "year", lag = 3, weights = data.frame(GI_en = c(0.3, 0.6, 0.1)))
 
-ctr4 <- ctr_agg(howWithin = "UShaped", howDocs = "inverseProportional", howTime = "linear", by = "day", lag = 20)
+ctr4 <- ctr_agg(howWithin = "UShaped", howDocs = "inverseProportional", howTime = "exponential",
+                do.inverseExp = TRUE, alphas = c(0.1, 0.2, 0.3), by = "day", lag = 180)
 
 ctr5 <- ctr_agg(howWithin = "counts", howDocs = "exponential", alphaExpDocs = 0.2,
                 howTime = "linear", by = "year", lag = 3)
@@ -58,7 +59,7 @@ test_that("Aggregation control function breaks when wrong inputs supplied", {
 # aggregate.sentiment
 s1 <- compute_sentiment(corpus, lex, how = "proportional")
 s2 <- compute_sentiment(quanteda::texts(corpus), lex, how = "counts")
-s3 <- compute_sentiment(corpus, lexClust, how = "squareRootCounts", do.sentence = TRUE)
+s3 <- compute_sentiment(corpus, lexClust, how = "proportionalSquareRoot", do.sentence = TRUE)
 sentimentAgg <- aggregate(s3, ctr_agg(lag = 7), do.full = FALSE)
 test_that("Test input and output of sentiment aggregation function", {
   expect_true(inherits(s1, "sentiment"))

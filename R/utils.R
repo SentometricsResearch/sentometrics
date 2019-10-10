@@ -10,24 +10,31 @@
 #'
 #' @param n a single \code{numeric} to indicate the lag length.
 #' @param alphas a \code{numeric} vector of decay factors.
+#' @param do.inverse \code{TRUE} if the inverse exponential curves should be calculated as well.
+#' @param do.normalize a \code{logical}, if \code{TRUE} weights are normalized to unity.
 #'
 #' @return A \code{data.frame} of exponential weighting curves per value of \code{alphas}.
 #'
 #' @seealso \code{\link{ctr_agg}}
 #'
 #' @export
-weights_exponential <- function(n, alphas = seq(0.1, 0.5, by = 0.1)) {
+weights_exponential <- function(n, alphas = seq(0.1, 0.5, by = 0.1), do.inverse = FALSE, do.normalize = TRUE) {
   if (max(alphas) >= 1 || min(alphas) <= 0)
     stop("Values in 'alphas' should be between 0 and 1 (both excluded).")
   vals <- 1:n
-  exponentials <- data.frame(matrix(nrow = n, ncol = length(alphas)))
-  colnames(exponentials) <- paste0("exponential_", alphas)
+  inv <- ifelse(do.inverse, 2, 1)
+  exponentials <- data.frame(matrix(nrow = n, ncol = length(alphas) * inv))
+  colnames(exponentials) <- paste0("exponential", rep(alphas, rep(inv, length(alphas))), c("", "_inv")[1:inv])
   for (i in 1:length(alphas)) {
     alpha <- alphas[i]
-    exponential <- ((alpha * (1 - alpha)^(1 - vals))) / sum((alpha * (1 - alpha)^(1 - vals)))
-    exponentials[, i] <-exponential
-
+    exponential <- alpha * (1 - alpha)^(1 - vals)
+    if (do.inverse == TRUE) {
+      exponential <- cbind(exponential, 1 / exponential)
+      i <- (i*2 - 1):(i*2)
+    }
+    exponentials[, i] <- exponential
   }
+  if (do.normalize == TRUE) exponentials <- t(t(exponentials)/colSums(exponentials)) # make weights sum to 1
   return(as.data.frame(exponentials))
 }
 
@@ -37,14 +44,14 @@ weights_exponential <- function(n, alphas = seq(0.1, 0.5, by = 0.1)) {
 #' for input in \code{\link{ctr_agg}} using the \code{weights} argument.
 #'
 #' @details The Almon polynomial formula implemented is:
-#' \eqn{(1 - (1 - i/n)^{b})(1 - i/n)^{B - b}}{(1 - (1 - i/n)^b) * (1 - i/n)^(B - b)}, where \eqn{i} is the lag index ordered from
+#' \eqn{(1 - (1 - i/n)^{r})(1 - i/n)^{R - r}}{(1 - (1 - i/n)^r) * (1 - i/n)^(R - r)}, where \eqn{i} is the lag index ordered from
 #' 1 to \eqn{n}. The inverse is computed by changing \eqn{i/n} to \eqn{1 - i/n}.
 #'
 #' @param n a single \code{numeric} to indicate the lag length (cf., \emph{n}).
-#' @param orders a \code{numeric} vector as the sequence of the Almon orders (cf., \emph{b}). The maximum value
-#' corresponds to \emph{B}.
+#' @param orders a \code{numeric} vector as the sequence of the Almon orders (cf., \emph{r}). The maximum value
+#' corresponds to \emph{R}.
 #' @param do.inverse \code{TRUE} if the inverse Almon polynomials should be calculated as well.
-#' @param do.normalize \code{TRUE} if polynomials should be normalized to unity.
+#' @param do.normalize a \code{logical}, if \code{TRUE} weights are normalized to unity.
 #'
 #' @return A \code{data.frame} of all Almon polynomial weighting curves, of size \code{length(orders)} (times two if
 #' \code{do.inverse = TRUE}).
@@ -73,7 +80,7 @@ weights_almon <- function(n, orders = 1:3, do.inverse = TRUE, do.normalize = TRU
     almon <- (1 - stdindex^b) * (stdindex)^(max(orders) - b)
     almons[, ind] <- almon
   }
-  if (do.normalize) almons <- t(t(almons)/colSums(almons)) # make weights sum to 1 (if do.normalize is TRUE)
+  if (do.normalize == TRUE) almons <- t(t(almons)/colSums(almons)) # make weights sum to 1
   return(as.data.frame(almons)) # first row is most lagged value
 }
 
@@ -92,6 +99,7 @@ weights_almon <- function(n, orders = 1:3, do.inverse = TRUE, do.normalize = TRU
 #' @param n a single \code{numeric} to indicate the lag length (cf., \emph{n}).
 #' @param a a \code{numeric} as the first parameter (cf., \emph{a}).
 #' @param b a \code{numeric} as the second parameter (cf., \emph{b}).
+#' @param do.normalize a \code{logical}, if \code{TRUE} weights are normalized to unity.
 #'
 #' @return A \code{data.frame} of beta weighting curves per combination of \code{a} and \code{b}. If \code{n = 1},
 #' all weights are set to 1.
@@ -102,7 +110,7 @@ weights_almon <- function(n, orders = 1:3, do.inverse = TRUE, do.normalize = TRU
 #' \emph{Econometric Reviews 26, 53-90}, \url{https://doi.org/10.1080/07474930600972467}.
 #'
 #' @export
-weights_beta <- function(n, a = 1:4, b = 1:4) {
+weights_beta <- function(n, a = 1:4, b = 1:4, do.normalize = TRUE) {
   if (any(c(a, b) <= 0))
     stop("Values in 'a' and 'b' should be positive.")
   vals <- (1:n) / n
@@ -116,11 +124,12 @@ weights_beta <- function(n, a = 1:4, b = 1:4) {
         aa <- a[i]
         bb <- b[j]
         beta <- (vals^(aa - 1) * (1 - vals)^(bb - 1) * gamma(aa + bb)) / (gamma(aa) * gamma(bb))
-        betas[, k] <- beta/sum(beta)
+        betas[, k] <- beta
         k <- k + 1
       }
     }
   }
+  if (do.normalize == TRUE) betas <- t(t(betas)/colSums(betas)) # make weights sum to 1
   return(as.data.frame(betas))
 }
 
@@ -135,13 +144,13 @@ setup_time_weights <- function(how, param) {
     weights <- cbind(weights, data.frame(linear = matrix((1:lag)/sum(1:lag), nrow = lag, ncol = 1)))
   }
   if ("exponential" %in% how) {
-    weights <- cbind(weights, weights_exponential(lag, param$alphasExp))
+    weights <- cbind(weights, weights_exponential(lag, param$alphasExp, param$do.inverseExp, TRUE)) # always normalize
   }
   if ("almon" %in% how) {
     weights <- cbind(weights, weights_almon(lag, param$ordersAlm, param$do.inverseAlm, TRUE)) # always normalize
   }
   if ("beta" %in% how) {
-    weights <- cbind(weights, weights_beta(lag, param$aBeta, param$bBeta))
+    weights <- cbind(weights, weights_beta(lag, param$aBeta, param$bBeta, TRUE)) # always normalize
   }
   if ("own" %in% how) {
     weights <- cbind(weights, param$weights)
@@ -155,30 +164,30 @@ setup_time_weights <- function(how, param) {
 #' \code{\link{ctr_agg}} to check if supplied aggregation hows are supported.
 #'
 #' @details
-#' Weighting within documents or sentences (\code{"words"}):
-#' \describe{
-#' \item{\code{"proportional"}}{divides each sentiment score by the total number of words.}
-#' \item{\code{"proportionalPol"}}{divides each sentiment score by the number of detected
-#' polarized words (counting words that appear multiple times by their frequency).}
-#' \item{\code{"counts"}}{no normalisation.}
-#' \item{\code{"squareRootCounts"}}{divides the sentiment by the square root of the number of tokens in each text.}
-#' \item{\code{"UShaped"}}{gives a higher weight to words at the beginning and end of the texts.}
-#' \item{\code{"invertedUShaped"}}{gives a lower weight to words at the beginning and the end of the texts.}
-#' \item{\code{"exponential"}}{gives gradually more weight the later the word appears in the text.}
-#' \item{\code{"invertedExponential"}}{gives gradually less weight the later the words appears in the text.}
-#' \item{\code{"TF"}}{gives a weight proportional to the number of times a word appears in a text.}
-#' \item{\code{"logarithmicTF"}}{gives the same weight as \code{"TF"} but logarithmically scaled.}
-#' \item{\code{"augmentedTF"}}{weight is determined by dividing the raw frequency of a token by the raw frequency
-#' of the most occurring term in the document (can be used to prevent a bias towards longer documents).}
-#' \item{\code{"IDF"}}{uses the logarithm of the division of the raw frequency of a word by the number of
-#' texts in which the word appears (words appearing in multiple texts get thus a lower weight).}
-#' \item{\code{"TFIDF"}}{same weights as \code{"TF"}-variant but multiplied with \code{"IDF"} weights.}
-#' \item{\code{"logarithmicTFIDF"}}{same weights as \code{"TF"}-variant but multiplied with \code{"IDF"} weights.}
-#' \item{\code{"augmentedTFIDF"}}{same weights as \code{"TF"}-variant but multiplied with \code{"IDF"} weights.}
-#' }
-#'
 #' See the package's \href{https://ssrn.com/abstract=3067734}{vignette} for a detailed explanation of all
 #' aggregation options.
+#'
+# Weighting within documents or sentences (\code{"words"}):
+# \describe{
+# \item{\code{"proportional"}}{divides each sentiment score by the total number of words.}
+# \item{\code{"proportionalPol"}}{divides each sentiment score by the number of detected
+# polarized words (counting words that appear multiple times by their frequency).}
+# \item{\code{"counts"}}{no normalisation.}
+# \item{\code{"proportionalSquareRoot"}}{divides the sentiment by the square root of the number of tokens in each text.}
+# \item{\code{"UShaped"}}{gives a higher weight to words at the beginning and end of the texts.}
+# \item{\code{"inverseUShaped"}}{gives a lower weight to words at the beginning and the end of the texts.}
+# \item{\code{"exponential"}}{gives gradually more weight the later the word appears in the text.}
+# \item{\code{"inverseExponential"}}{gives gradually less weight the later the words appears in the text.}
+# \item{\code{"TF"}}{gives a weight proportional to the number of times a word appears in a text.}
+# \item{\code{"logarithmicTF"}}{gives the same weight as \code{"TF"} but logarithmically scaled.}
+# \item{\code{"augmentedTF"}}{weight is determined by dividing the raw frequency of a token by the raw frequency
+# of the most occurring term in the document (can be used to prevent a bias towards longer documents).}
+# \item{\code{"IDF"}}{uses the logarithm of the division of the raw frequency of a word by the number of
+# texts in which the word appears (words appearing in multiple texts get thus a lower weight).}
+# \item{\code{"TFIDF"}}{same weights as \code{"TF"}-variant but multiplied with \code{"IDF"} weights.}
+# \item{\code{"logarithmicTFIDF"}}{same weights as \code{"TF"}-variant but multiplied with \code{"IDF"} weights.}
+# \item{\code{"augmentedTFIDF"}}{same weights as \code{"TF"}-variant but multiplied with \code{"IDF"} weights.}
+# }
 #'
 #' @return A list with the supported aggregation hows for arguments \code{howWithin} (\code{"words"}), \code{howDows}
 #' (\code{"docs"}) and \code{howTime} (\code{"time"}), to be supplied to \code{\link{ctr_agg}}.
@@ -187,8 +196,8 @@ setup_time_weights <- function(how, param) {
 #'
 #' @export
 get_hows <- function() {
-  words <- c("proportional", "proportionalPol", "counts", "squareRootCounts", "UShaped",
-             "invertedUShaped", "exponential", "invertedExponential", "TF", "logarithmicTF",
+  words <- c("counts", "proportional", "proportionalPol", "proportionalSquareRoot", "UShaped",
+             "inverseUShaped", "exponential", "inverseExponential", "TF", "logarithmicTF",
              "augmentedTF", "IDF", "TFIDF", "logarithmicTFIDF", "augmentedTFIDF")
   docs <- c("equal_weight", "proportional", "inverseProportional", "exponential", "inverseExponential")
   time <- c("equal_weight", "almon", "beta", "linear", "exponential", "own")

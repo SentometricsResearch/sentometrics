@@ -10,12 +10,12 @@ weights_almon(n, orders = 1:3, do.inverse = TRUE,
 \arguments{
 \item{n}{a single \code{numeric} to indicate the lag length (cf., \emph{n}).}
 
-\item{orders}{a \code{numeric} vector as the sequence of the Almon orders (cf., \emph{b}). The maximum value
-corresponds to \emph{B}.}
+\item{orders}{a \code{numeric} vector as the sequence of the Almon orders (cf., \emph{r}). The maximum value
+corresponds to \emph{R}.}
 
 \item{do.inverse}{\code{TRUE} if the inverse Almon polynomials should be calculated as well.}
 
-\item{do.normalize}{\code{TRUE} if polynomials should be normalized to unity.}
+\item{do.normalize}{a \code{logical}, if \code{TRUE} weights are normalized to unity.}
 }
 \value{
 A \code{data.frame} of all Almon polynomial weighting curves, of size \code{length(orders)} (times two if
@@ -27,7 +27,7 @@ for input in \code{\link{ctr_agg}} using the \code{weights} argument.
 }
 \details{
 The Almon polynomial formula implemented is:
-\eqn{(1 - (1 - i/n)^{b})(1 - i/n)^{B - b}}{(1 - (1 - i/n)^b) * (1 - i/n)^(B - b)}, where \eqn{i} is the lag index ordered from
+\eqn{(1 - (1 - i/n)^{r})(1 - i/n)^{R - r}}{(1 - (1 - i/n)^r) * (1 - i/n)^(R - r)}, where \eqn{i} is the lag index ordered from
 1 to \eqn{n}. The inverse is computed by changing \eqn{i/n} to \eqn{1 - i/n}.
 }
 \seealso{
