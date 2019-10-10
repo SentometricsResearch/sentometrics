@@ -4,7 +4,7 @@
 \alias{weights_beta}
 \title{Compute Beta weighting curves}
 \usage{
-weights_beta(n, a = 1:4, b = 1:4)
+weights_beta(n, a = 1:4, b = 1:4, do.normalize = TRUE)
 }
 \arguments{
 \item{n}{a single \code{numeric} to indicate the lag length (cf., \emph{n}).}
@@ -12,6 +12,8 @@ weights_beta(n, a = 1:4, b = 1:4)
 \item{a}{a \code{numeric} as the first parameter (cf., \emph{a}).}
 
 \item{b}{a \code{numeric} as the second parameter (cf., \emph{b}).}
+
+\item{do.normalize}{a \code{logical}, if \code{TRUE} weights are normalized to unity.}
 }
 \value{
 A \code{data.frame} of beta weighting curves per combination of \code{a} and \code{b}. If \code{n = 1},

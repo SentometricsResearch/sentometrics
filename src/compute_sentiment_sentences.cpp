@@ -2,7 +2,6 @@
 #include <Rcpp.h>
 #include <RcppParallel.h>
 #include "utils.h"
-#include "utils_sentences.h"
 #include "SentimentScorerSentences.h"
 
 // [[Rcpp::depends(RcppParallel)]]
@@ -15,11 +14,11 @@ using namespace RcppParallel;
 Rcpp::NumericMatrix compute_sentiment_sentences(std::vector<std::vector<std::string>> texts,
                                                 Rcpp::List lexicons,
                                                 std::string how,
-                                                bool hasValenceShifters) {
+                                                int valenceType) {
 
-  int nTexts = texts.size(); // already tokenized texts
+  int N = texts.size(); // already tokenized texts
   int nL = 0;
-  if (hasValenceShifters){
+  if (valenceType != 0) {
     nL = lexicons.size() - 1;
   } else {
     nL = lexicons.size();
@@ -35,18 +34,16 @@ Rcpp::NumericMatrix compute_sentiment_sentences(std::vector<std::vector<std::str
     make_frequency_maps(frequencyMap, inverseFrequencyMap, texts);
   }
   Rcpp::List valenceList;
-  Rcpp::CharacterVector valenceCols;
   std::unordered_map< std::string, double > valenceMap;
-  if (hasValenceShifters) {
+  if (valenceType != 0) {
     valenceList = lexicons[nL];
-    valenceCols = valenceList.names();
     valenceMap = make_valence_map(valenceList);
   }
 
-  Rcpp::NumericMatrix sentScores(nTexts, nL + 1);
+  Rcpp::NumericMatrix sentScores(N, nL + 1);
 
-  SentimentScorerSentences sentimentScorer(texts, lexiconMap, valenceMap, how, nL, frequencyMap, inverseFrequencyMap, isFreqWeighting, hasValenceShifters, sentScores);
-  parallelFor(0, nTexts, sentimentScorer);
+  SentimentScorerSentences sentimentScorer(texts, lexiconMap, valenceMap, how, nL, N, frequencyMap, inverseFrequencyMap, isFreqWeighting, valenceType, sentScores);
+  parallelFor(0, N, sentimentScorer);
 
   colnames(sentScores) = colNames;
 

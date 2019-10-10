@@ -8,7 +8,7 @@ using namespace std;
 #define UTILS_H
 
 inline bool is_frequency_weighting(std::string how) {
-  return (how == "TF" || how =="logarithmicTF" || how == "augmentedTF" ||how == "IDF"
+  return (how == "TF" || how == "logarithmicTF" || how == "augmentedTF" || how == "IDF"
             || how == "TFIDF" || how == "logarithmicTFIDF"
             || how == "augmentedTFIDF");
 }
@@ -65,7 +65,7 @@ inline std::unordered_map< std::string, double > make_valence_map(Rcpp::List val
 inline void update_frequency_map(std::unordered_map< std::string, double >& freqMap,
                                  std::unordered_map< int, std::unordered_map< std::string, double > >& frequencyMap,
                                  int i) {
-   freqMap = frequencyMap.at(i);
+  freqMap = frequencyMap.at(i);
 }
 
 inline void update_max_token_frequency(double& maxTokenFrequency,
@@ -85,16 +85,16 @@ inline void update_max_token_frequency(double& maxTokenFrequency,
 inline void update_token_frequency(double& tokenFrequency,
                                      std::unordered_map< std::string, double >& freqMap,
                                      std::string& token) {
- tokenFrequency = freqMap[token];
+  tokenFrequency = freqMap[token];
 }
 
 inline void update_token_inverse_frequency(double& tokenInverseFrequency,
-                                             std::unordered_map< std::string, double >& inverseFrequencyMap,
-                                             std::string& token,
-                                             std::string how) {
-    if (how =="augmentedTF" || how == "augmentedTFIDF" ) {
-      tokenInverseFrequency = inverseFrequencyMap[token];
-    }
+                                           std::unordered_map< std::string, double >& inverseFrequencyMap,
+                                           std::string& token,
+                                           std::string how) {
+  if (how == "IDF" || how == "TFIDF" || how == "logarithmicTFIDF" || how == "augmentedTFIDF") {
+    tokenInverseFrequency = inverseFrequencyMap[token];
+  }
 }
 
 inline void update_token_weights(std::vector < double >& tokenWeights,
@@ -107,14 +107,11 @@ inline void update_token_weights(std::vector < double >& tokenWeights,
                                  std::vector< std::vector< double > >& tokenScores,
                                  double& frequency,
                                  double& inverseFrequency,
-                                 double& maxTokenFrequency) {
-  double token_weight = 0.0;
-  double x = (double) j + 1;
-  double y = (double) nTokens;
+                                 double& maxTokenFrequency,
+                                 int N) {
 
   if (how == "proportionalPol") {
     if (tokenScores.size() != 0) {
-      token_weight = 1.0; // all the others need to be scaled in scale function
       for (int i = 0; i < nL; i++) {
         if (tokenScores[j][i] != 0.0) {
           nPolarized[i] += 1.0;
@@ -122,32 +119,40 @@ inline void update_token_weights(std::vector < double >& tokenWeights,
       }
     }
   } else {
+
+    double token_weight = 0.0;
+    double x = (double) j + 1;
+    double y = (double) nTokens;
+
     if (how == "UShaped") {
       token_weight = std::pow(x - y / 2, 2) / std::pow(y, 2);
-    } else if (how == "invertedUShaped") {
-      token_weight = 0.25 + (- std::pow(x - y / 2, 2)) / std::pow(y, 2);
+    } else if (how == "inverseUShaped") {
+      token_weight = 0.25 + (-std::pow(x - y / 2, 2)) / std::pow(y, 2);
     } else if (how == "exponential") {
       token_weight = std::exp(x / y) - 1.0;
-    } else if (how == "invertedExponential") {
-      token_weight =  std::exp(1.0 - x / y) - 1.0;
+    } else if (how == "inverseExponential") {
+      token_weight = std::exp(1.0 - x / y) - 1.0;
     } else if (how == "TF") {
-      token_weight =  frequency / nTokens;
+      token_weight = frequency / nTokens;
     } else if (how == "logarithmicTF") {
-      token_weight = std::log( 1 + frequency / nTokens);
-    } else if (how =="augmentedTF") {
+      token_weight = std::log(1 + frequency / nTokens);
+    } else if (how == "augmentedTF") {
       token_weight = (0.5 + 0.5 * frequency / maxTokenFrequency) / nTokens;
     } else if (how == "IDF") {
-      token_weight =  std::log(frequency / inverseFrequency);
+      token_weight = std::log(N / (1 + inverseFrequency));
     } else if (how == "TFIDF") {
-      token_weight =  std::log(frequency / inverseFrequency) * (frequency / nTokens);
+      token_weight = std::log(N / (1 + inverseFrequency)) * (frequency / nTokens);
     } else if (how == "logarithmicTFIDF") {
-      token_weight =  std::log(frequency / inverseFrequency) * (std::log( 1 + frequency / nTokens));
+      token_weight = std::log(N / (1 + inverseFrequency)) * (std::log(1 + frequency / nTokens));
     } else if (how == "augmentedTFIDF") {
-      token_weight =  std::log(frequency / inverseFrequency) * (0.5 + 0.5 * frequency / maxTokenFrequency);
+      token_weight = std::log(N / (1 + inverseFrequency)) * (0.5 + 0.5 * frequency / maxTokenFrequency);
     }
+    // std::cout << "freq.: " << frequency << " & inv. freq.: " << inverseFrequency << "\n";
+    // std::cout << "weight: " << token_weight << "\n";
     normalizer += token_weight;
+    tokenWeights[j] = token_weight;
   }
-  tokenWeights[j] = token_weight;
+
 }
 
 // inline bool is_pause_character(std::string token) {
@@ -162,15 +167,10 @@ inline void update_token_weights(std::vector < double >& tokenWeights,
 
 inline void scale_token_weights(std::vector < double >& tokenWeights,
                                 double& normalizer,
-                                std::vector< double >& nPolarized,
-                                std::string how,
-                                int& nTokens,
-                                int nL) {
-   if (how !="proportionalPol") {
-    for (int i = 0; i < nTokens; i++) {// token loop
-        tokenWeights[i] /= normalizer;
-    }
-   }
+                                int& nTokens) {
+  for (int i = 0; i < nTokens; i++) {
+    tokenWeights[i] /= normalizer;
+  }
 }
 
 inline void update_token_scores(std::vector< double >& scores,
@@ -181,30 +181,32 @@ inline void update_token_scores(std::vector< double >& scores,
                                 std::vector< double >& tokenWeights,
                                 int nL,
                                 int& nTokens,
-                                std::string how) {
-  if (how != "proportional" && how != "counts" && how != "squareRootCounts") {
-    scale_token_weights(tokenWeights, normalizer, nPolarized, how, nTokens, nL);
+                                std::string how,
+                                int& nPuncts) {
+  if (how != "proportional" && how != "proportionalPol"
+        && how != "counts" && how != "proportionalSquareRoot") {
+    scale_token_weights(tokenWeights, normalizer, nTokens);
   }
 
-  for (int i = 0; i < nTokens; i ++) {
-    // std::cout<< "Tokenloop " << i << "\n";
+  for (int i = 0; i < nTokens; i++) {
+    // std::cout << "Token: " << i << "\n";
     for (int j = 0; j < nL; j++) {
-      // std::cout<< "Lexicon loop " << j << "\n";
+      // std::cout << "Lexicon: " << j << "\n";
       if (tokenScores[i].size() != 0) {
         double score = tokenScores[i][j];
-       // std::cout<< "score within lexicon loop: " << score << "\n";
+        // std::cout << "score within lexicon: " << score << "\n";
         if (score != 0) {
           if (how == "counts") {
-            // std::cout<< "tokenshifter: " << tokenShifters[i] << " & score: " << score << "\n";
-            // std::cout<< "score before: " <<scores[j]<< "\n";
-            scores[j] += (tokenShifters[i] * score);
-            // std::cout<< "score after: " <<scores[j]<< "\n";
-          } else if (how == "squareRootCounts") {
-            scores[j] += (tokenShifters[i] * score / std::sqrt(nTokens));
+            // std::cout << "token shifter: " << tokenShifters[i] << " & score: " << score << "\n";
+            // std::cout << "score before: " << scores[j] << "\n";
+            scores[j] += tokenShifters[i] * score;
+            // std::cout << "score after: " << scores[j] << "\n";
           } else if (how == "proportional") {
-            scores[j] += (tokenShifters[i] * score / nTokens);
+            scores[j] += (tokenShifters[i] * score) / (nTokens - nPuncts);
           } else if (how == "proportionalPol") {
-            if (nPolarized[j] > 0)  scores[j] += (tokenShifters[i] * score) * (tokenWeights[i] / nPolarized[j]);
+            if (nPolarized[j] > 0) scores[j] += (tokenShifters[i] * score) / nPolarized[j];
+          } else if (how == "proportionalSquareRoot") {
+            scores[j] += (tokenShifters[i] * score) / std::sqrt(nTokens - nPuncts);
           } else {
             scores[j] += (tokenShifters[j] * score) * tokenWeights[i];
           }
@@ -233,22 +235,84 @@ inline double compute_cluster_impact(std::vector<int>& shifters) {
 inline void make_frequency_maps(std::unordered_map< int, std::unordered_map< std::string, double > >& frequencyMap,
                                 std::unordered_map< std::string, double >& inverseFrequencyMap,
                                 std::vector< std::vector< std::string > >& texts) {
-
   int nTexts = texts.size();
-
   for (int i = 0; i < nTexts; i++) {
     int nTokens = texts[i].size();
     std::unordered_map< std::string, double > textFreq;
-
     for (int j = 0; j < nTokens; j++) {
       std::string token = texts[i][j];
       textFreq[token] += 1.0;
       frequencyMap[nTexts][token] += 1.0; // count total and store in last element
       if (textFreq[token] == 1.0) {
-        inverseFrequencyMap[token] += 1.0; // count number of docs where token occurs
+        inverseFrequencyMap[token] += 1.0; // count number of docs or sentences where token occurs
       }
     }
     frequencyMap[i] = textFreq;
+  }
+}
+
+inline void update_primary_shifters_sentence(std::vector< int >& shifters,
+                                             double& valType,
+                                             int& position) {
+  if (valType == 1) shifters[0] += 1; // negators
+  else if (valType == 2) shifters[1] += 1; // amplifiers
+  else if (valType == 3) shifters[2] += 1; // deamplifiers
+  else if (valType == 4) { // adversative conjunction
+    if (position == 0) { // before hit
+      shifters[3] += 1;
+    } else if (position == 1) { // after hit
+      shifters[3] -= 1;
+    }
+  }
+}
+
+inline double compute_sentence_impact(std::vector<int>& shifters) {
+  int n = shifters[0] % 2; // 0 if even number of negators, 1 if odd number of negators
+  double wA = (1 - n) * shifters[1] * 0.8; // amplification impact
+  double wD = (-n * shifters[1] - shifters[2]) * 0.8; // deamplification impact
+  if (wD < -1) wD = -1;
+  double b = (1 + shifters[3] * 0.25);
+
+  double impact = (1 + (wA + wD)) * b;
+  if (n == 1) {
+    impact *= -1.0;
+  }
+
+  return(impact);
+}
+
+inline void check_for_commas(std::string& token,
+                             int& nPuncts,
+                             int& punctPosition,
+                             int& j,
+                             std::vector< std::string >& tokens) {
+  if (token == "c_c") {
+    nPuncts += 1;
+    punctPosition = j;
+  }
+}
+
+inline void set_cluster_bounds(int& st,
+                               int& en,
+                               int& nPuncts,
+                               int& punctPosition,
+                               int& nTokens,
+                               std::vector< std::string >& tokens,
+                               int& lB,
+                               int& nB,
+                               int& nA,
+                               int& j) {
+  if (nPuncts != 0 ) {
+    st = punctPosition;
+  } else {
+    st = std::max(lB, j - nB);
+  }
+  en = std::min(nTokens, j + nA + 1);
+  for (int m = en; m < nTokens; m++) {
+    if (tokens[m] == "c_c") {
+      en = m;
+      break;
+    }
   }
 }
 

@@ -8,8 +8,9 @@ ctr_agg(howWithin = "proportional", howDocs = "equal_weight",
   howTime = "equal_weight", do.sentence = FALSE,
   do.ignoreZeros = TRUE, by = "day", lag = 1, fill = "zero",
   alphaExpDocs = 0.1, alphasExp = seq(0.1, 0.5, by = 0.1),
-  ordersAlm = 1:3, do.inverseAlm = TRUE, aBeta = 1:4, bBeta = 1:4,
-  weights = NULL, tokens = NULL, nCore = 1)
+  do.inverseExp = FALSE, ordersAlm = 1:3, do.inverseAlm = TRUE,
+  aBeta = 1:4, bBeta = 1:4, weights = NULL, tokens = NULL,
+  nCore = 1)
 }
 \arguments{
 \item{howWithin}{a single \code{character} vector defining how to perform aggregation within
@@ -50,6 +51,9 @@ applying the \code{\link{measures_fill}} function before aggregating, except if 
 \item{alphasExp}{a \code{numeric} vector of all exponential weighting smoothing factors, used if \cr
 \code{"exponential" \%in\% howTime}. Values should be between 0 and 1 (both excluded); see
 \code{\link{weights_exponential}}.}
+
+\item{do.inverseExp}{a \code{logical} indicating if for every exponential curve its inverse has to be added,
+used if \code{"exponential" \%in\% howTime}; see \code{\link{weights_exponential}}.}
 
 \item{ordersAlm}{a \code{numeric} vector of all Almon polynomial orders (positive) to calculate weights for, used if
 \code{"almon" \%in\% howTime}; see \code{\link{weights_almon}}.}

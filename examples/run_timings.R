@@ -1,7 +1,7 @@
 
-##############################################################
-#######  COMPARISON OF TEXTUAL SENTIMENT COMPUTATIONS  #######
-##############################################################
+############################################################
+####### COMPARISON OF TEXTUAL SENTIMENT COMPUTATIONS #######
+############################################################
 
 ###### DESCRIPTION ######
 
@@ -11,6 +11,14 @@
 ### Download the package and its dependencies first before you run this script...
 ### install.packages("sentometrics", dependencies = TRUE) # from CRAN (version 0.7.5), OR
 ### install.packages("sentometrics_0.7.5.tar.gz", repos = NULL, dependencies = TRUE) # from the tar
+
+### Dependencies can be installed separately like this:
+### install.packages(
+###   c("covr", "doParallel", "e1071", "NLP", "randomForest",
+###     "testthat", "tm", "caret", "data.table", "foreach",
+###     "ggplot2", "glmnet", "ISOweek", "quanteda", "Rcpp", "RcppRoll",
+###     "RcppParallel", "stringi", "RcppArmadillo")
+### )
 
 ###### WARNING ######
 
@@ -93,16 +101,14 @@ lexiconsIn <- c(
   )
 )
 lex <- sento_lexicons(lexiconsIn = lexiconsIn, valenceIn = list_valence_shifters[["en"]])
+lexPure <- lex[-length(lex)]
+lexClust <- sento_lexicons(lexiconsIn = lexiconsIn, valenceIn = list_valence_shifters[["en"]][, c("x", "t")])
 
 keep <- sample(1:(nrow(usnews) * 25), 100000)
 corpusAll <- quanteda::corpus(do.call(rbind, lapply(1:25, function(j) usnews))[keep, ], text_field = "texts")
-# nTexts <- c(1, 5, 10, 25, 50, 75, 100) * 1000
-nTexts <- c(1, 50, 100) * 1000 ### TODO: remove!
+nTexts <- c(1, 5, 10, 25, 50, 75, 100) * 1000
 
 ########################################### definition of sentiment functions
-
-lexPure <- lex[-length(lex)]
-lexClust <- sento_lexicons(lexiconsIn = lexiconsIn, valenceIn = list_valence_shifters[["en"]][, c("x", "t")])
 
 # simple approach
 sentoUnigramsFunc <- function(texts) compute_sentiment(texts, lexicons = lex["HULIU"], how = "counts")
@@ -205,35 +211,37 @@ quantedaFunc <- function(texts) {
 
 syuzhetFunc <- function(texts) syuzhet::get_sentiment(texts, method = "bing")
 
-########################################### ### TODO: remove!
+########################################### sanity check of scores vs. tidytext calculators
 
-# K <- nTexts[2]
-#
-# system.time(s1 <- sentoUnigramsFunc(corpusAll[1:K]))
-# system.time(s2 <- tidytextUnigramsFunc(corpusAll[1:K]))
-# all.equal(s1$word_count, s2$word_count) & all.equal(s1$HULIU, s2$HULIU)
-#
-# system.time(s3 <- sentoUnigramsAllFunc(corpusAll[1:K]))
-# all.equal(s1$word_count, s3$word_count) & all.equal(s1$HULIU, s3$HULIU)
-#
-# system.time(s4 <- sentoBigramsFunc(corpusAll[1:K]))
-# system.time(s5 <- sentoBigramsAllFunc(corpusAll[1:K]))
-# system.time(s6 <- tidytextBigramsFunc(corpusAll[1:K]))
-# all.equal(s4$word_count, s5$word_count) & all.equal(s4$HULIU, s5$HULIU)
-# all.equal(s4$word_count, s6$word_count) & all.equal(s4$HULIU, s6$HULIU)
-#
-# system.time(s7 <- compute_sentiment(corpusAll[1:K], lexicons = lex[c("HULIU")], how = "proportional"))
-# system.time(s8 <- compute_sentiment(corpusAll[1:K], lexicons = lexPure, how = "proportional"))
-# all.equal(s7$word_count, s8$word_count) & all.equal(s7$HULIU, s8$HULIU)
-#
-# system.time(s9 <- compute_sentiment(corpusAll[1:K], lexicons = lex[c("HULIU")], how = "proportionalPol"))
-# system.time(s10 <- compute_sentiment(corpusAll[1:K], lexicons = lexPure, how = "proportionalPol"))
-# all.equal(s9$word_count, s10$word_count) & all.equal(s9$HULIU, s10$HULIU)
-#
-# system.time(sA <- sentoUnigramsAllFunc(corpusAll[1:K]))
-# system.time(sB <- tidytextUnigramsAllFunc(corpusAll[1:K]))
-# system.time(sC <- sentoClustersAllParFunc(corpusAll[1:K]))
-# sapply(colnames(sA), function(col) all(all.equal(sA[[col]], sB[[col]])))
+if (FALSE) {
+  K <- nTexts[2]
+
+  system.time(s1 <- sentoUnigramsFunc(corpusAll[1:K]))
+  system.time(s2 <- tidytextUnigramsFunc(corpusAll[1:K]))
+  all.equal(s1$word_count, s2$word_count) & all.equal(s1$HULIU, s2$HULIU)
+
+  system.time(s3 <- sentoUnigramsAllFunc(corpusAll[1:K]))
+  all.equal(s1$word_count, s3$word_count) & all.equal(s1$HULIU, s3$HULIU)
+
+  system.time(s4 <- sentoBigramsFunc(corpusAll[1:K]))
+  system.time(s5 <- sentoBigramsAllFunc(corpusAll[1:K]))
+  system.time(s6 <- tidytextBigramsFunc(corpusAll[1:K]))
+  all.equal(s4$word_count, s5$word_count) & all.equal(s4$HULIU, s5$HULIU)
+  all.equal(s4$word_count, s6$word_count) & all.equal(s4$HULIU, s6$HULIU)
+
+  system.time(s7 <- compute_sentiment(corpusAll[1:K], lexicons = lex[c("HULIU")], how = "proportional"))
+  system.time(s8 <- compute_sentiment(corpusAll[1:K], lexicons = lexPure, how = "proportional"))
+  all.equal(s7$word_count, s8$word_count) & all.equal(s7$HULIU, s8$HULIU)
+
+  system.time(s9 <- compute_sentiment(corpusAll[1:K], lexicons = lex[c("HULIU")], how = "proportionalPol"))
+  system.time(s10 <- compute_sentiment(corpusAll[1:K], lexicons = lexPure, how = "proportionalPol"))
+  all.equal(s9$word_count, s10$word_count) & all.equal(s9$HULIU, s10$HULIU)
+
+  system.time(sA <- sentoUnigramsAllFunc(corpusAll[1:K]))
+  system.time(sB <- tidytextUnigramsAllFunc(corpusAll[1:K]))
+  system.time(sC <- sentoClustersAllParFunc(corpusAll[1:K]))
+  sapply(colnames(sA), function(col) all(all.equal(sA[[col]], sB[[col]])))
+}
 
 ########################################### timings for one lexicon
 
@@ -270,11 +278,7 @@ timingsAll.single <- cbind(timingsFull.single[, 1:4], timingsSentimentAnalysis, 
 colnames(timingsAll.single) <- c("sento_unigrams", "sento_bigrams", "sento_clusters",
                                  "meanr", "SentimentAnalysis", "syuzhet", "quanteda", "tidytext")
 timings.single <- data.table(texts = nTexts, timingsAll.single)
-
-cat("TABLE 3 (PANEL A)")
 cat("\n")
-timings.single
-cat("\n \n")
 
 ########################################### timings for many lexicons
 
@@ -302,9 +306,15 @@ colnames(timingsFull.many) <- c("sento_unigrams_many", "sento_unigrams_many_feat
                                 "tidytext_unigrams_many", "tidytext_bigrams_many")
 timings.many <- data.table(texts = nTexts, timingsFull.many)
 
-cat("TABLE 3 (PANEL B)")
+cat("\n")
+cat("PANEL A")
+cat("\n")
+timings.single
+cat("\n \n")
+cat("PANEL B")
 cat("\n")
 timings.many
+cat("\n")
 
 ###########################################
 

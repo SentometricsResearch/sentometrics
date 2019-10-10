@@ -43,7 +43,32 @@ names(lexWrong)[2] <- "frr"
 
 ### tests from here ###
 
-test_data <- readRDS(system.file("extdata", "test_data.rds", package = "sentometrics")) # benchmark sentiment scores
+load(system.file("extdata", "test_data.rda", package = "sentometrics")) # benchmark sentiment scores
+
+sanity_sentiment <- function(texts, lexicon, valence = NULL) {
+  out <- rep(NA, length(texts))
+  for (i in seq_along(texts)) {
+    x <- texts[i]
+    tok <- stringi::stri_split_boundaries(
+      stringi::stri_trans_tolower(x), type = "word", skip_word_none = TRUE, skip_word_number = TRUE
+    )[[1]]
+    lo <- which(tok %in% lexicon[["x"]])
+    m <- tok[lo]
+    setkey(lexicon, "x")
+    sc <- lexicon[m, y]
+    before <- sapply(lo - 1, max, 1)
+    vals <- rep(1, length(sc))
+    if (!is.null(valence)) {
+      setkey(valence, "x")
+      val <- which(tok[before] %in% valence$x)
+      v <- tok[before][val]
+      vals[val] <- valence[v, y]
+    }
+    ss <- sum(sc * vals)
+    out[i] <- ss
+  }
+  out
+}
 
 sentimentList <- list(
   s1 = compute_sentiment(quanteda::texts(corpus), lex, how = "counts"),
@@ -55,14 +80,14 @@ sentimentList <- list(
                          lex, how = "counts"),
   s7 = compute_sentiment(corpus, lex, how = "counts"),
   s8 = compute_sentiment(quanteda::texts(corpus), lexSplit, how = "counts"),
-  # s9 = compute_sentiment(quanteda::texts(corpus), lex, how = "TF", nCore = 2), # no multicore computation because of CRAN checks
+  # s9 = compute_sentiment(quanteda::texts(corpus), lex, how = "TF", nCore = 2), # no multicore computation in CRAN checks
   s10 = compute_sentiment(quanteda::texts(corpus), lexClust, how = "counts"),
   s11 = compute_sentiment(corpus, lexClust, how = "proportional"),
   s12 = compute_sentiment(quanteda::texts(corpus), lexClust, how = "proportionalPol"),
   s13 = compute_sentiment(corpus, lex, how = "exponential"),
-  s14 = compute_sentiment(corpus, lex, how = "invertedExponential"),
+  s14 = compute_sentiment(corpus, lex, how = "inverseExponential"),
   s15 = compute_sentiment(corpus, lex, how = "UShaped"),
-  s16 = compute_sentiment(corpus, lex, how = "invertedUShaped"),
+  s16 = compute_sentiment(corpus, lex, how = "inverseUShaped"),
   s17 = compute_sentiment(corpus, lex, how = "TF"),
   s18 = compute_sentiment(corpus, lex, how = "logarithmicTF"),
   s19 = compute_sentiment(corpus, lex, how = "augmentedTF"),
@@ -70,7 +95,7 @@ sentimentList <- list(
   s21 = compute_sentiment(corpus, lex, how = "TFIDF"),
   s22 = compute_sentiment(corpus, lex, how = "logarithmicTFIDF"),
   s23 = compute_sentiment(corpus, lex, how = "augmentedTFIDF"),
-  s24 = compute_sentiment(corpusLang, lexLang, how = "squareRootCounts")
+  s24 = compute_sentiment(corpusLang, lexLang, how = "proportionalSquareRoot")
 )
 
 # compute_sentiment
@@ -93,6 +118,8 @@ test_that("Agreement between sentiment scores on document-level across input obj
   expect_true("language" %in% colnames(quanteda::docvars(corpusLang)))
   expect_error(compute_sentiment(corpusLang, lexWrong, how = "proportional"))
   expect_true(all.equal(test_data, sentimentList[1:11])) # compare with old sentiment scores
+  expect_true(all.equal(sentimentList$s1$GI_en, sanity_sentiment(quanteda::texts(corpus), lex$GI_en, lex$valence)))
+  expect_true(all.equal(sentimentList$s2$GI_en, sanity_sentiment(quanteda::texts(corpus), lex$GI_en)))
 })
 
 sentimentSentenceList <- list(
@@ -101,19 +128,21 @@ sentimentSentenceList <- list(
                          lexClust, how = "counts", do.sentence = TRUE),
   s3 = compute_sentiment(quanteda::corpus(usnews[1:250, c("texts", "wsj", "economy")], text_field = "texts"),
                          lexClust, how = "counts", do.sentence = TRUE),
-  s4 = compute_sentiment(corpus, lexClust, how = "squareRootCounts", do.sentence = TRUE),
-  s5 = compute_sentiment(corpusLang, lexLang, how = "proportional", do.sentence = TRUE)
+  s4 = compute_sentiment(corpus, lexClust, how = "proportionalSquareRoot", do.sentence = TRUE),
+  s5 = compute_sentiment(corpusLang, lexLang, how = "proportional", do.sentence = TRUE),
+  s6 = compute_sentiment(corpus, lex[1:3], how = "augmentedTFIDF", do.sentence = TRUE),
+  s7 = compute_sentiment(corpus, lex, how = "inverseUShaped", do.sentence = TRUE)
 )
 
-test_that("Agreement between sentiment scores on sentence-level across input objects", {
-  # expect_true(all(unlist(lapply(sentimentSentenceList, function(s) nrow(s) == 2658))))
-  # expect_true(all(unlist(lapply(sentimentSentenceList[1:4], function(s)
-  #   all(s$word_count == sentimentSentenceList$s1$word_count)))))
-  # expect_true(all(unlist(lapply(sentimentSentenceList, function(s)
-  #   sum(s$word_count) == sum(sentimentSentenceList$s1$word_count)))))
-  # expect_true(all(c("GI_en", "LM_en", "HENRY_en") %in%
-  #                   colnames(compute_sentiment(scorp[3], lexClust, how = "counts", do.sentence = TRUE))))
-})
+# test_that("Agreement between sentiment scores on sentence-level across input objects", {
+#   expect_true(all(unlist(lapply(sentimentSentenceList, function(s) nrow(s) == 2658))))
+#   expect_true(all(unlist(lapply(sentimentSentenceList[1:4], function(s)
+#     all(s$word_count == sentimentSentenceList$s1$word_count)))))
+#   expect_true(all(unlist(lapply(sentimentSentenceList, function(s)
+#     sum(s$word_count) == sum(sentimentSentenceList$s1$word_count)))))
+#   expect_true(all(c("GI_en", "LM_en", "HENRY_en") %in%
+#                     colnames(compute_sentiment(scorp[3], lexClust, how = "counts", do.sentence = TRUE))))
+# })
 
 # sento_lexicons
 test_that("Proper fails when issues with lexicons and valence shifters input", {

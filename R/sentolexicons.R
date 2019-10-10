@@ -16,7 +16,8 @@
 #' and a \code{"y"} or \code{"t"} column. The first column has the words, \code{"y"} has the values for bigram
 #' shifting, and \code{"t"} has the types of the valence shifter for a clustered approach to sentiment calculation
 #' (supported types: \code{1} = negators, \code{2} = amplifiers, \code{3} = deamplifiers, \code{4} = adversative conjunctions).
-#' If three columns are provided, the first two will be considered only. This argument can be one of the
+#' Type \code{4} is only used in a clusters-based sentence-level sentiment calculation.
+#' If three columns are provided, only the first two will be considered. This argument can be one of the
 #' built-in valence word lists accessible via \code{list_valence_shifters}. A word that appears in both a
 #' lexicon and the valence word list is prioritized as a lexical entry during sentiment calculation. If
 #' \code{NULL}, valence shifting is not applied in the sentiment analysis.
@@ -97,12 +98,11 @@ sento_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
     if ("t" %in% names(valenceIn)) {
       if (!all(unique(valenceIn[["t"]]) %in% c(1, 2, 3, 4)))
         stop("Supported types of valence shifters under the 't' column are 1, 2, 3 and 4.")
-      if (4 %in% unique(valenceIn[["t"]]))
-        warning("Valence shifters of type 4 are only used for a sentiment calculation by sentence.")
     }
-    valenceIn$x <- stringi::stri_trans_tolower(valenceIn$x)
-    valenceIn <- valenceIn[!(stringi::stri_detect(valenceIn$x, regex = "\\s+") | duplicated(valenceIn$x)), ]
-    lexicons[["valence"]] <- valenceIn
+    valenceIn <- data.table::as.data.table(valenceIn)
+    valenceIn[, "x" := stringi::stri_trans_tolower(valenceIn$x)]
+    lexicons[["valence"]] <-
+      valenceIn[!(stringi::stri_detect(valenceIn$x, regex = "\\s+") | duplicated(valenceIn$x)), ]
   }
 
   class(lexicons) <- c("sento_lexicons", class(lexicons))

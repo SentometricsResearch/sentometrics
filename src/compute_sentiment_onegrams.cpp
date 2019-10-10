@@ -14,7 +14,7 @@ Rcpp::NumericMatrix compute_sentiment_onegrams(std::vector< std::vector<std::str
                                                Rcpp::List lexicons,
                                                std::string how) {
 
-  int nTexts = texts.size(); // already tokenized texts
+  int N = texts.size(); // already tokenized texts
   int nL = lexicons.size();
   bool isFreqWeighting = is_frequency_weighting(how);
   Rcpp::CharacterVector colNames = prepare_column_names(lexicons.names(), nL);
@@ -26,9 +26,9 @@ Rcpp::NumericMatrix compute_sentiment_onegrams(std::vector< std::vector<std::str
   if (isFreqWeighting) {
     make_frequency_maps(frequencyMap, inverseFrequencyMap, texts);
   }
-  Rcpp::NumericMatrix sentScores(nTexts, nL + 1); // output matrix of word count and sentiment scores
-  SentimentScorerOnegrams sentimentScorer(texts, lexiconMap, how, nL, frequencyMap, inverseFrequencyMap, isFreqWeighting, sentScores);
-  parallelFor(0, nTexts, sentimentScorer);
+  Rcpp::NumericMatrix sentScores(N, nL + 1); // output matrix of word count and sentiment scores
+  SentimentScorerOnegrams sentimentScorer(texts, lexiconMap, how, nL, N, frequencyMap, inverseFrequencyMap, isFreqWeighting, sentScores);
+  parallelFor(0, N, sentimentScorer);
   colnames(sentScores) = colNames;
 
   return(sentScores);

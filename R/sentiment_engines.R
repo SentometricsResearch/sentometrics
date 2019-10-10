@@ -32,11 +32,12 @@ compute_sentiment_lexicons <- function(x, tokens, dv, lexicons, how, do.sentence
   threads <- min(RcppParallel::defaultNumThreads(), nCore)
   RcppParallel::setThreadOptions(numThreads = threads)
   if (is.character(x)) x <- quanteda::corpus(x)
-  noValence <- is.null(lexicons[["valence"]])
   if (do.sentence == TRUE) {
     tokens <- tokenize_texts(quanteda::texts(x), tokens, type = "sentence")
+    valenceType <- ifelse(is.null(lexicons[["valence"]]), 0,
+                          ifelse(colnames(lexicons[["valence"]])[2] == "y", 1, 2))
     s <- compute_sentiment_sentences(unlist(tokens, recursive = FALSE),
-                                     lexicons, how, !noValence) # call to C++ code
+                                     lexicons, how, valenceType) # call to C++ code
     dt <- data.table::data.table("id" = quanteda::docnames(x), "n" = sapply(tokens, length))
     if (!is.null(dv)) dt <- cbind(dt, dv)
     dt <- dt[rep(1:.N, n)][, "n" := NULL]
@@ -49,10 +50,12 @@ compute_sentiment_lexicons <- function(x, tokens, dv, lexicons, how, do.sentence
     }
   } else {
     tokens <- tokenize_texts(quanteda::texts(x), tokens, type = "word")
-    if (noValence == TRUE) {
-      s <- compute_sentiment_onegrams(tokens, lexicons, how) # call to C++ code
+    if (is.null(lexicons[["valence"]])) { # call to C++ code
+      s <- compute_sentiment_onegrams(tokens, lexicons, how)
     } else {
-      s <- compute_sentiment_valence(tokens, lexicons, how) # call to C++ code
+      # if (4 %in% unique(lexicons$valence[["t"]]))
+      #   warning("Valence shifters of type 4 are only used for a sentiment calculation by sentence.")
+      s <- compute_sentiment_valence(tokens, lexicons, how)
     }
     s <- data.table::data.table("id" = quanteda::docnames(x), s)
     if (!is.null(dv)) s <- cbind(s, dv)
@@ -105,8 +108,8 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
 #' @section Calculation:
 #' If the \code{lexicons} argument has no \code{"valence"} element, the sentiment computed corresponds to simple unigram
 #' matching with the lexicons [\emph{unigrams} approach]. If valence shifters are included in \code{lexicons} with a
-#' corresponding \code{"y"} column, these have the effect of modifying the polarity of a word detected from the lexicon if
-#' appearing right before such word (examples: not good or can't defend) [\emph{bigrams} approach]. If the valence
+#' corresponding \code{"y"} column, the polarity of a word detected from a lexicon gets multiplied with the associated
+#' value of a valence shifter if it appears right before the detected word (examples: not good or can't defend) [\emph{bigrams} approach]. If the valence
 #' table contains a \code{"t"} column, valence shifters are searched for in a cluster centered around a detected polarity
 #' word [\emph{clusters} approach]. The latter approach is a simplified version of the one utilized by the \pkg{sentimentr}
 #' package. A cluster amounts to four words before and two words after a polarity word. A cluster never overlaps with
@@ -116,11 +119,11 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
 #' is an odd number of negators (\code{t = 1}), \eqn{n = -1} and amplifiers are counted as deamplifiers, else \eqn{n = 1}.
 #'
 #' The sentence-level sentiment calculation approaches each sentence as if it is a document. Depending on the input either
-#' the unigrams, bigrams or clusters approach is used. For the latter, we replicated the default \pkg{sentimentr} package
-#' approach, with a cluster of five words before and two words after a polarized word. The cluster is limited to the words
-#' after a previous comma and before a next comma. Adversative conjunctions (\eqn{adv}, \code{t = 4}) are accounted for here.
-#' If the value \eqn{1 + 0.25adv} is greater (resp. smaller) than 1, it is added to (resp. substracted from) the net
-#' amplification weight.
+#' the unigrams, bigrams or clusters approach is used. We enhanced latter approach following more closely the default
+#' \pkg{sentimentr} settings. They use a cluster of five words before and two words after a polarized word. The cluster
+#' is limited to the words after a previous comma and before a next comma. Adversative conjunctions (\code{t = 4}) are
+#' accounted for here. The cluster is reweighted based on the value \eqn{1 + 0.25adv}, where \eqn{adv} is the difference
+#' between the number of adversative conjunctions found before and after the polarized word.
 #'
 #' @param x either a \code{sento_corpus} object created with \code{\link{sento_corpus}}, a \pkg{quanteda}
 #' \code{\link[quanteda]{corpus}} object, a \pkg{tm} \code{\link[tm]{SimpleCorpus}} object, a \pkg{tm}
@@ -199,21 +202,21 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
 #' ## sentiment calculator handles multiple character vectors within
 #' ## a single corpus element as separate documents
 #' vcorp <- tm::VCorpus(tm::DirSource(reuters))
-#' sent6 <- compute_sentiment(vcorp, l1, how = "proportional")
+#' sent6 <- compute_sentiment(vcorp, l1)
 #'
 #' # from a sento_corpus object - unigrams approach with tf-idf weighting
 #' sent7 <- compute_sentiment(corpusSample, l1, how = "TFIDF")
 #'
 #' # sentence-by-sentence computation
-#' sent8 <- compute_sentiment(corpusSample, l1, how = "squareRootCounts",
+#' sent8 <- compute_sentiment(corpusSample, l1, how = "proportionalSquareRoot",
 #'                            do.sentence = TRUE)
 #'
 #' # from an artificially constructed multilingual corpus
 #' usnews[["language"]] <- "en" # add language column
 #' usnews$language[1:100] <- "fr"
-#' l_en <- sento_lexicons(list("FEEL_en" = list_lexicons$FEEL_en_tr))
-#' l_fr <- sento_lexicons(list("FEEL_fr" = list_lexicons$FEEL_fr))
-#' lexicons <- list(en = l_en, fr = l_fr)
+#' lEn <- sento_lexicons(list("FEEL_en" = list_lexicons$FEEL_en_tr))
+#' lFr <- sento_lexicons(list("FEEL_fr" = list_lexicons$FEEL_fr))
+#' lexicons <- list(en = lEn, fr = lFr)
 #' corpusLang <- sento_corpus(corpusdf = usnews[1:250, ])
 #' sent9 <- compute_sentiment(corpusLang, lexicons, how = "proportional")
 #'
@@ -237,19 +240,12 @@ compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, 
     if (!is_names_correct(names(lexicons)))
       stop("At least one lexicon's name contains '-'. Please provide proper names.")
   }
-  if (do.sentence == TRUE) {
-    if (!is.null(lexicons[["valence"]])) {
-      if (is.null(lexicons[["valence"]][["t"]])) {
-        stop("Column x and t expected in valence shifters when doing a sentence-based computation.")
-      }
-    }
-  }
   if (!inherits(lexicons, "sento_lexicons")) {
     # only a sento_corpus can have a language column and deal with a list of sento_lexicons
     if (!("sento_corpus" %in% class(x))) {
       stop("List of multiple lexicons only allowed in combination with a sento_corpus.")
     } else {
-      if (!is.null(quanteda::docvars(x, field = "language"))) {
+      if ("language" %in% names(quanteda::docvars(x))) {
         # if language is in sento_corpus, each language needs to be covered by the list of sento_lexicons objects
         if (!all(unique(quanteda::docvars(x, field = "language")) %in% names(lexicons))) {
           stop("Lexicons do not cover all languages in corpus.")
@@ -261,12 +257,12 @@ compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, 
                       "Following names occur at least twice: ", paste0(duplics, collapse = ", "), "."))
         }
       } else { # if language not in sento_corpus, one sento_lexicons object is expected and not a list
-        stop("List of sento_lexicons objects only allowed if multiple languages in sento_corpus.")
+        stop("List of sento_lexicons objects only allowed if there is a language column in sento_corpus.")
       }
     }
   } else {
     if (inherits(x, "sento_corpus")) {
-      if("language" %in% names(quanteda::docvars(x)))
+      if ("language" %in% names(quanteda::docvars(x)))
         stop("Provide a list of sento_lexicons objects when having a language column in sento_corpus.")
     }
   }
@@ -274,7 +270,7 @@ compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, 
   UseMethod("compute_sentiment", x)
 }
 
-.compute_sentiment.sento_corpus <- function(x, lexicons, how, tokens = NULL, do.sentence = FALSE, nCore = 1) {
+.compute_sentiment.sento_corpus <- function(x, lexicons, how = "proportional", tokens = NULL, do.sentence = FALSE, nCore = 1) {
   nCore <- check_nCore(nCore)
 
   languages <- tryCatch(unique(quanteda::docvars(x, field = "language")), error = function(e) NULL)
@@ -298,7 +294,7 @@ compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, 
 #' @export
 compute_sentiment.sento_corpus <- compiler::cmpfun(.compute_sentiment.sento_corpus)
 
-.compute_sentiment.corpus <- function(x, lexicons, how, tokens = NULL, do.sentence = FALSE, nCore = 1) {
+.compute_sentiment.corpus <- function(x, lexicons, how = "proportional", tokens = NULL, do.sentence = FALSE, nCore = 1) {
   nCore <- check_nCore(nCore)
 
   if (ncol(quanteda::docvars(x)) == 0) {
@@ -323,7 +319,7 @@ compute_sentiment.sento_corpus <- compiler::cmpfun(.compute_sentiment.sento_corp
 #' @export
 compute_sentiment.corpus <- compiler::cmpfun(.compute_sentiment.corpus)
 
-.compute_sentiment.character <- function(x, lexicons, how, tokens = NULL, do.sentence = FALSE, nCore = 1) {
+.compute_sentiment.character <- function(x, lexicons, how = "proportional", tokens = NULL, do.sentence = FALSE, nCore = 1) {
   nCore <- check_nCore(nCore)
   s <- compute_sentiment_lexicons(x, tokens, dv = NULL, lexicons, how, do.sentence, nCore)
 
@@ -334,7 +330,7 @@ compute_sentiment.corpus <- compiler::cmpfun(.compute_sentiment.corpus)
 #' @export
 compute_sentiment.character <- compiler::cmpfun(.compute_sentiment.character)
 
-.compute_sentiment.VCorpus <- function(x, lexicons, how, tokens = NULL, do.sentence = FALSE, nCore = 1) {
+.compute_sentiment.VCorpus <- function(x, lexicons, how = "proportional", tokens = NULL, do.sentence = FALSE, nCore = 1) {
   compute_sentiment(unlist(lapply(x, "[", "content")),
                     lexicons, how, tokens, do.sentence, nCore)
 }
@@ -343,7 +339,7 @@ compute_sentiment.character <- compiler::cmpfun(.compute_sentiment.character)
 #' @export
 compute_sentiment.VCorpus <- compiler::cmpfun(.compute_sentiment.VCorpus)
 
-.compute_sentiment.SimpleCorpus <- function(x, lexicons, how, tokens = NULL, do.sentence = FALSE, nCore = 1) {
+.compute_sentiment.SimpleCorpus <- function(x, lexicons, how = "proportional", tokens = NULL, do.sentence = FALSE, nCore = 1) {
   compute_sentiment(as.character(as.list(x)),
                     lexicons, how, tokens, do.sentence, nCore)
 }
