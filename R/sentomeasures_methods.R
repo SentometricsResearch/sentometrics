@@ -6,8 +6,7 @@
 #' @method plot sento_measures
 #'
 #' @description Plotting method that shows all sentiment measures from the provided \code{sento_measures}
-#' object in one plot, or the average along one of the lexicons, features and time weighting dimensions. We suggest to
-#' make use of a \code{measures_xyz} function when you want to plot only a subset of the sentiment measures.
+#' object in one plot, or the average along one of the lexicons, features and time weighting dimensions.
 #'
 #' @param x a \code{sento_measures} object created using \code{\link{sento_measures}}.
 #' @param group a value from \code{c("lexicons", "features", "time", "all")}. The first three choices display the average of
@@ -20,19 +19,16 @@
 #' graphs plotted and \code{group} is different from \code{"all"}.
 #'
 #' @examples
-#' data("usnews", package = "sentometrics")
-#' data("list_lexicons", package = "sentometrics")
-#' data("list_valence_shifters", package = "sentometrics")
-#'
 #' # construct a sento_measures object to start with
-#' corpus <- sento_corpus(corpusdf = usnews)
+#' corpus <- sento_corpus(corpusdf = sentometrics::usnews)
 #' corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-#' l <- sento_lexicons(list_lexicons[c("LM_en")], list_valence_shifters[["en"]])
+#' l <- sento_lexicons(sentometrics::list_lexicons[c("LM_en")],
+#'                     sentometrics::list_valence_shifters[["en"]])
 #' ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "month", lag = 3)
 #' sento_measures <- sento_measures(corpusSample, l, ctr)
 #'
 #' # plot sentiment measures
-#' plot(sento_measures, group = "features")
+#' plot(sento_measures, "features")
 #'
 #' \dontrun{
 #' # adjust appearance of plot

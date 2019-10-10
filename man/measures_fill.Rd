@@ -33,14 +33,11 @@ The \code{dateBefore} and \code{dateAfter} dates are converted according to the 
 frequency.
 }
 \examples{
-data("usnews", package = "sentometrics")
-data("list_lexicons", package = "sentometrics")
-data("list_valence_shifters", package = "sentometrics")
-
 # construct a sento_measures object to start with
-corpus <- sento_corpus(corpusdf = usnews)
+corpus <- sento_corpus(corpusdf = sentometrics::usnews)
 corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+l <- sento_lexicons(sentometrics::list_lexicons[c("LM_en", "HENRY_en")],
+                    sentometrics::list_valence_shifters[["en"]])
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "day", lag = 7, fill = "none")
 sento_measures <- sento_measures(corpusSample, l, ctr)
 
