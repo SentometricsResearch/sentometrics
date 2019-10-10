@@ -10,14 +10,12 @@ adversative conjunctions)
 - moved the **`data.table`** package from Depends to Imports (see https://github.com/Rdatatable/data.table/issues/3076)
 - no change by reference of input sentiment objects in the `merge.sentiment()` function anymore
 - correct pass-through of default `how` argument in the `compute_sentiment()` function
-- improved documentation
-- corrected small bugs in the weighting schemes and made the naming and options more coherent
 - added a few adversative conjunctions to all word lists in `list_valence_shifters`
 - added a `do.normalize` option to the `weights_beta()` and `weights_exponential()` functions
 - added a `do.inverse` option to the `weights_exponential()` function and associated `do.inverseExp` argument in the `ctr_agg()` function
-- modified some names of options for within-document or within-sentence aggregation (i.e., across tokens): `"squareRootCounts"'` into `"proportionalSquareRoot"'`, `"invertedExponential"'` into `"inverseExponential"'`, and `"invertedUShaped"'` into `"inverseUShaped"'`
+- modified some names of options for within-document or within-sentence aggregation (i.e., across tokens): `"squareRootCounts"` into `"proportionalSquareRoot"`, `"invertedExponential"` into `"inverseExponential"`, and `"invertedUShaped"` into `"inverseUShaped"`
 - corrected the numerator (number of documents or sentences instead of token frequency) in all weighting schemes involving the inverse document frequency (IDF)
-- the `compute_sentiment()` function also allows now for a sentence-level calculation using the bigrams valence shifting approach
+- the `compute_sentiment()` function now also can do a sentence-level calculation using the bigrams valence shifting approach
 
 ## sentometrics 0.7.0
 
