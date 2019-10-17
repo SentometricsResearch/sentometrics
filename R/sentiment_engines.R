@@ -18,10 +18,11 @@ tokenize_texts <- function(x, tokens = NULL, type = "word") { # x embeds a chara
     } else if (type == "sentence") {
       sentences <- stringi::stri_split_boundaries(x, type = "sentence")
       tok <- lapply(sentences, function(sn) { # list of documents of list of sentences of words
-        stringi::stri_split_boundaries(
+        wo <- stringi::stri_split_boundaries(
           stringi::stri_trans_tolower(gsub(", ", " c_c ", sn)),
           type = "word", skip_word_none = TRUE, skip_word_number = TRUE
         )
+        wo[sapply(wo, length) != 0]
       })
     }
   } else tok <- tokens
@@ -331,7 +332,7 @@ compute_sentiment.corpus <- compiler::cmpfun(.compute_sentiment.corpus)
 compute_sentiment.character <- compiler::cmpfun(.compute_sentiment.character)
 
 .compute_sentiment.VCorpus <- function(x, lexicons, how = "proportional", tokens = NULL, do.sentence = FALSE, nCore = 1) {
-  compute_sentiment(unlist(lapply(x, "[", "content")),
+  compute_sentiment(unlist(lapply(x, "[[", "content")),
                     lexicons, how, tokens, do.sentence, nCore)
 }
 
@@ -352,8 +353,8 @@ compute_sentiment.SimpleCorpus <- compiler::cmpfun(.compute_sentiment.SimpleCorp
 #'
 #' @author Samuel Borms
 #'
-#' @description Combines multiple sentiment objects with possibly different column names into a new
-#' sentiment object. Here, too, any resulting \code{NA} values are converted to zero.
+#' @description Combines multiple \code{sentiment} objects with possibly different column names
+#' into a new \code{sentiment} object. Here, too, any resulting \code{NA} values are converted to zero.
 #'
 #' @param ... \code{sentiment} objects to merge.
 #'
@@ -366,6 +367,7 @@ compute_sentiment.SimpleCorpus <- compiler::cmpfun(.compute_sentiment.SimpleCorp
 #'
 #' l1 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")])
 #' l2 <- sento_lexicons(list_lexicons[c("FEEL_en_tr")])
+#' l3 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en", "FEEL_en_tr")])
 #'
 #' corp1 <- sento_corpus(corpusdf = usnews[1:200, ])
 #' corp2 <- sento_corpus(corpusdf = usnews[201:450, ])
@@ -377,10 +379,11 @@ compute_sentiment.SimpleCorpus <- compiler::cmpfun(.compute_sentiment.SimpleCorp
 #' s4 <- compute_sentiment(corp2, l1, "counts", do.sentence = TRUE)
 #' s5 <- compute_sentiment(corp3, l2, "proportional", do.sentence = TRUE)
 #' s6 <- compute_sentiment(corp3, l1, "counts", do.sentence = TRUE)
+#' s7 <- compute_sentiment(corp3, l3, "UShaped", do.sentence = TRUE)
 #'
 #' # straightforward row-wise merge
 #' m1 <- merge(s1, s2, s3)
-#' nrow(m1) # 700
+#' nrow(m1) == 700 # TRUE
 #'
 #' # another straightforward row-wise merge
 #' m2 <- merge(s4, s6)
@@ -388,30 +391,50 @@ compute_sentiment.SimpleCorpus <- compiler::cmpfun(.compute_sentiment.SimpleCorp
 #' # merge of sentence and non-sentence calculations
 #' m3 <- merge(s3, s6)
 #'
-#' # different methods add rows and/or columns
+#' # different methods adds columns
 #' m4 <- merge(s4, s5)
-#' nrow(m4) > nrow(m2) # TRUE
+#' nrow(m4) == nrow(m2) # TRUE
+#'
+#' # different methods and weighting add rows and columns
+#' ## rows are added only when the different weighting
+#' ## approach for a specific method gives other sentiment values
+#' m5 <- merge(s4, s7)
+#' nrow(m5) > nrow(m4) # TRUE
 #'
 #' @export
 merge.sentiment <- function(...) {
   inp <- list(...)
   if (!all(sapply(inp, inherits, "sentiment")))
     stop("Not all inputs are sentiment objects.")
-  cols <- unique(do.call(c, lapply(inp, colnames)))
-  dts <- lapply(inp, function(dt) {
-    dt <- data.table::data.table(dt) # no change by reference as also impacts input sentiment objects
-    newCols <- setdiff(cols, colnames(dt))
-    if (length(newCols) > 0) dt[, setdiff(cols, colnames(dt)) := as.numeric(NA)]
-    dt[]
-  })
-  s <- Reduce(function(...) merge(..., all = TRUE), dts)[order(date, id)]
+
+  # cols <- sect <- unique(do.call(c, lapply(inp, colnames)))
+  # for (dt in inp) {
+  #   sect <- intersect(sect, colnames(dt))
+  # }
+  # dts <- lapply(inp, function(dt) {
+  #   dt <- data.table::data.table(dt)
+  #   # newCols <- setdiff(cols, colnames(dt))
+  #   # if (length(newCols) > 0) dt[, setdiff(cols, colnames(dt)) := as.numeric(NA)]
+  #   dt[]
+  # })
+  # s <- Reduce(function(...) merge(..., by = sect, all = TRUE), dts)[order(date, id)]
+
+  s <- data.table::as.data.table(inp[[1]])
+  for (j in 2:length(inp)) {
+    dt <- data.table::data.table(inp[[j]]) # no change by reference
+    s <- merge(s, dt, by = intersect(colnames(s), colnames(dt)), all = TRUE)
+  }
+
   if ("sentence_id" %in% colnames(s)) {
     s[, "sentence_id" := ifelse(is.na(sentence_id), 1, sentence_id)]
     data.table::setcolorder(s, c("id", "sentence_id", "date"))
+    s <- s[order(date, id, sentence_id)]
   } else {
     data.table::setcolorder(s, c("id", "date"))
+    s <- s[order(date, id)]
   }
   for (j in seq_along(s)) data.table::set(s, i = which(is.na(s[[j]])), j = j, value = 0)
+
   class(s) <- c("sentiment", class(s))
   s
 }
@@ -560,7 +583,7 @@ as.sentiment.data.table <- function(s) {
   sentCols <- colNames[!(colNames %in% nonSentCols)]
   if (length(sentCols) == 0)
     stop("There should be at least one sentiment scores column.")
-  if (!all(sapply(sentCols, function(i) inherits(s[[i]], "numeric"))))
+  if (!all(sapply(sentCols, function(i) is.numeric(s[[i]]))))
     stop("All sentiment value columns should be of type numeric.")
   newNames <- sapply(stringi::stri_split(sentCols, regex = "--"), function(name) {
     if (length(name) == 1) return(paste0(name, "--", "dummyFeature"))

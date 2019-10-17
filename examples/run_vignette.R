@@ -116,6 +116,28 @@ sentScores <- compute_sentiment(usnews[["texts"]], lexicons = lex, how = "propor
 head(sentScores[, c("word_count", "GI_en", "SENTIWORD", "SOCAL")])
 cat("\n")
 
+reuters <- system.file("texts", "crude", package = "tm")
+tmVCorp <- tm::VCorpus(tm::DirSource(reuters),
+                       list(reader = tm::readReut21578XMLasPlain))
+class(compute_sentiment(tmVCorp, lex))
+cat("\n")
+
+sentoSent <- compute_sentiment(
+  as.sento_corpus(tmVCorp, dates = as.Date("1993-03-06") + 1:20), lex, "UShaped"
+)
+tmSentPos <- sapply(tmVCorp, tm::tm_term_score, lex$NRC[y > 0, x])
+tmSentNeg <- sapply(tmVCorp, tm::tm_term_score, lex$NRC[y < 0, x])
+tmSent <- cbind(sentoSent[, 1:3], "tm_NRC" = tmSentPos - tmSentNeg)
+sent <- merge(sentoSent, as.sentiment(tmSent))
+sent[6:9, c(1, 11:13)]
+cat("\n")
+
+sSentences <- compute_sentiment(uscorpus, lex, do.sentence = TRUE)
+sSentences[1:12, 1:7]
+aggDocuments <- aggregate(sSentences, ctr_agg(howDocs = "equal_weight"), do.full = FALSE)
+aggDocuments[1:2, 1:7]
+cat("\n")
+
 usnewsLang <- usnews[1:5, 1:3]
 usnewsLang[["language"]] <- c("fr", "en", "en", "fr", "en")
 lEn <- sento_lexicons(list("GI_en" = list_lexicons$GI_en))
@@ -125,6 +147,7 @@ sLang <- compute_sentiment(corpusLang,
                            list(en = sento_lexicons(list("GI_en" = list_lexicons$GI_en)),
                                 fr = sento_lexicons(list("GI_fr" = list_lexicons$GI_fr_tr))))
 head(sLang)
+cat("\n")
 
 cat("### SECTION 3.3 ####################### \n \n")
 
@@ -144,11 +167,6 @@ cat("\n")
 
 pT <- plot(sentMeas, group = "time")
 pT
-
-sSentences <- compute_sentiment(uscorpus, lex, do.sentence = TRUE)
-sSentences[1:12, 1:7]
-aggDocuments <- aggregate(sSentences, ctr_agg(howDocs = "equal_weight"), do.full = FALSE)
-aggDocuments[1:2, 1:7]
 
 cat("### SECTION 3.4 ####################### \n \n")
 
@@ -178,13 +196,13 @@ pL <- plot(sentMeasLex, group = "lexicons") +
   guides(colour = guide_legend(nrow = 1))
 pL
 
-sentMeasMerged <- aggregate(sentMeas,
-                            time = list(W = c("equal_weight", "exponential_0.2")),
-                            lexicons = list(LEX = c("LM_en", "HENRY_en", "GI_en")),
-                            features = list(JOUR = c("wsj", "wapo"),
-                                            NEW = c("uncertainty", "election")),
-                            do.keep = FALSE)
-get_dimensions(sentMeasMerged)
+sentMeasAgg <- aggregate(sentMeas,
+                         time = list(W = c("equal_weight", "exponential_0.2")),
+                         lexicons = list(LEX = c("LM_en", "HENRY_en", "GI_en")),
+                         features = list(JOUR = c("wsj", "wapo"),
+                                         NEW = c("uncertainty", "election")),
+                         do.keep = FALSE)
+get_dimensions(sentMeasAgg)
 
 glob <- aggregate(sentMeas,
                   lexicons = c(0.10, 0.40, 0.05, 0.05, 0.08, 0.08, 0.08, 0.08, 0.08),

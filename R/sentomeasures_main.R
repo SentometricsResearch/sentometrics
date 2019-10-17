@@ -528,11 +528,11 @@ weights_across <- function(s, how = "proportional", do.ignoreZeros = TRUE, alpha
     # exponential w.r.t. words in document vs. total words in all documents per date
     if (do.ignoreZeros == TRUE) {
       docsIn <- s[, lapply(.SD, function(x)
-        x * (alpha * (1 - alpha) ^ (1 - word_count / mean(word_count))) / x), by = eval(by)]
+        x * (10 * alpha * (word_count / sum(word_count, na.rm = TRUE) - 1)) / x), by = eval(by)]
       weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = eval(by)][, -c(1:2)]
     } else {
-      weights <- s[, w := alpha * (1 - alpha) ^ (1 - word_count / mean(word_count, na.rm = TRUE)) /
-                     sum(alpha * (1 - alpha) ^ (1 - word_count / mean(word_count, na.rm = TRUE)), na.rm = TRUE),
+      weights <- s[, w := 10 * alpha * (word_count / sum(word_count, na.rm = TRUE) - 1) /
+                     sum(10 * alpha * (word_count / sum(word_count, na.rm = TRUE) - 1), na.rm = TRUE),
                    by = eval(by)][, "w"]
       weights <- weights[, colnames(s)[-c(1:2)] := weights][, -1]
     }
@@ -540,11 +540,11 @@ weights_across <- function(s, how = "proportional", do.ignoreZeros = TRUE, alpha
     # inverse exponential w.r.t. words in document vs. total words in all documents per date
     if (do.ignoreZeros == TRUE) {
       docsIn <- s[, lapply(.SD, function(x)
-        x * (1 / (alpha * (1 - alpha) ^ (1 - word_count / mean(word_count)))) / x), by = eval(by)]
+        x * (10 * alpha * (1 - word_count / sum(word_count, na.rm = TRUE))) / x), by = eval(by)]
       weights <- docsIn[, lapply(.SD, function(x) x / sum(x, na.rm = TRUE)), by = eval(by)][, -c(1:2)]
     } else {
-      weights <- s[, w := (1 / (alpha * (1 - alpha) ^ (1 - word_count / mean(word_count, na.rm = TRUE)))) /
-                     sum(alpha * (1 - alpha) ^ (1 - word_count / mean(word_count, na.rm = TRUE)), na.rm = TRUE),
+      weights <- s[, w := (10 * alpha * (1 - word_count / sum(word_count, na.rm = TRUE))) /
+                     sum(10 * alpha * (1 - word_count / sum(word_count, na.rm = TRUE)), na.rm = TRUE),
                    by = eval(by)][, "w"]
       weights <- weights[, colnames(s)[-c(1:2)] := weights][, -1]
     }

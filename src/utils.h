@@ -121,23 +121,23 @@ inline void update_token_weights(std::vector < double >& tokenWeights,
   } else {
 
     double token_weight = 0.0;
-    double x = (double) j + 1;
+    double x = (double) j + 1; // because 0-based indexing
     double y = (double) nTokens;
 
     if (how == "UShaped") {
-      token_weight = std::pow(x - y / 2, 2) / std::pow(y, 2);
+      token_weight = std::pow(x - ((y + 1) / 2), 2);
     } else if (how == "inverseUShaped") {
-      token_weight = 0.25 + (-std::pow(x - y / 2, 2)) / std::pow(y, 2);
+      token_weight = 0.25 + (-std::pow(x - ((y + 1) / 2), 2)) / std::pow(y, 2);
     } else if (how == "exponential") {
-      token_weight = std::exp(x / y) - 1.0;
+      token_weight = std::exp(5.0 * (x / y - 1));
     } else if (how == "inverseExponential") {
-      token_weight = std::exp(1.0 - x / y) - 1.0;
+      token_weight = std::exp(5.0 * (1 - x / y));
     } else if (how == "TF") {
       token_weight = frequency / nTokens;
     } else if (how == "logarithmicTF") {
       token_weight = std::log(1 + frequency / nTokens);
     } else if (how == "augmentedTF") {
-      token_weight = (0.5 + 0.5 * frequency / maxTokenFrequency) / nTokens;
+      token_weight = 1 + (frequency / maxTokenFrequency);
     } else if (how == "IDF") {
       token_weight = std::log(N / (1 + inverseFrequency));
     } else if (how == "TFIDF") {
@@ -145,7 +145,7 @@ inline void update_token_weights(std::vector < double >& tokenWeights,
     } else if (how == "logarithmicTFIDF") {
       token_weight = std::log(N / (1 + inverseFrequency)) * (std::log(1 + frequency / nTokens));
     } else if (how == "augmentedTFIDF") {
-      token_weight = std::log(N / (1 + inverseFrequency)) * (0.5 + 0.5 * frequency / maxTokenFrequency);
+      token_weight = std::log(N / (1 + inverseFrequency)) * (1 + (frequency / maxTokenFrequency));
     }
     // std::cout << "freq.: " << frequency << " & inv. freq.: " << inverseFrequency << "\n";
     // std::cout << "weight: " << token_weight << "\n";

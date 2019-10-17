@@ -2,7 +2,7 @@
 % Please edit documentation in R/sentocorpus.R
 \name{add_features}
 \alias{add_features}
-\title{Add feature columns to a (sento)corpus object}
+\title{Add feature columns to a (sento_)corpus object}
 \usage{
 add_features(corpus, featuresdf = NULL, keywords = NULL,
   do.binary = TRUE, do.regex = FALSE)
