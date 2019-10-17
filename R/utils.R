@@ -9,7 +9,8 @@
 #' for input in \code{\link{ctr_agg}} using the \code{weights} argument.
 #'
 #' @param n a single \code{numeric} to indicate the lag length.
-#' @param alphas a \code{numeric} vector of decay factors.
+#' @param alphas a \code{numeric} vector of decay factors, between 0 and 1, but multiplied by 10 in
+#' the implementation.
 #' @param do.inverse \code{TRUE} if the inverse exponential curves should be calculated as well.
 #' @param do.normalize a \code{logical}, if \code{TRUE} weights are normalized to unity.
 #'
@@ -21,15 +22,15 @@
 weights_exponential <- function(n, alphas = seq(0.1, 0.5, by = 0.1), do.inverse = FALSE, do.normalize = TRUE) {
   if (max(alphas) >= 1 || min(alphas) <= 0)
     stop("Values in 'alphas' should be between 0 and 1 (both excluded).")
-  vals <- 1:n
+  vals <- (1:n) / n
   inv <- ifelse(do.inverse, 2, 1)
   exponentials <- data.frame(matrix(nrow = n, ncol = length(alphas) * inv))
   colnames(exponentials) <- paste0("exponential", rep(alphas, rep(inv, length(alphas))), c("", "_inv")[1:inv])
   for (i in 1:length(alphas)) {
-    alpha <- alphas[i]
-    exponential <- alpha * (1 - alpha)^(1 - vals)
+    alpha <- 10 * alphas[i]
+    exponential <- exp(alpha * (vals - 1))
     if (do.inverse == TRUE) {
-      exponential <- cbind(exponential, 1 / exponential)
+      exponential <- cbind(exponential, exp(alpha * (1 - vals)))
       i <- (i*2 - 1):(i*2)
     }
     exponentials[, i] <- exponential

@@ -10,7 +10,8 @@ weights_exponential(n, alphas = seq(0.1, 0.5, by = 0.1),
 \arguments{
 \item{n}{a single \code{numeric} to indicate the lag length.}
 
-\item{alphas}{a \code{numeric} vector of decay factors.}
+\item{alphas}{a \code{numeric} vector of decay factors, between 0 and 1, but multiplied by 10 in
+the implementation.}
 
 \item{do.inverse}{\code{TRUE} if the inverse exponential curves should be calculated as well.}
 

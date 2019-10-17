@@ -8,13 +8,14 @@ adversative conjunctions)
 - clarified the documentation for the `peakdates()` and `peakdocs()` functions
 - put the Shiny application made available in previous package update (i.e., the `sento_app()` function) in a separate sole-purpose package **`sentometrics.app`** (see https://github.com/sborms/sentometrics.app) 
 - moved the **`data.table`** package from Depends to Imports (see https://github.com/Rdatatable/data.table/issues/3076)
-- no change by reference of input sentiment objects in the `merge.sentiment()` function anymore
+- no change by reference of input sentiment objects in the `merge.sentiment()` function anymore, and modified the merging to give for instance a simple column binding of sentment methods when all else is equal
 - correct pass-through of default `how` argument in the `compute_sentiment()` function
 - added a few adversative conjunctions to all word lists in `list_valence_shifters`
 - added a `do.normalize` option to the `weights_beta()` and `weights_exponential()` functions
 - added a `do.inverse` option to the `weights_exponential()` function and associated `do.inverseExp` argument in the `ctr_agg()` function
 - modified some names of options for within-document or within-sentence aggregation (i.e., across tokens): `"squareRootCounts"` into `"proportionalSquareRoot"`, `"invertedExponential"` into `"inverseExponential"`, and `"invertedUShaped"` into `"inverseUShaped"`
 - corrected the numerator (number of documents or sentences instead of token frequency) in all weighting schemes involving the inverse document frequency (IDF)
+- aligned all formulas concerning the exponential weighting curves
 - the `compute_sentiment()` function now also can do a sentence-level calculation using the bigrams valence shifting approach
 
 ## sentometrics 0.7.0
@@ -28,6 +29,7 @@ adversative conjunctions)
 - added the flexibility to do an explicit sentence-by-sentence sentiment computation (see `do.sentence` argument in the `compute_sentiment()` function)
 - added the flexibility to create a multi-language `sento_corpus` object to do a multi-language sentiment computation (applying different lexicons to texts written in different languages)
 - expanded the `compute_sentiment()` function to also take **`tm`** `SimpleCorpus` and `VCorpus` objects
+- added the **`tm`** and **`NLP`** packages to Suggests
 
 ## sentometrics 0.5.6
 

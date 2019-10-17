@@ -152,7 +152,7 @@ clean_texts <- function(corpusdf) {
   return(corpusdf)
 }
 
-#' Add feature columns to a (sento)corpus object
+#' Add feature columns to a (sento_)corpus object
 #'
 #' @author Samuel Borms
 #'
