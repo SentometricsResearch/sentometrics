@@ -36,8 +36,8 @@ lex <- sento_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")],
 lexSplit <- sento_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")], do.split = TRUE)
 lexClust <- sento_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")],
                            list_valence_shifters[["en"]][, c("x", "t")])
-lEn <- sento_lexicons(list("HENRY_en" = list_lexicons$HENRY_en))
-lFr <- sento_lexicons(list("HENRY_fr" = list_lexicons$HENRY_en))
+lEn <- sento_lexicons(list("HENRY_en" = list_lexicons$HENRY_en), list_valence_shifters$en)
+lFr <- sento_lexicons(list("HENRY_fr" = list_lexicons$HENRY_en, "FEEL" = list_lexicons$FEEL_fr))
 lexLang <- lexWrong <- list(en = lEn, fr = lFr)
 names(lexWrong)[2] <- "frr"
 
