@@ -137,8 +137,11 @@ sent8 <- compute_sentiment(corpusSample, l1, how = "proportionalSquareRoot",
 # from an artificially constructed multilingual corpus
 usnews[["language"]] <- "en" # add language column
 usnews$language[1:100] <- "fr"
-lEn <- sento_lexicons(list("FEEL_en" = list_lexicons$FEEL_en_tr))
-lFr <- sento_lexicons(list("FEEL_fr" = list_lexicons$FEEL_fr))
+lEn <- sento_lexicons(list("FEEL_en" = list_lexicons$FEEL_en_tr,
+                           "HENRY" = list_lexicons$HENRY_en),
+                      list_valence_shifters$en)
+lFr <- sento_lexicons(list("FEEL_fr" = list_lexicons$FEEL_fr),
+                      list_valence_shifters$fr)
 lexicons <- list(en = lEn, fr = lFr)
 corpusLang <- sento_corpus(corpusdf = usnews[1:250, ])
 sent9 <- compute_sentiment(corpusLang, lexicons, how = "proportional")

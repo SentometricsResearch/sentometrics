@@ -17,6 +17,7 @@ adversative conjunctions)
 - corrected the numerator (number of documents or sentences instead of token frequency) in all weighting schemes involving the inverse document frequency (IDF)
 - aligned all formulas concerning the exponential weighting curves
 - the `compute_sentiment()` function now also can do a sentence-level calculation using the bigrams valence shifting approach
+- fixed a small bug that did not allow to have different valence shifters lists for a multi-language sentiment calculation
 
 ## sentometrics 0.7.0
 

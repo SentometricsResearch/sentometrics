@@ -215,8 +215,11 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
 #' # from an artificially constructed multilingual corpus
 #' usnews[["language"]] <- "en" # add language column
 #' usnews$language[1:100] <- "fr"
-#' lEn <- sento_lexicons(list("FEEL_en" = list_lexicons$FEEL_en_tr))
-#' lFr <- sento_lexicons(list("FEEL_fr" = list_lexicons$FEEL_fr))
+#' lEn <- sento_lexicons(list("FEEL_en" = list_lexicons$FEEL_en_tr,
+#'                            "HENRY" = list_lexicons$HENRY_en),
+#'                       list_valence_shifters$en)
+#' lFr <- sento_lexicons(list("FEEL_fr" = list_lexicons$FEEL_fr),
+#'                       list_valence_shifters$fr)
 #' lexicons <- list(en = lEn, fr = lFr)
 #' corpusLang <- sento_corpus(corpusdf = usnews[1:250, ])
 #' sent9 <- compute_sentiment(corpusLang, lexicons, how = "proportional")
@@ -251,7 +254,8 @@ compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, 
         if (!all(unique(quanteda::docvars(x, field = "language")) %in% names(lexicons))) {
           stop("Lexicons do not cover all languages in corpus.")
         }
-        nms <- c(names(lexicons), sapply(lexicons, names))
+        nms <- unname(c(names(lexicons), unlist(lapply(lexicons, names))))
+        nms <- nms[nms != "valence"]
         if (sum(duplicated(nms)) > 0) { # check for duplicated lexicon names
           duplics <- unique(nms[duplicated(nms)])
           stop(paste0("Names of lexicons within and/or across languages are not unique. ",
