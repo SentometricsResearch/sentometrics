@@ -92,6 +92,10 @@ uscorpus <- add_features(uscorpus,
 tail(quanteda::docvars(uscorpus))
 cat("\n")
 
+summ <- corpus_summarize(uscorpus, by = "year")
+pCorp <- summ$plots$feature_plot + guides(color = guide_legend(nrow = 1))
+pCorp
+
 cat("### SECTION 3.2 ####################### \n \n")
 
 data("list_lexicons", package = "sentometrics")
@@ -266,7 +270,8 @@ pF <- plot(sentMeasPred, group = "features") +
   guides(colour = guide_legend(nrow = 1))
 pF
 
-load("vix.rda")
+# load("vix.rda")
+load("C:/Users/saborms/Dropbox/SentometricsRPackage/sentometrics/examples/vix.rda")
 data("epu", package = "sentometrics")
 sentMeasIn <- subset(sentMeasPred, date %in% vix$date)
 datesIn <- get_dates(sentMeasIn)
@@ -367,9 +372,17 @@ sink()
 
 ###### FIGURES ######
 
-ggsave("sentmeasT.pdf", pT) # Figure 1
-ggsave("sentmeasL.pdf", pL) # Figure 2
-ggsave("sentmeasF.pdf", pF) # Figure 3
-ggsave("for.pdf", r) # Figure 4
-ggsave("attr.pdf", a) # Figure 5
+ggsave("C:/Users/saborms/Dropbox/SentometricsRPackage/vignette/plots/corpsumm.pdf", pCorp)
+ggsave("C:/Users/saborms/Dropbox/SentometricsRPackage/vignette/plots/sentmeasL.pdf", pL)
+ggsave("C:/Users/saborms/Dropbox/SentometricsRPackage/vignette/plots/sentmeasT.pdf", pT)
+ggsave("C:/Users/saborms/Dropbox/SentometricsRPackage/vignette/plots/for.pdf", r)
+ggsave("C:/Users/saborms/Dropbox/SentometricsRPackage/vignette/plots/attr.pdf", a)
+ggsave("C:/Users/saborms/Dropbox/SentometricsRPackage/vignette/plots/sentmeasF.pdf", pF)
+
+# ggsave("corpsumm.pdf", pCorp)
+# ggsave("sentmeasT.pdf", pT)
+# ggsave("sentmeasL.pdf", pL)
+# ggsave("sentmeasF.pdf", pF)
+# ggsave("for.pdf", r)
+# ggsave("attr.pdf", a)
 
