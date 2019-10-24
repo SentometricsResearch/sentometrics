@@ -300,16 +300,17 @@ add_features <- function(corpus, featuresdf = NULL, keywords = NULL, do.binary =
 #'
 #' @author Jeroen Van Pelt, Samuel Borms, Andres Algaba
 #'
-#' @description Summarizes the \code{sento_corpus} object and returns insights about features and tokens over time.
+#' @description Summarizes the \code{sento_corpus} object and returns insights about the evolution of
+#' documents, features and tokens over time.
 #'
-#' @details This function summarizes the \code{sento_corpus} object by generating statistics about features and tokens over
-#' time. The insights can be narrowed down to a chosen set of metadata features. The same tokenization as in the
-#' sentiment calculation in \code{\link{compute_sentiment}} is used.
+#' @details This function summarizes the \code{sento_corpus} object by generating statistics about
+#' documents, features and tokens over time. The insights can be narrowed down to a chosen set of metadata
+#' features. The same tokenization as in the sentiment calculation in \code{\link{compute_sentiment}} is used.
 #'
 #' @param x is a \code{sento_corpus} object created with \code{\link{sento_corpus}}
 #' @param by a single \code{character} vector to specify the frequency time interval over which the statistics
 #' need to be calculated.
-#' @param features a \code{character} vector that can be used to select a subset of the features to be analysed.
+#' @param features a \code{character} vector that can be used to select a subset of the features to analyse.
 #'
 #' @return returns a \code{list} containing:
 #' \item{stats}{a \code{data.table} with statistics about the number of documents, total, average, minimum and maximum
@@ -324,8 +325,9 @@ add_features <- function(corpus, featuresdf = NULL, keywords = NULL, do.binary =
 #' # summary of corpus by day
 #' summary1 <- corpus_summarize(corpus)
 #'
-#' # summary of corpus by month
-#' summary2 <- corpus_summarize(corpus, by = "month")
+#' # summary of corpus by month for both journals
+#' summary2 <- corpus_summarize(corpus, by = "month",
+#'                              features = c("wsj", "wapo"))
 #'
 #' @export
 corpus_summarize <- function(x, by = "day", features = NULL) {
@@ -341,6 +343,8 @@ corpus_summarize <- function(x, by = "day", features = NULL) {
   )
 
   if (!is.null(features)) {
+    if (!all(features %in% colnames(dt)[-c(1, ncol(dt))]))
+      stop("Not all features provided in the 'features' argument are present in the corpus.")
     dt <- dt[, c(features, "date", "nTokens"), with = FALSE]
   }
 
@@ -366,28 +370,25 @@ corpus_summarize <- function(x, by = "day", features = NULL) {
   # plots
   docPlot <- ggplot(melt(freqAll[, .(date, documents)], id = "date", all = TRUE)) +
     geom_line(aes(x = date, y = value, color = variable, group = variable)) +
-    ggtitle(paste0("Number of documents over time (by ", by, ")")) +
     theme_bw() +
     scale_x_date(name = "Date", date_labels = "%m-%Y") +
-    scale_y_continuous(name = "Count") +
+    scale_y_continuous(name = paste0("Number of documents (by ", by, ")")) +
     plot_theme(legendPos = "none")
 
   freqAllMelt <- melt(freqAll[, !"documents"], id = "date", all = TRUE)
   legendPos <- ifelse(length(unique(freqAllMelt[["variable"]])) <= 12, "top", "none")
   featPlot <- ggplot(freqAllMelt) +
     geom_line(aes(x = date, y = value, color = variable, group = variable)) +
-    ggtitle(paste0("Feature statistics over time (by ", by, ")")) +
     theme_bw() +
     scale_x_date(name = "Date", date_labels = "%m-%Y") +
-    scale_y_continuous(name = "Count") +
+    scale_y_continuous(name = paste0("Feature count (by ", by, ")")) +
     plot_theme(legendPos)
 
   tokPlot <- ggplot(melt(tokensDT[, !"totalTokens"], id = "date", all = TRUE)) +
     geom_line(aes(x = date, y = value, color = variable, group = variable)) +
-    ggtitle(paste0("Token statistics over time (by ", by, ")")) +
     theme_bw() +
     scale_x_date(name = "Date", date_labels = "%m-%Y") +
-    scale_y_continuous(name = "Count") +
+    scale_y_continuous(name = paste0("Token count (by ", by, ")")) +
     plot_theme(legendPos = "top")
 
   # output

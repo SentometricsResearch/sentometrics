@@ -12,7 +12,7 @@ corpus_summarize(x, by = "day", features = NULL)
 \item{by}{a single \code{character} vector to specify the frequency time interval over which the statistics
 need to be calculated.}
 
-\item{features}{a \code{character} vector that can be used to select a subset of the features to be analysed.}
+\item{features}{a \code{character} vector that can be used to select a subset of the features to analyse.}
 }
 \value{
 returns a \code{list} containing:
@@ -21,12 +21,13 @@ number of tokens and the number of texts per features for each date.}
 \item{plots}{a \code{list} with three plots representing the above statistics.}
 }
 \description{
-Summarizes the \code{sento_corpus} object and returns insights about features and tokens over time.
+Summarizes the \code{sento_corpus} object and returns insights about the evolution of
+documents, features and tokens over time.
 }
 \details{
-This function summarizes the \code{sento_corpus} object by generating statistics about features and tokens over
-time. The insights can be narrowed down to a chosen set of metadata features. The same tokenization as in the
-sentiment calculation in \code{\link{compute_sentiment}} is used.
+This function summarizes the \code{sento_corpus} object by generating statistics about
+documents, features and tokens over time. The insights can be narrowed down to a chosen set of metadata
+features. The same tokenization as in the sentiment calculation in \code{\link{compute_sentiment}} is used.
 }
 \examples{
 data("usnews", package = "sentometrics")
@@ -36,8 +37,9 @@ corpus <- sento_corpus(usnews)
 # summary of corpus by day
 summary1 <- corpus_summarize(corpus)
 
-# summary of corpus by month
-summary2 <- corpus_summarize(corpus, by = "month")
+# summary of corpus by month for both journals
+summary2 <- corpus_summarize(corpus, by = "month",
+                             features = c("wsj", "wapo"))
 
 }
 \author{

@@ -189,9 +189,9 @@ inline void update_token_scores(std::vector< double >& scores,
   }
 
   for (int i = 0; i < nTokens; i++) {
-    // std::cout << "Token: " << i << "\n";
+    // std::cout << "token: " << i << "\n";
     for (int j = 0; j < nL; j++) {
-      // std::cout << "Lexicon: " << j << "\n";
+      // std::cout << "lexicon: " << j << "\n";
       if (tokenScores[i].size() != 0) {
         double score = tokenScores[i][j];
         // std::cout << "score within lexicon: " << score << "\n";
