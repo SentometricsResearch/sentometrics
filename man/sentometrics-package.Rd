@@ -24,8 +24,8 @@ Please cite the package in publications. Use \code{citation("sentometrics")}.
 \code{\link{as.sento_corpus}}
 \item Sentiment computation and aggregation into sentiment measures: \code{\link{ctr_agg}},
 \code{\link{sento_lexicons}}, \code{\link{compute_sentiment}}, \code{\link{aggregate.sentiment}},
-\code{\link{sento_measures}}, \code{\link{aggregate.sento_measures}}, \code{\link{peakdocs}},
-\code{\link{peakdates}} and a series of manipulation functions
+\code{\link{as.sentiment}}, \code{\link{sento_measures}}, \code{\link{aggregate.sento_measures}},
+\code{\link{peakdocs}}, \code{\link{peakdates}}
 \item Sparse modelling: \code{\link{ctr_model}}, \code{\link{sento_model}}
 \item Prediction and post-modelling analysis: \code{\link{predict.sento_model}},
 \code{\link{attributions}}
