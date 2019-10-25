@@ -46,7 +46,7 @@ plot.sento_measures <- function(x, group = "all", ...) {
     stop("The 'group' argument should be either 'lexicons', 'features', 'time' or 'all'.")
   measures <- data.table::as.data.table(x)
   if (group == "all") {
-    measuresMelt <- melt(measures, id.vars = "date", variable.factor = FALSE)
+    measuresMelt <- data.table::melt(measures, id.vars = "date", variable.factor = FALSE)
     legendPos <- "none"
   } else {
     measuresMelt <- measures_to_long(measures)[, c("date", group, "value"), with = FALSE]

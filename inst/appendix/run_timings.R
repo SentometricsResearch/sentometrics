@@ -12,14 +12,6 @@
 ### install.packages("sentometrics", dependencies = TRUE) # from CRAN (version 0.7.5), OR
 ### install.packages("sentometrics_0.7.5.tar.gz", repos = NULL, dependencies = TRUE) # from the tar
 
-### Dependencies can be installed separately like this:
-### install.packages(
-###   c("covr", "doParallel", "e1071", "NLP", "randomForest",
-###     "testthat", "tm", "caret", "data.table", "foreach",
-###     "ggplot2", "glmnet", "ISOweek", "quanteda", "Rcpp", "RcppRoll",
-###     "RcppParallel", "stringi", "RcppArmadillo")
-### )
-
 ###### WARNING ######
 
 ### We run the SentimentAnalysis function separately (cf. timingsSentimentAnalysis <- ...)
@@ -61,7 +53,7 @@ remove(list = ls())
 set.seed(505)
 
 remove(list = ls())
-options(prompt = "R> ", continue = "+  ", width = 120, digits = 4, max.print = 80, useFancyQuotes = FALSE)
+options(prompt = "R> ", continue = "+  ", width = 120, digits = 4, max.print = 90, useFancyQuotes = FALSE)
 sink(file = "output_timings.txt", append = FALSE, split = TRUE) # output printed in .txt file
 
 library("sentometrics")
@@ -79,7 +71,6 @@ library("tidyr")
 library("microbenchmark")
 
 info <- sessionInfo()
-cat(info$locale, "\n \n")
 print(info)
 cat("\n")
 

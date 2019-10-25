@@ -329,6 +329,7 @@ add_features <- function(corpus, featuresdf = NULL, keywords = NULL, do.binary =
 #' summary2 <- corpus_summarize(corpus, by = "month",
 #'                              features = c("wsj", "wapo"))
 #'
+#' @import ggplot2
 #' @export
 corpus_summarize <- function(x, by = "day", features = NULL) {
   check_class(x, "sento_corpus")
@@ -368,14 +369,14 @@ corpus_summarize <- function(x, by = "day", features = NULL) {
   data.table::setcolorder(stats, c("date", "documents"))
 
   # plots
-  docPlot <- ggplot(melt(freqAll[, .(date, documents)], id = "date", all = TRUE)) +
+  docPlot <- ggplot(data.table::melt(freqAll[, .(date, documents)], id = "date", all = TRUE)) +
     geom_line(aes(x = date, y = value, color = variable, group = variable)) +
     theme_bw() +
     scale_x_date(name = "Date", date_labels = "%m-%Y") +
     scale_y_continuous(name = paste0("Number of documents (by ", by, ")")) +
     plot_theme(legendPos = "none")
 
-  freqAllMelt <- melt(freqAll[, !"documents"], id = "date", all = TRUE)
+  freqAllMelt <- data.table::melt(freqAll[, !"documents"], id = "date", all = TRUE)
   legendPos <- ifelse(length(unique(freqAllMelt[["variable"]])) <= 12, "top", "none")
   featPlot <- ggplot(freqAllMelt) +
     geom_line(aes(x = date, y = value, color = variable, group = variable)) +
@@ -384,7 +385,7 @@ corpus_summarize <- function(x, by = "day", features = NULL) {
     scale_y_continuous(name = paste0("Feature count (by ", by, ")")) +
     plot_theme(legendPos)
 
-  tokPlot <- ggplot(melt(tokensDT[, !"totalTokens"], id = "date", all = TRUE)) +
+  tokPlot <- ggplot(data.table::melt(tokensDT[, !"totalTokens"], id = "date", all = TRUE)) +
     geom_line(aes(x = date, y = value, color = variable, group = variable)) +
     theme_bw() +
     scale_x_date(name = "Date", date_labels = "%m-%Y") +

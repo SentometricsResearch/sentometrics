@@ -405,7 +405,7 @@ measures_to_long <- function(measures) { # changes format of sentiment measures 
   measuresTrans[, "lexicons" := sapply(triplets, "[", 1)]
   measuresTrans[, "features" := sapply(triplets, "[", 2)]
   measuresTrans[, "time" := sapply(triplets, "[", 3)]
-  long <- melt(measuresTrans, id.vars = c("lexicons", "features", "time"), variable.name = "toDrop")
+  long <- data.table::melt(measuresTrans, id.vars = c("lexicons", "features", "time"), variable.name = "toDrop")
   long[, "toDrop" := NULL]
   long[, "date" := rep(dates, rep(length(names), length(dates)))]
   setcolorder(long, c("date", "value", "lexicons", "features", "time"))[]

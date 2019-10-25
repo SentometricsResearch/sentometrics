@@ -736,11 +736,11 @@ plot.sento_modelIter <- function(x, ...) {
     plotter <- geom_point()
     scaleY <- scale_y_discrete(name = "Response")
   }
-  data <- data.frame(date = row.names(sento_modelIter$performance$raw),
-                     realized = sento_modelIter$performance$raw$response,
-                     prediction = sento_modelIter$performance$raw$predicted)
+  data <- data.table::data.table(date = row.names(sento_modelIter$performance$raw),
+                                 realized = sento_modelIter$performance$raw$response,
+                                 prediction = sento_modelIter$performance$raw$predicted)
   if (mF != "gaussian") data[, 2:3] <- lapply(data[, 2:3], as.character)
-  melted <- melt(data, id.vars = "date")
+  melted <- data.table::melt(data, id.vars = "date")
   p <- ggplot(data = melted, aes(x = as.Date(date), y = value, color = variable)) +
     plotter +
     scale_x_date(name = "Date", date_labels = "%m-%Y") +
