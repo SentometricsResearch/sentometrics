@@ -12,36 +12,50 @@
 ### install.packages("sentometrics", dependencies = TRUE) # from CRAN (version 0.7.5), OR
 ### install.packages("sentometrics_0.7.5.tar.gz", repos = NULL, dependencies = TRUE) # from the tar
 
-###### SESSION INFO ###### ### TODO: update
+### Dependencies can be installed separately like this:
+### install.packages(
+###   c("covr", "doParallel", "e1071", "NLP", "randomForest",
+###     "testthat", "tm", "caret", "data.table", "foreach",
+###     "ggplot2", "glmnet", "ISOweek", "quanteda", "Rcpp", "RcppRoll",
+###     "RcppParallel", "stringi", "RcppArmadillo")
+### )
 
-### R version 3.5.1 (2018-07-02)
+###### SESSION INFO ######
+
+### R version 3.6.1 (2019-07-05)
 ### Platform: x86_64-w64-mingw32/x64 (64-bit)
-### Running under: Windows >= 8 x64 (build 9200)
+### Running under: Windows 10 x64 (build 18362)
 ###
 ### Matrix products: default
 ###
 ### locale:
-### [1] LC_COLLATE=Dutch_Belgium.1252  LC_CTYPE=Dutch_Belgium.1252    LC_MONETARY=Dutch_Belgium.1252
-### [4] LC_NUMERIC=C                   LC_TIME=Dutch_Belgium.1252
+### [1] LC_COLLATE=English_Belgium.1252  LC_CTYPE=English_Belgium.1252    LC_MONETARY=English_Belgium.1252
+### [4] LC_NUMERIC=C                     LC_TIME=English_Belgium.1252
 ###
 ### attached base packages:
 ### [1] stats     graphics  grDevices utils     datasets  methods   base
 ###
 ### other attached packages:
-### [1] lubridate_1.7.4    stm_1.3.3          quanteda_1.3.14    lexicon_1.1.3      gridExtra_2.3      ggplot2_3.1.0
-### [7] sentometrics_0.5.6 data.table_1.11.8
+### [1] zoo_1.8-4          lubridate_1.7.4    stm_1.3.3          quanteda_1.5.1     lexicon_1.2.1      gridExtra_2.3
+### [7] ggplot2_3.2.1      data.table_1.12.6  sentometrics_0.7.5 testthat_2.2.1
 ###
 ### loaded via a namespace (and not attached):
-### [1] Rcpp_1.0.0         pillar_1.3.1       compiler_3.5.1     plyr_1.8.4         bindr_0.1.1        iterators_1.0.10
-### [7] tools_3.5.1        stopwords_0.9.0    tibble_1.4.2       gtable_0.2.0       lattice_0.20-38    pkgconfig_2.0.2
-### [13] rlang_0.3.0.1      Matrix_1.2-15      foreach_1.4.4      fastmatch_1.1-0    yaml_2.2.0         bindrcpp_0.2.2
-### [19] withr_2.1.2        dplyr_0.7.8        stringr_1.3.1      syuzhet_1.0.4      grid_3.5.1         glmnet_2.0-16
-### [25] tidyselect_0.2.5   glue_1.3.0         R6_2.3.0           purrr_0.2.5        spacyr_1.0         magrittr_1.5
-### [31] scales_1.0.0       codetools_0.2-15   assertthat_0.2.0   colorspace_1.3-2   stringi_1.2.4      RcppParallel_4.4.2
-### [37] lazyeval_0.2.1     munsell_0.5.0      crayon_1.3.4
+### [1] Rcpp_1.0.2         lattice_0.20-38    prettyunits_1.0.2  class_7.3-15       ps_1.3.0           assertthat_0.2.0
+### [7] glmnet_2.0-18      rprojroot_1.3-2    digest_0.6.20      packrat_0.5.0      ipred_0.9-8        foreach_1.4.7
+### [13] R6_2.4.0           plyr_1.8.4         backports_1.1.3    stats4_3.6.1       pillar_1.3.1       rlang_0.4.0
+### [19] lazyeval_0.2.2     caret_6.0-84       rstudioapi_0.10    callr_3.3.1        rpart_4.1-15       Matrix_1.2-17
+### [25] desc_1.2.0         devtools_2.1.0     splines_3.6.1      gower_0.1.2        stringr_1.4.0      ISOweek_0.6-2
+### [31] munsell_0.5.0      spacyr_1.0         compiler_3.6.1     pkgconfig_2.0.2    pkgbuild_1.0.3     nnet_7.3-12
+### [37] tidyselect_0.2.5   tibble_2.1.3       prodlim_2018.04.18 codetools_0.2-16   RcppRoll_0.3.0     crayon_1.3.4
+### [43] dplyr_0.8.3        withr_2.1.2        MASS_7.3-51.4      recipes_0.1.6      ModelMetrics_1.2.2 grid_3.6.1
+### [49] nlme_3.1-141       gtable_0.3.0       magrittr_1.5       scales_1.0.0       RcppParallel_4.4.4 cli_1.1.0
+### [55] stringi_1.4.3      reshape2_1.4.3     fs_1.3.1           remotes_2.1.0      syuzhet_1.0.4      timeDate_3043.102
+### [61] stopwords_0.9.0    generics_0.0.2     fastmatch_1.1-0    lava_1.6.5         iterators_1.0.12   tools_3.6.1
+### [67] glue_1.3.0         purrr_0.3.0        processx_3.4.1     pkgload_1.0.2      survival_2.44-1.1  colorspace_1.4-0
+### [73] sessioninfo_1.1.1  memoise_1.1.0      usethis_1.5.1
 
 remove(list = ls())
-options(prompt = "R> ", continue = "+  ", width = 120, digits = 4, max.print = 80, useFancyQuotes = FALSE)
+options(prompt = "R> ", continue = "+  ", width = 120, digits = 4, max.print = 90, useFancyQuotes = FALSE)
 sink(file = "output_vignette.txt", append = FALSE, split = TRUE) # output printed in .txt file
 
 library("sentometrics")
@@ -56,7 +70,6 @@ library("lubridate")
 library("zoo")
 
 info <- sessionInfo()
-cat(info$locale, "\n \n")
 print(info)
 cat("\n")
 
@@ -117,7 +130,7 @@ lex[["HENRY_en"]]
 cat("\n")
 
 sentScores <- compute_sentiment(usnews[["texts"]], lexicons = lex, how = "proportional")
-head(sentScores[, c("word_count", "GI_en", "SENTIWORD", "SOCAL")])
+head(sentScores[, c("id", "word_count", "GI_en", "SENTIWORD", "SOCAL")])
 cat("\n")
 
 reuters <- system.file("texts", "crude", package = "tm")
@@ -137,7 +150,7 @@ sent[6:9, c(1, 11:13)]
 cat("\n")
 
 sSentences <- compute_sentiment(uscorpus, lex, do.sentence = TRUE)
-sSentences[1:12, 1:7]
+sSentences[1:11, 1:7]
 aggDocuments <- aggregate(sSentences, ctr_agg(howDocs = "equal_weight"), do.full = FALSE)
 aggDocuments[1:2, 1:7]
 cat("\n")
@@ -178,7 +191,7 @@ subset(sentMeas, delete = list(c("LM_en"),
                                c("SENTICNET", "economy", "equal_weight")))
 cat("\n")
 
-subset(sentMeas, date %in% get_dates(sentMeas)[50:149])
+subset(sentMeas, date %in% get_dates(sentMeas)[50:99])
 cat("\n")
 
 sentMeasFill <- measures_fill(sentMeas, fill = "latest", dateBefore = "1995-07-01")
@@ -201,7 +214,7 @@ pL <- plot(sentMeasLex, group = "lexicons") +
 pL
 
 sentMeasAgg <- aggregate(sentMeas,
-                         time = list(W = c("equal_weight", "exponential_0.2")),
+                         time = list(W = c("equal_weight", "exponential0.2")),
                          lexicons = list(LEX = c("LM_en", "HENRY_en", "GI_en")),
                          features = list(JOUR = c("wsj", "wapo"),
                                          NEW = c("uncertainty", "election")),
@@ -313,7 +326,7 @@ for (i in 1:(length(preds))) {
 true <- out[["performance"]]$raw$response
 benchmark <- data.frame(preds = preds, error = preds - true, errorSq = (preds - true)^2,
                         predsAR = predsAR, errorAR = predsAR - true, errorSqAR = (predsAR - true)^2,
-                        stringsAsFactors = FALSE)
+                        stringsAsFactors = FALSE) # main benchmark is EPU-based model
 
 ###### TABLE 3 ######
 dates  <- names(out$models)
@@ -321,23 +334,17 @@ dates1 <- which(dates <= "2007-06-01")
 dates2 <- which(dates > "2007-06-01" & dates <= "2009-12-01")
 dates3 <- which(dates > "2009-12-01")
 
-rmseTable <- c(out$performance$RMSFE,
-  sqrt(mean(benchmark$errorSq)), sqrt(mean(benchmark$errorSqAR)), # full
-  sqrt(mean(out$performance$raw[dates1, "errorSq"])),
-  sqrt(mean(benchmark[dates1, "errorSq"])), sqrt(mean(benchmark[dates1, "errorSqAR"])), # pre-crisis (P1)
-  sqrt(mean(out$performance$raw[dates2, "errorSq"])),
-  sqrt(mean(benchmark[dates2, "errorSq"])), sqrt(mean(benchmark[dates2, "errorSqAR"])), # crisis (P2)
-  sqrt(mean(out$performance$raw[dates3, "errorSq"])),
-  sqrt(mean(benchmark[dates3, "errorSq"])), sqrt(mean(benchmark[dates3, "errorSqAR"])) # post-crisis (P3)
+rmseTable <- c(
+  out$performance$RMSFE, sqrt(mean(benchmark$errorSq)), sqrt(mean(benchmark$errorSqAR)), # full
+  sqrt(mean(out$performance$raw[dates1, "errorSq"])), sqrt(mean(benchmark[dates1, "errorSq"])), sqrt(mean(benchmark[dates1, "errorSqAR"])), # pre-crisis (P1)
+  sqrt(mean(out$performance$raw[dates2, "errorSq"])), sqrt(mean(benchmark[dates2, "errorSq"])), sqrt(mean(benchmark[dates2, "errorSqAR"])), # crisis (P2)
+  sqrt(mean(out$performance$raw[dates3, "errorSq"])), sqrt(mean(benchmark[dates3, "errorSq"])), sqrt(mean(benchmark[dates3, "errorSqAR"])) # post-crisis (P3)
 )
-madTable <- c(out$performance$MAD,
-  mean(abs(benchmark$error)), mean(abs(benchmark$errorAR)),
-  mean(abs(out$performance$raw[dates1, "error"])),
-  mean(abs(benchmark[dates1, "error"])), mean(abs(benchmark[dates1, "errorAR"])),
-  mean(abs(out$performance$raw[dates2, "error"])),
-  mean(abs(benchmark[dates2, "error"])), mean(abs(benchmark[dates2, "errorAR"])),
-  mean(abs(out$performance$raw[dates3, "error"])),
-  mean(abs(benchmark[dates3, "error"])), mean(abs(benchmark[dates3, "errorAR"]))
+madTable <- c(
+  out$performance$MAD, mean(abs(benchmark$error)), mean(abs(benchmark$errorAR)),
+  mean(abs(out$performance$raw[dates1, "error"])), mean(abs(benchmark[dates1, "error"])), mean(abs(benchmark[dates1, "errorAR"])),
+  mean(abs(out$performance$raw[dates2, "error"])), mean(abs(benchmark[dates2, "error"])), mean(abs(benchmark[dates2, "errorAR"])),
+  mean(abs(out$performance$raw[dates3, "error"])), mean(abs(benchmark[dates3, "error"])), mean(abs(benchmark[dates3, "errorAR"]))
 )
 names(rmseTable) <- names(madTable) <-
   paste0(rep(c("Full", "P1", "P2", "P3"), rep(3, 4)), "_", c("M-s", "M-bm", "M-ar"))
