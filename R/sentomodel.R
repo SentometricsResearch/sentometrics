@@ -308,7 +308,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' out4 <- sento_model(sento_measures, yb, x = x, ctr = ctrCVb)
 #' summary(out4)}
 #'
-#' @importFrom glmnet predict.glmnet predict.elnet predict.lognet predict.multnet
+#' @import glmnet
 #' @export
 sento_model <- function(sento_measures, y, x = NULL, ctr) {
   check_class(sento_measures, "sento_measures")
@@ -755,7 +755,7 @@ plot.sento_modelIter <- function(x, ...) {
 #' @author Samuel Borms
 #'
 #' @description Prediction method for \code{sento_model} class, with usage along the lines of
-#' \code{predict.glmnet}, but simplified in terms of parameters.
+#' \code{\link{predict.glmnet}}, but simplified in terms of parameters.
 #'
 #' @param object a \code{sento_model} object created with \code{\link{sento_model}}.
 #' @param newx a data \code{matrix} used for the prediction(s), row-by-row; see
@@ -771,6 +771,7 @@ plot.sento_modelIter <- function(x, ...) {
 #'
 #' @seealso \code{\link{predict.glmnet}}, \code{\link{sento_model}}
 #'
+#' @import glmnet
 #' @export
 predict.sento_model <- function(object, newx, type = "response", offset = NULL, ...) {
   stopifnot(is.matrix(newx))
