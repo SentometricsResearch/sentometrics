@@ -1,5 +1,5 @@
 
-## submission (version 0.7.5) [xx/10/2019]
+## submission (version 0.7.5) [30/10/2019]
 
 **new**: slight bug, documentation and consistency fixes.
 
