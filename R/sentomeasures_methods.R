@@ -297,7 +297,7 @@ get_dimensions <- function(sento_measures) {
 #'                      ctr_agg(lag = 3))
 #'
 #' data.table::as.data.table(sm)
-#' data.table::as.data.table(sm, "long")
+#' data.table::as.data.table(sm, format = "long")
 #'
 #' @export
 as.data.table.sento_measures <- function(x, keep.rownames = FALSE, format = "wide", ...) {
@@ -307,6 +307,11 @@ as.data.table.sento_measures <- function(x, keep.rownames = FALSE, format = "wid
     measures_to_long(x[["measures"]])
   else
     stop("The 'format' argument should be 'wide' or 'long'.")
+}
+
+#' @export
+as.data.frame.sento_measures <- function(x, ...) {
+  as.data.frame(x[["measures"]])
 }
 
 #' Subset sentiment measures

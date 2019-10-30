@@ -83,3 +83,14 @@ test_that("Summary of sento_corpus object" , {
   expect_true(all(month(summYear$stats$date) == 1 , TRUE ))
 })
 
+# as.data.table, as.data.frame
+dt <- as.data.table(corpus)
+df <- as.data.frame(corpus)
+test_that("Proper data.table and data.frame conversion", {
+  expect_true(inherits(dt, "data.table"))
+  expect_true(all(colnames(dt)[1:3] == c("id", "date", "texts")))
+  expect_true(class(df) == "data.frame")
+  expect_true(all(colnames(df)[1:2] == c("date", "texts")))
+  expect_true(all(colnames(dt)[-1] == colnames(df)))
+})
+

@@ -517,3 +517,15 @@ as.sento_corpus <- function(x, dates = NULL, do.clean = FALSE) {
   UseMethod("as.sento_corpus", x)
 }
 
+#' @export
+as.data.table.sento_corpus <- function(x, ...) {
+  dt <- data.table::data.table(id = quanteda::docnames(x), x$documents)
+  data.table::setcolorder(dt, c("id", "date", "texts"))
+  dt
+}
+
+#' @export
+as.data.frame.sento_corpus <- function(x, ...) {
+  x$documents[, c("date", "texts", colnames(x$documents)[-c(1:2)])]
+}
+
