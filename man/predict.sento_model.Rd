@@ -27,7 +27,7 @@ A prediction output depending on the \code{type} argument.
 }
 \description{
 Prediction method for \code{sento_model} class, with usage along the lines of
-\code{predict.glmnet}, but simplified in terms of parameters.
+\code{\link{predict.glmnet}}, but simplified in terms of parameters.
 }
 \seealso{
 \code{\link{predict.glmnet}}, \code{\link{sento_model}}
