@@ -59,7 +59,7 @@ test_that("Plot is a ggplot object", {
   expect_true(inherits(p, "ggplot"))
 })
 
-# as.data.table, to_long
+# as.data.table, measures_to_long
 measuresLong <- as.data.table(sentMeas, format = "long")
 test_that("Proper long formatting of sentiment measures", {
   expect_true(nrow(measuresLong) == nobs(sentMeas) * nmeasures(sentMeas))
@@ -67,5 +67,10 @@ test_that("Proper long formatting of sentiment measures", {
   expect_true(all(sentMeas$features %in% unique(measuresLong[["features"]])))
   expect_true(all(sentMeas$time %in% unique(measuresLong[["time"]])))
   expect_true(all(as.data.table(sentMeas)[["date"]] %in% unique(measuresLong[["date"]])))
+})
+
+# as.data.frame
+test_that("Proper data.frame conversion", {
+  expect_true(class(as.data.frame(sentMeas)) == "data.frame")
 })
 

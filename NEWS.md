@@ -1,6 +1,7 @@
 
 ## sentometrics 0.7.5
 
+- new functions: `as.data.table.sento_corpus()`, `as.data.frame.sento_corpus()`, and `as.data.frame.sento_measures()`
 - embedded a small workaround in the `plot.attributions()` function to guaranty same plotting behaviour after update of **`ggplot2`** package that gave buggy output for the `geom_area()` layer
 - integrated for overall consistency the `measures_global()` function into the `aggregate.sento_measures()` function, adding a `do.global` argument to enact it
 - slightly changed the clusters-based sentence-level sentiment computation (different weighting of

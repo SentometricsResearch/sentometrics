@@ -34,7 +34,7 @@ sm <- sento_measures(sento_corpus(corpusdf = usnews[1:200, ]),
                      ctr_agg(lag = 3))
 
 data.table::as.data.table(sm)
-data.table::as.data.table(sm, "long")
+data.table::as.data.table(sm, format = "long")
 
 }
 \author{

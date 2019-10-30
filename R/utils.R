@@ -352,7 +352,7 @@ update_attribweights <- function(sento_measures, ...) {
 
   newB <- B[, sento_measures$time, drop = FALSE]
   newW <- W[, c("id", "date", lexFeats), with = FALSE]
-  for (col in lexFeats) set(newW, which(is.nan(newW[[col]])), col, NA) # convert NaN to NA
+  for (col in lexFeats) data.table::set(newW, which(is.nan(newW[[col]])), col, NA) # convert NaN to NA
 
   list(W = newW, B = newB)
 }
@@ -408,7 +408,7 @@ measures_to_long <- function(measures) { # changes format of sentiment measures 
   long <- data.table::melt(measuresTrans, id.vars = c("lexicons", "features", "time"), variable.name = "toDrop")
   long[, "toDrop" := NULL]
   long[, "date" := rep(dates, rep(length(names), length(dates)))]
-  setcolorder(long, c("date", "value", "lexicons", "features", "time"))[]
+  data.table::setcolorder(long, c("date", "value", "lexicons", "features", "time"))[]
   return(long)
 }
 
