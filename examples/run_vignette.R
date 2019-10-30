@@ -150,9 +150,9 @@ sent[6:9, c(1, 11:13)]
 cat("\n")
 
 sSentences <- compute_sentiment(uscorpus, lex, do.sentence = TRUE)
-sSentences[1:11, 1:7]
+sSentences[1:11, 1:6]
 aggDocuments <- aggregate(sSentences, ctr_agg(howDocs = "equal_weight"), do.full = FALSE)
-aggDocuments[1:2, 1:7]
+aggDocuments[1:2, 1:6]
 cat("\n")
 
 usnewsLang <- usnews[1:5, 1:3]
@@ -236,8 +236,6 @@ y <- rnorm(nobs(sentMeas))
 dt <- as.data.table(sentMeas)
 z <- zoo::zoo(dt[, !"date"], order.by = dt[["date"]])
 reg <- lm(y ~ z[, 1:6])
-# plot(z[, 1:6], main = "Sentiment", xlab = "", ylab = paste0("s", 1:6))
-# plot(reg, 1, sub.caption = "")
 
 ctrInSample <- ctr_model(model = "gaussian",
                          type = "BIC",
@@ -283,8 +281,7 @@ pF <- plot(sentMeasPred, group = "features") +
   guides(colour = guide_legend(nrow = 1))
 pF
 
-# load("vix.rda")
-load("C:/Users/saborms/Dropbox/SentometricsRPackage/sentometrics/examples/vix.rda")
+load("vix.rda")
 data("epu", package = "sentometrics")
 sentMeasIn <- subset(sentMeasPred, date %in% vix$date)
 datesIn <- get_dates(sentMeasIn)
@@ -376,20 +373,4 @@ a <- gridExtra::grid.arrange(fe + theme(axis.title.x = element_blank()),
                              ncol = 1, nrow = 2)
 
 sink()
-
-###### FIGURES ######
-
-ggsave("C:/Users/saborms/Dropbox/SentometricsRPackage/vignette/plots/corpsumm.pdf", pCorp)
-ggsave("C:/Users/saborms/Dropbox/SentometricsRPackage/vignette/plots/sentmeasL.pdf", pL)
-ggsave("C:/Users/saborms/Dropbox/SentometricsRPackage/vignette/plots/sentmeasT.pdf", pT)
-ggsave("C:/Users/saborms/Dropbox/SentometricsRPackage/vignette/plots/for.pdf", r)
-ggsave("C:/Users/saborms/Dropbox/SentometricsRPackage/vignette/plots/attr.pdf", a)
-ggsave("C:/Users/saborms/Dropbox/SentometricsRPackage/vignette/plots/sentmeasF.pdf", pF)
-
-# ggsave("corpsumm.pdf", pCorp)
-# ggsave("sentmeasT.pdf", pT)
-# ggsave("sentmeasL.pdf", pL)
-# ggsave("sentmeasF.pdf", pF)
-# ggsave("for.pdf", r)
-# ggsave("attr.pdf", a)
 
