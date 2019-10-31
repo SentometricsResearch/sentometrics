@@ -1,7 +1,11 @@
 
-## submission (version 0.7.5) [30/10/2019]
+## submission (version 0.7.5.1) [31/10/2019]
 
-**new**: slight bug, documentation and consistency fixes.
+**new**: memory bug
+
+<!--- ## submission (version 0.7.5) [30/10/2019]
+
+**new**: slight bug, documentation and consistency fixes.--->
 
 <!--- ## submission (version 0.7) [12/09/2019]
 
