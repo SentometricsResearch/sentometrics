@@ -208,7 +208,7 @@ inline void update_token_scores(std::vector< double >& scores,
           } else if (how == "proportionalSquareRoot") {
             scores[j] += (tokenShifters[i] * score) / std::sqrt(nTokens - nPuncts);
           } else {
-            scores[j] += (tokenShifters[j] * score) * tokenWeights[i];
+            scores[j] += (tokenShifters[i] * score) * tokenWeights[i];
           }
         }
       }
