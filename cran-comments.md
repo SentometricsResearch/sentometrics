@@ -1,5 +1,5 @@
 
-## submission (version 0.7.5.1) [31/10/2019]
+## submission (version 0.7.6) [31/10/2019]
 
 **new**: memory bug
 
