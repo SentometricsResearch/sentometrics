@@ -1,11 +1,11 @@
 
 ## submission (version 0.7.6) [31/10/2019]
 
-**new**: memory bug
+- fixed memory leak bug
 
 <!--- ## submission (version 0.7.5) [30/10/2019]
 
-**new**: slight bug, documentation and consistency fixes.--->
+**new**: slight bug, documentation and consistency fixes --->
 
 <!--- ## submission (version 0.7) [12/09/2019]
 
@@ -38,7 +38,7 @@
 
 <!--- ## resubmission (version 0.4) [28/05/2018]
 
-- modified example that took to long (to pass pre-test) --->
+- modified example that took too long (to pass pre-test) --->
 
 <!--- ## submission (version 0.4) [28/05/2018]
 

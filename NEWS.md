@@ -1,6 +1,7 @@
-## sentometrics 0.7.6
-- fix memory allocation issue in `compute_sentiment()`.
 
+## sentometrics 0.7.6
+
+- fixed memory allocation issue in the `compute_sentiment()` function
 
 ## sentometrics 0.7.5
 

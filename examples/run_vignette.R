@@ -10,7 +10,7 @@
 ### See the paper for the results and setup details.
 ### Download the package and its dependencies first before you run this script...
 ### install.packages("sentometrics", dependencies = TRUE) # from CRAN (version 0.7.5), OR
-### install.packages("sentometrics_0.7.5.tar.gz", repos = NULL, dependencies = TRUE) # from the tar
+### install.packages("sentometrics_0.7.6.tar.gz", repos = NULL, dependencies = TRUE) # from the tar
 
 ### Dependencies can be installed separately like this:
 ### install.packages(
@@ -37,7 +37,7 @@
 ###
 ### other attached packages:
 ### [1] zoo_1.8-4          lubridate_1.7.4    stm_1.3.3          quanteda_1.5.1     lexicon_1.2.1      gridExtra_2.3
-### [7] ggplot2_3.2.1      data.table_1.12.6  sentometrics_0.7.5 testthat_2.2.1
+### [7] ggplot2_3.2.1      data.table_1.12.6  sentometrics_0.7.6 testthat_2.2.1
 ###
 ### loaded via a namespace (and not attached):
 ### [1] Rcpp_1.0.2         lattice_0.20-38    prettyunits_1.0.2  class_7.3-15       ps_1.3.0           assertthat_0.2.0

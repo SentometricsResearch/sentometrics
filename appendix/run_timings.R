@@ -10,7 +10,7 @@
 ### comparing various textual sentiment computation tools in R.
 ### Download the package and its dependencies first before you run this script...
 ### install.packages("sentometrics", dependencies = TRUE) # from CRAN (version 0.7.5), OR
-### install.packages("sentometrics_0.7.5.tar.gz", repos = NULL, dependencies = TRUE) # from the tar
+### install.packages("sentometrics_0.7.6.tar.gz", repos = NULL, dependencies = TRUE) # from the tar
 
 ###### WARNING ######
 
@@ -20,33 +20,32 @@
 
 ###### SESSION INFO ###### ### TODO: update
 
-### R version 3.5.1 (2018-07-02)
+### R version 3.6.1 (2019-07-05)
 ### Platform: x86_64-w64-mingw32/x64 (64-bit)
-### Running under: Windows >= 8 x64 (build 9200)
+### Running under: Windows 10 x64 (build 18362)
 ###
 ### Matrix products: default
 ###
 ### locale:
-### [1] LC_COLLATE=Dutch_Belgium.1252  LC_CTYPE=Dutch_Belgium.1252    LC_MONETARY=Dutch_Belgium.1252
-### [4] LC_NUMERIC=C                   LC_TIME=Dutch_Belgium.1252
+### [1] LC_COLLATE=English_Belgium.1252  LC_CTYPE=English_Belgium.1252    LC_MONETARY=English_Belgium.1252
+### [4] LC_NUMERIC=C                     LC_TIME=English_Belgium.1252
 ###
 ### attached base packages:
 ### [1] stats     graphics  grDevices utils     datasets  methods   base
 ###
 ### other attached packages:
-### [1] microbenchmark_1.4-6    tidyr_0.8.2             dplyr_0.7.8             lexicon_1.1.3
-### [5] SentimentAnalysis_1.3-2 syuzhet_1.0.4           meanr_0.1-1             tidytext_0.2.0
-### [9] quanteda_1.3.14         sentometrics_0.5.6      data.table_1.11.8
+### [1] microbenchmark_1.4-7    tidyr_1.0.0             dplyr_0.8.3             lexicon_1.2.1
+### [5] SentimentAnalysis_1.3-3 syuzhet_1.0.4           meanr_0.1-2             tidytext_0.2.2
+### [9] quanteda_1.5.1          data.table_1.12.6       sentometrics_0.7.6
 ###
 ### loaded via a namespace (and not attached):
-### [1] Rcpp_1.0.0         pillar_1.3.1       compiler_3.5.1     plyr_1.8.4         bindr_0.1.1        tokenizers_0.2.1
-### [7] iterators_1.0.10   tools_3.5.1        stopwords_0.9.0    nlme_3.1-137       lubridate_1.7.4    tibble_1.4.2
-### [13] gtable_0.2.0       lattice_0.20-38    pkgconfig_2.0.2    rlang_0.3.0.1      Matrix_1.2-15      foreach_1.4.4
-### [19] fastmatch_1.1-0    yaml_2.2.0         bindrcpp_0.2.2     janeaustenr_0.1.5  stringr_1.3.1      generics_0.0.2
-### [25] grid_3.5.1         glmnet_2.0-16      tidyselect_0.2.5   glue_1.3.0         R6_2.3.0           ggplot2_3.1.0
-### [31] purrr_0.2.5        spacyr_1.0         magrittr_1.5       backports_1.1.3    SnowballC_0.5.1    scales_1.0.0
-### [37] codetools_0.2-15   assertthat_0.2.0   colorspace_1.3-2   stringi_1.2.4      RcppParallel_4.4.2 lazyeval_0.2.1
-### [43] munsell_0.5.0      broom_0.5.1        crayon_1.3.4
+### [1] Rcpp_1.0.2         pillar_1.3.1       compiler_3.6.1     tokenizers_0.2.1   iterators_1.0.12   tools_3.6.1
+### [7] stopwords_0.9.0    zeallot_0.1.0      lifecycle_0.1.0    lubridate_1.7.4    tibble_2.1.3       gtable_0.3.0
+### [13] lattice_0.20-38    pkgconfig_2.0.2    rlang_0.4.0        Matrix_1.2-17      foreach_1.4.7      fastmatch_1.1-0
+### [19] janeaustenr_0.1.5  stringr_1.4.0      vctrs_0.2.0        generics_0.0.2     glmnet_2.0-18      grid_3.6.1
+### [25] tidyselect_0.2.5   glue_1.3.0         R6_2.4.0           ggplot2_3.2.1      purrr_0.3.0        spacyr_1.0
+### [31] magrittr_1.5       backports_1.1.3    SnowballC_0.6.0    scales_1.0.0       codetools_0.2-16   assertthat_0.2.0
+### [37] colorspace_1.4-0   stringi_1.4.3      lazyeval_0.2.2     RcppParallel_4.4.4 munsell_0.5.0      crayon_1.3.4
 
 remove(list = ls())
 
@@ -231,7 +230,7 @@ if (FALSE) {
   system.time(sA <- sentoUnigramsAllFunc(corpusAll[1:K]))
   system.time(sB <- tidytextUnigramsAllFunc(corpusAll[1:K]))
   system.time(sC <- sentoClustersAllParFunc(corpusAll[1:K]))
-  sapply(colnames(sA), function(col) all(all.equal(sA[[col]], sB[[col]])))
+  sapply(colnames(sB), function(col) all(all.equal(sA[[col]], sB[[col]])))
 }
 
 ########################################### timings for one lexicon
