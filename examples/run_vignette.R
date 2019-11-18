@@ -9,7 +9,7 @@
 ### Aggregate and Predict with Textual Sentiment' (Ardia, Bluteau, Borms and Boudt, 2019).
 ### See the paper for the results and setup details.
 ### Download the package and its dependencies first before you run this script...
-### install.packages("sentometrics", dependencies = TRUE) # from CRAN (version 0.7.5), OR
+### install.packages("sentometrics", dependencies = TRUE) # from CRAN (version 0.7.6), OR
 ### install.packages("sentometrics_0.7.6.tar.gz", repos = NULL, dependencies = TRUE) # from the tar
 
 ### Dependencies can be installed separately like this:
@@ -40,8 +40,8 @@
 ### [7] ggplot2_3.2.1      data.table_1.12.6  sentometrics_0.7.6 testthat_2.2.1
 ###
 ### loaded via a namespace (and not attached):
-### [1] Rcpp_1.0.2         lattice_0.20-38    prettyunits_1.0.2  class_7.3-15       ps_1.3.0           assertthat_0.2.0
-### [7] glmnet_2.0-18      rprojroot_1.3-2    digest_0.6.20      packrat_0.5.0      ipred_0.9-8        foreach_1.4.7
+###  [1] Rcpp_1.0.2         lattice_0.20-38    prettyunits_1.0.2  class_7.3-15       ps_1.3.0           assertthat_0.2.0
+###  [7] glmnet_2.0-18      rprojroot_1.3-2    digest_0.6.20      packrat_0.5.0      ipred_0.9-8        foreach_1.4.7
 ### [13] R6_2.4.0           plyr_1.8.4         backports_1.1.3    stats4_3.6.1       pillar_1.3.1       rlang_0.4.0
 ### [19] lazyeval_0.2.2     caret_6.0-84       rstudioapi_0.10    callr_3.3.1        rpart_4.1-15       Matrix_1.2-17
 ### [25] desc_1.2.0         devtools_2.1.0     splines_3.6.1      gower_0.1.2        stringr_1.4.0      ISOweek_0.6-2
@@ -151,6 +151,8 @@ cat("\n")
 
 sSentences <- compute_sentiment(uscorpus, lex, do.sentence = TRUE)
 sSentences[1:11, 1:6]
+cat("\n")
+
 aggDocuments <- aggregate(sSentences, ctr_agg(howDocs = "equal_weight"), do.full = FALSE)
 aggDocuments[1:2, 1:6]
 cat("\n")
@@ -187,8 +189,7 @@ pT
 
 cat("### SECTION 3.4 ####################### \n \n")
 
-subset(sentMeas, delete = list(c("LM_en"),
-                               c("SENTICNET", "economy", "equal_weight")))
+subset(sentMeas, 1:600, delete = list(c("LM_en"), c("SENTICNET", "economy", "equal_weight")))
 cat("\n")
 
 subset(sentMeas, date %in% get_dates(sentMeas)[50:99])

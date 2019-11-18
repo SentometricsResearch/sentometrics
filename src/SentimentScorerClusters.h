@@ -42,7 +42,7 @@ struct SentimentScorerClusters : public RcppParallel::Worker {
       int nPuncts = 0;
       std::vector< std::vector< double > > tokenScores(nTokens, std::vector< double >(nL, 0.0));
 
-      std::vector< double > tokenWeights(nTokens,0.0);
+      std::vector< double > tokenWeights(nTokens, 0.0);
       std::vector< double > tokenShifters(nTokens, 1.0);
       std::unordered_map< std::string, double > freqMap;
 
