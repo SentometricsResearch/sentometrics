@@ -1,7 +1,7 @@
 Package: sentometrics
 Type: Package
 Title: An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction
-Version: 0.7.6
+Version: 0.8.0
 Authors@R: c(person("Samuel", "Borms", email = "samuel.borms@unine.ch", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-9533-1870")),
   person("David", "Ardia", email = "david.ardia@hec.ca", role = c("aut"), comment = c(ORCID = "0000-0003-2823-782X")),
   person("Keven", "Bluteau", email = "keven.bluteau@unine.ch", role = c("aut"), comment = c(ORCID = "0000-0003-2990-4807")),

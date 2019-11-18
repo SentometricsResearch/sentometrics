@@ -72,8 +72,7 @@ inline void update_max_token_frequency(double& maxTokenFrequency,
                                        std::unordered_map< std::string, double >& frequencyMap,
                                        std::string how) {
   if (how == "augmentedTF" || how == "augmentedTFIDF") {
-    int globalMax = 0;
-    int localMax = 0;
+    int globalMax = 0, localMax = 0;
     for (auto& it: frequencyMap) {
       localMax = it.second;
       if (localMax > globalMax) globalMax = localMax;
@@ -83,8 +82,8 @@ inline void update_max_token_frequency(double& maxTokenFrequency,
 }
 
 inline void update_token_frequency(double& tokenFrequency,
-                                     std::unordered_map< std::string, double >& freqMap,
-                                     std::string& token) {
+                                   std::unordered_map< std::string, double >& freqMap,
+                                   std::string& token) {
   tokenFrequency = freqMap[token];
 }
 
