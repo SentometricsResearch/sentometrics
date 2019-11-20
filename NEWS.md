@@ -2,7 +2,7 @@
 ## sentometrics 0.7.6
 
 - fixed memory allocation issue in the `compute_sentiment()` function
-- package update followed by releasing a substantial update of the vignette (see https://doi.org/10.2139/ssrn.3067734)
+- package update followed by releasing a substantial update of the vignette (see https://doi.org/10.2139/ssrn.3067734) [coming soon]
 
 ## sentometrics 0.7.5
 
