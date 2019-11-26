@@ -372,10 +372,10 @@ $(document).ready(function () {
 </div>
 
 
-<p>You collected a large number of texts and think it is a good idea to summarize your corpus into several textual sentiment time series, which you ponder could help predicting some variable you are interested in. However, you do not really know how to proceed next… Fortunately, you come across the <strong><code>sentometrics</code></strong> package, which does exactly what you need! Great!</p>
+<p>You collected a large number of texts and think it is a good idea to summarize your corpus into several textual sentiment time series, which you ponder could help predicting some variable you are interested in. However, you do not really know how to proceed next… Fortunately, you come across the <strong>sentometrics</strong> package, which does exactly what you need! Great!</p>
 <div id="the-r-package-sentometrics-what" class="section level2">
 <h2>The R package <strong>sentometrics</strong>: What?</h2>
-<p>The <strong><code>sentometrics</code></strong> package is <strong>an integrated framework for textual sentiment time series aggregation and prediction</strong>. It accounts for the intrinsic challenge that, for a given text, sentiment can be computed in many different ways, as well as the large number of possibilities to pool sentiment across texts and time. This additional layer of manipulation does not exist in standard text mining and time series analysis packages. The package also provides an interface to econometrically model the impact of sentiment in texts on a given variable, as part of one coherent workflow. The package therefore integrates the fast <em>quantification</em> of sentiment from texts, the <em>aggregation</em> into different sentiment measures and the optimized <em>prediction</em> based on these measures.</p>
+<p>The <strong>sentometrics</strong> package is <strong>an integrated framework for textual sentiment time series aggregation and prediction</strong>. It accounts for the intrinsic challenge that, for a given text, sentiment can be computed in many different ways, as well as the large number of possibilities to pool sentiment across texts and time. This additional layer of manipulation does not exist in standard text mining and time series analysis packages. The package also provides an interface to econometrically model the impact of sentiment in texts on a given variable, as part of one coherent workflow. The package therefore integrates the fast <em>quantification</em> of sentiment from texts, the <em>aggregation</em> into different sentiment measures and the optimized <em>prediction</em> based on these measures.</p>
 <div id="for-you-to-read" class="section level3">
 <h3>For you to read</h3>
 <p>Our <a href="https://ssrn.com/abstract=3067734">vignette</a> explains the ins and outs of the software package, and has an accompanying code example (see the <code>run_vignette.R</code> script under the <em>/examples</em> folder on our GitHub repository). The complete documentation can be found on CRAN’s <a href="https://CRAN.R-project.org/package=sentometrics">sentometrics</a> page.</p>
@@ -385,7 +385,7 @@ $(document).ready(function () {
 <h2>Installation</h2>
 <p>To install the latest package version from CRAN, simply do:</p>
 <pre class="r"><code>install.packages(&quot;sentometrics&quot;)</code></pre>
-<p>The latest development version of <strong><code>sentometrics</code></strong> resides on the GitHub repository. To install this version (which may still contain bugs!), execute:</p>
+<p>The latest development version of <strong>sentometrics</strong> resides on the GitHub repository. To install this version (which may still contain bugs!), execute:</p>
 <pre class="r"><code>devtools::install_github(&quot;sborms/sentometrics&quot;)</code></pre>
 <p>When installed, you are ready to load the package…</p>
 <pre class="r"><code>library(&quot;sentometrics&quot;)</code></pre>
@@ -393,8 +393,9 @@ $(document).ready(function () {
 </div>
 <div id="many-and-more-examples" class="section level2">
 <h2>Many and more examples</h2>
-<div id="example-1" class="section level3">
-<h3>Example 1</h3>
+<p>Here follow a bunch of examples, from simple to a little less simple. Sentiment computation, aggregation, diagnostic tools, visualization, regression – it’s all in here.</p>
+<div id="example-1-ready-to-use-sentiment-calculation" class="section level3">
+<h3><em><strong>Example 1</strong></em>: ready-to-use sentiment calculation</h3>
 <p>A simple calculation of sentiment. The score is a substraction of the number of negative lexicon words (those with a score of -1) from the number of positive lexicon words (those with a score of 1).</p>
 <pre class="r"><code>library(&quot;sentometrics&quot;)
 
@@ -406,8 +407,8 @@ s &lt;- compute_sentiment(
   how = &quot;counts&quot;
 )</code></pre>
 </div>
-<div id="example-2" class="section level3">
-<h3>Example 2</h3>
+<div id="example-2-sentiment-calculation-from-a-sento_corpus-object" class="section level3">
+<h3><em><strong>Example 2</strong></em>: sentiment calculation from a <code>sento_corpus</code> object</h3>
 <p>The same simple calculation as in Example 1, but using a <code>sento_corpus</code> object.</p>
 <pre class="r"><code>library(&quot;sentometrics&quot;)
 
@@ -418,9 +419,9 @@ lexicons &lt;- sento_lexicons(sentometrics::list_lexicons[c(&quot;GI_en&quot;, &
 
 s &lt;- compute_sentiment(corpus, lexicons, how = &quot;counts&quot;)</code></pre>
 </div>
-<div id="example-3" class="section level3">
-<h3>Example 3</h3>
-<p>Again, a simple textual sentiment calculation, but this time using a <strong><code>tm</code></strong> package corpus object. Super flexible! The output is this time slightly different, as the scores are divided by the total number of words.</p>
+<div id="example-3-sentiment-calculation-from-a-tm-simplecorpus-object" class="section level3">
+<h3><em><strong>Example 3</strong></em>: sentiment calculation from a <strong>tm</strong> <code>SimpleCorpus</code> object</h3>
+<p>Again, a simple textual sentiment calculation, but this time using a <strong>tm</strong> package corpus object. Super flexible! The output is this time slightly different, as the scores are divided by the total number of words.</p>
 <pre class="r"><code>library(&quot;sentometrics&quot;)
 library(&quot;tm&quot;)
 
@@ -431,8 +432,8 @@ lexicons &lt;- sento_lexicons(sentometrics::list_lexicons[c(&quot;GI_en&quot;, &
 
 s &lt;- compute_sentiment(corpus, lexicons, how = &quot;proportional&quot;)</code></pre>
 </div>
-<div id="example-4" class="section level3">
-<h3>Example 4</h3>
+<div id="example-4-sentiment-calculation-from-own-tokenization" class="section level3">
+<h3><em><strong>Example 4</strong></em>: sentiment calculation from own tokenization</h3>
 <p>Even more flexibility in this example! You tokenize your corpus outside the sentiment computation function call, so you control exactly which words the lexicons are going to look into.</p>
 <pre class="r"><code>library(&quot;sentometrics&quot;)
 library(&quot;quanteda&quot;)
@@ -446,8 +447,8 @@ tks &lt;- as.list(tokens(corpus, what = &quot;fastestword&quot;))
 
 s &lt;- compute_sentiment(corpus, lexicons, how = &quot;counts&quot;, tokens = tks)</code></pre>
 </div>
-<div id="example-5" class="section level3">
-<h3>Example 5</h3>
+<div id="example-5-sentence-level-sentiment-calculation-and-aggregation" class="section level3">
+<h3><em><strong>Example 5</strong></em>: sentence-level sentiment calculation and aggregation</h3>
 <p>A textual sentiment computation on sentence-level, starting from a document-level corpus. Subsequently, the sentence-level scores are aggregated into document-level scores.</p>
 <pre class="r"><code>library(&quot;sentometrics&quot;)
 library(&quot;quanteda&quot;)
@@ -469,8 +470,8 @@ sDocs &lt;- aggregate(s, ctr_agg(howDocs = &quot;proportional&quot;), do.full = 
 corpusPeaks &lt;- corpus_subset(corpus, docnames(corpus) %in% peakDocsPos)
 texts(corpusPeaks)</code></pre>
 </div>
-<div id="example-6" class="section level3">
-<h3>Example 6</h3>
+<div id="example-6-document-level-sentiment-aggregation-into-time-series" class="section level3">
+<h3><em><strong>Example 6</strong></em> document-level sentiment aggregation into time series</h3>
 <p>To aggregate document-level sentiment scores into time series only requires to specificy a few parameters regarding the weighting and the time frequency.</p>
 <pre class="r"><code>library(&quot;sentometrics&quot;)
 
@@ -493,8 +494,8 @@ plot(measures, &quot;features&quot;)
 plot(measures, &quot;lexicons&quot;)
 plot(measures, &quot;time&quot;)</code></pre>
 </div>
-<div id="example-7" class="section level3">
-<h3>Example 7</h3>
+<div id="example-7-document-level-sentiment-aggregation-into-time-series-bis" class="section level3">
+<h3><em><strong>Example 7</strong></em>: document-level sentiment aggregation into time series (bis)</h3>
 <p>The aggregation into sentiment time series does not have to be done in two steps. Below one-step approach is recommended because very easy!</p>
 <pre class="r"><code>library(&quot;sentometrics&quot;)
 library(&quot;data.table&quot;)
@@ -512,8 +513,8 @@ measures &lt;- sento_measures(corpus, lexicons, ctr)</code></pre>
 <pre class="r"><code>peakDatesNeg &lt;- peakdates(measures, n = 5, type = &quot;neg&quot;, do.average = TRUE)
 dtPeaks &lt;- as.data.table(subset(measures, date %in% peakDatesNeg))</code></pre>
 </div>
-<div id="example-8" class="section level3">
-<h3>Example 8</h3>
+<div id="example-8-sentiment-time-series-aggregation" class="section level3">
+<h3><em><strong>Example 8</strong></em>: sentiment time series aggregation</h3>
 <p>Sentiment measures can be further aggregated across any of the three dimensions. The computed time series are averages across the relevant measures.</p>
 <pre class="r"><code>library(&quot;sentometrics&quot;)
 
@@ -531,10 +532,10 @@ measuresAgg &lt;- aggregate(measures,
                          features = list(&quot;journal&quot; = c(&quot;wsj&quot;, &quot;wapo&quot;)),
                          time = list(&quot;linequal&quot; = c(&quot;linear&quot;, &quot;equal_weight&quot;)))
 
-get_dimensions(measuresAgg)</code></pre>
+get_dimensions(measuresAgg) # inspect the contents of the three dimensions</code></pre>
 </div>
-<div id="example-9" class="section level3">
-<h3>Example 9</h3>
+<div id="example-9-sentiment-time-series-aggregation-bis" class="section level3">
+<h3><em><strong>Example 9</strong></em>: sentiment time series aggregation (bis)</h3>
 <p>To keep it at its simplest, all the sentiment measures computed can be condensed in a few global sentiment time series. The computation can be run in a weighted way as well.</p>
 <pre class="r"><code>library(&quot;sentometrics&quot;)
 library(&quot;ggplot2&quot;)
@@ -550,7 +551,7 @@ ctr &lt;- ctr_agg(howWithin = &quot;counts&quot;,
 measures &lt;- sento_measures(corpus, lexicons, ctr)
 
 measuresGlobal &lt;- aggregate(measures, do.global = TRUE)</code></pre>
-<p>The output in this case is not a specific <strong><code>sentometrics</code></strong> <em><code>sento_measures</code></em> object, but simply a <em><code>data.table</code></em>. Below produces a nice plot using the <strong><code>ggplot2</code></strong> package.</p>
+<p>The output in this case is not a specific <strong>sentometrics</strong> <em><code>sento_measures</code></em> object, but simply a <em><code>data.table</code></em>. Below produces a nice plot using the <strong>ggplot2</strong> package.</p>
 <pre class="r"><code>ggplot(melt(measuresGlobal, id.vars = &quot;date&quot;)) +
   aes(x = date, y = value, color = variable) +
   geom_line() +
@@ -562,7 +563,7 @@ measuresGlobal &lt;- aggregate(measures, do.global = TRUE)</code></pre>
 </div>
 <div id="shiny-application" class="section level2">
 <h2>Shiny application</h2>
-<p>You might also want to have a look at the <a href="https://github.com/sborms/sentometrics.app"><strong><code>sentometrics.app</code></strong></a> package. Its <code>sento_app()</code> function embeds a Shiny application that displays many of <strong><code>sentometrics</code></strong>’ functionalities. Enjoy!</p>
+<p>You might also want to have a look at the <a href="https://github.com/sborms/sentometrics.app"><strong>sentometrics.app</strong></a> package. Its <code>sento_app()</code> function embeds a Shiny application that displays many of <strong>sentometrics</strong>’ functionalities. Enjoy!</p>
 </div>
 <div id="media" class="section level2">
 <h2>Media</h2>
