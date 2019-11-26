@@ -33,7 +33,9 @@ library("sentometrics")
 
 ## Many and more examples
 
-### Example 1
+Here follow a bunch of examples, from simple to a little less simple. Sentiment computation, aggregation, diagnostic tools, visualization, regression - it's all in here.
+
+### Example 1: ready-to-use sentiment calculation
 
 A simple calculation of sentiment. The score is a substraction of the number of negative lexicon words (those with a score of -1) from the number of positive lexicon words (those with a score of 1).
 
@@ -49,7 +51,7 @@ s <- compute_sentiment(
 )
 ```
 
-### Example 2
+### Example 2: sentiment calculation from a `sento_corpus` object 
 
 The same simple calculation as in Example 1, but using a `sento_corpus` object.
 
@@ -64,7 +66,7 @@ lexicons <- sento_lexicons(sentometrics::list_lexicons[c("GI_en", "LM_en", "HENR
 s <- compute_sentiment(corpus, lexicons, how = "counts")
 ```
 
-### Example 3
+### Example 3: sentiment calculation from a `SimpleCorpus` object
 
 Again, a simple textual sentiment calculation, but this time using a **`tm`** package corpus object. Super flexible! The output is this time slightly different, as the scores are divided by the total number of words.
 
@@ -80,7 +82,7 @@ lexicons <- sento_lexicons(sentometrics::list_lexicons[c("GI_en", "LM_en", "HENR
 s <- compute_sentiment(corpus, lexicons, how = "proportional")
 ```
 
-### Example 4
+### Example 4: sentiment calculation from own tokenization
 
 Even more flexibility in this example! You tokenize your corpus outside the sentiment computation function call, so you control exactly which words the lexicons are going to look into.
 
@@ -98,7 +100,7 @@ tks <- as.list(tokens(corpus, what = "fastestword"))
 s <- compute_sentiment(corpus, lexicons, how = "counts", tokens = tks)
 ```
 
-### Example 5
+### Example 5: sentence-level sentiment calculation and aggregation
 
 A textual sentiment computation on sentence-level, starting from a document-level corpus. Subsequently, the sentence-level scores are aggregated into document-level scores.
 
@@ -128,7 +130,7 @@ corpusPeaks <- corpus_subset(corpus, docnames(corpus) %in% peakDocsPos)
 texts(corpusPeaks)
 ```
 
-### Example 6
+### Example 6: document-level sentiment aggregation into time series
 
 To aggregate document-level sentiment scores into time series only requires to specificy a few parameters regarding the weighting and the time frequency.
 
@@ -159,7 +161,7 @@ plot(measures, "lexicons")
 plot(measures, "time")
 ```
 
-### Example 7
+### Example 7: document-level sentiment aggregation into time series (bis)
 
 The aggregation into sentiment time series does not have to be done in two steps. Below one-step approach is recommended because very easy!
 
@@ -185,7 +187,7 @@ peakDatesNeg <- peakdates(measures, n = 5, type = "neg", do.average = TRUE)
 dtPeaks <- as.data.table(subset(measures, date %in% peakDatesNeg))
 ```
 
-### Example 8
+### Example 8: sentiment time series aggregation
 
 Sentiment measures can be further aggregated across any of the three dimensions. The computed time series are averages across the relevant measures.
 
@@ -209,7 +211,7 @@ measuresAgg <- aggregate(measures,
 get_dimensions(measuresAgg) # inspect the contents of the three dimensions
 ```
 
-### Example 9
+### Example 9: sentiment time series aggregation (bis)
 
 To keep it at its simplest, all the sentiment measures computed can be condensed in a few global sentiment time series. The computation can be run in a weighted way as well.  
 
