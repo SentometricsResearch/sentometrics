@@ -308,7 +308,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' out4 <- sento_model(sento_measures, yb, x = x, ctr = ctrCVb)
 #' summary(out4)}
 #'
-#' @import glmnet
+# @import glmnet
 #' @export
 sento_model <- function(sento_measures, y, x = NULL, ctr) {
   check_class(sento_measures, "sento_measures")
@@ -465,7 +465,8 @@ sento_model <- function(sento_measures, y, x = NULL, ctr) {
       opt <-  suppressWarnings(which(IC == min(IC, na.rm = TRUE), arr.ind = TRUE))
       if (dim(opt)[1] == 0) {
         return(list(IC = IC, lambda = lambdasMat[1, 1], alpha = alphas[1]))
-        warning("Computation of none of the information criteria resolved. First alpha and lambda used as optimum.")
+        warning("Computation of none of the information criteria
+                resolved. First alpha and lambda used as optimum.")
       }
       else {
         return(list(IC = IC, lambda = lambdasMat[opt[1, 1], opt[1, 2]], alpha = alphas[opt[1, 1]]))
@@ -771,14 +772,12 @@ plot.sento_modelIter <- function(x, ...) {
 #'
 #' @seealso \code{\link{predict.glmnet}}, \code{\link{sento_model}}
 #'
-#' @import glmnet
 #' @export
 predict.sento_model <- function(object, newx, type = "response", offset = NULL, ...) {
   stopifnot(is.matrix(newx))
-  sento_model <- object
-  reg <- sento_model$reg
-  discarded <- sento_model$discarded
-  n <- sum(sento_model$nVar)
+  reg <- object$reg
+  discarded <- object$discarded
+  n <- sum(object$nVar)
   if (n != ncol(newx)) stop("Number of columns in 'newx' not equal to the required number of input variables.")
   idx <- c(!discarded, rep(TRUE, (n - length(discarded)))) # TRUE means variable to keep for prediction
   newx <- newx[, idx, drop = FALSE]
