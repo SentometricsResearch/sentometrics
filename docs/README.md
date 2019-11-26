@@ -35,7 +35,7 @@ library("sentometrics")
 
 Here follow a bunch of examples, from simple to a little less simple. Sentiment computation, aggregation, diagnostic tools, visualization, regression -- it's all in here.
 
-### _**Example 1**_: ready-to-use sentiment calculation
+### _**Example 1:**_ ready-to-use sentiment calculation
 
 A simple calculation of sentiment. The score is a substraction of the number of negative lexicon words (those with a score of -1) from the number of positive lexicon words (those with a score of 1).
 
@@ -51,7 +51,7 @@ s <- compute_sentiment(
 )
 ```
 
-### _**Example 2**_: sentiment calculation from a `sento_corpus` object 
+### _**Example 2:**_ sentiment calculation from a `sento_corpus` object 
 
 The same simple calculation as in Example 1, but using a `sento_corpus` object.
 
@@ -66,7 +66,7 @@ lexicons <- sento_lexicons(sentometrics::list_lexicons[c("GI_en", "LM_en", "HENR
 s <- compute_sentiment(corpus, lexicons, how = "counts")
 ```
 
-### _**Example 3**_: sentiment calculation from a **tm** `SimpleCorpus` object
+### _**Example 3:**_ sentiment calculation from a **tm** `SimpleCorpus` object
 
 Again, a simple textual sentiment calculation, but this time using a **tm** package corpus object. Super flexible! The output is this time slightly different, as the scores are divided by the total number of words.
 
@@ -82,7 +82,7 @@ lexicons <- sento_lexicons(sentometrics::list_lexicons[c("GI_en", "LM_en", "HENR
 s <- compute_sentiment(corpus, lexicons, how = "proportional")
 ```
 
-### _**Example 4**_: sentiment calculation from own tokenization
+### _**Example 4:**_ sentiment calculation from own tokenization
 
 Even more flexibility in this example! You tokenize your corpus outside the sentiment computation function call, so you control exactly which words the lexicons are going to look into.
 
@@ -100,7 +100,7 @@ tks <- as.list(tokens(corpus, what = "fastestword"))
 s <- compute_sentiment(corpus, lexicons, how = "counts", tokens = tks)
 ```
 
-### _**Example 5**_: sentence-level sentiment calculation and aggregation
+### _**Example 5:**_ sentence-level sentiment calculation and aggregation
 
 A textual sentiment computation on sentence-level, starting from a document-level corpus. Subsequently, the sentence-level scores are aggregated into document-level scores.
 
@@ -130,7 +130,7 @@ corpusPeaks <- corpus_subset(corpus, docnames(corpus) %in% peakDocsPos)
 texts(corpusPeaks)
 ```
 
-### _**Example 6**_: document-level sentiment aggregation into time series
+### _**Example 6:**_ document-level sentiment aggregation into time series
 
 To aggregate document-level sentiment scores into time series only requires to specificy a few parameters regarding the weighting and the time frequency.
 
@@ -161,7 +161,7 @@ plot(measures, "lexicons")
 plot(measures, "time")
 ```
 
-### _**Example 7**_: document-level sentiment aggregation into time series (bis)
+### _**Example 7:**_ document-level sentiment aggregation into time series (bis)
 
 The aggregation into sentiment time series does not have to be done in two steps. Below one-step approach is recommended because very easy!
 
@@ -187,7 +187,7 @@ peakDatesNeg <- peakdates(measures, n = 5, type = "neg", do.average = TRUE)
 dtPeaks <- as.data.table(subset(measures, date %in% peakDatesNeg))
 ```
 
-### _**Example 8**_: sentiment time series aggregation
+### _**Example 8:**_ sentiment time series aggregation
 
 Sentiment measures can be further aggregated across any of the three dimensions. The computed time series are averages across the relevant measures.
 
@@ -211,12 +211,13 @@ measuresAgg <- aggregate(measures,
 get_dimensions(measuresAgg) # inspect the contents of the three dimensions
 ```
 
-### _**Example 9**_: sentiment time series aggregation (bis)
+### _**Example 9:**_ sentiment time series aggregation (bis)
 
 To keep it at its simplest, all the sentiment measures computed can be condensed in a few global sentiment time series. The computation can be run in a weighted way as well.  
 
 ```R
 library("sentometrics")
+library("data.table")
 library("ggplot2")
 
 data("usnews")
@@ -232,7 +233,7 @@ measures <- sento_measures(corpus, lexicons, ctr)
 measuresGlobal <- aggregate(measures, do.global = TRUE)
 ```
 
-The output in this case is not a specific **sentometrics** _`sento_measures`_ object, but simply a _`data.table`_. Below produces a nice plot using the **ggplot2** package.
+The output in this case is not a specific **sentometrics** _`sento_measures`_ object, but simply a _`data.table`_ object. Below produces a nice plot using the **ggplot2** package.
 
 ```R
 ggplot(melt(measuresGlobal, id.vars = "date")) +
