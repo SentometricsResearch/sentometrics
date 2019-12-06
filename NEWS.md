@@ -4,6 +4,7 @@
 - package update followed by releasing a substantial update of the vignette (see https://doi.org/10.2139/ssrn.3067734)
 - added a clean error message when a document-level `sentiment` object not computed from a `sento_corpus` object is given to the `aggregate.sentiment()` function; the function now can also aggregate sentence-level `sentiment` objects without a `"date"` column
 - changed some `warning()` calls to `message()` calls to be more kind to the user
+- altered internal code to comply with **`quanteda`**'s >= v2.0 corpus object
 
 ## sentometrics 0.7.6
 
