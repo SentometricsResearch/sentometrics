@@ -1,8 +1,13 @@
 
+## sentometrics 0.8.0
+
+- package update followed by releasing a substantial update of the vignette (see https://doi.org/10.2139/ssrn.3067734)
+- added a clean error message when a document-level `sentiment` object not computed from a `sento_corpus` object is given to the `aggregate.sentiment()` function; the function now can also aggregate sentence-level `sentiment` objects without a `"date"` column
+- changed some `warning()` calls to `message()` calls to be more kind to the user
+
 ## sentometrics 0.7.6
 
 - fixed memory allocation issue in the `compute_sentiment()` function
-- package update followed by releasing a substantial update of the vignette (see https://doi.org/10.2139/ssrn.3067734) [coming soon]
 
 ## sentometrics 0.7.5
 
@@ -86,7 +91,7 @@ adversative conjunctions)
 - replaced the `dfm` argument in the `compute_sentiment()` and `ctr_agg()` functions by a `tokens` argument, and altered the input and behaviour of the `nCore` argument in these same two functions
 - switched from the **`quanteda`** package to the **`stringi`** package for more direct tokenization
 - trimmed the `list_lexicons` and `list_valence_shifters` built-in word lists by keeping only unigrams, and included same trimming procedure in the `sento_lexicons()` function
-- added a type column `"t"` to the `list_valence_shifters` built-in word list, and reset values of the `"y"` column from 2 to 1.8 and from 0.5 to 0.2
+- added a column type `"t"` to the `list_valence_shifters` built-in word list, and reset values of the `"y"` column from 2 to 1.8 and from 0.5 to 0.2
 - updated the `epu` built-in dataset with the newest available series, up to July 2018
 - corrected the word 'sparesly' to 'sparsely' in `list_valence_shifters[["en"]]`
 - further shortened project page to the bare essence
