@@ -97,7 +97,7 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
 
   corpusdf <- corpusdf[, c(nonfeatures, features)]
 
-  info <- "This is a sento_corpus object derived from a quanteda corpus object."
+  info <- "This is a sento_corpus object based on the quanteda corpus object."
 
   if (length(features) == 0) {
     corpusdf[["dummyFeature"]] <- 1
@@ -140,7 +140,7 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
   if (do.clean) corpusdf <- clean_texts(corpusdf)
   corp <- quanteda::corpus(x = corpusdf, docid_field = "id", text_field = "texts", metacorpus = list(info = info))
   class(corp) <- c("sento_corpus", class(corp))
-  setorder(corp$documents, "date", na.last = FALSE)
+  data.table::setorder(quanteda::docvars(corp), date) # oldest comes first
   return(corp)
 }
 
@@ -279,7 +279,7 @@ add_features <- function(corpus, featuresdf = NULL, keywords = NULL, do.binary =
 `docvars<-.sento_corpus` <- function(x, field, value) {
   if (!is.null(value)) {
     stop("To add or replace features in a sento_corpus object, use the add_features() function.", call. = FALSE)
-  } else {
+  } else { # delete one or more features
     # xNew <- NextMethod("docvars<-")
     xNew <- x
     class(xNew) <- c("corpus", "list")
@@ -518,13 +518,14 @@ as.sento_corpus <- function(x, dates = NULL, do.clean = FALSE) {
 
 #' @export
 as.data.table.sento_corpus <- function(x, ...) {
-  dt <- data.table::data.table(id = quanteda::docnames(x), x$documents)
+  dt <- data.table::data.table(id = quanteda::docnames(x), texts = quanteda::texts(x), quanteda::docvars(x))
   data.table::setcolorder(dt, c("id", "date", "texts"))
   dt
 }
 
 #' @export
 as.data.frame.sento_corpus <- function(x, ...) {
-  x$documents[, c("date", "texts", colnames(x$documents)[-c(1:2)])]
+  df <- cbind(quanteda::docvars(x), texts = quanteda::texts(x))
+  df[, c("date", "texts", setdiff(colnames(df), c("date", "texts")))]
 }
 

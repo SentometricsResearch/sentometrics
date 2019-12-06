@@ -11,7 +11,9 @@ set.seed(123)
 
 # corpus, lexicon and aggregation control creation
 data("usnews")
-corpus <- quanteda::corpus_sample(quanteda::corpus_subset(sento_corpus(corpusdf = usnews)), 750)
+
+corpus <- quanteda::corpus_sample(sento_corpus(corpusdf = usnews), 750)
+# corpus <- as.sento_corpus(quanteda::corpus_sample(sento_corpus(corpusdf = usnews), 750))
 
 data("list_lexicons")
 lex <- sento_lexicons(list_lexicons[c("GI_en", "LM_en")])

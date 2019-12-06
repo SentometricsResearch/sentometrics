@@ -13,8 +13,9 @@ reuters <- system.file("texts", "crude", package = "tm")
 
 ### tests from here ###
 
-# sento_corpus
 corpus <- sento_corpus(corpusdf = usnews, do.clean = TRUE)
+
+# sento_corpus
 test_that("Corpus building works and fails when appropriate", {
   expect_equal(c("date", "wsj", "wapo", "economy", "noneconomy"),
                names(docvars(corpus)))
@@ -92,5 +93,23 @@ test_that("Proper data.table and data.frame conversion", {
   expect_true(class(df) == "data.frame")
   expect_true(all(colnames(df)[1:2] == c("date", "texts")))
   expect_true(all(colnames(dt)[-1] == colnames(df)))
+})
+
+# quanteda corpus_*() functions
+res <- quanteda::corpus_reshape(corpus, to = "sentences")
+sam <- quanteda::corpus_sample(corpus, 100)
+seg <- quanteda::corpus_segment(corpus, pattern = "stock", use_docvars = TRUE)
+sub <- quanteda::corpus_subset(corpus, wsj == 1)
+tri <- quanteda::corpus_trim(corpus, "documents", min_ntoken = 300)
+trs <- quanteda::corpus_trim(corpus, "sentences", min_ntoken = 40)
+# trs <- quanteda::corpus_trimsentences(corpus, min_length = 40)
+test_that("quanteda corpus_*() functions keep sento_corpus object intact when expected", {
+  expect_true(inherits(res, "sento_corpus"))
+  expect_false("sento_corpus" %in% class(sam))
+  expect_true(inherits(as.sento_corpus(sam), "sento_corpus"))
+  expect_true(inherits(seg, "sento_corpus"))
+  expect_true(inherits(sub, "sento_corpus"))
+  expect_true(inherits(tri, "sento_corpus"))
+  expect_true(inherits(trs, "sento_corpus"))
 })
 
