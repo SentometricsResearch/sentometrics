@@ -86,24 +86,22 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
   dates <- as.Date(corpusdf$date, format = "%Y-%m-%d")
   if (any(is.na(dates))) stop("Some dates are not in appropriate format. Should be 'yyyy-mm-dd'.")
   else corpusdf$date <- dates
-
   # check if language is provided
   if ("language" %in% cols) {
     nonfeatures <- c(nonfeatures, "language")
-    # if (!all(sapply(corpusdf$language, is_iso_language)))
-    #   stop("Not all text contain ISO 639 code. Check ISOcodes::ISO_639_2 for list of available options.")
   }
-
+  # check if feature names are correctly formatted
   features <- cols[!(cols %in% nonfeatures)]
   if (!is_names_correct(features))
-    stop("At least one feature's name contains '-'. Please provide proper names.")
+    stop("At least one feature name contains '-'. Please provide proper names.")
+
   corpusdf <- corpusdf[, c(nonfeatures, features)]
 
   info <- "This is a sento_corpus object derived from a quanteda corpus object."
 
   if (length(features) == 0) {
     corpusdf[["dummyFeature"]] <- 1
-    warning("No features detected. A 'dummyFeature' feature valued at 1 throughout is added.")
+    message("We detected no features, so we added a dummy feature 'dummyFeature'.")
   } else {
     if (sum(duplicated(features)) > 0) {
       duplics <- unique(features[duplicated(features)])
@@ -114,7 +112,8 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
     if (any(!isNumeric)) {
       toDrop <- names(which(!isNumeric))
       corpusdf[, toDrop] <- NULL
-      warning(paste0("Following feature columns are dropped as they are not numeric: ", paste0(toDrop, collapse = ", "), "."))
+      warning(paste0("Following feature columns are dropped as they are not numeric: ",
+                     paste0(toDrop, collapse = ", "), "."))
       if (length(toDrop) == length(isNumeric)) {
         corpusdf[["dummyFeature"]] <- 1
         warning("No remaining feature columns. A 'dummyFeature' feature valued at 1 throughout is added.")
@@ -141,7 +140,7 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
   if (do.clean) corpusdf <- clean_texts(corpusdf)
   corp <- quanteda::corpus(x = corpusdf, docid_field = "id", text_field = "texts", metacorpus = list(info = info))
   class(corp) <- c("sento_corpus", class(corp))
-  setorder(corp$documents, "date", na.last=FALSE)
+  setorder(corp$documents, "date", na.last = FALSE)
   return(corp)
 }
 

@@ -261,13 +261,13 @@ compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, 
                       "Following names occur at least twice: ", paste0(duplics, collapse = ", "), "."))
         }
       } else { # if language not in sento_corpus, one sento_lexicons object is expected and not a list
-        stop("List of sento_lexicons objects only allowed if there is a language column in sento_corpus.")
+        stop("List of sento_lexicons objects only allowed if there is a 'language' column in sento_corpus.")
       }
     }
   } else {
     if (inherits(x, "sento_corpus")) {
       if ("language" %in% names(quanteda::docvars(x)))
-        stop("Provide a list of sento_lexicons objects when having a language column in sento_corpus.")
+        stop("Provide a list of sento_lexicons objects when having a 'language' column in sento_corpus.")
     }
   }
 
