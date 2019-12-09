@@ -102,7 +102,7 @@ s <- compute_sentiment(corpus, lexicons, how = "counts", tokens = tks)
 
 ### _**Example 5:**_ sentence-level sentiment calculation and aggregation
 
-A textual sentiment computation on sentence-level, starting from a document-level corpus. Subsequently, the sentence-level scores are aggregated into document-level scores.
+A textual sentiment computation on sentence-level, starting from a document-level corpus, and normalized dividing by the number of detected polarized words. Subsequently, the resulting sentence-level scores are aggregated into document-level scores.
 
 ```R
 library("sentometrics")
@@ -247,12 +247,14 @@ ggplot(melt(measuresGlobal, id.vars = "date")) +
 
 ### _**Example 10:**_ tf-idf sentiment calculation as in the **quanteda** package
 
+The term frequency-inverse document frequency statistic is widely used to quantify term importance in a corpus. Its use extends to sentiment calculation simply by adding the polarity of the words to the equation. This example shows that the tf-idf sentiment output from **sentometrics** is the same as the output obtained using the text mining package **quanteda**.
+
 ```R
 library("sentometrics")
 library("quanteda")
 library("stringi")
 
-# assure same tokenization for full comparability
+# ensure same tokenization for full comparability
 txts <- sentometrics::usnews$texts[1:100]
 toks <- stri_split_boundaries(stri_trans_tolower(txts), type = "word", skip_word_none = TRUE)
 
@@ -283,6 +285,8 @@ testthat::expect_equal(q, s)
 
 ### _**Example 11:**_ comparing the three key approaches to the sentiment computation
 
+You can choose between three main approaches to do the lexicon-based sentiment calculation: only account for unigrams (_simple_), account for bigrams through valence shifters (_valence_), account for context through valence shifters in a cluster of words around a detected polarized word (_cluster_). Read the [vignette](https://ssrn.com/abstract=3067734) for more details! Here we demonstrate how to plot the different approaches for comparison.
+
 ```R
 library("sentometrics")
 library("lexicon")
@@ -306,6 +310,8 @@ legend("topright", col = 1:3, legend = colnames(s), lty = 1, cex = 0.7)
 ```
 
 ### _**Example 12:**_ summarizing a corpus through some statistics and plots
+
+Quickly investigate how your corpus looks like in terms of number of documents, number of tokens and its metadata features.
 
 ```R
 library("sentometrics")
