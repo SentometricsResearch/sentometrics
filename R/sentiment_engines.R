@@ -19,7 +19,7 @@ tokenize_texts <- function(x, tokens = NULL, type = "word") { # x embeds a chara
       sentences <- stringi::stri_split_boundaries(x, type = "sentence")
       tok <- lapply(sentences, function(sn) { # list of documents of list of sentences of words
         wo <- stringi::stri_split_boundaries(
-          stringi::stri_trans_tolower(gsub(", ", " c_c ", sn)),
+          stringi::stri_trans_tolower(gsub(", ", " c_c ", sn)), # reset commas
           type = "word", skip_word_none = TRUE, skip_word_number = TRUE
         )
         wo[sapply(wo, length) != 0]
