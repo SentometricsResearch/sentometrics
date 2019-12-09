@@ -312,7 +312,7 @@ aggregate.sentiment <- function(x, ctr, do.full = TRUE, ...) {
   if ("sentence_id" %in% cols) {
     x <- aggregate_sentences(x, how = howDocs, weightingParamDocs = weightingParamDocs)
     if (do.full == FALSE) return(x)
-    if (do.full == TRUE && !("date" %in% colnames(x))) {
+    if (do.full == TRUE && !("date" %in% cols)) {
       warning("Aggregation only performed until document-level, since no 'date' column present.")
       return(x)
     }

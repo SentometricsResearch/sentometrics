@@ -245,7 +245,7 @@ ggplot(melt(measuresGlobal, id.vars = "date")) +
   sentometrics:::plot_theme(legendPos = "top") # a small trick to finetune the plotting display
 ```
 
-### _**Example 10:**_ tf-idf sentiment calculation versus the **quanteda** package
+### _**Example 10:**_ tf-idf sentiment calculation as in the **quanteda** package
 
 ```R
 library("sentometrics")
@@ -259,7 +259,7 @@ toks <- stri_split_boundaries(stri_trans_tolower(txts), type = "word", skip_word
 # pick a lexicon
 lexIn <- sentometrics::list_lexicons$GI_en
 
-### quanteda tf-idf sentiment calculation
+### quanteda tf-idf sentiment calculation ###
 
 toksQ <- as.tokens(toks)
 dfmQ <- dfm(toksQ) %>% dfm_tfidf(k = 1)
@@ -269,13 +269,11 @@ negWords <- lexIn[y == -1, x]
 
 posScores <- rowSums(dfm_select(dfmQ, posWords))
 negScores <- rowSums(dfm_select(dfmQ, negWords))
-
 q <- unname(posScores - negScores)
 
-### sentometrics tf-idf sentiment calculation
+### sentometrics tf-idf sentiment calculation ###
 
 lex <- sento_lexicons(list(L = lexIn))
-
 s <- compute_sentiment(txts, lex, tokens = toks, "TFIDF")[["L"]]
 ```
 
@@ -285,19 +283,20 @@ R they equal (using the **testthat** package)?
 testthat::expect_equal(q, s)
 ```
 
-### _**Example 11:**_ comparing the simple, valence shifters and clustered approach to sentiment computation
+### _**Example 11:**_ comparing the three key approaches to the sentiment computation
 
 ```R
 library("sentometrics")
 library("lexicon")
 
 data("usnews")
-data("list_valence_shifters")
-
 txts <- usnews[1:200, "texts"]
 
-lexValence <- sento_lexicons(list(nrc = lexicon::hash_sentiment_nrc), list_valence_shifters[["en"]][, c("x", "y")])
-lexCluster <- sento_lexicons(list(nrc = lexicon::hash_sentiment_nrc), list_valence_shifters[["en"]][, c("x", "t")])
+data("list_valence_shifters")
+vals <- list_valence_shifters[["en"]]
+
+lexValence <- sento_lexicons(list(nrc = lexicon::hash_sentiment_nrc), vals[, c("x", "y")])
+lexCluster <- sento_lexicons(list(nrc = lexicon::hash_sentiment_nrc), vals[, c("x", "t")])
 
 s1 <- compute_sentiment(txts, head(lexValence, -1))$nrc
 s2 <- compute_sentiment(txts, lexValence)$nrc

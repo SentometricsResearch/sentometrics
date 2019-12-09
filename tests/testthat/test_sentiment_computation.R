@@ -88,13 +88,13 @@ sentimentList <- list(
   s14 = compute_sentiment(corpus, lex, how = "inverseExponential"),
   s15 = compute_sentiment(corpus, lex, how = "UShaped"),
   s16 = compute_sentiment(corpus, lex, how = "inverseUShaped"),
-  s17 = compute_sentiment(corpus, lex, how = "TF"),
-  s18 = compute_sentiment(corpus, lex, how = "logarithmicTF"),
-  s19 = compute_sentiment(corpus, lex, how = "augmentedTF"),
-  s20 = compute_sentiment(corpus, lex, how = "IDF"),
+  # s17 = compute_sentiment(corpus, lex, how = "TF"),
+  # s18 = compute_sentiment(corpus, lex, how = "logarithmicTF"),
+  # s19 = compute_sentiment(corpus, lex, how = "augmentedTF"),
+  # s20 = compute_sentiment(corpus, lex, how = "IDF"),
   s21 = compute_sentiment(corpus, lex, how = "TFIDF"),
-  s22 = compute_sentiment(corpus, lex, how = "logarithmicTFIDF"),
-  s23 = compute_sentiment(corpus, lex, how = "augmentedTFIDF"),
+  # s22 = compute_sentiment(corpus, lex, how = "logarithmicTFIDF"),
+  # s23 = compute_sentiment(corpus, lex, how = "augmentedTFIDF"),
   s24 = compute_sentiment(corpusLang, lexLang, how = "proportionalSquareRoot")
 )
 
@@ -130,7 +130,7 @@ sentimentSentenceList <- list(
                          lexClust, how = "counts", do.sentence = TRUE),
   s4 = compute_sentiment(corpus, lexClust, how = "proportionalSquareRoot", do.sentence = TRUE),
   s5 = compute_sentiment(corpusLang, lexLang, how = "proportional", do.sentence = TRUE),
-  s6 = compute_sentiment(corpus, lex[1:3], how = "augmentedTFIDF", do.sentence = TRUE),
+  s6 = compute_sentiment(corpus, lex[1:3], how = "TFIDF", do.sentence = TRUE),
   s7 = compute_sentiment(corpus, lex, how = "inverseUShaped", do.sentence = TRUE)
 )
 
@@ -185,5 +185,15 @@ test_that("Correct binding of several sentiment objects", {
   expect_true(inherits(merge(sentimentList$s1, sentimentList$s2), "data.table"))
   expect_true(nrow(merge(sA, sB, sA)) == (2 * nrow(sA)))
   expect_true(ncol(merge(sentimentList$s7, sentimentList$s11)) == ncol(sentimentList$s7))
+})
+
+# tf-idf comparison sentometrics vs. quanteda
+toks <- stri_split_boundaries(stri_trans_tolower(texts(corpus)), type = "word", skip_word_none = TRUE)
+dfmQ <- dfm(as.tokens(toks)) %>% dfm_tfidf(k = 1)
+posScores <- rowSums(dfm_select(dfmQ, lex$GI_en[y == 1, x]))
+negScores <- rowSums(dfm_select(dfmQ, lex$GI_en[y == -1, x]))
+test_that("Same tf-idf scoring for sentometrics and quanteda", {
+  expect_equal(compute_sentiment(texts(corpus), lex[-length(lex)], tokens = toks, "TFIDF")[["GI_en"]],
+               unname(posScores - negScores))
 })
 
