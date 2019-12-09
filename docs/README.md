@@ -245,6 +245,88 @@ ggplot(melt(measuresGlobal, id.vars = "date")) +
   sentometrics:::plot_theme(legendPos = "top") # a small trick to finetune the plotting display
 ```
 
+### _**Example 10:**_ tf-idf sentiment calculation versus the **quanteda** package
+
+```R
+library("sentometrics")
+library("quanteda")
+library("stringi")
+
+# assure same tokenization for full comparability
+txts <- sentometrics::usnews$texts[1:100]
+toks <- stri_split_boundaries(stri_trans_tolower(txts), type = "word", skip_word_none = TRUE)
+
+# pick a lexicon
+lexIn <- sentometrics::list_lexicons$GI_en
+
+### quanteda tf-idf sentiment calculation
+
+toksQ <- as.tokens(toks)
+dfmQ <- dfm(toksQ) %>% dfm_tfidf(k = 1)
+
+posWords <- lexIn[y == 1, x]
+negWords <- lexIn[y == -1, x]
+
+posScores <- rowSums(dfm_select(dfmQ, posWords))
+negScores <- rowSums(dfm_select(dfmQ, negWords))
+
+q <- unname(posScores - negScores)
+
+### sentometrics tf-idf sentiment calculation
+
+lex <- sento_lexicons(list(L = lexIn))
+
+s <- compute_sentiment(txts, lex, tokens = toks, "TFIDF")[["L"]]
+```
+
+R they equal (using the **testthat** package)?
+
+```R
+testthat::expect_equal(q, s)
+```
+
+### _**Example 11:**_ comparing the simple, valence shifters and clustered approach to sentiment computation
+
+```R
+library("sentometrics")
+library("lexicon")
+
+data("usnews")
+data("list_valence_shifters")
+
+txts <- usnews[1:200, "texts"]
+
+lexValence <- sento_lexicons(list(nrc = lexicon::hash_sentiment_nrc), list_valence_shifters[["en"]][, c("x", "y")])
+lexCluster <- sento_lexicons(list(nrc = lexicon::hash_sentiment_nrc), list_valence_shifters[["en"]][, c("x", "t")])
+
+s1 <- compute_sentiment(txts, head(lexValence, -1))$nrc
+s2 <- compute_sentiment(txts, lexValence)$nrc
+s3 <- compute_sentiment(txts, lexCluster)$nrc
+s <- cbind(simple = s1, valence = s2, cluster = s3)
+
+matplot(s, type = "l", lty = 1, ylab = "Sentiment", xlab = "Document")
+legend("topright", col = 1:3, legend = colnames(s), lty = 1, cex = 0.7)
+```
+
+### _**Example 12:**_ summarizing a corpus through some statistics and plots
+
+```R
+library("sentometrics")
+
+data("usnews")
+
+corpus <- sento_corpus(usnews)
+
+summ1 <- corpus_summarize(corpus, by = "week")
+summ1[["stats"]] # some weekly corpus statistics about tokens and features
+
+summ2 <- corpus_summarize(corpus, by = "year", features = c("wsj", "wapo"))
+plots <- summ2[["plots"]]
+plots$doc_plot # yearly evolution of number of documents
+plots$feature_plot # yearly evolution of the presence of the "wsj" and "wapo" features
+plots$token_plot # yearly evolution of the token statistics (mean, min., max.)
+```
+
 ## Shiny application
 
 You might also want to have a look at the [**sentometrics.app**](https://github.com/sborms/sentometrics.app) package. Its `sento_app()` function embeds a Shiny application that displays many of **sentometrics**' functionalities. Enjoy!

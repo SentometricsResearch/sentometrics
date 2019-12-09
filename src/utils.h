@@ -8,6 +8,9 @@ using namespace std;
 #define UTILS_H
 
 inline bool is_frequency_weighting(std::string how) {
+  // return (how == "TF" || how == "logarithmicTF" || how == "augmentedTF" || how == "IDF"
+  //           || how == "TFIDF" || how == "logarithmicTFIDF"
+  //           || how == "augmentedTFIDF");
   return (how == "TF" || how == "logarithmicTF" || how == "augmentedTF" || how == "IDF"
             || how == "TFIDF" || how == "logarithmicTFIDF"
             || how == "augmentedTFIDF");
@@ -68,18 +71,18 @@ inline void update_frequency_map(std::unordered_map< std::string, double >& freq
   freqMap = frequencyMap.at(i);
 }
 
-inline void update_max_token_frequency(double& maxTokenFrequency,
-                                       std::unordered_map< std::string, double >& frequencyMap,
-                                       std::string how) {
-  if (how == "augmentedTF" || how == "augmentedTFIDF") {
-    int globalMax = 0, localMax = 0;
-    for (auto& it: frequencyMap) {
-      localMax = it.second;
-      if (localMax > globalMax) globalMax = localMax;
-    }
-    maxTokenFrequency = globalMax;
-  }
-}
+// inline void update_max_token_frequency(double& maxTokenFrequency,
+//                                        std::unordered_map< std::string, double >& frequencyMap,
+//                                        std::string how) {
+//   if (how == "augmentedTF" || how == "augmentedTFIDF") {
+//     int globalMax = 0, localMax = 0;
+//     for (auto& it: frequencyMap) {
+//       localMax = it.second;
+//       if (localMax > globalMax) globalMax = localMax;
+//     }
+//     maxTokenFrequency = globalMax;
+//   }
+// }
 
 inline void update_token_frequency(double& tokenFrequency,
                                    std::unordered_map< std::string, double >& freqMap,
@@ -91,7 +94,10 @@ inline void update_token_inverse_frequency(double& tokenInverseFrequency,
                                            std::unordered_map< std::string, double >& inverseFrequencyMap,
                                            std::string& token,
                                            std::string how) {
-  if (how == "IDF" || how == "TFIDF" || how == "logarithmicTFIDF" || how == "augmentedTFIDF") {
+  // if (how == "IDF" || how == "TFIDF" || how == "logarithmicTFIDF" || how == "augmentedTFIDF") {
+  //   tokenInverseFrequency = inverseFrequencyMap[token];
+  // }
+  if (how == "TFIDF") {
     tokenInverseFrequency = inverseFrequencyMap[token];
   }
 }
@@ -131,20 +137,20 @@ inline void update_token_weights(std::vector < double >& tokenWeights,
       token_weight = std::exp(5.0 * (x / y - 1));
     } else if (how == "inverseExponential") {
       token_weight = std::exp(5.0 * (1 - x / y));
-    } else if (how == "TF") {
-      token_weight = frequency / nTokens;
-    } else if (how == "logarithmicTF") {
-      token_weight = std::log(1 + frequency / nTokens);
-    } else if (how == "augmentedTF") {
-      token_weight = 1 + (frequency / maxTokenFrequency);
-    } else if (how == "IDF") {
-      token_weight = std::log(N / (1 + inverseFrequency));
-    } else if (how == "TFIDF") {
-      token_weight = std::log(N / (1 + inverseFrequency)) * (frequency / nTokens);
-    } else if (how == "logarithmicTFIDF") {
-      token_weight = std::log(N / (1 + inverseFrequency)) * (std::log(1 + frequency / nTokens));
-    } else if (how == "augmentedTFIDF") {
-      token_weight = std::log(N / (1 + inverseFrequency)) * (1 + (frequency / maxTokenFrequency));
+    // } else if (how == "TF") {
+    //   token_weight = frequency / nTokens;
+    // } else if (how == "logarithmicTF") {
+    //   token_weight = std::log(1 + frequency / nTokens); // natural logarithm
+    // } else if (how == "augmentedTF") {
+    //   token_weight = 1 + (frequency / maxTokenFrequency);
+    } else if (how == "TFIDF") { // former "IDF" weighting scheme
+      token_weight = std::log10(N / (1 + inverseFrequency));
+    // } else if (how == "TFIDF") {
+    //   token_weight = std::log(N / (1 + inverseFrequency)) * (frequency / nTokens);
+    // } else if (how == "logarithmicTFIDF") {
+    //   token_weight = std::log(N / (1 + inverseFrequency)) * (std::log(1 + frequency / nTokens));
+    // } else if (how == "augmentedTFIDF") {
+    //   token_weight = std::log(N / (1 + inverseFrequency)) * (1 + (frequency / maxTokenFrequency));
     }
     // std::cout << "freq.: " << frequency << " & inv. freq.: " << inverseFrequency << "\n";
     // std::cout << "weight: " << token_weight << "\n";
@@ -182,8 +188,9 @@ inline void update_token_scores(std::vector< double >& scores,
                                 int& nTokens,
                                 std::string how,
                                 int& nPuncts) {
+
   if (how != "proportional" && how != "proportionalPol"
-        && how != "counts" && how != "proportionalSquareRoot") {
+        && how != "counts" && how != "proportionalSquareRoot" && how != "TFIDF") {
     scale_token_weights(tokenWeights, normalizer, nTokens);
   }
 
@@ -213,6 +220,7 @@ inline void update_token_scores(std::vector< double >& scores,
       }
     }
   }
+
 }
 
 inline void update_primary_shifters(std::vector< int >& shifters,

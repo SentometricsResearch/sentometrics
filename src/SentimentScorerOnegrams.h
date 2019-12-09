@@ -45,7 +45,7 @@ struct SentimentScorerOnegrams : public RcppParallel::Worker {
       double maxTokenFrequency = 1.0;
       if (isFreqWeighting) {
         update_frequency_map(freqMap, frequencyMap, i);
-        update_max_token_frequency(maxTokenFrequency, freqMap, how);
+        // update_max_token_frequency(maxTokenFrequency, freqMap, how);
       }
 
       for (int j = 0; j < nTokens; j++) {
