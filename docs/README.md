@@ -260,7 +260,6 @@ toks <- stri_split_boundaries(stri_trans_tolower(txts), type = "word", skip_word
 lexIn <- sentometrics::list_lexicons$GI_en
 
 ### quanteda tf-idf sentiment calculation ###
-
 toksQ <- as.tokens(toks)
 dfmQ <- dfm(toksQ) %>% dfm_tfidf(k = 1)
 
@@ -272,7 +271,6 @@ negScores <- rowSums(dfm_select(dfmQ, negWords))
 q <- unname(posScores - negScores)
 
 ### sentometrics tf-idf sentiment calculation ###
-
 lex <- sento_lexicons(list(L = lexIn))
 s <- compute_sentiment(txts, lex, tokens = toks, "TFIDF")[["L"]]
 ```
@@ -321,7 +319,7 @@ summ1[["stats"]] # some weekly corpus statistics about tokens and features
 
 summ2 <- corpus_summarize(corpus, by = "year", features = c("wsj", "wapo"))
 plots <- summ2[["plots"]]
-plots$doc_plot # yearly evolution of number of documents
+plots$doc_plot # yearly evolution of the number of documents
 plots$feature_plot # yearly evolution of the presence of the "wsj" and "wapo" features
 plots$token_plot # yearly evolution of the token statistics (mean, min., max.)
 ```
