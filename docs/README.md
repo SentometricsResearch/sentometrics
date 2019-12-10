@@ -233,7 +233,7 @@ measures <- sento_measures(corpus, lexicons, ctr)
 measuresGlobal <- aggregate(measures, do.global = TRUE)
 ```
 
-The output in this case is not a specific **sentometrics** _`sento_measures`_ object, but simply a _`data.table`_ object. Below produces a nice plot using the **ggplot2** package.
+The output in this case is not a specific **sentometrics** `sento_measures` object, but simply a `data.table` object. Below produces a nice plot using the **ggplot2** package.
 
 ```R
 ggplot(melt(measuresGlobal, id.vars = "date")) +
@@ -285,7 +285,7 @@ testthat::expect_equal(q, s)
 
 ### _**Example 11:**_ comparing the three key approaches to the sentiment computation
 
-You can choose between three main approaches to do the lexicon-based sentiment calculation: only account for unigrams (_simple_), consider valence shifting in a bigrams perspective (_valence_), or consider valence shifting in a cluster of words around a detected polarized word (_cluster_). Read the [vignette](https://ssrn.com/abstract=3067734) for more details! Here we demonstrate how to plot the different approaches for comparison.
+We offer three main approaches to do the lexicon-based sentiment calculation: only account for unigrams _(simple)_, consider valence shifting in a bigrams perspective _(valence)_, or consider valence shifting in a cluster of words around a detected polarized word _(cluster)_. Read the [vignette](https://ssrn.com/abstract=3067734) for more details! Here we demonstrate how to plot the different approaches for comparison.
 
 ```R
 library("sentometrics")
@@ -329,6 +329,8 @@ plots$doc_plot # yearly evolution of the number of documents
 plots$feature_plot # yearly evolution of the presence of the "wsj" and "wapo" features
 plots$token_plot # yearly evolution of the token statistics (mean, min., max.)
 ```
+
+More to come...
 
 ## Shiny application
 
