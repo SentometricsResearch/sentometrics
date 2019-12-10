@@ -42,7 +42,8 @@ l1 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")],
 l2 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")],
                      list_valence_shifters[["en"]][, c("x", "t")])
 sent1 <- compute_sentiment(corpusSample, l1, how = "counts")
-sent2 <- compute_sentiment(corpusSample, l2, how = "counts", do.sentence = TRUE)
+sent2 <- compute_sentiment(corpusSample, l2, do.sentence = TRUE)
+sent3 <- compute_sentiment(texts(corpusSample), l2, do.sentence = TRUE)
 ctr <- ctr_agg(howTime = c("linear"), by = "year", lag = 3)
 
 # aggregate into sentiment measures
@@ -50,8 +51,12 @@ sm1 <- aggregate(sent1, ctr)
 sm2 <- aggregate(sent2, ctr)
 
 # two-step aggregation (first into document-level sentiment)
-sent3 <- aggregate(sent2, ctr, do.full = FALSE)
-sm3 <- aggregate(sent3, ctr)
+sd2 <- aggregate(sent2, ctr, do.full = FALSE)
+sm3 <- aggregate(sd2, ctr)
+
+# aggregation of a sentiment data.table
+cols <- c("word_count", names(l2)[-length(l2)])
+sd3 <- sent3[, lapply(.SD, sum), by = "id", .SDcols = cols]
 
 }
 \seealso{
