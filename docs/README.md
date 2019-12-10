@@ -285,7 +285,7 @@ testthat::expect_equal(q, s)
 
 ### _**Example 11:**_ comparing the three key approaches to the sentiment computation
 
-You can choose between three main approaches to do the lexicon-based sentiment calculation: only account for unigrams (_simple_), account for bigrams through valence shifters (_valence_), account for context through valence shifters in a cluster of words around a detected polarized word (_cluster_). Read the [vignette](https://ssrn.com/abstract=3067734) for more details! Here we demonstrate how to plot the different approaches for comparison.
+You can choose between three main approaches to do the lexicon-based sentiment calculation: only account for unigrams (_simple_), consider valence shifting in a bigrams perspective (_valence_), or consider valence shifting in a cluster of words around a detected polarized word (_cluster_). Read the [vignette](https://ssrn.com/abstract=3067734) for more details! Here we demonstrate how to plot the different approaches for comparison.
 
 ```R
 library("sentometrics")

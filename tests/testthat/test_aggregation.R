@@ -10,7 +10,7 @@ set.seed(123)
 # corpus, lexicon and aggregation control creation
 data("usnews")
 corpus <- quanteda::corpus_sample(sento_corpus(corpusdf = usnews), size = 1000)
-data.table::setorder(corpus$documents, "date", na.last = FALSE)
+
 data("list_lexicons")
 lex <- sento_lexicons(list_lexicons[c("GI_en", "LM_en")])
 lexClust <- sento_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")],
@@ -36,7 +36,7 @@ ctr4 <- ctr_agg(howWithin = "UShaped", howDocs = "inverseProportional", howTime 
 ctr5 <- ctr_agg(howWithin = "counts", howDocs = "exponential", alphaExpDocs = 0.2,
                 howTime = "linear", by = "year", lag = 3)
 
-ctr6 <- ctr_agg(howWithin = "augmentedTF", howDocs = "inverseExponential", alphaExpDocs = 0.1,
+ctr6 <- ctr_agg(howWithin = "TFIDF", howDocs = "inverseExponential", alphaExpDocs = 0.1,
                 howTime = "equal_weight", by = "week", lag = 7)
 
 # sento_measures
@@ -51,9 +51,9 @@ test_that("Aggregation control function breaks when wrong inputs supplied", {
                        lag = 42, by = "infinitely", fill = "theMartiniPolice", nCore = c("yes", "man")))
   expect_error(ctr_agg(howTime = c("almon", "beta", "exponential"), lag = 0,
                        ordersAlm = -1:2, aBeta = -2, bBeta = -3, alphasExp = c(-1, -3)))
-  expect_warning(ctr_agg(howTime = "linear", lag = 4, weights = data.frame(a = c(1/2, 1/2))))
+  expect_message(ctr_agg(howTime = "linear", lag = 4, weights = data.frame(a = c(1/2, 1/2))))
   expect_error(ctr_agg(howTime = "own", lag = 12, weights = data.frame("dot--hacker" = rep(1/12, 12), check.names = FALSE)))
-  expect_warning(ctr_agg(howTime = c("linear", "beta"), lag = 1))
+  expect_message(ctr_agg(howTime = c("linear", "beta"), lag = 1))
 })
 
 # aggregate.sentiment
@@ -61,15 +61,15 @@ s1 <- compute_sentiment(corpus, lex, how = "proportional")
 s2 <- compute_sentiment(quanteda::texts(corpus), lex, how = "counts")
 s3 <- compute_sentiment(corpus, lexClust, how = "proportionalSquareRoot", do.sentence = TRUE)
 sentimentAgg <- aggregate(s3, ctr_agg(lag = 7), do.full = FALSE)
-test_that("Test input and output of sentiment aggregation function", {
+test_that("Test input and output of sentiment aggregation functionality", {
   expect_true(inherits(s1, "sentiment"))
   expect_true(inherits(s2, "data.table"))
   expect_true(inherits(s3, "sentiment"))
   expect_true(inherits(aggregate(s1, ctr1), "sento_measures"))
-  expect_true(inherits(aggregate(s3, ctr1), "sento_measures"))
+  expect_true(inherits(aggregate(s3, ctr1), "sento_measures")) # sentence-level with dates (full)
   expect_true(inherits(aggregate(s3, ctr1, do.full = FALSE), "sentiment"))
-  expect_error(aggregate(s2, ctr2))
-  expect_error(sento_measures(corpus, lex, ctr3))
+  expect_error(aggregate(s2, ctr2)) # doc-level but no dates
+  expect_error(sento_measures(corpus, lex, ctr3)) # because overlapping names specified
   expect_true(inherits(sento_measures(corpus, lex, ctr4), "sento_measures"))
   expect_true(inherits(sento_measures(corpus, lex, ctr5), "sento_measures"))
   expect_true(inherits(sento_measures(corpus, lex, ctr6), "sento_measures"))

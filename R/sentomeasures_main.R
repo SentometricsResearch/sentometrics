@@ -117,12 +117,12 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
   }
   if (!("own" %in% howTime) && is.data.frame(weights)) {
     howTime <- c(howTime, "own")
-    warning("The option 'own' is added to 'howTime' since a valid (not NULL) 'weights' data.frame was supplied.")
+    message("Option 'own' is added to 'howTime' because a 'weights' data.frame was supplied.")
   }
   if ("own" %in% howTime) {
     if (lag != nrow(weights)) {
       lag <- nrow(weights)
-      warning("Argument 'lag' is set equal to the number of rows in the 'weights' data.frame.")
+      message("Argument 'lag' is set to the number of rows in the 'weights' data.frame.")
     }
     if (!is_names_correct(colnames(weights))) {
       err <- c(err, "The column names in the 'weights' data.frame should not contain any '-'.")
@@ -285,7 +285,8 @@ sento_measures <- function(sento_corpus, lexicons, ctr) {
 #' l2 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")],
 #'                      list_valence_shifters[["en"]][, c("x", "t")])
 #' sent1 <- compute_sentiment(corpusSample, l1, how = "counts")
-#' sent2 <- compute_sentiment(corpusSample, l2, how = "counts", do.sentence = TRUE)
+#' sent2 <- compute_sentiment(corpusSample, l2, do.sentence = TRUE)
+#' sent3 <- compute_sentiment(texts(corpusSample), l2, do.sentence = TRUE)
 #' ctr <- ctr_agg(howTime = c("linear"), by = "year", lag = 3)
 #'
 #' # aggregate into sentiment measures
@@ -293,8 +294,12 @@ sento_measures <- function(sento_corpus, lexicons, ctr) {
 #' sm2 <- aggregate(sent2, ctr)
 #'
 #' # two-step aggregation (first into document-level sentiment)
-#' sent3 <- aggregate(sent2, ctr, do.full = FALSE)
-#' sm3 <- aggregate(sent3, ctr)
+#' sd2 <- aggregate(sent2, ctr, do.full = FALSE)
+#' sm3 <- aggregate(sd2, ctr)
+#'
+#' # aggregation of a sentiment data.table
+#' cols <- c("word_count", names(l2)[-length(l2)])
+#' sd3 <- sent3[, lapply(.SD, sum), by = "id", .SDcols = cols]
 #'
 #' @importFrom stats aggregate
 #' @export
@@ -312,13 +317,12 @@ aggregate.sentiment <- function(x, ctr, do.full = TRUE, ...) {
   if ("sentence_id" %in% cols) {
     x <- aggregate_sentences(x, how = howDocs, weightingParamDocs = weightingParamDocs)
     if (do.full == FALSE) return(x)
-    if (do.full == TRUE && !("date" %in% cols)) {
-      warning("Aggregation only performed until document-level, since no 'date' column present.")
-      return(x)
-    }
-  } else {
-    if (!("date" %in% cols)) stop("A document-level sentiment input should have a 'date' column for full aggregation.")
+    # if (do.full == TRUE && !("date" %in% cols)) {
+    #   warning("Aggregation only performed until document-level, since no 'date' column present.")
+    #   return(x)
+    # }
   }
+  # if (!("date" %in% cols)) stop("A document-level sentiment input should have a 'date' column for full aggregation.")
 
   aggDocs <- aggregate_docs(x, by = by, how = howDocs, weightingParamDocs = weightingParamDocs)
   aggDocs$ctr <- ctr
