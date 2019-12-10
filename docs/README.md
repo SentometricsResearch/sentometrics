@@ -277,7 +277,7 @@ lex <- sento_lexicons(list(L = lexIn))
 s <- compute_sentiment(txts, lex, tokens = toks, "TFIDF")[["L"]]
 ```
 
-R they equal (using the **testthat** package)?
+_R_ they equal (using the **testthat** package)?
 
 ```R
 testthat::expect_equal(q, s)
@@ -285,7 +285,7 @@ testthat::expect_equal(q, s)
 
 ### _**Example 11:**_ comparing the three key approaches to the sentiment computation
 
-We offer three main approaches to do the lexicon-based sentiment calculation: only account for unigrams _(simple)_, consider valence shifting in a bigrams perspective _(valence)_, or consider valence shifting in a cluster of words around a detected polarized word _(cluster)_. Read the [vignette](https://ssrn.com/abstract=3067734) for more details! Here we demonstrate how to plot the different approaches for comparison.
+We offer three main approaches to do the lexicon-based sentiment calculation: account only for unigrams _(simple)_, consider valence shifting in a bigrams perspective _(valence)_, or consider valence shifting in a cluster of words around a detected polarized word _(cluster)_. Read the [vignette](https://ssrn.com/abstract=3067734) for more details! Here we demonstrate how to plot the different approaches for comparison.
 
 ```R
 library("sentometrics")

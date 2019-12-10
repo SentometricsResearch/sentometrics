@@ -4,7 +4,7 @@
 - package update followed by release of a substantial update of the vignette (see https://doi.org/10.2139/ssrn.3067734)
 - changed some `warning()` calls to `message()` calls to be more kind to the user
 - altered internal code to comply with **quanteda**'s >= v2.0 `corpus` object
-- dropped all `"TF"`-like weights for within-document aggregation except for `"TFIDF"`, and made it return the same sentiment scores as would when using the **quanteda** package (see example on https://sborms.github.io/sentometrics/)
+- dropped all `"TF"`-inspired weights for within-document aggregation except for `"TFIDF"`, and made this option return the same sentiment scores as would when using the **quanteda** package (see the example on https://sborms.github.io/sentometrics/)
 
 ## sentometrics 0.7.6
 
