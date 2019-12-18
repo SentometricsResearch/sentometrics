@@ -17,7 +17,7 @@ txt <- system.file("texts", "txt", package = "tm")
 scorp <- tm::SimpleCorpus(tm::DirSource(txt))
 # scorp$content[1] <- "A text for which we want to calculate above average sentiment."
 # scorp$content[2] <- "A text for which we want to calculate below average sentiment."
-scorp$content[3] <- corpus$documents$text[3]
+scorp$content[3] <- quanteda::texts(corpus)[3]
 
 # VCorpus creation
 reuters <- system.file("texts", "crude", package = "tm")
@@ -46,6 +46,9 @@ names(lexWrong)[2] <- "frr"
 load(system.file("extdata", "test_data.rda", package = "sentometrics")) # benchmark sentiment scores
 
 sanity_sentiment <- function(texts, lexicon, valence = NULL) {
+  setkey(lexicon, "x")
+  if (!is.null(valence)) setkey(valence, "x")
+
   out <- rep(NA, length(texts))
   for (i in seq_along(texts)) {
     x <- texts[i]
@@ -54,12 +57,10 @@ sanity_sentiment <- function(texts, lexicon, valence = NULL) {
     )[[1]]
     lo <- which(tok %in% lexicon[["x"]])
     m <- tok[lo]
-    setkey(lexicon, "x")
     sc <- lexicon[m, y]
     before <- sapply(lo - 1, max, 1)
     vals <- rep(1, length(sc))
     if (!is.null(valence)) {
-      setkey(valence, "x")
       val <- which(tok[before] %in% valence$x)
       v <- tok[before][val]
       vals[val] <- valence[v, y]
@@ -67,6 +68,7 @@ sanity_sentiment <- function(texts, lexicon, valence = NULL) {
     ss <- sum(sc * vals)
     out[i] <- ss
   }
+
   out
 }
 
