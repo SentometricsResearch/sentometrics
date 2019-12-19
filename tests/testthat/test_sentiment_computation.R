@@ -5,6 +5,7 @@ library("sentometrics")
 library("data.table")
 library("quanteda")
 library("tm")
+library("stringi")
 
 set.seed(123)
 
@@ -191,7 +192,7 @@ test_that("Correct binding of several sentiment objects", {
 
 # tf-idf comparison sentometrics vs. quanteda
 toks <- stri_split_boundaries(stri_trans_tolower(texts(corpus)), type = "word", skip_word_none = TRUE)
-dfmQ <- dfm(as.tokens(toks)) %>% dfm_tfidf(k = 1)
+dfmQ <- quanteda::dfm(as.tokens(toks)) %>% dfm_tfidf(k = 1)
 posScores <- rowSums(dfm_select(dfmQ, lex$GI_en[y == 1, x]))
 negScores <- rowSums(dfm_select(dfmQ, lex$GI_en[y == -1, x]))
 test_that("Same tf-idf scoring for sentometrics and quanteda", {
