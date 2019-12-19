@@ -529,3 +529,14 @@ as.data.frame.sento_corpus <- function(x, ...) {
   df[, c("date", "texts", setdiff(colnames(df), c("date", "texts")))]
 }
 
+# this function is directly taken from the quanteda package
+#' @export
+print.sento_corpus <- function(x, ...) {
+  cat("A sento_corpus consisting of ", format(quanteda::ndoc(x), big.mark = ","), " document",
+      if (quanteda::ndoc(x) > 1L) "s" else "", sep = "")
+  if (ncol(quanteda::docvars(x)))
+    cat(" and ", format(ncol(quanteda::docvars(x)), big.mark = ","), " docvar",
+        if (ncol(quanteda::docvars(x)) == 1L) "" else "s", sep = "")
+  cat(".\n")
+}
+
