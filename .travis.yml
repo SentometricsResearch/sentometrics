@@ -8,7 +8,7 @@ os:
 r_packages:
  - devtools
  - ddalpha # temporary
- # - roxygen2
+# - roxygen2
 
 addons:
   apt:
@@ -18,13 +18,14 @@ addons:
 script:
  - |
    R CMD build .
-   travis_wait 180 R CMD check --no-build-vignettes --no-manual --use-valgrind --as-cran sentometrics*tar.gz
- # - Rscript -e 'devtools::install(); devtools::test()'
+   travis_wait 180 R CMD check --no-build-vignettes --no-manual --as-cran sentometrics*tar.gz
+#   travis_wait 180 R CMD check --no-build-vignettes --no-manual --use-valgrind --as-cran sentometrics*tar.gz
+#   - Rscript -e 'devtools::install(); devtools::test()'
 
 r:
  - devel
  - release
- # - oldrel
+# - oldrel
 
 after_success:
  - Rscript -e 'covr::codecov()'

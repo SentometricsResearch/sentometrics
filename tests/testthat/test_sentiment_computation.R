@@ -1,4 +1,6 @@
 
+# test_file("tests/testthat/test_sentiment_computation.R")
+
 context("Sentiment computation")
 
 library("sentometrics")
