@@ -49,13 +49,13 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Samuel Borms \email{samuel.borms@unine.ch} (0000-0001-9533-1870)
+\strong{Maintainer}: Samuel Borms \email{samuel.borms@unine.ch} (\href{https://orcid.org/0000-0001-9533-1870}{ORCID})
 
 Authors:
 \itemize{
-  \item David Ardia \email{david.ardia@hec.ca} (0000-0003-2823-782X)
-  \item Keven Bluteau \email{keven.bluteau@unine.ch} (0000-0003-2990-4807)
-  \item Kris Boudt \email{kris.boudt@vub.be} (0000-0002-1000-5142)
+  \item David Ardia \email{david.ardia@hec.ca} (\href{https://orcid.org/0000-0003-2823-782X}{ORCID})
+  \item Keven Bluteau \email{keven.bluteau@unine.ch} (\href{https://orcid.org/0000-0003-2990-4807}{ORCID})
+  \item Kris Boudt \email{kris.boudt@vub.be} (\href{https://orcid.org/0000-0002-1000-5142}{ORCID})
 }
 
 Other contributors:

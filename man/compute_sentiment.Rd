@@ -4,8 +4,14 @@
 \alias{compute_sentiment}
 \title{Compute textual sentiment across features and lexicons}
 \usage{
-compute_sentiment(x, lexicons, how = "proportional", tokens = NULL,
-  do.sentence = FALSE, nCore = 1)
+compute_sentiment(
+  x,
+  lexicons,
+  how = "proportional",
+  tokens = NULL,
+  do.sentence = FALSE,
+  nCore = 1
+)
 }
 \arguments{
 \item{x}{either a \code{sento_corpus} object created with \code{\link{sento_corpus}}, a \pkg{quanteda}

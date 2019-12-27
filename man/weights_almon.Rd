@@ -4,8 +4,7 @@
 \alias{weights_almon}
 \title{Compute Almon polynomials}
 \usage{
-weights_almon(n, orders = 1:3, do.inverse = TRUE,
-  do.normalize = TRUE)
+weights_almon(n, orders = 1:3, do.inverse = TRUE, do.normalize = TRUE)
 }
 \arguments{
 \item{n}{a single \code{numeric} to indicate the lag length (cf., \emph{n}).}
