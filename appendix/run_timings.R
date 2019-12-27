@@ -9,8 +9,8 @@
 ### to Compute, Aggregate and Predict with Textual Sentiment' (Ardia, Bluteau, Borms and Boudt, 2019),
 ### comparing various textual sentiment computation tools in R.
 ### Download the package and its dependencies first before you run this script...
-### install.packages("sentometrics", dependencies = TRUE) # from CRAN (version 0.7.6), OR
-### install.packages("sentometrics_0.7.6.tar.gz", repos = NULL, dependencies = TRUE) # from the tar
+### install.packages("sentometrics", dependencies = TRUE) # from CRAN (version 0.8), OR
+### install.packages("sentometrics_0.8.tar.gz", repos = NULL, dependencies = TRUE) # from the tar
 
 ###### SESSION INFO ######
 

@@ -193,12 +193,12 @@ test_that("Correct binding of several sentiment objects", {
 })
 
 # tf-idf comparison sentometrics vs. quanteda
-toks <- stri_split_boundaries(stri_trans_tolower(texts(corpus)), type = "word", skip_word_none = TRUE)
+toks <- stri_split_boundaries(stri_trans_tolower(quanteda::texts(corpus)), type = "word", skip_word_none = TRUE)
 dfmQ <- quanteda::dfm(as.tokens(toks)) %>% dfm_tfidf(k = 1)
-posScores <- rowSums(dfm_select(dfmQ, lex$GI_en[y == 1, x]))
-negScores <- rowSums(dfm_select(dfmQ, lex$GI_en[y == -1, x]))
+posScores <- rowSums(as.matrix(quanteda::dfm_select(dfmQ, lex$GI_en[y == 1, x])))
+negScores <- rowSums(as.matrix(quanteda::dfm_select(dfmQ, lex$GI_en[y == -1, x])))
 test_that("Same tf-idf scoring for sentometrics and quanteda", {
-  expect_equal(compute_sentiment(texts(corpus), lex[-length(lex)], tokens = toks, "TFIDF")[["GI_en"]],
+  expect_equal(compute_sentiment(quanteda::texts(corpus), lex[-length(lex)], tokens = toks, "TFIDF")[["GI_en"]],
                unname(posScores - negScores))
 })
 
