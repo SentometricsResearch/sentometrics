@@ -1,6 +1,7 @@
 
 ## sentometrics 0.8.0
 
+- new function: `print.sento_corpus()`
 - package update followed by release of a substantial update of the vignette (see https://doi.org/10.2139/ssrn.3067734)
 - changed some `warning()` calls to `message()` calls to be more kind to the user
 - altered internal code to comply with **quanteda**'s >= v2.0 `corpus` object

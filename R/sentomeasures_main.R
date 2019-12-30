@@ -257,9 +257,8 @@ sento_measures <- function(sento_corpus, lexicons, ctr) {
 #' sentiment measures. Can also be used to aggregate sentence-level sentiment scores into
 #' document-level sentiment scores. This function is called within the \code{\link{sento_measures}} function.
 #'
-#' @param x a \code{sentiment} object created using \code{\link{compute_sentiment}} (computed from a
-#' \code{sento_corpus} object, or any sentence-level \code{sentiment} object given \code{do.full = FALSE}), or an
-#' output from \code{\link{as.sentiment}}.
+#' @param x a \code{sentiment} object created using \code{\link{compute_sentiment}} (from a \code{sento_corpus}
+#' object) or using \code{\link{as.sentiment}}.
 #' @param ctr output from a \code{\link{ctr_agg}} call. The \code{howWithin} and \code{nCore} elements are ignored.
 #' @param do.full if \code{do.full = TRUE} (by default), does entire aggregation up to a \code{sento_measures}
 #' object, else only goes from sentence-level to document-level. Ignored if no \code{"sentence_id"} column in
@@ -286,7 +285,8 @@ sento_measures <- function(sento_corpus, lexicons, ctr) {
 #'                      list_valence_shifters[["en"]][, c("x", "t")])
 #' sent1 <- compute_sentiment(corpusSample, l1, how = "counts")
 #' sent2 <- compute_sentiment(corpusSample, l2, do.sentence = TRUE)
-#' sent3 <- compute_sentiment(texts(corpusSample), l2, do.sentence = TRUE)
+#' sent3 <- compute_sentiment(quanteda::texts(corpusSample), l2,
+#'                            do.sentence = TRUE)
 #' ctr <- ctr_agg(howTime = c("linear"), by = "year", lag = 3)
 #'
 #' # aggregate into sentiment measures
@@ -343,7 +343,7 @@ aggregate_sentences <- function(sentiment, how, weightingParamDocs) {
     s <- sw[, lapply(.SD, sum, na.rm = TRUE), by = c("id", "date")] # assumes all id and date combinations are unique
   } else {
     sw <- data.table::data.table(id = sentiment[["id"]], wc, sentiment[, -1:-3] * weights)
-    s <- sw[, lapply(.SD, function(x) sum(x, na.rm = TRUE)), by = "id"]
+    s <- sw[, lapply(.SD, sum, na.rm = TRUE), by = "id"]
   }
   class(s) <- c("sentiment", class(s))
   s

@@ -198,7 +198,7 @@ setup_time_weights <- function(how, param) {
 #' @export
 get_hows <- function() {
   words <- c("counts", "proportional", "proportionalPol", "proportionalSquareRoot", "UShaped",
-             "inverseUShaped", "TFIDF")
+             "inverseUShaped", "exponential", "inverseExponential", "TFIDF")
   docs <- c("equal_weight", "proportional", "inverseProportional", "exponential", "inverseExponential")
   time <- c("equal_weight", "almon", "beta", "linear", "exponential", "own")
   return(list(words = words, docs = docs, time = time))
