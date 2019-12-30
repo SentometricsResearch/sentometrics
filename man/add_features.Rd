@@ -4,8 +4,13 @@
 \alias{add_features}
 \title{Add feature columns to a (sento_)corpus object}
 \usage{
-add_features(corpus, featuresdf = NULL, keywords = NULL,
-  do.binary = TRUE, do.regex = FALSE)
+add_features(
+  corpus,
+  featuresdf = NULL,
+  keywords = NULL,
+  do.binary = TRUE,
+  do.regex = FALSE
+)
 }
 \arguments{
 \item{corpus}{a \code{sento_corpus} object created with \code{\link{sento_corpus}}, or a \pkg{quanteda}

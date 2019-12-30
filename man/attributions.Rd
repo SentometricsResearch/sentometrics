@@ -4,8 +4,14 @@
 \alias{attributions}
 \title{Retrieve top-down model sentiment attributions}
 \usage{
-attributions(model, sento_measures, do.lags = TRUE,
-  do.normalize = FALSE, refDates = NULL, factor = NULL)
+attributions(
+  model,
+  sento_measures,
+  do.lags = TRUE,
+  do.normalize = FALSE,
+  refDates = NULL,
+  factor = NULL
+)
 }
 \arguments{
 \item{model}{a \code{sento_model} or a \code{sento_modelIter} object created with \code{\link{sento_model}}.}

@@ -4,8 +4,12 @@
 \alias{weights_exponential}
 \title{Compute exponential weighting curves}
 \usage{
-weights_exponential(n, alphas = seq(0.1, 0.5, by = 0.1),
-  do.inverse = FALSE, do.normalize = TRUE)
+weights_exponential(
+  n,
+  alphas = seq(0.1, 0.5, by = 0.1),
+  do.inverse = FALSE,
+  do.normalize = TRUE
+)
 }
 \arguments{
 \item{n}{a single \code{numeric} to indicate the lag length.}

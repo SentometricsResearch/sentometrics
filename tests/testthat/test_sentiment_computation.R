@@ -17,7 +17,7 @@ txt <- system.file("texts", "txt", package = "tm")
 scorp <- tm::SimpleCorpus(tm::DirSource(txt))
 # scorp$content[1] <- "A text for which we want to calculate above average sentiment."
 # scorp$content[2] <- "A text for which we want to calculate below average sentiment."
-scorp$content[3] <- corpus$documents$text[3]
+scorp$content[3] <- quanteda::texts(corpus)[3]
 
 # VCorpus creation
 reuters <- system.file("texts", "crude", package = "tm")
@@ -84,8 +84,8 @@ sentimentList <- list(
   s10 = compute_sentiment(quanteda::texts(corpus), lexClust, how = "counts"),
   s11 = compute_sentiment(corpus, lexClust, how = "proportional"),
   s12 = compute_sentiment(quanteda::texts(corpus), lexClust, how = "proportionalPol"),
-  s13 = compute_sentiment(corpus, lex, how = "exponential"),
-  s14 = compute_sentiment(corpus, lex, how = "inverseExponential"),
+#  s13 = compute_sentiment(corpus, lex, how = "exponential"),
+#  s14 = compute_sentiment(corpus, lex, how = "inverseExponential"),
   s15 = compute_sentiment(corpus, lex, how = "UShaped"),
   s16 = compute_sentiment(corpus, lex, how = "inverseUShaped"),
   # s17 = compute_sentiment(corpus, lex, how = "TF"),

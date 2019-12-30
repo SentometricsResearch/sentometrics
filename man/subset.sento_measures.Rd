@@ -4,8 +4,7 @@
 \alias{subset.sento_measures}
 \title{Subset sentiment measures}
 \usage{
-\method{subset}{sento_measures}(x, subset = NULL, select = NULL,
-  delete = NULL, ...)
+\method{subset}{sento_measures}(x, subset = NULL, select = NULL, delete = NULL, ...)
 }
 \arguments{
 \item{x}{a \code{sento_measures} object created using \code{\link{sento_measures}}.}

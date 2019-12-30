@@ -4,8 +4,7 @@
 \alias{predict.sento_model}
 \title{Make predictions from a sento_model object}
 \usage{
-\method{predict}{sento_model}(object, newx, type = "response",
-  offset = NULL, ...)
+\method{predict}{sento_model}(object, newx, type = "response", offset = NULL, ...)
 }
 \arguments{
 \item{object}{a \code{sento_model} object created with \code{\link{sento_model}}.}

@@ -4,12 +4,24 @@
 \alias{ctr_model}
 \title{Set up control for sentiment-based sparse regression modelling}
 \usage{
-ctr_model(model = c("gaussian", "binomial", "multinomial"),
-  type = c("BIC", "AIC", "Cp", "cv"), do.intercept = TRUE,
-  do.iter = FALSE, h = 0, oos = 0, do.difference = FALSE,
-  alphas = seq(0, 1, by = 0.2), lambdas = NULL, nSample = NULL,
-  trainWindow = NULL, testWindow = NULL, start = 1,
-  do.shrinkage.x = FALSE, do.progress = TRUE, nCore = 1)
+ctr_model(
+  model = c("gaussian", "binomial", "multinomial"),
+  type = c("BIC", "AIC", "Cp", "cv"),
+  do.intercept = TRUE,
+  do.iter = FALSE,
+  h = 0,
+  oos = 0,
+  do.difference = FALSE,
+  alphas = seq(0, 1, by = 0.2),
+  lambdas = NULL,
+  nSample = NULL,
+  trainWindow = NULL,
+  testWindow = NULL,
+  start = 1,
+  do.shrinkage.x = FALSE,
+  do.progress = TRUE,
+  nCore = 1
+)
 }
 \arguments{
 \item{model}{a \code{character} vector with one of the following: \code{"gaussian"} (linear regression), \code{"binomial"}
