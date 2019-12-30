@@ -7,9 +7,8 @@
 \method{aggregate}{sentiment}(x, ctr, do.full = TRUE, ...)
 }
 \arguments{
-\item{x}{a \code{sentiment} object created using \code{\link{compute_sentiment}} (computed from a
-\code{sento_corpus} object, or any sentence-level \code{sentiment} object given \code{do.full = FALSE}), or an
-output from \code{\link{as.sentiment}}.}
+\item{x}{a \code{sentiment} object created using \code{\link{compute_sentiment}} (from a \code{sento_corpus}
+object) or using \code{\link{as.sentiment}}.}
 
 \item{ctr}{output from a \code{\link{ctr_agg}} call. The \code{howWithin} and \code{nCore} elements are ignored.}
 
@@ -43,7 +42,8 @@ l2 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")],
                      list_valence_shifters[["en"]][, c("x", "t")])
 sent1 <- compute_sentiment(corpusSample, l1, how = "counts")
 sent2 <- compute_sentiment(corpusSample, l2, do.sentence = TRUE)
-sent3 <- compute_sentiment(texts(corpusSample), l2, do.sentence = TRUE)
+sent3 <- compute_sentiment(quanteda::texts(corpusSample), l2,
+                           do.sentence = TRUE)
 ctr <- ctr_agg(howTime = c("linear"), by = "year", lag = 3)
 
 # aggregate into sentiment measures

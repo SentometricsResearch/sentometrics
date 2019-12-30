@@ -32,7 +32,7 @@ tokenize_texts <- function(x, tokens = NULL, type = "word") { # x embeds a chara
 compute_sentiment_lexicons <- function(x, tokens, dv, lexicons, how, do.sentence = FALSE, nCore = 1) {
   threads <- min(RcppParallel::defaultNumThreads(), nCore)
   RcppParallel::setThreadOptions(numThreads = threads)
-  if (is.character(x)) x <- quanteda::corpus(x)
+  if (inherits(x, "character")) x <- quanteda::corpus(x)
   if (do.sentence == TRUE) {
     tokens <- tokenize_texts(quanteda::texts(x), tokens, type = "sentence")
     valenceType <- ifelse(is.null(lexicons[["valence"]]), 0,

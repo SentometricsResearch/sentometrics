@@ -98,7 +98,10 @@ sento_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
     if ("t" %in% names(valenceIn)) {
       if (!all(unique(valenceIn[["t"]]) %in% c(1, 2, 3, 4)))
         stop("Supported types of valence shifters under the 't' column are 1, 2, 3 and 4.")
+      valenceIn$t <- as.numeric(valenceIn$t)
     }
+    valenceIn$y <- as.numeric(valenceIn$y)
+
     valenceIn <- data.table::as.data.table(valenceIn)
     valenceIn[, "x" := stringi::stri_trans_tolower(valenceIn$x)]
     lexicons[["valence"]] <-
