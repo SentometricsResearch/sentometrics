@@ -4,13 +4,26 @@
 \alias{ctr_agg}
 \title{Set up control for aggregation into sentiment measures}
 \usage{
-ctr_agg(howWithin = "proportional", howDocs = "equal_weight",
-  howTime = "equal_weight", do.sentence = FALSE,
-  do.ignoreZeros = TRUE, by = "day", lag = 1, fill = "zero",
-  alphaExpDocs = 0.1, alphasExp = seq(0.1, 0.5, by = 0.1),
-  do.inverseExp = FALSE, ordersAlm = 1:3, do.inverseAlm = TRUE,
-  aBeta = 1:4, bBeta = 1:4, weights = NULL, tokens = NULL,
-  nCore = 1)
+ctr_agg(
+  howWithin = "proportional",
+  howDocs = "equal_weight",
+  howTime = "equal_weight",
+  do.sentence = FALSE,
+  do.ignoreZeros = TRUE,
+  by = "day",
+  lag = 1,
+  fill = "zero",
+  alphaExpDocs = 0.1,
+  alphasExp = seq(0.1, 0.5, by = 0.1),
+  do.inverseExp = FALSE,
+  ordersAlm = 1:3,
+  do.inverseAlm = TRUE,
+  aBeta = 1:4,
+  bBeta = 1:4,
+  weights = NULL,
+  tokens = NULL,
+  nCore = 1
+)
 }
 \arguments{
 \item{howWithin}{a single \code{character} vector defining how to perform aggregation within

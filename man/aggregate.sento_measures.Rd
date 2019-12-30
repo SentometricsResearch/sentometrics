@@ -4,8 +4,15 @@
 \alias{aggregate.sento_measures}
 \title{Aggregate sentiment measures}
 \usage{
-\method{aggregate}{sento_measures}(x, features = NULL, lexicons = NULL,
-  time = NULL, do.global = FALSE, do.keep = FALSE, ...)
+\method{aggregate}{sento_measures}(
+  x,
+  features = NULL,
+  lexicons = NULL,
+  time = NULL,
+  do.global = FALSE,
+  do.keep = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{a \code{sento_measures} object created using \code{\link{sento_measures}}.}

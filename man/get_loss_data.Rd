@@ -4,8 +4,7 @@
 \alias{get_loss_data}
 \title{Retrieve loss data from a selection of models}
 \usage{
-get_loss_data(models, loss = c("DA", "error", "errorSq", "AD",
-  "accuracy"))
+get_loss_data(models, loss = c("DA", "error", "errorSq", "AD", "accuracy"))
 }
 \arguments{
 \item{models}{a named \code{list} of \code{sento_modelIter} objects. All models should be of the same family, being

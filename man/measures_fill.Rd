@@ -4,8 +4,12 @@
 \alias{measures_fill}
 \title{Add and fill missing dates to sentiment measures}
 \usage{
-measures_fill(sento_measures, fill = "zero", dateBefore = NULL,
-  dateAfter = NULL)
+measures_fill(
+  sento_measures,
+  fill = "zero",
+  dateBefore = NULL,
+  dateAfter = NULL
+)
 }
 \arguments{
 \item{sento_measures}{a \code{sento_measures} object created using \code{\link{sento_measures}}.}
