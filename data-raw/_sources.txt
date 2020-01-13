@@ -1,7 +1,7 @@
 
 LIST_LEXICONS:
   LM: https://www3.nd.edu/~mcdonald/Word_Lists.html
-    > Tim Loughran and Bill McDonald, 2011, "When is a Liability not a Liability? Textual Analysis, Dictionaries, and 10-Ks,? Journal of Finance, 66:1, 35-65
+    > Tim Loughran and Bill McDonald, 2011, "When is a Liability not a Liability? Textual Analysis, Dictionaries, and 10-Ks", Journal of Finance, 66:1, 35-65
 
   HENRY: paper pp. 387
     > Elaine Henry. (2008). "Are Investors Influenced by the Way Earnings Press Releases are Written?", The Journal of Business Communication, 4 (45), 363-407
@@ -10,7 +10,7 @@ LIST_LEXICONS:
     > Harvard IV-4 dictionary + Lasswell value dictionary
 
   FEEL: http://www.lirmm.fr/~abdaoui/FEEL
-    > Amine Abdaoui, Jérôme Azé, Sandra Bringay et Pascal Poncelet. FEEL: French Expanded Emotion Lexicon. Language Resources and Evaluation, LRE 2016, pp 1-23
+    > Amine Abdaoui, Jérôme Azé, Sandra Bringay et Pascal Poncelet. "FEEL: French Expanded Emotion Lexicon". Language Resources and Evaluation, LRE 2016, pp. 1-23
 
 LIST_VALENCE_SHIFTERS: R package lexicon
 
