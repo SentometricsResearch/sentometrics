@@ -126,36 +126,6 @@ check_agg_dimensions <- function(sento_measures, features = NULL, lexicons = NUL
   return(list(stop = stop, msg1 = msg1, msg2 = msg2))
 }
 
-measures_global <- function(sento_measures, lexicons = NULL, features = NULL, time = NULL) {
-  check_class(sento_measures, "sento_measures")
-
-  dims <- get_dimensions(sento_measures)
-  n <- sapply(dims, length)
-  weightsInp <- list(features, lexicons, time)
-  weights <- sapply(1:3, function(i) {
-    if (is.null(weightsInp[[i]]))
-      w <- as.list(rep(1/n[i], n[i])) # modify weights if equal to default value of NULL
-    else {
-      w <- as.list(weightsInp[[i]])
-      if (length(w) != n[i])
-        stop("All weights must be equal in length to the respective number of components.")
-    }
-    names(w) <- dims[[i]] # named weight lists
-    return(w)
-  })
-
-  measuresLong <- data.table::as.data.table(sento_measures, format = "long")
-  measuresLong[, "wFeat" := unlist(weights[[1]][measuresLong[["features"]]])] # weights features
-  measuresLong[, "wLex" := unlist(weights[[2]][measuresLong[["lexicons"]]])] # weights lexicon
-  measuresLong[, "wTime" :=- unlist(weights[[3]][measuresLong[["time"]]])] # weights time
-  globs <- measuresLong[, list(globLex = mean(value * wLex),
-                               globFeat = mean(value * wFeat),
-                               globTime = mean(value * wTime)), by = date]
-  globs[["global"]] <- rowMeans(globs[, -1])
-
-  return(globs)
-}
-
 #' Update sentiment measures
 #'
 #' @author Jeroen Van Pelt, Samuel Borms, Andres Algaba

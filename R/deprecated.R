@@ -249,6 +249,6 @@ measures_global <- function(...) {
 #'
 #' @export
 sento_app <- function(...) {
-  stop("Use the sento_app() function now put into the sentometrics.app package.")
+  stop("Use the sento_app() function from the sentometrics.app package.")
 }
 
