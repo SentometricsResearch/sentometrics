@@ -18,8 +18,8 @@ addons:
 script:
  - |
    R CMD build .
-   travis_wait 180 R CMD check --no-build-vignettes --no-manual --as-cran sentometrics*tar.gz
-#   travis_wait 180 R CMD check --no-build-vignettes --no-manual --use-valgrind --as-cran sentometrics*tar.gz
+#   travis_wait 180 R CMD check --no-build-vignettes --no-manual --as-cran sentometrics*tar.gz
+   travis_wait 180 R CMD check --no-build-vignettes --no-manual --use-valgrind --as-cran sentometrics*tar.gz
 #   - Rscript -e 'devtools::install(); devtools::test()'
 
 r:
