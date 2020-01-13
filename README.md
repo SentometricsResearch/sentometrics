@@ -14,7 +14,7 @@
 
 ### Introduction
 
-The **`sentometrics`** package is **an integrated framework for textual sentiment time series aggregation and prediction**. It accounts for the intrinsic challenge that, for a given text, sentiment can be computed in many different ways, as well as the large number of possibilities to pool sentiment across texts and time. This additional layer of manipulation does not exist in standard text mining and time series analysis packages. The package therefore integrates the fast _quantification_ of sentiment from texts, the _aggregation_ into different sentiment time series and the optimized _prediction_ based on these measures.
+The **`sentometrics`** package is an **integrated framework for textual sentiment time series aggregation and prediction**. It accounts for the intrinsic challenge that textual sentiment can be computed in many different ways, as well as the large number of possibilities to pool sentiment into a time series index. The package therefore integrates the fast _quantification_ of sentiment from texts, the _aggregation_ into different sentiment time series and the _prediction_ based on these measures. All in one coherent workflow!
 
 See the [project page](https://sborms.github.io/sentometrics/), the [vignette](https://doi.org/10.2139/ssrn.3067734) and following [paper](https://doi.org/10.1016/j.ijforecast.2018.10.010) for respectively a brief and an extensive introduction to the package, and a real-life macroeconomic forecasting application. We also refer to this [survey](https://doi.org/10.2139/ssrn.2652876) for an overview of the workflow in a typical econometric analysis of sentiment from alternative (such as textual) data.
 
