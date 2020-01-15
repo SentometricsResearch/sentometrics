@@ -262,8 +262,7 @@ toks <- stri_split_boundaries(stri_trans_tolower(txts), type = "word", skip_word
 lexIn <- sentometrics::list_lexicons$GI_en
 
 ### quanteda tf-idf sentiment calculation ###
-toksQ <- as.tokens(toks)
-dfmQ <- dfm(toksQ) %>% dfm_tfidf(k = 1)
+dfmQ <- dfm(as.tokens(toks)) %>% dfm_tfidf(k = 1)
 
 posWords <- lexIn[y == 1, x]
 negWords <- lexIn[y == -1, x]
