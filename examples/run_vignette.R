@@ -36,37 +36,23 @@
 # [1] stats     graphics  grDevices utils     datasets  methods   base
 #
 # other attached packages:
-# [1] microbenchmark_1.4-7    tidyr_1.0.0             dplyr_0.8.3             SentimentAnalysis_1.3-3
-# [5] syuzhet_1.0.4           meanr_0.1-2             tidytext_0.2.2          zoo_1.8-7
-# [9] lubridate_1.7.4         stm_1.3.5               quanteda_1.5.2          lexicon_1.2.1
-# [13] gridExtra_2.3           ggplot2_3.2.1           data.table_1.12.8       sentometrics_0.8.0
-# [17] testthat_2.3.1
+# [1] data.table_1.12.8  sentometrics_0.8.0 zoo_1.8-7          lubridate_1.7.4    stm_1.3.5          quanteda_1.5.2
+# [7] lexicon_1.2.1      gridExtra_2.3      ggplot2_3.2.1
 #
 # loaded via a namespace (and not attached):
-#  [1] nlme_3.1-143       matrixStats_0.55.0 fs_1.3.1           usethis_1.5.1      devtools_2.2.1     rprojroot_1.3-2
-#  [7] SnowballC_0.6.0    tools_3.6.2        backports_1.1.5    R6_2.4.1           rpart_4.1-15       lazyeval_0.2.2
-# [13] colorspace_1.4-1   nnet_7.3-12        withr_2.1.2        tidyselect_0.2.5   prettyunits_1.1.0  processx_3.4.1
-# [19] compiler_3.6.2     glmnet_3.0-2       cli_2.0.1          xml2_1.2.2         NLP_0.2-0          desc_1.2.0
-# [25] labeling_0.3       slam_0.1-47        scales_1.1.0       tm_0.7-7           callr_3.4.0        stringr_1.4.0
-# [31] digest_0.6.23      pkgconfig_2.0.3    sessioninfo_1.1.1  rlang_0.4.2        rstudioapi_0.10    shape_1.4.4
-# [37] generics_0.0.2     farver_2.0.1       ModelMetrics_1.2.2 tokenizers_0.2.1   magrittr_1.5       Matrix_1.2-18
-# [43] Rcpp_1.0.3         munsell_0.5.0      fansi_0.4.1        lifecycle_0.1.0    stringi_1.4.5      pROC_1.16.0
-# [49] MASS_7.3-51.4      pkgbuild_1.0.6     plyr_1.8.5         recipes_0.1.9      grid_3.6.2         parallel_3.6.2
-# [55] crayon_1.3.4       lattice_0.20-38    splines_3.6.2      zeallot_0.1.0      ps_1.3.0           pillar_1.4.3
-# [61] ISOweek_0.6-2      reshape2_1.4.3     codetools_0.2-16   stopwords_1.0      stats4_3.6.2       pkgload_1.0.2
-# [67] fastmatch_1.1-0    glue_1.3.1         packrat_0.5.0      remotes_2.1.0      RcppParallel_4.4.4 vctrs_0.2.1
-# [73] foreach_1.4.7      gtable_0.3.0       purrr_0.3.3        assertthat_0.2.1   gower_0.2.1        prodlim_2019.11.13
-# [79] janeaustenr_0.1.5  class_7.3-15       survival_3.1-8     timeDate_3043.102  RcppRoll_0.3.0     tibble_2.1.3
-# [85] iterators_1.0.12   memoise_1.1.0      spacyr_1.2         lava_1.6.6         ellipsis_0.3.0     caret_6.0-85
-# [91] ipred_0.9-9
+#  [1] NLP_0.2-0          Rcpp_1.0.3         pillar_1.4.3       compiler_3.6.2     iterators_1.0.12   tools_3.6.2
+#  [7] stopwords_1.0      digest_0.6.23      lifecycle_0.1.0    tibble_2.1.3       gtable_0.3.0       lattice_0.20-38
+# [13] pkgconfig_2.0.3    rlang_0.4.2        foreach_1.4.7      Matrix_1.2-18      fastmatch_1.1-0    RcppRoll_0.3.0
+# [19] parallel_3.6.2     stringr_1.4.0      withr_2.1.2        dplyr_0.8.3        xml2_1.2.2         glmnet_3.0-2
+# [25] syuzhet_1.0.4      grid_3.6.2         tidyselect_0.2.5   glue_1.3.1         R6_2.4.1           ISOweek_0.6-2
+# [31] farver_2.0.1       spacyr_1.2         purrr_0.3.3        magrittr_1.5       matrixStats_0.55.0 codetools_0.2-16
+# [37] scales_1.1.0       assertthat_0.2.1   shape_1.4.4        colorspace_1.4-1   labeling_0.3       stringi_1.4.5
+# [43] lazyeval_0.2.2     RcppParallel_4.4.4 munsell_0.5.0      slam_0.1-47        tm_0.7-7           crayon_1.3.4
 
 remove(list = ls())
 options(prompt = "R> ", continue = "+  ", width = 120, digits = 4, max.print = 90, useFancyQuotes = FALSE)
 sink(file = "output_vignette.txt", append = FALSE, split = TRUE) # output printed in .txt file
 
-library("sentometrics")
-
-library("data.table")
 library("ggplot2")
 library("gridExtra")
 library("lexicon")
@@ -84,6 +70,7 @@ set.seed(505)
 cat("### SECTION 3.1 ####################### \n \n")
 
 library("sentometrics")
+library("data.table")
 
 data("usnews", package = "sentometrics")
 class(usnews)
@@ -161,8 +148,6 @@ cat("\n")
 
 usnewsLang <- usnews[1:5, 1:3]
 usnewsLang[["language"]] <- c("fr", "en", "en", "fr", "en")
-lEn <- sento_lexicons(list("GI_en" = list_lexicons$GI_en))
-lFr <- sento_lexicons(list("GI_fr" = list_lexicons$GI_fr_tr))
 corpusLang <- sento_corpus(corpusdf = usnewsLang)
 sLang <- compute_sentiment(corpusLang,
                            list(en = sento_lexicons(list("GI_en" = list_lexicons$GI_en)),
@@ -323,12 +308,12 @@ for (i in 1:(length(preds))) {
   predsAR[i] <- predict(regAR, xx[j + oos, "lag", drop = FALSE])
 }
 
+###### TABLE 2 ######
 true <- out[["performance"]]$raw$response
 benchmark <- data.frame(preds = preds, error = preds - true, errorSq = (preds - true)^2,
                         predsAR = predsAR, errorAR = predsAR - true, errorSqAR = (predsAR - true)^2,
                         stringsAsFactors = FALSE) # main benchmark is EPU-based model
 
-###### TABLE 3 ######
 dates  <- names(out$models)
 dates1 <- which(dates <= "2007-06-01")
 dates2 <- which(dates > "2007-06-01" & dates <= "2009-12-01")
@@ -356,8 +341,7 @@ cat("\n")
 cat("MAD \n")
 madTable
 cat("\n")
-
-######
+#####################
 
 r <- plot(out) +
   geom_line(data = melt(data.table(date = names(out$models),
@@ -371,9 +355,9 @@ fe <- plot(attr, group = "features") +
   guides(fill = guide_legend(nrow = 1))
 le <- plot(attr, group = "lexicons") +
   guides(fill = guide_legend(nrow = 1))
-a <- gridExtra::grid.arrange(fe + theme(axis.title.x = element_blank()),
-                             le + theme(axis.title.y = element_blank()),
-                             ncol = 1, nrow = 2)
+a <- grid.arrange(fe + theme(axis.title.x = element_blank()),
+                  le + theme(axis.title.y = element_blank()),
+                  ncol = 1, nrow = 2)
 
 ######
 
@@ -386,4 +370,13 @@ cat("\n")
 ######
 
 sink()
+
+if (FALSE) {
+  ggsave("C:/Users/saborms/Dropbox/SentometricsRPackage/vignette/plots/corpsumm.pdf", pCorp)
+  ggsave("C:/Users/saborms/Dropbox/SentometricsRPackage/vignette/plots/sentmeasT.pdf", pT)
+  ggsave("C:/Users/saborms/Dropbox/SentometricsRPackage/vignette/plots/sentmeasL.pdf", pL)
+  ggsave("C:/Users/saborms/Dropbox/SentometricsRPackage/vignette/plots/sentmeasF.pdf", pF)
+  ggsave("C:/Users/saborms/Dropbox/SentometricsRPackage/vignette/plots/for.pdf", r)
+  ggsave("C:/Users/saborms/Dropbox/SentometricsRPackage/vignette/plots/attr.pdf", a)
+}
 
