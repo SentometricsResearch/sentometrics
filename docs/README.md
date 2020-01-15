@@ -31,7 +31,7 @@ library("sentometrics")
 
 ... and have some fun! 
 
-## Many and more examples
+## Examples
 
 Here follow a bunch of examples, from simple to a little less simple. Sentiment computation, aggregation, diagnostic tools, visualization, regression -- it's all in here.
 
