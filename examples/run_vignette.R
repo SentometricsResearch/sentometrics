@@ -371,12 +371,10 @@ cat("\n")
 
 sink()
 
-if (FALSE) {
-  ggsave("C:/Users/saborms/Dropbox/SentometricsRPackage/vignette/plots/corpsumm.pdf", pCorp)
-  ggsave("C:/Users/saborms/Dropbox/SentometricsRPackage/vignette/plots/sentmeasT.pdf", pT)
-  ggsave("C:/Users/saborms/Dropbox/SentometricsRPackage/vignette/plots/sentmeasL.pdf", pL)
-  ggsave("C:/Users/saborms/Dropbox/SentometricsRPackage/vignette/plots/sentmeasF.pdf", pF)
-  ggsave("C:/Users/saborms/Dropbox/SentometricsRPackage/vignette/plots/for.pdf", r)
-  ggsave("C:/Users/saborms/Dropbox/SentometricsRPackage/vignette/plots/attr.pdf", a)
-}
+ggsave("corpsumm.pdf", pCorp)
+ggsave("sentmeasT.pdf", pT)
+ggsave("sentmeasL.pdf", pL)
+ggsave("sentmeasF.pdf", pF)
+ggsave("for.pdf", r)
+ggsave("attr.pdf", a)
 
