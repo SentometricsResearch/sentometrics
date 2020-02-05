@@ -344,5 +344,5 @@ You might also want to have a look at the [**sentometrics.app**](https://github.
 
 ## Contact
 
-Reach out to [Samuel Borms](mailto:samuel.borms@unine.ch) if you have questions, suggestions or want to help.
+Reach out to [Samuel Borms](mailto:borms_sam@hotmail.com) if you have questions, suggestions or want to help.
 
