@@ -37,7 +37,7 @@ Ardia, Bluteau and Boudt (2019). ``Questioning the news about economic growth: S
 thousands of news-based sentiment values''. \emph{International Journal of Forecasting 35, 1370-1386},
 \url{https://doi.org/10.1016/j.ijforecast.2018.10.010}.
 
-Ardia, Bluteau, Borms and Boudt (2019). ``The R package sentometrics to compute, aggregate and
+Ardia, Bluteau, Borms and Boudt (2020). ``The R package sentometrics to compute, aggregate and
 predict with textual sentiment''. \emph{Working paper}, \url{https://doi.org/10.2139/ssrn.3067734}.
 }
 \seealso{
