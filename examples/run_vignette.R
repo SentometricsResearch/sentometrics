@@ -6,7 +6,7 @@
 ###### DESCRIPTION ######
 
 ### This code is used in the vignette paper 'The R Package sentometrics to Compute,
-### Aggregate and Predict with Textual Sentiment' (Ardia, Bluteau, Borms and Boudt, 2019).
+### Aggregate and Predict with Textual Sentiment' (Ardia, Bluteau, Borms and Boudt, 2020).
 ### See the paper for the results and setup details.
 ### Download the package and its dependencies first before you run this script...
 ### install.packages("sentometrics", dependencies = TRUE) # from CRAN (version 0.8), OR
@@ -22,45 +22,37 @@
 
 ###### SESSION INFO ######
 
-### R version 3.6.1 (2019-07-05)
-### Platform: x86_64-w64-mingw32/x64 (64-bit)
-### Running under: Windows 10 x64 (build 18362)
-###
-### Matrix products: default
-###
-### locale:
-### [1] LC_COLLATE=English_Belgium.1252  LC_CTYPE=English_Belgium.1252    LC_MONETARY=English_Belgium.1252
-### [4] LC_NUMERIC=C                     LC_TIME=English_Belgium.1252
-###
-### attached base packages:
-### [1] stats     graphics  grDevices utils     datasets  methods   base
-###
-### other attached packages:
-### [1] zoo_1.8-4          lubridate_1.7.4    stm_1.3.3          quanteda_1.5.1     lexicon_1.2.1      gridExtra_2.3
-### [7] ggplot2_3.2.1      data.table_1.12.6  sentometrics_0.7.6 testthat_2.2.1
-###
-### loaded via a namespace (and not attached):
-###  [1] Rcpp_1.0.2         lattice_0.20-38    prettyunits_1.0.2  class_7.3-15       ps_1.3.0           assertthat_0.2.0
-###  [7] glmnet_2.0-18      rprojroot_1.3-2    digest_0.6.20      packrat_0.5.0      ipred_0.9-8        foreach_1.4.7
-### [13] R6_2.4.0           plyr_1.8.4         backports_1.1.3    stats4_3.6.1       pillar_1.3.1       rlang_0.4.0
-### [19] lazyeval_0.2.2     caret_6.0-84       rstudioapi_0.10    callr_3.3.1        rpart_4.1-15       Matrix_1.2-17
-### [25] desc_1.2.0         devtools_2.1.0     splines_3.6.1      gower_0.1.2        stringr_1.4.0      ISOweek_0.6-2
-### [31] munsell_0.5.0      spacyr_1.0         compiler_3.6.1     pkgconfig_2.0.2    pkgbuild_1.0.3     nnet_7.3-12
-### [37] tidyselect_0.2.5   tibble_2.1.3       prodlim_2018.04.18 codetools_0.2-16   RcppRoll_0.3.0     crayon_1.3.4
-### [43] dplyr_0.8.3        withr_2.1.2        MASS_7.3-51.4      recipes_0.1.6      ModelMetrics_1.2.2 grid_3.6.1
-### [49] nlme_3.1-141       gtable_0.3.0       magrittr_1.5       scales_1.0.0       RcppParallel_4.4.4 cli_1.1.0
-### [55] stringi_1.4.3      reshape2_1.4.3     fs_1.3.1           remotes_2.1.0      syuzhet_1.0.4      timeDate_3043.102
-### [61] stopwords_0.9.0    generics_0.0.2     fastmatch_1.1-0    lava_1.6.5         iterators_1.0.12   tools_3.6.1
-### [67] glue_1.3.0         purrr_0.3.0        processx_3.4.1     pkgload_1.0.2      survival_2.44-1.1  colorspace_1.4-0
-### [73] sessioninfo_1.1.1  memoise_1.1.0      usethis_1.5.1
+# R version 3.6.2 (2019-12-12)
+# Platform: x86_64-w64-mingw32/x64 (64-bit)
+# Running under: Windows 10 x64 (build 18362)
+#
+# Matrix products: default
+#
+# locale:
+# [1] LC_COLLATE=English_Belgium.1252  LC_CTYPE=English_Belgium.1252    LC_MONETARY=English_Belgium.1252
+# [4] LC_NUMERIC=C                     LC_TIME=English_Belgium.1252
+#
+# attached base packages:
+# [1] stats     graphics  grDevices utils     datasets  methods   base
+#
+# other attached packages:
+# [1] data.table_1.12.8  sentometrics_0.8.0 zoo_1.8-7          lubridate_1.7.4    stm_1.3.5          quanteda_1.5.2
+# [7] lexicon_1.2.1      gridExtra_2.3      ggplot2_3.2.1
+#
+# loaded via a namespace (and not attached):
+#  [1] NLP_0.2-0          Rcpp_1.0.3         pillar_1.4.3       compiler_3.6.2     iterators_1.0.12   tools_3.6.2
+#  [7] stopwords_1.0      digest_0.6.23      lifecycle_0.1.0    tibble_2.1.3       gtable_0.3.0       lattice_0.20-38
+# [13] pkgconfig_2.0.3    rlang_0.4.2        foreach_1.4.7      Matrix_1.2-18      fastmatch_1.1-0    RcppRoll_0.3.0
+# [19] parallel_3.6.2     stringr_1.4.0      withr_2.1.2        dplyr_0.8.3        xml2_1.2.2         glmnet_3.0-2
+# [25] syuzhet_1.0.4      grid_3.6.2         tidyselect_0.2.5   glue_1.3.1         R6_2.4.1           ISOweek_0.6-2
+# [31] farver_2.0.1       spacyr_1.2         purrr_0.3.3        magrittr_1.5       matrixStats_0.55.0 codetools_0.2-16
+# [37] scales_1.1.0       assertthat_0.2.1   shape_1.4.4        colorspace_1.4-1   labeling_0.3       stringi_1.4.5
+# [43] lazyeval_0.2.2     RcppParallel_4.4.4 munsell_0.5.0      slam_0.1-47        tm_0.7-7           crayon_1.3.4
 
 remove(list = ls())
 options(prompt = "R> ", continue = "+  ", width = 120, digits = 4, max.print = 90, useFancyQuotes = FALSE)
 sink(file = "output_vignette.txt", append = FALSE, split = TRUE) # output printed in .txt file
 
-library("sentometrics")
-
-library("data.table")
 library("ggplot2")
 library("gridExtra")
 library("lexicon")
@@ -68,10 +60,6 @@ library("quanteda")
 library("stm")
 library("lubridate")
 library("zoo")
-
-info <- sessionInfo()
-print(info)
-cat("\n")
 
 set.seed(505)
 
@@ -82,6 +70,7 @@ set.seed(505)
 cat("### SECTION 3.1 ####################### \n \n")
 
 library("sentometrics")
+library("data.table")
 
 data("usnews", package = "sentometrics")
 class(usnews)
@@ -159,8 +148,6 @@ cat("\n")
 
 usnewsLang <- usnews[1:5, 1:3]
 usnewsLang[["language"]] <- c("fr", "en", "en", "fr", "en")
-lEn <- sento_lexicons(list("GI_en" = list_lexicons$GI_en))
-lFr <- sento_lexicons(list("GI_fr" = list_lexicons$GI_fr_tr))
 corpusLang <- sento_corpus(corpusdf = usnewsLang)
 sLang <- compute_sentiment(corpusLang,
                            list(en = sento_lexicons(list("GI_en" = list_lexicons$GI_en)),
@@ -321,12 +308,12 @@ for (i in 1:(length(preds))) {
   predsAR[i] <- predict(regAR, xx[j + oos, "lag", drop = FALSE])
 }
 
+###### TABLE 2 ######
 true <- out[["performance"]]$raw$response
 benchmark <- data.frame(preds = preds, error = preds - true, errorSq = (preds - true)^2,
                         predsAR = predsAR, errorAR = predsAR - true, errorSqAR = (predsAR - true)^2,
                         stringsAsFactors = FALSE) # main benchmark is EPU-based model
 
-###### TABLE 3 ######
 dates  <- names(out$models)
 dates1 <- which(dates <= "2007-06-01")
 dates2 <- which(dates > "2007-06-01" & dates <= "2009-12-01")
@@ -354,8 +341,7 @@ cat("\n")
 cat("MAD \n")
 madTable
 cat("\n")
-
-######
+#####################
 
 r <- plot(out) +
   geom_line(data = melt(data.table(date = names(out$models),
@@ -369,9 +355,26 @@ fe <- plot(attr, group = "features") +
   guides(fill = guide_legend(nrow = 1))
 le <- plot(attr, group = "lexicons") +
   guides(fill = guide_legend(nrow = 1))
-a <- gridExtra::grid.arrange(fe + theme(axis.title.x = element_blank()),
-                             le + theme(axis.title.y = element_blank()),
-                             ncol = 1, nrow = 2)
+a <- grid.arrange(fe + theme(axis.title.x = element_blank()),
+                  le + theme(axis.title.y = element_blank()),
+                  ncol = 1, nrow = 2)
+
+######
+
+cat("############################## \n")
+cat("###### SESSION INFO \n \n")
+info <- sessionInfo()
+print(info)
+cat("\n")
+
+######
 
 sink()
+
+ggsave("corpsumm.pdf", pCorp)
+ggsave("sentmeasT.pdf", pT)
+ggsave("sentmeasL.pdf", pL)
+ggsave("sentmeasF.pdf", pF)
+ggsave("for.pdf", r)
+ggsave("attr.pdf", a)
 

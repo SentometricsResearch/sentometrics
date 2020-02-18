@@ -1,7 +1,11 @@
 
-## submission (version 0.7.6) [31/10/2019]
+## submission (version 0.8) [13/01/2020]
 
-- fixed memory leak bug
+**new**: minor improvements
+
+<!--- ## submission (version 0.7.6) [31/10/2019]
+
+- fixed memory leak bug --->
 
 <!--- ## submission (version 0.7.5) [30/10/2019]
 

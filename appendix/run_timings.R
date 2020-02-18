@@ -5,8 +5,8 @@
 
 ###### DESCRIPTION ######
 
-### This code was used in a previous version of the vignette paper 'The R Package sentometrics
-### to Compute, Aggregate and Predict with Textual Sentiment' (Ardia, Bluteau, Borms and Boudt, 2019),
+### This code is used for the supplementary appendix to the vignette paper 'The R Package sentometrics
+### to Compute, Aggregate and Predict with Textual Sentiment' (Ardia, Bluteau, Borms and Boudt, 2020),
 ### comparing various textual sentiment computation tools in R.
 ### Download the package and its dependencies first before you run this script...
 ### install.packages("sentometrics", dependencies = TRUE) # from CRAN (version 0.8), OR
@@ -14,36 +14,34 @@
 
 ###### SESSION INFO ######
 
-### R version 3.6.1 (2019-07-05)
-### Platform: x86_64-w64-mingw32/x64 (64-bit)
-### Running under: Windows 10 x64 (build 18362)
-###
-### Matrix products: default
-###
-### locale:
-### [1] LC_COLLATE=English_Belgium.1252  LC_CTYPE=English_Belgium.1252    LC_MONETARY=English_Belgium.1252
-### [4] LC_NUMERIC=C                     LC_TIME=English_Belgium.1252
-###
-### attached base packages:
-### [1] stats     graphics  grDevices utils     datasets  methods   base
-###
-### other attached packages:
-### [1] microbenchmark_1.4-7    tidyr_1.0.0             dplyr_0.8.3             lexicon_1.2.1
-### [5] SentimentAnalysis_1.3-3 syuzhet_1.0.4           meanr_0.1-2             tidytext_0.2.2
-### [9] quanteda_1.5.1          data.table_1.12.6       sentometrics_0.7.6
-###
-### loaded via a namespace (and not attached):
-###  [1] Rcpp_1.0.2         pillar_1.3.1       compiler_3.6.1     tokenizers_0.2.1   iterators_1.0.12   tools_3.6.1
-###  [7] stopwords_0.9.0    zeallot_0.1.0      lifecycle_0.1.0    lubridate_1.7.4    tibble_2.1.3       gtable_0.3.0
-### [13] lattice_0.20-38    pkgconfig_2.0.2    rlang_0.4.0        Matrix_1.2-17      foreach_1.4.7      fastmatch_1.1-0
-### [19] janeaustenr_0.1.5  stringr_1.4.0      vctrs_0.2.0        generics_0.0.2     glmnet_2.0-18      grid_3.6.1
-### [25] tidyselect_0.2.5   glue_1.3.0         R6_2.4.0           ggplot2_3.2.1      purrr_0.3.0        spacyr_1.0
-### [31] magrittr_1.5       backports_1.1.3    SnowballC_0.6.0    scales_1.0.0       codetools_0.2-16   assertthat_0.2.0
-### [37] colorspace_1.4-0   stringi_1.4.3      lazyeval_0.2.2     RcppParallel_4.4.4 munsell_0.5.0      crayon_1.3.4
-
-remove(list = ls())
-
-set.seed(505)
+# R version 3.6.2 (2019-12-12)
+# Platform: x86_64-w64-mingw32/x64 (64-bit)
+# Running under: Windows 10 x64 (build 18362)
+#
+# Matrix products: default
+#
+# locale:
+# [1] LC_COLLATE=English_Belgium.1252  LC_CTYPE=English_Belgium.1252    LC_MONETARY=English_Belgium.1252
+# [4] LC_NUMERIC=C                     LC_TIME=English_Belgium.1252
+#
+# attached base packages:
+# [1] stats     graphics  grDevices utils     datasets  methods   base
+#
+# other attached packages:
+# [1] microbenchmark_1.4-7    tidyr_1.0.0             dplyr_0.8.3             lexicon_1.2.1
+# [5] data.table_1.12.8       SentimentAnalysis_1.3-3 syuzhet_1.0.4           meanr_0.1-2
+# [9] tidytext_0.2.2          quanteda_1.5.2          sentometrics_0.8.0
+#
+# loaded via a namespace (and not attached):
+#  [1] NLP_0.2-0          Rcpp_1.0.3         pillar_1.4.3       compiler_3.6.2     tokenizers_0.2.1   iterators_1.0.12
+#  [7] tools_3.6.2        stopwords_1.0      zeallot_0.1.0      packrat_0.5.0      lubridate_1.7.4    lifecycle_0.1.0
+# [13] tibble_2.1.3       gtable_0.3.0       lattice_0.20-38    pkgconfig_2.0.3    rlang_0.4.2        Matrix_1.2-18
+# [19] foreach_1.4.7      fastmatch_1.1-0    rstudioapi_0.10    parallel_3.6.2     xml2_1.2.2         janeaustenr_0.1.5
+# [25] stringr_1.4.0      vctrs_0.2.1        generics_0.0.2     grid_3.6.2         tidyselect_0.2.5   glue_1.3.1
+# [31] R6_2.4.1           ggplot2_3.2.1      purrr_0.3.3        spacyr_1.2         magrittr_1.5       ellipsis_0.3.0
+# [37] backports_1.1.5    SnowballC_0.6.0    scales_1.1.0       codetools_0.2-16   assertthat_0.2.1   colorspace_1.4-1
+# [43] stringi_1.4.5      RcppParallel_4.4.4 lazyeval_0.2.2     munsell_0.5.0      slam_0.1-47        tm_0.7-7
+# [49] crayon_1.3.4
 
 remove(list = ls())
 options(prompt = "R> ", continue = "+  ", width = 120, digits = 4, max.print = 90, useFancyQuotes = FALSE)
@@ -51,21 +49,19 @@ sink(file = "output_timings.txt", append = FALSE, split = TRUE) # output printed
 
 library("sentometrics")
 
-library("data.table")
 library("quanteda")
 library("tidytext")
 library("meanr")
 library("syuzhet")
 library("SentimentAnalysis")
 
+library("data.table")
 library("lexicon")
 library("dplyr")
 library("tidyr")
 library("microbenchmark")
 
-info <- sessionInfo()
-print(info)
-cat("\n")
+set.seed(505)
 
 ########################################### loading of packages, definition of lexicons
 
@@ -291,16 +287,22 @@ colnames(timingsFull.many) <- c("sento_unigrams_many", "sento_unigrams_many_feat
 timings.many <- data.table(texts = nTexts, timingsFull.many)
 
 cat("\n")
-cat("PANEL A")
-cat("\n")
+cat("PANEL A", "\n")
 timings.single
-cat("\n \n")
-cat("PANEL B")
 cat("\n")
+cat("PANEL B", "\n")
 timings.many
 cat("\n")
 
-###########################################
+######
+
+cat("############################## \n")
+cat("###### SESSION INFO \n \n")
+info <- sessionInfo()
+print(info)
+cat("\n")
+
+######
 
 sink()
 
