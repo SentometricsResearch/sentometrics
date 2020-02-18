@@ -1,0 +1,84 @@
+Run timings for texts size of 1000 
+Run timings for texts size of 5000 
+Run timings for texts size of 10000 
+Run timings for texts size of 25000 
+Run timings for texts size of 50000 
+Run timings for texts size of 75000 
+Run timings for texts size of 1e+05 
+
+Run timings for texts size of 1000 
+Run timings for texts size of 5000 
+Run timings for texts size of 10000 
+Run timings for texts size of 25000 
+Run timings for texts size of 50000 
+Run timings for texts size of 75000 
+Run timings for texts size of 1e+05 
+
+Run timings for texts size of 1000 
+Run timings for texts size of 5000 
+Run timings for texts size of 10000 
+Run timings for texts size of 25000 
+Run timings for texts size of 50000 
+Run timings for texts size of 75000 
+Run timings for texts size of 1e+05 
+
+PANEL A
+    texts sento_unigrams sento_bigrams sento_clusters  meanr SentimentAnalysis syuzhet quanteda tidytext
+1:   1000         0.2447        0.1976         0.2237 0.0777             1.180  0.5468   0.5985   0.1605
+2:   5000         0.8670        0.8678         0.9144 0.3420             5.257  1.9872   1.7366   0.5995
+3:  10000         1.7251        1.6773         1.7209 0.6688            11.225  3.8307   3.0742   1.1110
+4:  25000         4.4119        4.2144         4.4019 1.7121            26.875  9.0715   7.1894   2.8258
+5:  50000         9.1801        8.5456         9.4217 3.7477            53.084 18.3654  14.1207   5.8835
+6:  75000        13.6154       13.4873        13.4365 5.0550            78.437 27.1280  20.3666   8.4837
+7: 100000        18.6920       18.2231        18.6149 6.5685           109.576 35.2517  26.9816  11.0646
+ 
+PANEL B
+    texts sento_unigrams_many sento_unigrams_many_features sento_bigrams_many sento_clusters_many
+1:   1000              0.2608                       0.2394             0.2661              0.2649
+2:   5000              1.0047                       0.8692             1.0122              1.0133
+3:  10000              1.9642                       1.6790             1.9799              1.9657
+4:  25000              4.8174                       4.2360             4.9001              4.9665
+5:  50000              9.9563                       8.7101            10.1299             10.0230
+6:  75000             16.6963                      19.1378            16.6728             23.0397
+7: 100000             32.3982                      23.6591            23.8046             36.4094
+   sento_clusters_many_parallel tidytext_unigrams_many tidytext_bigrams_many
+1:                       0.2183                 0.2088                0.6596
+2:                       0.7902                 0.6694                2.7952
+3:                       1.5441                 1.2747                5.6750
+4:                       3.8085                 3.0665               13.9461
+5:                       7.8541                 6.0343               27.9955
+6:                      15.4257                13.9951               58.0154
+7:                      30.8611                14.0195               64.7318
+
+############################## 
+###### SESSION INFO 
+ 
+R version 3.6.2 (2019-12-12)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows 10 x64 (build 18362)
+
+Matrix products: default
+
+locale:
+[1] LC_COLLATE=English_Belgium.1252  LC_CTYPE=English_Belgium.1252    LC_MONETARY=English_Belgium.1252
+[4] LC_NUMERIC=C                     LC_TIME=English_Belgium.1252    
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] microbenchmark_1.4-7    tidyr_1.0.0             dplyr_0.8.3             lexicon_1.2.1          
+ [5] data.table_1.12.8       SentimentAnalysis_1.3-3 syuzhet_1.0.4           meanr_0.1-2            
+ [9] tidytext_0.2.2          quanteda_1.5.2          sentometrics_0.8.0     
+
+loaded via a namespace (and not attached):
+ [1] NLP_0.2-0          Rcpp_1.0.3         pillar_1.4.3       compiler_3.6.2     tokenizers_0.2.1   iterators_1.0.12  
+ [7] tools_3.6.2        stopwords_1.0      zeallot_0.1.0      packrat_0.5.0      lubridate_1.7.4    lifecycle_0.1.0   
+[13] tibble_2.1.3       gtable_0.3.0       lattice_0.20-38    pkgconfig_2.0.3    rlang_0.4.2        Matrix_1.2-18     
+[19] foreach_1.4.7      fastmatch_1.1-0    rstudioapi_0.10    parallel_3.6.2     xml2_1.2.2         janeaustenr_0.1.5 
+[25] stringr_1.4.0      vctrs_0.2.1        generics_0.0.2     grid_3.6.2         tidyselect_0.2.5   glue_1.3.1        
+[31] R6_2.4.1           ggplot2_3.2.1      purrr_0.3.3        spacyr_1.2         magrittr_1.5       ellipsis_0.3.0    
+[37] backports_1.1.5    SnowballC_0.6.0    scales_1.1.0       codetools_0.2-16   assertthat_0.2.1   colorspace_1.4-1  
+[43] stringi_1.4.5      RcppParallel_4.4.4 lazyeval_0.2.2     munsell_0.5.0      slam_0.1-47        tm_0.7-7          
+[49] crayon_1.3.4      
+

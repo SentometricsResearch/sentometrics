@@ -9,7 +9,7 @@ Authors@R: c(person("Samuel", "Borms", email = "samuel.borms@unine.ch", role = c
   person("Jeroen", "Van Pelt", email = "jeroenvanpelt@hotmail.com", role = c("ctb")),
   person("Andres", "Algaba", email = "andres.algaba@vub.be", role = c("ctb")))
 Maintainer: Samuel Borms <samuel.borms@unine.ch>
-Description: Optimized prediction based on textual sentiment, accounting for the intrinsic challenge that sentiment can be computed and pooled across texts and time in various ways. See Ardia et al. (2019) <doi:10.2139/ssrn.3067734>.
+Description: Optimized prediction based on textual sentiment, accounting for the intrinsic challenge that sentiment can be computed and pooled across texts and time in various ways. See Ardia et al. (2020) <doi:10.2139/ssrn.3067734>.
 Depends: R (>= 3.3.0)
 License: GPL (>= 2)
 BugReports: https://github.com/sborms/sentometrics/issues

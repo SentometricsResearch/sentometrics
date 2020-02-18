@@ -69,7 +69,7 @@ sentiment_bind(...)
 
 measures_merge(...)
 
-measures_global(sento_measures, lexicons = NULL, features = NULL, time = NULL)
+measures_global(...)
 
 sento_app(...)
 }

@@ -3,7 +3,7 @@ You collected a large number of texts and think it is a good idea to summarize y
 
 ## The R package **sentometrics**: What?
 
-The **sentometrics** package is **an integrated framework for textual sentiment time series aggregation and prediction**. It accounts for the intrinsic challenge that, for a given text, sentiment can be computed in many different ways, as well as the large number of possibilities to pool sentiment across texts and time. This additional layer of manipulation does not exist in standard text mining and time series analysis packages. The package also provides an interface to econometrically model the impact of sentiment in texts on a given variable, as part of one coherent workflow. The package therefore integrates the fast _quantification_ of sentiment from texts, the _aggregation_ into different sentiment measures and the optimized _prediction_ based on these measures.
+The **sentometrics** package is an **integrated framework for textual sentiment time series aggregation and prediction**. It accounts for the intrinsic challenge that textual sentiment can be computed in many different ways, as well as the large number of possibilities to pool sentiment into a time series index. The package therefore integrates the fast _quantification_ of sentiment from texts, the _aggregation_ into different sentiment time series and the _prediction_ based on these measures. All in one coherent workflow!
 
 ### For you to read
 
@@ -31,7 +31,7 @@ library("sentometrics")
 
 ... and have some fun! 
 
-## Many and more examples
+## Examples
 
 Here follow a bunch of examples, from simple to a little less simple. Sentiment computation, aggregation, diagnostic tools, visualization, regression -- it's all in here.
 
@@ -262,8 +262,7 @@ toks <- stri_split_boundaries(stri_trans_tolower(txts), type = "word", skip_word
 lexIn <- sentometrics::list_lexicons$GI_en
 
 ### quanteda tf-idf sentiment calculation ###
-toksQ <- as.tokens(toks)
-dfmQ <- dfm(toksQ) %>% dfm_tfidf(k = 1)
+dfmQ <- dfm(as.tokens(toks)) %>% dfm_tfidf(k = 1)
 
 posWords <- lexIn[y == 1, x]
 negWords <- lexIn[y == -1, x]
@@ -345,5 +344,5 @@ You might also want to have a look at the [**sentometrics.app**](https://github.
 
 ## Contact
 
-Reach out to [Samuel Borms](mailto:samuel.borms@unine.ch) if you have questions, suggestions or want to help.
+Reach out to [Samuel Borms](mailto:borms_sam@hotmail.com) if you have questions, suggestions or want to help.
 
