@@ -118,7 +118,8 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
         corpusdf[["dummyFeature"]] <- 1
         warning("No remaining feature columns. A 'dummyFeature' feature valued at 1 throughout is added.")
         if (do.clean) corpusdf <- clean_texts(corpusdf)
-        corp <- quanteda::corpus(x = corpusdf, docid_field = "id", text_field = "texts", metacorpus = list(info = info))
+        corp <- quanteda::corpus(x = corpusdf, docid_field = "id", text_field = "texts",
+                                 meta = list(info = info))
         class(corp) <- c("sento_corpus", class(corp))
         return(corp)
       }
@@ -138,7 +139,8 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
   }
 
   if (do.clean) corpusdf <- clean_texts(corpusdf)
-  corp <- quanteda::corpus(x = corpusdf, docid_field = "id", text_field = "texts", metacorpus = list(info = info))
+  corp <- quanteda::corpus(x = corpusdf, docid_field = "id", text_field = "texts",
+                           meta = list(info = info))
   class(corp) <- c("sento_corpus", class(corp))
   data.table::setorder(quanteda::docvars(corp), date) # oldest comes first
   return(corp)
