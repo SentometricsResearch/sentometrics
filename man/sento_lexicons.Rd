@@ -27,7 +27,7 @@ polarity lexicon.}
 \value{
 A \code{list} of class \code{sento_lexicons} with each lexicon as a separate element according to its name, as a
 \code{data.table}, and optionally an element named \code{valence} that comprises the valence words. Every \code{"x"} column
-contains the words, every \code{"y"} column contains the polarity scores. The \code{"t"} column for valence shifters
+contains the words, every \code{"y"} column contains the scores. The \code{"t"} column for valence shifters
 contains the different types.
 }
 \description{
