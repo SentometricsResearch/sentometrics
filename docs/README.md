@@ -7,7 +7,7 @@ The **sentometrics** package is an **integrated framework for textual sentiment 
 
 ### For you to read
 
-Our [vignette](https://ssrn.com/abstract=3067734) explains the ins and outs of the software package, and has an accompanying code example (see the `run_vignette.R` script under the _/examples_ folder on our GitHub repository). The complete documentation can be found on CRAN's [sentometrics](https://CRAN.R-project.org/package=sentometrics) page. 
+Our [vignette](https://ssrn.com/abstract=3067734) explains the ins and outs of the software package, and has an accompanying code example (see the `run_vignette.R` script in the _examples_ folder on our GitHub repository). The complete documentation can be found on CRAN's [sentometrics](https://CRAN.R-project.org/package=sentometrics) page.
 
 ## Installation
 
@@ -233,7 +233,7 @@ measures <- sento_measures(corpus, lexicons, ctr)
 measuresGlobal <- aggregate(measures, do.global = TRUE)
 ```
 
-The output in this case is not a specific **sentometrics** `sento_measures` object, but simply a `data.table` object. Below produces a nice plot using the **ggplot2** package.
+The output in this case is not a specific **sentometrics** `sento_measures` object, but a `data.table` object. Below produces a nice plot using the **ggplot2** package.
 
 ```R
 ggplot(melt(measuresGlobal, id.vars = "date")) +

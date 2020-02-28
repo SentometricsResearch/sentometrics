@@ -1,4 +1,8 @@
 
+## sentometrics 0.8.1
+
+- alignment with released **quanteda** v2.0
+
 ## sentometrics 0.8.0
 
 - new function: `print.sento_corpus()`

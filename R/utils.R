@@ -361,6 +361,13 @@ check_class <- function(x, class) {
     stop("Please provide a ", class, " object as argument.")
 }
 
+is_only_character <- function(x) {
+  cl <- class(x)
+  if (length(cl) > 1) FALSE
+  else if (cl == "character") TRUE
+  else FALSE
+}
+
 compute_stats <- function(sento_measures) {
   measures <- data.table::as.data.table(sento_measures)[, -1] # drop dates
   names <- c("mean", "sd", "max", "min", "meanCorr")

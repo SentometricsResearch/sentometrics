@@ -43,11 +43,9 @@ computation only for sufficiently large corpora.}
 \value{
 If \code{x} is a \code{sento_corpus} object: a \code{sentiment} object, i.e., a \code{data.table} containing
 the sentiment scores \code{data.table} with an \code{"id"}, a \code{"date"} and a \code{"word_count"} column,
-and all lexicon-feature sentiment scores columns. If \code{do.sentence = TRUE}, an additional
-\code{"sentence_id"} column along the \code{"id"} column is added. The tokenized sentences are not
-provided but can be obtained as \code{stringi::stri_split_boundaries(texts, type = "sentence")}.
-A \code{sentiment} object can be aggregated (into time series) with the \code{\link{aggregate.sentiment}}
-function.
+and all lexicon-feature sentiment scores columns. The tokenized sentences are not provided but can be
+obtained as \code{stringi::stri_split_boundaries(texts, type = "sentence")}. A \code{sentiment} object can
+be aggregated (into time series) with the \code{\link{aggregate.sentiment}} function.
 
 If \code{x} is a \pkg{quanteda} \code{\link[quanteda]{corpus}} object: a sentiment scores
 \code{data.table} with an \code{"id"} and a \code{"word_count"} column, and all lexicon-feature
@@ -56,6 +54,9 @@ sentiment scores columns.
 If \code{x} is a \pkg{tm} \code{SimpleCorpus} object, a \pkg{tm} \code{VCorpus} object, or a \code{character}
 vector: a sentiment scores \code{data.table} with an auto-created \code{"id"} column, a \code{"word_count"}
 column, and all lexicon sentiment scores columns.
+
+When \code{do.sentence = TRUE}, an additional \code{"sentence_id"} column along the
+\code{"id"} column is added.
 }
 \description{
 Given a corpus of texts, computes sentiment per document or sentence using the valence shifting
@@ -139,7 +140,7 @@ sent7 <- compute_sentiment(corpusSample, l1, how = "TFIDF")
 sent8 <- compute_sentiment(corpusSample, l1, how = "proportionalSquareRoot",
                            do.sentence = TRUE)
 
-# from an artificially constructed multilingual corpus
+# from a (fake) multilingual corpus
 usnews[["language"]] <- "en" # add language column
 usnews$language[1:100] <- "fr"
 lEn <- sento_lexicons(list("FEEL_en" = list_lexicons$FEEL_en_tr,

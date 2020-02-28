@@ -1,7 +1,11 @@
 
-## submission (version 0.8) [13/01/2020]
+## submission (version 0.8.1) [xx/0x/2020]
 
-**new**: minor improvements
+**new**: compliance fixes related to new quanteda release
+
+<!--- ## submission (version 0.8) [13/01/2020]
+
+**new**: minor improvements --->
 
 <!--- ## submission (version 0.7.6) [31/10/2019]
 
