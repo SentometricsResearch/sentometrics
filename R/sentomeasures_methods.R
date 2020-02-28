@@ -95,13 +95,12 @@ plot.sento_measures <- function(x, group = "all", ...) {
 #'
 #' @export
 diff.sento_measures <- function(x, lag = 1, differences = 1, ...) {
-  sento_measures <- x
-  dates <- get_dates(sento_measures)[-1:-(lag * differences)]
-  measures <- data.table::as.data.table(sento_measures)[, -1] # drop dates
+  dates <- get_dates(x)[-1:-(lag * differences)]
+  measures <- data.table::as.data.table(x)[, -1] # drop dates
   measuresDiff <- diff(as.matrix(measures), lag = lag, differences = differences)
-  sento_measures$measures <- data.table::data.table(date = dates, measuresDiff)
-  sento_measures$stats <- compute_stats(sento_measures)
-  return(sento_measures)
+  x$measures <- data.table::data.table(date = dates, measuresDiff)
+  x$stats <- compute_stats(x)
+  x
 }
 
 #' @export
@@ -192,26 +191,24 @@ nobs.sento_measures <- function(object, ...) {
 #'
 #' @export
 scale.sento_measures <- function(x, center = TRUE, scale = TRUE) {
-  sento_measures <- x
-  dates <- get_dates(sento_measures)
-  measures <- data.table::as.data.table(sento_measures)[, -1] # drop dates
+  dates <- get_dates(x)
+  measures <- data.table::as.data.table(x)[, -1] # drop dates
   if (is.matrix(center)) {
-    if (nrow(center) != nobs(sento_measures) || !(ncol(center) %in% c(1, nmeasures(sento_measures))))
+    if (nrow(center) != nobs(x) || !(ncol(center) %in% c(1, nmeasures(x))))
       stop("The matrix dimensions of the 'center' argument are not correct.")
     measures <- measures + center
     center <- FALSE
   }
   if (is.matrix(scale)) {
-    if (nrow(scale) != nobs(sento_measures) || !(ncol(scale) %in% c(1, nmeasures(sento_measures))))
+    if (nrow(scale) != nobs(x) || !(ncol(scale) %in% c(1, nmeasures(x))))
       stop("The matrix dimensions of the 'scale' argument are not correct.")
     measures <- measures / scale
     scale <- FALSE
   }
-
   measuresNorm <- scale(measures, center = center, scale = scale)
-  sento_measures$measures <- data.table::data.table(date = dates, measuresNorm)
-  sento_measures$stats <- compute_stats(sento_measures)
-  return(sento_measures)
+  x$measures <- data.table::data.table(date = dates, measuresNorm)
+  x$stats <- compute_stats(x)
+  x
 }
 
 #' @export
@@ -234,9 +231,8 @@ summary.sento_measures <- function(object, ...) {
 
 #' @export
 print.sento_measures <- function(x, ...) {
-  sento_measures <- x
-  cat("A sento_measures object (", nmeasures(sento_measures),
-      " textual sentiment time series, ", nobs(sento_measures),
+  cat("A sento_measures object (", nmeasures(x),
+      " textual sentiment time series, ", nobs(x),
       " observations).", "\n", sep = "")
 }
 
