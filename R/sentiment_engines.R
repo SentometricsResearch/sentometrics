@@ -25,7 +25,7 @@ tokenize_texts <- function(x, tokens = NULL, type = "word") { # x embeds a chara
         wo[sapply(wo, length) != 0]
       })
     }
-  } else tok <- tokens
+  } else return(tokens)
   tok
 }
 
