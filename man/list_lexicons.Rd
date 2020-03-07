@@ -6,7 +6,7 @@
 \title{Built-in lexicons}
 \format{A \code{list} with all built-in lexicons, appropriately named as \code{"NAME_language(_tr)"} .}
 \source{
-\href{http://www.lirmm.fr/~abdaoui/FEEL}{FEEL lexicon}. Retrieved November 1, 2017.
+\href{http://advanse.lirmm.fr/feel.php}{FEEL lexicon}. Retrieved November 1, 2017.
 
 \href{http://www.wjh.harvard.edu/~inquirer/spreadsheet_guide.htm}{GI lexicon}. Retrieved November 1, 2017.
 
