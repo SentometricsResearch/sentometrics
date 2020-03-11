@@ -1,5 +1,5 @@
 
-## submission (version 0.8.1) [07/03/2020]
+## submission (version 0.8.1) [11/03/2020]
 
 **new**: compliance fixes related to new quanteda release
 
