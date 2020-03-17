@@ -32,6 +32,10 @@ To install the latest development version of **`sentometrics`** (which may conta
 devtools::install_github("sborms/sentometrics")
 ```
 
+### Examples
+
+For a castle made of examples, see [this page](https://github.com/sborms/sentometrics.examples).
+
 ### Shiny application
 
 For a visual interface as a Shiny application of the package's core functionalities, install the [**`sentometrics.app`**](https://github.com/sborms/sentometrics.app) package, and run the `sento_app()` function.
