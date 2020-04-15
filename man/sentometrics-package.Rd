@@ -44,6 +44,7 @@ predict with textual sentiment''. \emph{Working paper}, \url{https://doi.org/10.
 Useful links:
 \itemize{
   \item \url{https://github.com/sborms/sentometrics}
+  \item \url{https://sborms.github.io/sentometrics}
   \item Report bugs at \url{https://github.com/sborms/sentometrics/issues}
 }
 

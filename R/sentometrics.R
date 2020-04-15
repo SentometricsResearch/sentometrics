@@ -153,7 +153,7 @@
 #' @docType data
 #'
 #' @description
-#' Monthly news-based U.S. Economic Policy Uncertainty (EPU) index (Baker, Bloom and Davis, 2015). Goes from January 1985
+#' Monthly news-based U.S. Economic Policy Uncertainty (EPU) index (Baker, Bloom and Davis, 2016). Goes from January 1985
 #' to July 2018, and includes a binomial and a multinomial example series. Following columns are present:
 #'
 #' \itemize{

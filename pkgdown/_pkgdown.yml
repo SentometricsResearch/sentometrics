@@ -1,0 +1,55 @@
+# url: https://sborms.github.io/sentometrics # https://sentometrics.r-lib.org, https://github.com/r-lib/sentometrics
+
+destination: docs
+
+template:
+  params:
+    bootswatch: lumen # https://bootswatch.com/
+
+navbar:
+  structure:
+    left:  [home, intro, articles, research, news, reference]
+    right: [github]
+  components:
+    articles:
+      text: Examples
+      menu:
+      - text: Tutorials
+      - text: Corpus manipulation
+        href: articles/corpus.html
+      - text: Sentiment computation
+        href: articles/sentiment.html
+      - text: Indexation
+        href: articles/indexation.html
+      - text: -------
+      - text: Applications
+      - text: Creating EPU indices
+        href: articles/epu.html
+      - text: Predicting the VIX index
+        href: articles/vix.html
+    research:
+      text: Research
+      href: articles/research.html
+    news:
+      text: News
+      menu:
+      - text: Development
+        href: articles/development.html
+      - text: Releases
+        href: news/index.html
+    reference: ~
+
+authors:
+  Samuel Borms:
+    href: https://www.linkedin.com/in/sam-borms
+  David Ardia:
+    href: https://ardiad.github.io/website
+  Keven Bluteau:
+    href: https://www.kevenbluteau.com
+  Kris Boudt:
+    href: https://linkedin.com/in/krisboudt
+  Jeroen Van Pelt:
+    href: https://linkedin.com/in/vanpeltjeroen
+  Andres Algaba:
+    href: https://linkedin.com/in/andresalgaba
+

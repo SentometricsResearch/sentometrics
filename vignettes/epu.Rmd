@@ -1,0 +1,154 @@
+---
+title: "Creating Economic Policy Uncertainty (EPU) indices"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.width = 6, fig.height = 4, fig.align = "center")
+```
+
+In this application, we create (a sentiment-adjusted version of) the well-known Economic Policy Uncertainty (EPU) index, which fits very will within the package's framework.
+
+## A "regular" EPU index
+
+#### Load packages
+
+```{r}
+library("sentometrics")
+library("data.table")
+```
+
+#### Load and create corpus object
+
+```{r}
+data("usnews")
+
+corpus <- sento_corpus(usnews[, c("id", "date", "texts", "wsj", "wapo")])
+```
+
+#### Define list of keywords and turn into a `sento_lexicons` object
+
+```{r}
+keywords <- list(
+  E = c("economy", "economic"),
+  P = c("congress", "legislation", "white house", "regulation", "deficit", "federal reserve"),
+  U = c("uncertainty", "uncertain")
+)
+keywords_dt <- lapply(keywords, function(kw) data.table(x = kw, y = 1))
+lex <- sento_lexicons(keywords_dt)
+```
+
+#### Compute textual sentiment
+
+```{r}
+s <- compute_sentiment(corpus, lex, "counts")
+```
+
+#### Adjust and reconvert to a `sentiment` object
+
+```{r}
+sA <- s[, 1:3]
+sB <- s[, -c(1:3)]
+
+to_epu <- function(x) as.numeric(rowSums(x > 0) >= 2) # >= 3 is too strict for this corpus
+
+sB[, "EPU--wsj" := to_epu(.SD), .SDcols = endsWith(colnames(sB), "wsj")]
+sB[, "EPU--wapo" := to_epu(.SD), .SDcols = endsWith(colnames(sB), "wapo")]
+
+s2 <- as.sentiment(cbind(sA, sB[, c("EPU--wsj", "EPU--wapo")]))
+```
+
+#### Aggregate into sentiment measures
+
+```{r}
+w <- data.frame("simple" = c(rep(0, 11), 1), "linear" = weights_exponential(12, alphas = 10^-10)[, 1])
+ctr <- ctr_agg(howDocs = "equal_weight", do.ignoreZeros = FALSE,
+               howTime = "own", by = "month", lag = 12, weights = w)
+
+sm <- aggregate(s2, ctr)
+```
+
+#### Scale newspaper-level EPU measures
+
+```{r}
+dt <- as.data.table(subset(sm, date < "2005-01-01"))
+sds <- apply(dt[, -1], 2, sd)
+
+sm2 <- scale(sm, center = FALSE, scale = sds/100)
+subset(sm2, date < "2005-01-01")[["stats"]]
+```
+
+#### Aggregate measures into one EPU index
+
+```{r}
+sm3 <- aggregate(sm2, features = list(journals = c("wsj", "wapo")))
+
+plot(sm3, "time")
+```
+
+#### Rescale into final EPU index
+
+```{r}
+sm4 <- scale(sm3, center = rep(-50, nmeasures(sm3)), scale = FALSE)
+
+plot(sm4)
+```
+
+## A sentiment-adjusted EPU index
+
+#### Load and create corpus object
+
+```{r}
+corpus <- sento_corpus(usnews[, c("id", "date", "texts", "wsj", "wapo")])
+```
+
+#### Compute EPU relevance
+
+```{r}
+corpus <- add_features(corpus, keywords = keywords, do.binary = TRUE)
+
+library("quanteda")
+dv <- as.data.table(docvars(corpus))
+dv[, EPU := to_epu(.SD), .SDcols = c("E", "P", "U")]
+```
+
+#### Add normalized newspaper features
+
+```{r}
+# compute total number of articles per journal and month
+totArticles <- dv[, date := format(date, "%Y-%m")][,
+  lapply(.SD, sum), by = date, .SDcols = c("wsj", "wapo")]
+setnames(totArticles, c("wsj", "wapo"), c("wsjT", "wapoT"))
+
+dv <- merge(dv, totArticles, by = "date")
+dv[, c("wsj", "wapo") := list((wsj * EPU) / wsjT, (EPU * wapo) / wapoT)]
+
+for (j in which(colnames(dv) %in% c("wsj", "wapo"))) # replace NaN and Inf values due to zero division
+  set(dv, which(is.na(dv[[j]]) | is.infinite(dv[[j]])), j, 0)
+
+corpus <- add_features(corpus, featuresdf = dv[, c("wsj", "wapo", "EPU")])
+```
+
+#### Select EPU corpus
+
+```{r}
+corpus <- corpus_subset(corpus, EPU == 1)
+docvars(corpus, c("E", "P", "U", "EPU")) <- NULL
+```
+
+#### Aggregate into a sentiment-adjusted EPU index
+
+```{r}
+sentLex <- sento_lexicons(sentometrics::list_lexicons[c("GI_en")])
+ctr <- ctr_agg("counts", "equal_weight", "equal_weight", by = "month", lag = 12)
+
+sm <- sento_measures(corpus, sentLex, ctr)
+
+sm2 <- aggregate(sm, features = list(journals = c("wsj", "wapo")))
+
+plot(sm2)
+```
+
