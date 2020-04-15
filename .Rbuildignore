@@ -9,3 +9,7 @@
 ^cran-comments\.md$
 ^CRAN-RELEASE$
 ^appendix$
+^_pkgdown\.yml$
+^pkgdown$
+^vignettes$
+^index$

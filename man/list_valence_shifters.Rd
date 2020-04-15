@@ -4,7 +4,9 @@
 \name{list_valence_shifters}
 \alias{list_valence_shifters}
 \title{Built-in valence word lists}
-\format{A \code{list} with all built-in valence word lists, appropriately named.}
+\format{
+A \code{list} with all built-in valence word lists, appropriately named.
+}
 \source{
 \code{\link[lexicon]{hash_valence_shifters}} (English valence shifters). Retrieved August 24, 2018.
 }

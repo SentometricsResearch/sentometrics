@@ -1,0 +1,140 @@
+---
+title: "Predicting the VIX index"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE,
+                      warning = FALSE, message = FALSE, fig.width = 6, fig.height = 4, fig.align = "center")
+```
+
+In this application, we show a recommended workflow to predict a variable, in this case the stock market volatility VIX index, using textual sentiment indices. It takes over and explains the example provided in the [vignette](https://doi.org/10.2139/ssrn.3067734).
+
+#### Load packages
+
+```{r}
+library("sentometrics")
+library("quanteda")
+library("stm")
+library("lexicon")
+```
+
+#### Convert the built-in corpus into a `sento_corpus` object 
+
+```{r}
+uscorpus <- sento_corpus(sentometrics::usnews)
+```
+
+#### Fit a topic model
+
+```{r}
+### TODO: check difference in output w.r.t. JSS output
+dfm <- quanteda::dfm(uscorpus, tolower = TRUE,
+                     remove_punct = TRUE, remove_numbers = TRUE, remove = quanteda::stopwords("en")) %>%
+  quanteda::dfm_remove(min_nchar = 3) %>%
+  quanteda::dfm_trim(min_termfreq = 0.95, termfreq_type = "quantile") %>%
+  quanteda::dfm_trim(max_docfreq = 0.10, docfreq_type = "prop")
+dfm <- quanteda::dfm_subset(dfm, quanteda::ntoken(dfm) > 0)
+topicModel <- stm::stm(dfm, K = 8, verbose = FALSE)
+topTerms <- t(stm::labelTopics(topicModel, n = 5)[["prob"]])
+
+topTerms
+```
+
+#### Use the topic model output to enrich the corpus with features
+
+```{r}
+keywords <- lapply(1:ncol(topTerms), function(i) topTerms[, i])
+names(keywords) <- paste0("TOPIC_", 1:length(keywords))
+uscorpus <- add_features(uscorpus, keywords = keywords, do.binary = FALSE, do.regex = FALSE)
+quanteda::docvars(uscorpus, c("uncertainty", "election", "economy", "noneconomy", "wsj", "wapo")) <- NULL
+colSums(quanteda::docvars(uscorpus)[, -1] != 0)
+```
+
+#### Prepare the sentiment lexicons
+
+```{r}
+lexiconsIn <- c(
+  sentometrics::list_lexicons[c("LM_en", "HENRY_en", "GI_en")],
+  list(
+    NRC = lexicon::hash_sentiment_nrc,
+    HULIU = lexicon::hash_sentiment_huliu,
+    SENTIWORD = lexicon::hash_sentiment_sentiword,
+    JOCKERS = lexicon::hash_sentiment_jockers,
+    SENTICNET = lexicon::hash_sentiment_senticnet,
+    SOCAL = lexicon::hash_sentiment_socal_google
+  )
+)
+lex <- sento_lexicons(lexiconsIn = lexiconsIn,
+                      valenceIn = sentometrics::list_valence_shifters[["en"]])
+```
+
+#### Define the sentiment index aggregation specifications
+
+```{r}
+ctrAggPred <- ctr_agg(
+  howWithin = "proportionalPol",
+  howDocs = "equal_weight",
+  howTime = "beta", by = "day", fill = "latest", lag = 270, aBeta = 1:3, bBeta = 1:2
+)
+```
+
+#### Aggregate the corpus into textual sentiment time series
+
+```{r}
+sentMeasPred <- sento_measures(uscorpus, lexicons = lex, ctr = ctrAggPred)
+
+plot(sentMeasPred, group = "features")
+```
+
+#### Retrieve the VIX data
+
+```{r}
+library("repmis")
+vixObject <- "https://github.com/sborms/sentometrics/blob/master/examples/vix.rda?raw=true"
+source_data(vixObject)
+```
+
+#### Align the sentiment measures and the VIX data
+
+```{r}
+sentMeasIn <- subset(sentMeasPred, date %in% vix$date)
+datesIn <- get_dates(sentMeasIn)
+y <- vix[vix$date %in% datesIn, value]
+x <- data.frame(lag = y)
+```
+
+#### Prepare the regression model specifications
+
+```{r}
+ctrIter <- ctr_model(model = "gaussian",
+                     type = "BIC",
+                     h = 6,
+                     alphas = c(0, 0.1, 0.3, 0.5, 0.7, 0.9, 1),
+                     do.iter = TRUE,
+                     oos = 5, # h - 1
+                     nSample = 60,
+                     nCore = 1)
+```
+
+#### Fit and assess the elastic net model iteratively over time
+
+```{r}
+out <- sento_model(sentMeasIn, x = x, y = y, ctr = ctrIter)
+
+summary(out)
+plot(out)
+```
+
+#### Compute and plot the sentiment attributions
+
+```{r}
+attr <- attributions(out, sentMeasIn, do.lags = FALSE, do.normalize = FALSE)
+
+plot(attr, group = "features")
+plot(attr, group = "lexicons")
+```
+

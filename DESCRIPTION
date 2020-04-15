@@ -1,7 +1,7 @@
 Package: sentometrics
 Type: Package
 Title: An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction
-Version: 0.8.1
+Version: 0.8.5
 Authors@R: c(person("Samuel", "Borms", email = "samuel.borms@unine.ch", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-9533-1870")),
   person("David", "Ardia", email = "david.ardia@hec.ca", role = c("aut"), comment = c(ORCID = "0000-0003-2823-782X")),
   person("Keven", "Bluteau", email = "keven.bluteau@unine.ch", role = c("aut"), comment = c(ORCID = "0000-0003-2990-4807")),
@@ -13,7 +13,7 @@ Description: Optimized prediction based on textual sentiment, accounting for the
 Depends: R (>= 3.3.0)
 License: GPL (>= 2)
 BugReports: https://github.com/sborms/sentometrics/issues
-URL: https://github.com/sborms/sentometrics
+URL: https://github.com/sborms/sentometrics, https://sborms.github.io/sentometrics
 Encoding: UTF-8
 LazyData: true
 Suggests: covr, 
@@ -39,5 +39,5 @@ Imports: caret,
   stringi,
   utils
 LinkingTo: Rcpp, RcppArmadillo, RcppParallel
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 SystemRequirements: GNU make

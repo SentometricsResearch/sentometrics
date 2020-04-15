@@ -4,7 +4,9 @@
 \name{list_lexicons}
 \alias{list_lexicons}
 \title{Built-in lexicons}
-\format{A \code{list} with all built-in lexicons, appropriately named as \code{"NAME_language(_tr)"} .}
+\format{
+A \code{list} with all built-in lexicons, appropriately named as \code{"NAME_language(_tr)"} .
+}
 \source{
 \href{https://doi.org/10.1007/s10579-016-9364-5}{FEEL lexicon}. Retrieved November 1, 2017.
 

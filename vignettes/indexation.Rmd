@@ -1,0 +1,128 @@
+---
+title: "Index aggregation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.width = 7, fig.height = 4, fig.align = "center")
+```
+
+This tutorial provides a guide on how to flexibly aggregate a qualitative corpus into many time series indices.
+
+#### Preparation
+
+```{r}
+library("sentometrics")
+library("ggplot2")
+library("data.table")
+
+data("usnews")
+data("list_lexicons")
+data("list_valence_shifters")
+```
+
+### Document-level sentiment aggregation into time series
+
+To aggregate document-level sentiment scores into time series requires only to specify a few parameters regarding the weighting and the time frequency.
+
+```{r}
+corpus <- sento_corpus(usnews)
+
+s <- compute_sentiment(
+  corpus,
+  sento_lexicons(list_lexicons[c("GI_en", "LM_en")]),
+  how = "counts"
+)
+
+ctr <- ctr_agg(howDocs = "proportional",
+               howTime = "equal_weight", by = "month", lag = 6)
+measures <- aggregate(s, ctr)
+```
+
+The obtained measures can be plotted, all of them, or according to the three time series dimensions (the corpus features, the lexicons and the time weighting schemes).
+
+```{r}
+plot(measures)
+plot(measures, "features")
+plot(measures, "lexicons")
+plot(measures, "time")
+```
+
+### Document-level sentiment aggregation into time series (bis)
+
+The aggregation into sentiment time series does not have to be done in two steps. Below one-step approach is recommended because very easy!
+
+```{r}
+corpus <- sento_corpus(usnews)
+lexicons <- sento_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")])
+ctr <- ctr_agg(howWithin = "counts",
+               howDocs = "proportional",
+               howTime = "linear", by = "week", lag = 14)
+
+measures <- sento_measures(corpus, lexicons, ctr)
+measures
+```
+
+Similar to extracting the peak documents in a sentiment table, we extract here the peak dates in the sentiment time series matrix. Detected below are the 5 dates where average sentiment across all sentiment measures is lowest.
+
+```{r}
+peakDatesNeg <- peakdates(measures, n = 5, type = "neg", do.average = TRUE)
+```
+
+```{r}
+dtPeaks <- as.data.table(subset(measures, date %in% peakDatesNeg))
+data.table(dtPeaks[, "date"], avg = rowMeans(dtPeaks[, -1]))
+```
+
+### Sentiment time series aggregation
+
+Sentiment measures can be further aggregated across any of the three dimensions. The computed time series are averages across the relevant measures.
+
+```{r}
+corpus <- sento_corpus(usnews)
+lexicons <- sento_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")])
+ctr <- ctr_agg(howWithin = "counts",
+               howDocs = "proportional",
+               howTime = c("linear", "equal_weight"), by = "week", lag = 14)
+
+measures <- sento_measures(corpus, lexicons, ctr)
+
+measuresAgg <- aggregate(measures,
+                         features = list("journal" = c("wsj", "wapo")),
+                         time = list("linequal" = c("linear", "equal_weight")))
+
+get_dimensions(measuresAgg) # inspect the contents of the three dimensions
+```
+
+### Sentiment time series aggregation (bis)
+
+To keep it at its simplest, all the sentiment measures computed can be condensed in a few global sentiment time series. The computation can be run in a weighted way as well.  
+
+```{r}
+corpus <- sento_corpus(usnews)
+lexicons <- sento_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")])
+ctr <- ctr_agg(howWithin = "counts",
+               howDocs = "proportional",
+               howTime = c("linear", "equal_weight"), by = "week", lag = 14)
+
+measures <- sento_measures(corpus, lexicons, ctr)
+
+measuresGlobal <- aggregate(measures, do.global = TRUE)
+measuresGlobal
+```
+
+The output in this case is not a specific **`sentometrics`** `sento_measures` object, but a `data.table` object. Below produces a nice plot using the **`ggplot2`** package.
+
+```{r}
+ggplot(melt(measuresGlobal, id.vars = "date")) +
+  aes(x = date, y = value, color = variable) +
+  geom_line() +
+  scale_x_date(name = "Date", date_labels = "%m-%Y") +
+  scale_y_continuous(name = "Sentiment") +
+  theme_bw() + 
+  sentometrics:::plot_theme(legendPos = "top") # a trick to finetune the plot display
+```
+

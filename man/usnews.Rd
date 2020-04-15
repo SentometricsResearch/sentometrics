@@ -4,7 +4,9 @@
 \name{usnews}
 \alias{usnews}
 \title{Texts (not) relevant to the U.S. economy}
-\format{A \code{data.frame}, formatted as required to be an input for \code{\link{sento_corpus}}.}
+\format{
+A \code{data.frame}, formatted as required to be an input for \code{\link{sento_corpus}}.
+}
 \source{
 \href{https://www.figure-eight.com/data-for-everyone/}{Economic News Article Tone and Relevance}. Retrieved
 November 1, 2017.

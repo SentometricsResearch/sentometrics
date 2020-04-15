@@ -11,7 +11,7 @@
 
 \item{center}{a \code{logical} or a \code{numeric} vector, see documentation for the generic \code{\link{scale}}.
 Alternatively, one can provide a \code{matrix} of dimensions \code{nobs(sento_measures)} times \code{1} or
-\code{nmeasures(sento_measures)} with values to add to each individual observation.}
+\code{nmeasures(sento_measures)} with values to subtract from each individual observation.}
 
 \item{scale}{a \code{logical} or a \code{numeric} vector, see documentation for the generic \code{\link{scale}}.
 Alternatively, one can provide a \code{matrix} of dimensions \code{nobs(sento_measures)} times \code{1} or
@@ -39,7 +39,7 @@ set.seed(505)
 # construct a sento_measures object to start with
 corpus <- sento_corpus(corpusdf = usnews)
 corpusSample <- quanteda::corpus_sample(corpus, size = 500)
-l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")], list_valence_shifters[["en"]])
+l <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")])
 ctr <- ctr_agg(howTime = c("equal_weight", "linear"), by = "year", lag = 3)
 sento_measures <- sento_measures(corpusSample, l, ctr)
 
@@ -49,7 +49,7 @@ sc1 <- scale(sento_measures)
 n <- nobs(sento_measures)
 m <- nmeasures(sento_measures)
 
-# add a matrix
+# subtract a matrix
 sc2 <- scale(sento_measures, center = matrix(runif(n * m), n, m), scale = FALSE)
 
 # divide every row observation based on a one-column matrix, then center

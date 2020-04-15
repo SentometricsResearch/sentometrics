@@ -1,0 +1,57 @@
+---
+title: "Future development"
+output: rmarkdown::html_vignette
+---
+
+Overview of anticipated developments and known bugs or unfinished business. If you want to help out on one of these things, contact the maintainer.
+
+### Extensions
+
+- Implement a `sento_train()` function to for instance generate a lexicon from a corpus.
+
+- Add straightforward topic modelling functionality into the `add_features()` function (or as part of the `sento_train()` function).
+
+- Expand the number of available models in the `sento_model()` function (e.g. constrained regression and PCA).
+
+- Implement an optimization approach into the `aggregate.sento_measures(..., do.global = TRUE)` function to extract optimized weights across dimensions (make it possibly available through the `sento_model()` function); this includes allowing weights to be set in the `aggregate.sento_measures()` function instead of averaging by default.
+
+- Implement fast textual sentiment computation for lexicons with ngrams.
+
+- Implement a `scale.sentiment()` function.
+
+- Implement a structure to support high-frequency intraday aggregation.
+
+- Make more lexicons available (e.g. German and Spanish).
+
+- Give more control to the user to play with **`glmnet`** parameters in the `sento_model()` function.
+
+- Write a helper function to aggregate an `attributions` object into clusters.
+
+- Resolve inconsistency with `data.frame` input columns (`"text(s)"` & `"(doc_)id"`) in the **`sentometrics`**, **`quanteda`** and **`tm`** corpus creators.
+
+- Prepare functional CRAN version of **`sentometrics.app`** package.
+
+- Find additional computational speed gains (especially after recent additions which introduced some overhead).
+
+- Add a `"binary"` option to `get_hows()["words"]` that turns the sentiment computation into an indicator-like calculation (value of 1 if a text has at least one lexicon word).
+
+### Tweaks and bugs
+
+- Optimize parallelization of iterative model runs (e.g. avoid unnecessary copying of objects across cores).
+
+- Add a `delete_features()` function as an intuitive counterpart to `add_features()`.
+
+- Solve issue that column names of sentiment measures output do not deal well with weird characters (e.g. é) but still get through.
+
+- Handle `data.frame` and `matrix` input in `sento_model(..., y, ...)` function more consistently.
+
+- Add references to external **`textdata`** package in examples (e.g. for extra lexicons).
+
+- Be more flexible for the features in a `sento_corpus` object by allowing also values outside 0 and 1.
+
+- Make sure subsetting does not maintain a `sentiment` object when it is not supposed to be.
+
+- Drop horizontal 0-line for the `plot.sento_measures()` function as it distorts graphs of time series with values far away from 0.
+
+- Remove all but one (not all) duplicate entries in the `sento_lexicons()` function.
+
