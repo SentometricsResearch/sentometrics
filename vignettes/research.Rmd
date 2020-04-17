@@ -5,17 +5,19 @@ output: rmarkdown::html_vignette
 
 Here is an updated list of papers related the **`sentometrics`** package, or more broadly about textual sentiment analysis (most of which use the package for underlying calculations). These research projects are carried out by a joint group of collaborators working at the intersection of sentiment analysis and econometrics. 
 
-### Papers
+### Vignette
 
-_An extensive introduction to the package_
+_An extensive introduction to the package._
 
 - Ardia, D., Bluteau, K., Borms, S. & Boudt, K. (2020). **The R package sentometrics to compute, aggregate and predict with textual sentiment**. Forthcoming in Journal of Statistical Software. [Link](https://doi.org/10.2139/ssrn.3067734).
 
-_An overview of the required steps in a typical econometric analysis of sentiment from textual data_
+### Survey
+
+_An overview of the required steps in a typical econometric analysis of sentiment from textual data._
 
 - Algaba, A., Ardia, D., Bluteau, K., Borms & S., Boudt, K. (2020). **Econometrics meets sentiment: An overview of methodology and applications**. Working paper. [Link](https://doi.org/10.2139/ssrn.2652876).
 
-_Empirical applications_
+### Empirical applications
 
 - Borms, S., Boudt, K., Van Holle, F. & Willems, J. (2020). **Semi-supervised text mining for monitoring the news about the ESG performance of companies**. Working paper.
 

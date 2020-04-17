@@ -11,5 +11,5 @@
 ^appendix$
 ^_pkgdown\.yml$
 ^pkgdown$
-^vignettes$
+# ^vignettes$
 ^index$

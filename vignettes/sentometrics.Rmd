@@ -31,7 +31,7 @@ devtools::install_github("sborms/sentometrics")
 
 Check out the **Examples** section. It includes tutorials with a bunch of examples, from simple to a little less simple, and some larger-scale applications. Sentiment computation, aggregation, diagnostic tools, visualization, regression -- it's all in there.
 
-## Shiny application
+## Shiny app
 
 You might also want to have a look at the [**`sentometrics.app`**](https://github.com/sborms/sentometrics.app) package. Its `sento_app()` function embeds a Shiny application that displays many of **`sentometrics`**' functionalities. Enjoy!
 

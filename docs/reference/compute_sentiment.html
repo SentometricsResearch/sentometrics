@@ -19,7 +19,7 @@
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/lumen/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/spacelab/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
@@ -81,7 +81,7 @@ augmented bag-of-words approach, based on the lexicons provided and a choice of 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.5</span>
       </span>
     </div>
 
@@ -254,11 +254,11 @@ lexicons and valence shifters. Word counts are based on that same tokenization.<
 <p>If the <code>lexicons</code> argument has no <code>"valence"</code> element, the sentiment computed corresponds to simple unigram
 matching with the lexicons [<em>unigrams</em> approach]. If valence shifters are included in <code>lexicons</code> with a
 corresponding <code>"y"</code> column, the polarity of a word detected from a lexicon gets multiplied with the associated
-value of a valence shifter if it appears right before the detected word (examples: not good or can't defend) [<em>bigrams</em> approach]. If the valence
-table contains a <code>"t"</code> column, valence shifters are searched for in a cluster centered around a detected polarity
-word [<em>clusters</em> approach]. The latter approach is a simplified version of the one utilized by the <span class="pkg">sentimentr</span>
-package. A cluster amounts to four words before and two words after a polarity word. A cluster never overlaps with
-a preceding one. Roughly speaking, the polarity of a cluster is calculated as \(n(1 + 0.80d)S + \sum s\). The polarity
+value of a valence shifter if it appears right before the detected word (examples: not good or can't defend) [<em>bigrams</em>
+approach]. If the valence table contains a <code>"t"</code> column, valence shifters are searched for in a cluster centered around
+a detected polarity word [<em>clusters</em> approach]. The latter approach is a simplified version of the one utilized by the
+<span class="pkg">sentimentr</span> package. A cluster amounts to four words before and two words after a polarity word. A cluster never overlaps
+with a preceding one. Roughly speaking, the polarity of a cluster is calculated as \(n(1 + 0.80d)S + \sum s\). The polarity
 score of the detected word is \(S\), \(s\) represents polarities of eventual other sentiment words, and \(d\) is
 the difference between the number of amplifiers (<code>t = 2</code>) and the number of deamplifiers (<code>t = 3</code>). If there
 is an odd number of negators (<code>t = 1</code>), \(n = -1\) and amplifiers are counted as deamplifiers, else \(n = 1\).</p>

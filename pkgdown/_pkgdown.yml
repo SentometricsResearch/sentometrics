@@ -1,10 +1,13 @@
-# url: https://sborms.github.io/sentometrics # https://sentometrics.r-lib.org, https://github.com/r-lib/sentometrics
+url: https://sborms.github.io/sentometrics
 
 destination: docs
 
 template:
   params:
-    bootswatch: lumen # https://bootswatch.com/
+    bootswatch: spacelab # https://bootswatch.com/
+
+toc:
+  depth: 3
 
 navbar:
   structure:

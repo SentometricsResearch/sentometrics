@@ -12,7 +12,7 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.width = 7, fig.heigh
 
 This tutorial provides a guide on how to flexibly aggregate a qualitative corpus into many time series indices.
 
-#### Preparation
+##### Preparation
 
 ```{r}
 library("sentometrics")
@@ -77,7 +77,7 @@ dtPeaks <- as.data.table(subset(measures, date %in% peakDatesNeg))
 data.table(dtPeaks[, "date"], avg = rowMeans(dtPeaks[, -1]))
 ```
 
-### Sentiment time series aggregation
+### Sentiment aggregation into time series
 
 Sentiment measures can be further aggregated across any of the three dimensions. The computed time series are averages across the relevant measures.
 
@@ -97,7 +97,7 @@ measuresAgg <- aggregate(measures,
 get_dimensions(measuresAgg) # inspect the contents of the three dimensions
 ```
 
-### Sentiment time series aggregation (bis)
+### Sentiment aggregation into time series (bis)
 
 To keep it at its simplest, all the sentiment measures computed can be condensed in a few global sentiment time series. The computation can be run in a weighted way as well.  
 
