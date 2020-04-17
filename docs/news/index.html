@@ -19,7 +19,7 @@
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/lumen/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/spacelab/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
@@ -79,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.5</span>
       </span>
     </div>
 
@@ -164,6 +164,213 @@
       <small>Source: <a href='https://github.com/sborms/sentometrics/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="sentometrics-085-devel" class="section level2">
+<h2 class="hasAnchor">
+<a href="#sentometrics-085-devel" class="anchor"></a>sentometrics 0.8.5 (devel)</h2>
+<ul>
+<li>Some documentation fixes.</li>
+</ul>
+</div>
+    <div id="sentometrics-081" class="section level2">
+<h2 class="hasAnchor">
+<a href="#sentometrics-081" class="anchor"></a>sentometrics 0.8.1</h2>
+<ul>
+<li>Alignment with released <strong><code>quanteda</code></strong> v2.0.</li>
+</ul>
+</div>
+    <div id="sentometrics-080" class="section level2">
+<h2 class="hasAnchor">
+<a href="#sentometrics-080" class="anchor"></a>sentometrics 0.8.0</h2>
+<ul>
+<li>New function: <code>print.sento_corpus()</code>.</li>
+<li>Package update followed by release of a substantial update of the vignette (see <a href="https://doi.org/10.2139/ssrn.3067734" class="uri">https://doi.org/10.2139/ssrn.3067734</a>).</li>
+<li>Changed some <code><a href="https://rdrr.io/r/base/warning.html">warning()</a></code> calls to <code><a href="https://rdrr.io/r/base/message.html">message()</a></code> calls to be more kind to the user.</li>
+<li>Altered internal code to comply with the <code>corpus</code> object from <strong><code>quanteda</code></strong> &gt;= v2.0.</li>
+<li>Dropped all <code>"TF"</code>-inspired weights for within-document aggregation except for <code>"TFIDF"</code>, and made this option return the same sentiment scores as would when using the <strong><code>quanteda</code></strong> package (see the example on <a href="https://sborms.github.io/sentometrics" class="uri">https://sborms.github.io/sentometrics</a>).</li>
+</ul>
+</div>
+    <div id="sentometrics-076" class="section level2">
+<h2 class="hasAnchor">
+<a href="#sentometrics-076" class="anchor"></a>sentometrics 0.7.6</h2>
+<ul>
+<li>Fixed memory allocation issue in the <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code> function.</li>
+</ul>
+</div>
+    <div id="sentometrics-075" class="section level2">
+<h2 class="hasAnchor">
+<a href="#sentometrics-075" class="anchor"></a>sentometrics 0.7.5</h2>
+<ul>
+<li>New functions: <code>as.data.table.sento_corpus()</code>, <code>as.data.frame.sento_corpus()</code>, and <code>as.data.frame.sento_measures()</code>.</li>
+<li>Embedded a small workaround in <code><a href="../reference/plot.attributions.html">plot.attributions()</a></code> to guaranty same plotting behaviour after update of <strong><code>ggplot2</code></strong> package that gave buggy output for the <code>geom_area()</code> layer.</li>
+<li>Integrated for overall consistency <code><a href="../reference/sentometrics-defunct.html">measures_global()</a></code> into the <code><a href="../reference/aggregate.sento_measures.html">aggregate.sento_measures()</a></code> function, adding a <code>do.global</code> argument to enact it.</li>
+<li>Slightly changed the clusters-based sentence-level sentiment computation (different weighting of adversative conjunctions).</li>
+<li>Clarified the documentation for the <code><a href="../reference/peakdates.html">peakdates()</a></code> and <code><a href="../reference/peakdocs.html">peakdocs()</a></code> functions.</li>
+<li>Put the Shiny application made available in previous package update (i.e., the <code><a href="../reference/sentometrics-defunct.html">sento_app()</a></code> function) in a separate sole-purpose package <strong><code>sentometrics.app</code></strong> (see <a href="https://github.com/sborms/sentometrics.app" class="uri">https://github.com/sborms/sentometrics.app</a>).</li>
+<li>Moved the <strong><code>data.table</code></strong> package from Depends to Imports (see <a href="https://github.com/Rdatatable/data.table/issues/3076" class="uri">https://github.com/Rdatatable/data.table/issues/3076</a>).</li>
+<li>No change by reference of input sentiment objects in the <code><a href="../reference/merge.sentiment.html">merge.sentiment()</a></code> function anymore, and modified the merging to give for instance a simple column binding of sentment methods when all else is equal.</li>
+<li>Correct pass-through of default <code>how</code> argument in the <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code> function.</li>
+<li>Added a few adversative conjunctions to all word lists in <code>list_valence_shifters</code>.</li>
+<li>Added a <code>do.normalize</code> option to the <code><a href="../reference/weights_beta.html">weights_beta()</a></code> and <code><a href="../reference/weights_exponential.html">weights_exponential()</a></code> functions.</li>
+<li>Added a <code>do.inverse</code> option to the <code><a href="../reference/weights_exponential.html">weights_exponential()</a></code> function and associated <code>do.inverseExp</code> argument in the <code><a href="../reference/ctr_agg.html">ctr_agg()</a></code> function.</li>
+<li>Modified some names of options for within-document or within-sentence aggregation (i.e., across tokens): <code>"squareRootCounts"</code> into <code>"proportionalSquareRoot"</code>, <code>"invertedExponential"</code> into <code>"inverseExponential"</code>, and <code>"invertedUShaped"</code> into <code>"inverseUShaped"</code>.</li>
+<li>Corrected the numerator (number of documents or sentences instead of token frequency) in all weighting schemes involving the inverse document frequency (IDF).</li>
+<li>Aligned all formulas concerning the exponential weighting curves.</li>
+<li>The <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code> function now also can do a sentence-level calculation using the bigrams valence shifting approach.</li>
+<li>Fixed a small bug that did not allow to have different valence shifters lists for a multi-language sentiment calculation.</li>
+</ul>
+</div>
+    <div id="sentometrics-070" class="section level2">
+<h2 class="hasAnchor">
+<a href="#sentometrics-070" class="anchor"></a>sentometrics 0.7.0</h2>
+<ul>
+<li>New functions: <code><a href="../reference/measures_update.html">measures_update()</a></code>, <code><a href="../reference/subset.sento_measures.html">subset.sento_measures()</a></code>, <code><a href="../reference/as.sentiment.html">as.sentiment()</a></code>, <code>as.sento_measures()</code>, <code>as.data.table.sentiment()</code>, <code><a href="../reference/corpus_summarize.html">corpus_summarize()</a></code>, <code><a href="../reference/sentometrics-defunct.html">sento_app()</a></code>, and <code><a href="../reference/aggregate.sento_measures.html">aggregate.sento_measures()</a></code>.</li>
+<li>Defunct all deprecated functions as well as the functions replaced by the new functions (<em>wiping the slate cleanâ¦</em>).</li>
+<li>Handled reverse dependency issue raised by <strong><code>quanteda</code></strong> developers regarding their new corpus object.</li>
+<li>Renamed the class objects coming from any <code>sento_xyz()</code> function into the name of the function (e.g., the <code><a href="../reference/sento_measures.html">sento_measures()</a></code> function now gives a <code>sento_measures</code> object instead of a <code>sentomeasures</code> object).</li>
+<li>Fixed a small bug in the <code><a href="../reference/aggregate.sento_measures.html">aggregate.sento_measures()</a></code> (previously <code><a href="../reference/sentometrics-defunct.html">measures_merge()</a></code>) function to take the mean instead of the sum in a particular case.</li>
+<li>Added many more within- and across-document weighting schemes (see the <code><a href="../reference/get_hows.html">get_hows()</a></code> function for an overview).</li>
+<li>Added the flexibility to do an explicit sentence-by-sentence sentiment computation (see <code>do.sentence</code> argument in the <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code> function).</li>
+<li>Added the flexibility to create a multi-language <code>sento_corpus</code> object to do a multi-language sentiment computation (applying different lexicons to texts written in different languages).</li>
+<li>Expanded the <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code> function to also take <strong><code>tm</code></strong> <code>SimpleCorpus</code> and <code>VCorpus</code> objects.</li>
+<li>Added the <strong><code>tm</code></strong> and <strong><code>NLP</code></strong> packages to Suggests.</li>
+</ul>
+</div>
+    <div id="sentometrics-056" class="section level2">
+<h2 class="hasAnchor">
+<a href="#sentometrics-056" class="anchor"></a>sentometrics 0.5.6</h2>
+<ul>
+<li>New function: <code><a href="../reference/peakdates.html">peakdates()</a></code>.</li>
+<li>Modified the purpose of the <code><a href="../reference/peakdocs.html">peakdocs()</a></code> function and added a <code><a href="../reference/peakdates.html">peakdates()</a></code> function to properly handle the entire functionality of extracting peaks.</li>
+<li>A series of documentation fixes.</li>
+</ul>
+</div>
+    <div id="sentometrics-055" class="section level2">
+<h2 class="hasAnchor">
+<a href="#sentometrics-055" class="anchor"></a>sentometrics 0.5.5</h2>
+<ul>
+<li>New functions: <code><a href="../reference/sentometrics-defunct.html">sentiment_bind()</a></code>, and <code><a href="../reference/sentometrics-defunct.html">to_sentiment()</a></code>.</li>
+<li>Defined replacement (of lexicons and names) for a <code>sentolexicons</code> object.</li>
+<li>Properly handled <code>lag = 1</code> in the <code><a href="../reference/ctr_agg.html">ctr_agg()</a></code> function, and set weights to 1 by default for <code>n = 1</code> in the <code><a href="../reference/weights_beta.html">weights_beta()</a></code> function.</li>
+<li>Solved single failing test for older R version (3.4.4).</li>
+<li>Removed the <strong><code>abind</code></strong> package from Imports.</li>
+<li>Removed the <strong><code>zoo</code></strong> package from Imports, by replacing the single occurrence of the <code><a href="https://rdrr.io/pkg/zoo/man/na.locf.html">zoo::na.locf()</a></code> function by the <code>fill_NAs()</code> helper function (written in <strong><code>Rcpp</code></strong>).</li>
+<li>Extended the <code><a href="https://quanteda.io/reference/docvars.html">quanteda::docvars()</a></code> replacement method to a <code>sentocorpus</code> object.</li>
+<li>Modified information criterion estimators for edge cases to avoid them turning negative.</li>
+<li>Dropped the <code>"x"</code> output element from a <code>sentomodel</code> object (for large samples, this became too memory consuming).</li>
+<li>Dropped the <code>"howWithin"</code> output element from a <code>sentomeasures</code> object, and simplified a <code>sentiment</code> object into a <code>data.table</code> directly instead of a <code>list</code>.</li>
+<li>Expanded the <code>do.shrinkage.x</code> argument in the <code><a href="../reference/ctr_model.html">ctr_model()</a></code> function to a vector argument.</li>
+<li>Added a <code>do.lags</code> argument to the <code><a href="../reference/attributions.html">attributions()</a></code> function, to be able to circumvent the most time-consuming part of the computation .</li>
+<li>Imposed a check in the <code><a href="../reference/sento_measures.html">sento_measures()</a></code> function on the uniqueness of the names within and across the lexicons, features and time weighting schemes.</li>
+<li>Solved a bug in the <code><a href="../reference/sentometrics-defunct.html">measures_merge()</a></code> function that made full merging not possible.</li>
+<li>The <code>n</code> argument in the <code><a href="../reference/peakdocs.html">peakdocs()</a></code> function can now also be specified as a quantile.</li>
+</ul>
+</div>
+    <div id="sentometrics-051" class="section level2">
+<h2 class="hasAnchor">
+<a href="#sentometrics-051" class="anchor"></a>sentometrics 0.5.1</h2>
+<ul>
+<li>Minor modifications to resolve few CRAN issues.</li>
+<li>Set default value of <code>nCore</code> argument in the <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code> and <code><a href="../reference/ctr_agg.html">ctr_agg()</a></code> functions to 1.</li>
+<li>Classed the output of the <code>compute_sentiment.sentocorpus()</code> function as a <code>sentiment</code> object, and modified the <code><a href="https://rdrr.io/r/stats/aggregate.html">aggregate()</a></code> function to <code><a href="../reference/aggregate.sentiment.html">aggregate.sentiment()</a></code>.</li>
+</ul>
+</div>
+    <div id="sentometrics-050" class="section level2">
+<h2 class="hasAnchor">
+<a href="#sentometrics-050" class="anchor"></a>sentometrics 0.5.0</h2>
+<ul>
+<li>New functions: <code><a href="../reference/weights_beta.html">weights_beta()</a></code>, <code><a href="../reference/get_dates.html">get_dates()</a></code>, <code><a href="../reference/get_dimensions.html">get_dimensions()</a></code>, <code><a href="../reference/sentometrics-defunct.html">get_measures()</a></code>, and <code><a href="../reference/get_loss_data.html">get_loss_data()</a></code>.</li>
+<li>Renamed following functions: <code><a href="../reference/sentometrics-defunct.html">to_global()</a></code> to <code><a href="../reference/sentometrics-defunct.html">measures_global()</a></code>, <code><a href="../reference/sentometrics-defunct.html">perform_agg()</a></code> to <code><a href="https://rdrr.io/r/stats/aggregate.html">aggregate()</a></code>, <code><a href="../reference/sentometrics-defunct.html">almons()</a></code> to <code><a href="../reference/weights_almon.html">weights_almon()</a></code>, <code><a href="../reference/sentometrics-defunct.html">exponentials()</a></code> to <code><a href="../reference/weights_exponential.html">weights_exponential()</a></code>, <code><a href="../reference/sentometrics-defunct.html">setup_lexicons()</a></code> to <code><a href="../reference/sento_lexicons.html">sento_lexicons()</a></code>, <code><a href="../reference/sentometrics-defunct.html">retrieve_attributions()</a></code> to <code><a href="../reference/attributions.html">attributions()</a></code>, <code><a href="../reference/sentometrics-defunct.html">plot_attributions()</a></code> to <code><a href="../reference/plot.attributions.html">plot.attributions()</a></code>.</li>
+<li>Defunct the <code><a href="../reference/sentometrics-defunct.html">ctr_merge()</a></code> function, so that all merge parameters have to be passed on directly to the <code><a href="../reference/sentometrics-defunct.html">measures_merge()</a></code> function.</li>
+<li>Expanded the use of the <code>center</code> and <code>scale</code> arguments in the <code><a href="https://rdrr.io/r/base/scale.html">scale()</a></code> function.</li>
+<li>Added the <code>dateBefore</code> and <code>dateAfter</code> arguments to the <code><a href="../reference/measures_fill.html">measures_fill()</a></code> function, and dropped <code>NA</code> option of its <code>fill</code> argument.</li>
+<li>Added a <code>"beta"</code> time aggregation option (see associated <code><a href="../reference/weights_beta.html">weights_beta()</a></code> function).</li>
+<li>Corrected update of <code>"attribWeights"</code> element of output <code>sentomeasures</code> object in required <code>measures_xyz()</code> functions.</li>
+<li>Added a new attribution dimension (<code>"lags"</code>) to the <code><a href="../reference/attributions.html">attributions()</a></code> function, and corrected some edge cases.</li>
+<li>Made a slight correction to the information criterion estimators.</li>
+<li>Added a <code>lambdas</code> argument to the <code><a href="../reference/ctr_model.html">ctr_model()</a></code> function, directly passed on to the <code><a href="https://rdrr.io/pkg/glmnet/man/glmnet.html">glmnet::glmnet()</a></code> function if used.</li>
+<li>Omitted <code>do.combine</code> argument in <code><a href="../reference/sentometrics-defunct.html">measures_delete()</a></code> and <code><a href="../reference/sentometrics-defunct.html">measures_select()</a></code> functions to simplify.</li>
+<li>Expanded set of unit tests, included a coverage badge, and added <strong><code>covr</code></strong> to Suggests.</li>
+<li>Reimplementation (and improved documentation) of the sentiment calculation in the <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code> function, by writing part of the code in <strong><code>Rcpp</code></strong> relying on <strong><code>RcppParallel</code></strong> (added to Imports); there are now three approaches to computing sentiment (unigrams, bigrams and clusters).</li>
+<li>Replaced the <code>dfm</code> argument in the <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code> and <code><a href="../reference/ctr_agg.html">ctr_agg()</a></code> functions by a <code>tokens</code>. argument, and altered the input and behaviour of the <code>nCore</code> argument in these same two functions.</li>
+<li>Switched from the <strong><code>quanteda</code></strong> package to the <strong><code>stringi</code></strong> package for more direct tokenization.</li>
+<li>Trimmed the <code>list_lexicons</code> and <code>list_valence_shifters</code> built-in word lists by keeping only unigrams, and included same trimming procedure in the <code><a href="../reference/sento_lexicons.html">sento_lexicons()</a></code> function.</li>
+<li>Added a column type <code>"t"</code> to the <code>list_valence_shifters</code> built-in word list, and reset values of the <code>"y"</code> column from 2 to 1.8 and from 0.5 to 0.2.</li>
+<li>Updated the <code>epu</code> built-in dataset with the newest available series, up to July 2018.</li>
+<li>Corrected the word âspareslyâ to âsparselyâ in <code>list_valence_shifters[["en"]]</code>.</li>
+<li>Further shortened project page to the bare essence.</li>
+<li>Omitted statement printed (âCompute sentimentâ¦ Done.â) in the <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code> function.</li>
+<li>Slightly modified <code><a href="https://rdrr.io/r/base/print.html">print()</a></code> generic for a <code>sentomeasures</code> object.</li>
+<li>Dropped the <code>"tf-idf"</code> option for within-document aggregation in the <code><a href="../reference/ctr_agg.html">ctr_agg()</a></code> function.</li>
+<li>The <code><a href="../reference/sento_lexicons.html">sento_lexicons()</a></code> function outputs a <code>sentolexicons</code> object, which the <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code>. function specifically requires as an input; a <code>sentolexicons</code> object also includes a <code><a href="https://rdrr.io/r/base/Extract.html">"["</a></code> class-preserving extractor function.</li>
+<li>The <code><a href="../reference/attributions.html">attributions()</a></code> function outputs an <code>attributions</code> object; the <code>plot_attribtutions()</code> function is therefore replaced by the <code><a href="https://rdrr.io/r/graphics/plot.html">plot()</a></code> generic.</li>
+<li>Defunct the <code><a href="../reference/sentometrics-defunct.html">perform_MCS()</a></code> function, but the output of the <code><a href="../reference/get_loss_data.html">get_loss_data()</a></code> function can easily be used as an input to the <code>MCSprocedure()</code> function from the <strong><code>MCS</code></strong> package (discarded from Imports).</li>
+<li>Moved the <strong><code>parallel</code></strong> and <strong><code>doParallel</code></strong> packages to Suggests, as only needed (if enacted) in the <code><a href="../reference/sento_model.html">sento_model()</a></code> function.</li>
+<li>Sligthly modified appearance of plotting functions, to drop <strong><code>ggthemes</code></strong> from Imports.</li>
+</ul>
+</div>
+    <div id="sentometrics-040" class="section level2">
+<h2 class="hasAnchor">
+<a href="#sentometrics-040" class="anchor"></a>sentometrics 0.4.0</h2>
+<ul>
+<li>New functions: <code><a href="../reference/sentometrics-defunct.html">measures_delete()</a></code>, <code><a href="../reference/nmeasures.html">nmeasures()</a></code>, <code><a href="https://rdrr.io/r/stats/nobs.html">nobs()</a></code>, and <code><a href="../reference/sentometrics-defunct.html">to_sentocorpus()</a></code>.</li>
+<li>Renamed following functions: any <code>xyz_measures()</code> to <code>measures_xyz()</code>, <code>extract_peakdocs()</code> to <code><a href="../reference/peakdocs.html">peakdocs()</a></code>.</li>
+<li>Dropped <code>do.normalizeAlm</code> argument in the <code><a href="../reference/ctr_agg.html">ctr_agg()</a></code> function (but kept in the <code><a href="../reference/sentometrics-defunct.html">almons()</a></code> function).</li>
+<li>Inverted order of rows in output of the <code><a href="../reference/sentometrics-defunct.html">almons()</a></code> function to be consistent with Ardia et al.Â (IJF, 2019) paper.</li>
+<li>Renamed <code>lexicons</code> to <code>list_lexicons</code>, and <code>valence</code> to <code>list_valence_shifters</code>.</li>
+<li>The <code>stats</code> element of a <code>sentomeasures</code> object is now also updated in <code><a href="../reference/measures_fill.html">measures_fill()</a></code>.</li>
+<li>Changed <code>"_eng"</code> to <code>"_en"</code>â in <code>list_lexicons</code> and <code>list_valence_shifters</code> objects, to be in accordance with two-letter ISO language naming.</li>
+<li>Changed <code>"valence_language"</code> naming to <code>"language"</code> in <code>list_valence_shifters</code> object.</li>
+<li>The <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code> function now also accepts a <strong><code>quanteda</code></strong> <code>corpus</code> object and a <code>character</code> vector.</li>
+<li>The <code><a href="../reference/add_features.html">add_features()</a></code> function now also accepts a <strong><code>quanteda</code></strong> <code>corpus</code> object.</li>
+<li>Added an <code>nCore</code> argument to the <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code>, <code><a href="../reference/ctr_agg.html">ctr_agg()</a></code>, and <code><a href="../reference/ctr_model.html">ctr_model()</a></code> functions to allow for (more straightforward) parallelized computations, and omitted the <code>do.parallel</code> argument in the <code><a href="../reference/ctr_model.html">ctr_model()</a></code> function.</li>
+<li>Added a <code>do.difference</code> argument to the <code><a href="../reference/ctr_model.html">ctr_model()</a></code> function and expanded the use of the already existing <code>oos</code> argument.</li>
+<li>Brought <strong><code>ggplot2</code></strong> and <strong><code>foreach</code></strong> to Imports.</li>
+</ul>
+</div>
+    <div id="sentometrics-035" class="section level2">
+<h2 class="hasAnchor">
+<a href="#sentometrics-035" class="anchor"></a>sentometrics 0.3.5</h2>
+<ul>
+<li>Faster <code><a href="../reference/sentometrics-defunct.html">to_global()</a></code>.</li>
+<li>Set <code>tolower = FALSE</code> of <code><a href="https://quanteda.io/reference/dfm.html">quanteda::dfm()</a></code> constructor in <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code>.</li>
+<li>Changed <code>intercept</code> argument in <code><a href="../reference/ctr_model.html">ctr_model()</a></code> to <code>do.intercept</code> for consistency.</li>
+<li>Proper checks on values of feature columns in <code><a href="../reference/sento_corpus.html">sento_corpus()</a></code> and <code><a href="../reference/add_features.html">add_features()</a></code>.</li>
+</ul>
+</div>
+    <div id="sentometrics-030" class="section level2">
+<h2 class="hasAnchor">
+<a href="#sentometrics-030" class="anchor"></a>sentometrics 0.3.0</h2>
+<ul>
+<li>New functions: <code><a href="https://rdrr.io/r/base/diff.html">diff()</a></code>, <code>extract_peakdocs()</code>, and <code><a href="../reference/sentometrics-defunct.html">subset_measures()</a></code>.</li>
+<li>Modified R Depends from 3.4.2 to 3.3.0, and omitted import of <strong><code>sentimentr</code></strong>.</li>
+<li>Word count per document now determined based on a separate tokenization.</li>
+<li>Improved valence shifters search (modified <code>incluce_valence()</code> helper function).</li>
+<li>New option added for within-document aggregation (<code>"proportionalPol"</code>).</li>
+<li>Now correct pass-through of <code>dfm</code> argument in <code><a href="../reference/ctr_agg.html">ctr_agg()</a></code>.</li>
+<li>Simplified <code><a href="../reference/sentometrics-defunct.html">select_measures()</a></code>, but <code>toSelect</code> argument expanded.</li>
+<li>Calculation in <code><a href="../reference/sentometrics-defunct.html">to_global()</a></code> changed (see vignette).</li>
+<li>Improved <code><a href="../reference/add_features.html">add_features()</a></code>: regex and non-binary (between 0 and 1) allowed.</li>
+<li>All texts and lexicons now automatically to lowercase for sentiment calculation.</li>
+<li>(Re)translation of built-in lexicons and valence word lists.</li>
+<li>Small documentation clarifications and fixes.</li>
+<li>New vignette and run_vignette.R script.</li>
+<li>Shortened project page (no code example anymore).</li>
+</ul>
+</div>
+    <div id="sentometrics-020" class="section level2">
+<h2 class="hasAnchor">
+<a href="#sentometrics-020" class="anchor"></a>sentometrics 0.2.0</h2>
+<ul>
+<li>First public release.</li>
+</ul>
+</div>
+    <div id="sentometrics-010" class="section level2">
+<h2 class="hasAnchor">
+<a href="#sentometrics-010" class="anchor"></a>sentometrics 0.1.0</h2>
+<ul>
+<li>Google Summer of Code 2017 âreleaseâ (unstable).</li>
+</ul>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

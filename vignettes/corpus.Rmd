@@ -12,7 +12,7 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.width = 7, fig.heigh
 
 This tutorial provides insights in how to create, enrich, transform and analyze a corpus.
 
-#### Preparation
+##### Preparation
 
 ```{r}
 library("sentometrics")
@@ -50,7 +50,7 @@ plots$feature_plot # yearly evolution of the presence of the "wsj" and "wapo" fe
 plots$token_plot # yearly evolution of the token statistics (mean, min., max.)
 ```
 
-### Apply the **`quanteda`** corpus functions on a `sento_corpus` object
+### Apply **`quanteda`** corpus functions on a `sento_corpus` object
 
 ```{r}
 corpus <- sento_corpus(usnews)

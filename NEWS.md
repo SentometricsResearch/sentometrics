@@ -1,5 +1,5 @@
 
-## sentometrics 0.8.5 (in development)
+## sentometrics 0.8.5 (devel)
 
 - Some documentation fixes.
 

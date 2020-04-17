@@ -12,7 +12,7 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.width = 7, fig.heigh
 
 This tutorial provides a guide on how to perform the textual sentiment computation.
 
-#### Preparation
+##### Preparation
 
 ```{r}
 library("sentometrics")
@@ -80,6 +80,27 @@ tks <- as.list(tokens(corpus, what = "fastestword"))
 s <- compute_sentiment(corpus, lexicons, how = "counts", tokens = tks)
 ```
 
+### The three key approaches to the sentiment computation
+
+We offer three main approaches to do the lexicon-based sentiment calculation: account only for unigrams _(simple)_, consider valence shifting in a bigrams perspective _(valence)_, or consider valence shifting in a cluster of words around a detected polarized word _(cluster)_. Read the [vignette](https://ssrn.com/abstract=3067734) for more details! Here we demonstrate how to plot the different approaches for comparison.
+
+```{r}
+txts <- usnews[1:200, "texts"]
+
+vals <- list_valence_shifters[["en"]]
+
+lexValence <- sento_lexicons(list(nrc = hash_sentiment_nrc), vals[, c("x", "y")])
+lexCluster <- sento_lexicons(list(nrc = hash_sentiment_nrc), vals[, c("x", "t")])
+
+s1 <- compute_sentiment(txts, head(lexValence, -1))$nrc
+s2 <- compute_sentiment(txts, lexValence)$nrc
+s3 <- compute_sentiment(txts, lexCluster)$nrc
+s <- cbind(simple = s1, valence = s2, cluster = s3)
+
+matplot(s, type = "l", lty = 1, ylab = "Sentiment", xlab = "Text")
+legend("topright", col = 1:3, legend = colnames(s), lty = 1, cex = 0.7)
+```
+
 ### Sentence-level sentiment calculation and aggregation
 
 A textual sentiment computation on sentence-level, starting from a document-level corpus, and normalized dividing by the number of detected polarized words. Subsequently, the resulting sentence-level scores are aggregated into document-level scores.
@@ -144,26 +165,5 @@ _R_ they equal?
 
 ```{r}
 all.equal(q, s)
-```
-
-### The three key approaches to the sentiment computation
-
-We offer three main approaches to do the lexicon-based sentiment calculation: account only for unigrams _(simple)_, consider valence shifting in a bigrams perspective _(valence)_, or consider valence shifting in a cluster of words around a detected polarized word _(cluster)_. Read the [vignette](https://ssrn.com/abstract=3067734) for more details! Here we demonstrate how to plot the different approaches for comparison.
-
-```{r}
-txts <- usnews[1:200, "texts"]
-
-vals <- list_valence_shifters[["en"]]
-
-lexValence <- sento_lexicons(list(nrc = hash_sentiment_nrc), vals[, c("x", "y")])
-lexCluster <- sento_lexicons(list(nrc = hash_sentiment_nrc), vals[, c("x", "t")])
-
-s1 <- compute_sentiment(txts, head(lexValence, -1))$nrc
-s2 <- compute_sentiment(txts, lexValence)$nrc
-s3 <- compute_sentiment(txts, lexCluster)$nrc
-s <- cbind(simple = s1, valence = s2, cluster = s3)
-
-matplot(s, type = "l", lty = 1, ylab = "Sentiment", xlab = "Text")
-legend("topright", col = 1:3, legend = colnames(s), lty = 1, cex = 0.7)
 ```
 
