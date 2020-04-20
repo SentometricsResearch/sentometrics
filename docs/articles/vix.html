@@ -133,10 +133,10 @@
 <div id="load-packages" class="section level4">
 <h4 class="hasAnchor">
 <a href="#load-packages" class="anchor"></a>Load packages</h4>
-<div class="sourceCode" id="cb1"><html><body><pre class="r">library("sentometrics")
-library("quanteda")
-library("stm")
-library("lexicon")</pre></body></html></div>
+<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"sentometrics"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"quanteda"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"stm"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"lexicon"</span>)</pre></body></html></div>
 </div>
 <div id="convert-the-built-in-corpus-into-a-sento_corpus-object" class="section level4">
 <h4 class="hasAnchor">
@@ -146,59 +146,458 @@ library("lexicon")</pre></body></html></div>
 <div id="fit-a-topic-model" class="section level4">
 <h4 class="hasAnchor">
 <a href="#fit-a-topic-model" class="anchor"></a>Fit a topic model</h4>
-<div class="sourceCode" id="cb3"><html><body><pre class="r">### TODO: check difference in output w.r.t. JSS output
-dfm %
-  quanteda::dfm_remove(min_nchar = 3) %&gt;%
-  quanteda::dfm_trim(min_termfreq = 0.95, termfreq_type = "quantile") %&gt;%
-  quanteda::dfm_trim(max_docfreq = 0.10, docfreq_type = "prop")
-dfm  0)
-topicModel </pre></body></html></div>
+<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="co">### TODO: check difference in output w.r.t. JSS output</span>
+<span class="no">dfm</span> <span class="kw">&lt;-</span> <span class="kw pkg">quanteda</span><span class="kw ns">::</span><span class="fu"><a href="https://quanteda.io/reference/dfm.html">dfm</a></span>(<span class="no">uscorpus</span>, <span class="kw">tolower</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
+                     <span class="kw">remove_punct</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">remove_numbers</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">remove</span> <span class="kw">=</span> <span class="kw pkg">quanteda</span><span class="kw ns">::</span><span class="fu"><a href="https://quanteda.io/reference/reexports.html">stopwords</a></span>(<span class="st">"en"</span>)) <span class="kw">%&gt;%</span>
+  <span class="kw pkg">quanteda</span><span class="kw ns">::</span><span class="fu"><a href="https://quanteda.io/reference/dfm_select.html">dfm_remove</a></span>(<span class="kw">min_nchar</span> <span class="kw">=</span> <span class="fl">3</span>) <span class="kw">%&gt;%</span>
+  <span class="kw pkg">quanteda</span><span class="kw ns">::</span><span class="fu"><a href="https://quanteda.io/reference/dfm_trim.html">dfm_trim</a></span>(<span class="kw">min_termfreq</span> <span class="kw">=</span> <span class="fl">0.95</span>, <span class="kw">termfreq_type</span> <span class="kw">=</span> <span class="st">"quantile"</span>) <span class="kw">%&gt;%</span>
+  <span class="kw pkg">quanteda</span><span class="kw ns">::</span><span class="fu"><a href="https://quanteda.io/reference/dfm_trim.html">dfm_trim</a></span>(<span class="kw">max_docfreq</span> <span class="kw">=</span> <span class="fl">0.10</span>, <span class="kw">docfreq_type</span> <span class="kw">=</span> <span class="st">"prop"</span>)
+<span class="no">dfm</span> <span class="kw">&lt;-</span> <span class="kw pkg">quanteda</span><span class="kw ns">::</span><span class="fu"><a href="https://quanteda.io/reference/dfm_subset.html">dfm_subset</a></span>(<span class="no">dfm</span>, <span class="kw pkg">quanteda</span><span class="kw ns">::</span><span class="fu"><a href="https://quanteda.io/reference/ntoken.html">ntoken</a></span>(<span class="no">dfm</span>) <span class="kw">&gt;</span> <span class="fl">0</span>)
+<span class="no">topicModel</span> <span class="kw">&lt;-</span> <span class="kw pkg">stm</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/stm/man/stm.html">stm</a></span>(<span class="no">dfm</span>, <span class="kw">K</span> <span class="kw">=</span> <span class="fl">8</span>, <span class="kw">verbose</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
+<span class="no">topTerms</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="kw pkg">stm</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/stm/man/labelTopics.html">labelTopics</a></span>(<span class="no">topicModel</span>, <span class="kw">n</span> <span class="kw">=</span> <span class="fl">5</span>)<span class="kw">[[</span><span class="st">"prob"</span>]])
+
+<span class="no">topTerms</span></pre></body></html></div>
+<pre><code>##      [,1]          [,2]       [,3]        [,4]       [,5]        [,6]       
+## [1,] "funds"       "banks"    "labor"     "tax"      "share"     "bond"     
+## [2,] "fund"        "credit"   "reported"  "budget"   "corp"      "oil"      
+## [3,] "bonds"       "debt"     "decline"   "house"    "industry"  "composite"
+## [4,] "capital"     "loans"    "second"    "congress" "cents"     "yield"    
+## [5,] "investments" "mortgage" "economist" "bush"     "executive" "bonds"    
+##      [,7]      [,8]      
+## [1,] "workers" "trade"   
+## [2,] "state"   "currency"
+## [3,] "work"    "central" 
+## [4,] "states"  "china"   
+## [5,] "health"  "european"</code></pre>
 </div>
 <div id="use-the-topic-model-output-to-enrich-the-corpus-with-features" class="section level4">
 <h4 class="hasAnchor">
 <a href="#use-the-topic-model-output-to-enrich-the-corpus-with-features" class="anchor"></a>Use the topic model output to enrich the corpus with features</h4>
-<div class="sourceCode" id="cb4"><html><body><pre class="r">keywords </pre></body></html></div>
+<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">keywords</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="fl">1</span>:<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span>(<span class="no">topTerms</span>), <span class="kw">function</span>(<span class="no">i</span>) <span class="no">topTerms</span>[, <span class="no">i</span>])
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">keywords</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="st">"TOPIC_"</span>, <span class="fl">1</span>:<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">keywords</span>))
+<span class="no">uscorpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/add_features.html">add_features</a></span>(<span class="no">uscorpus</span>, <span class="kw">keywords</span> <span class="kw">=</span> <span class="no">keywords</span>, <span class="kw">do.binary</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">do.regex</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
+<span class="kw pkg">quanteda</span><span class="kw ns">::</span><span class="fu"><a href="https://quanteda.io/reference/docvars.html">docvars</a></span>(<span class="no">uscorpus</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"uncertainty"</span>, <span class="st">"election"</span>, <span class="st">"economy"</span>, <span class="st">"noneconomy"</span>, <span class="st">"wsj"</span>, <span class="st">"wapo"</span>)) <span class="kw">&lt;-</span> <span class="kw">NULL</span>
+<span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colSums</a></span>(<span class="kw pkg">quanteda</span><span class="kw ns">::</span><span class="fu"><a href="https://quanteda.io/reference/docvars.html">docvars</a></span>(<span class="no">uscorpus</span>)[, -<span class="fl">1</span>] <span class="kw">!=</span> <span class="fl">0</span>)</pre></body></html></div>
+<pre><code>## TOPIC_1 TOPIC_2 TOPIC_3 TOPIC_4 TOPIC_5 TOPIC_6 TOPIC_7 TOPIC_8 
+##    1111    1101    1389     648     954    1005    1052     856</code></pre>
 </div>
 <div id="prepare-the-sentiment-lexicons" class="section level4">
 <h4 class="hasAnchor">
 <a href="#prepare-the-sentiment-lexicons" class="anchor"></a>Prepare the sentiment lexicons</h4>
-<div class="sourceCode" id="cb5"><html><body><pre class="r">lexiconsIn </pre></body></html></div>
+<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">lexiconsIn</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(
+  <span class="kw pkg">sentometrics</span><span class="kw ns">::</span><span class="no"><a href="../reference/list_lexicons.html">list_lexicons</a></span>[<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"LM_en"</span>, <span class="st">"HENRY_en"</span>, <span class="st">"GI_en"</span>)],
+  <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(
+    <span class="kw">NRC</span> <span class="kw">=</span> <span class="kw pkg">lexicon</span><span class="kw ns">::</span><span class="no"><a href="https://rdrr.io/pkg/lexicon/man/hash_sentiment_nrc.html">hash_sentiment_nrc</a></span>,
+    <span class="kw">HULIU</span> <span class="kw">=</span> <span class="kw pkg">lexicon</span><span class="kw ns">::</span><span class="no"><a href="https://rdrr.io/pkg/lexicon/man/hash_sentiment_huliu.html">hash_sentiment_huliu</a></span>,
+    <span class="kw">SENTIWORD</span> <span class="kw">=</span> <span class="kw pkg">lexicon</span><span class="kw ns">::</span><span class="no"><a href="https://rdrr.io/pkg/lexicon/man/hash_sentiment_sentiword.html">hash_sentiment_sentiword</a></span>,
+    <span class="kw">JOCKERS</span> <span class="kw">=</span> <span class="kw pkg">lexicon</span><span class="kw ns">::</span><span class="no"><a href="https://rdrr.io/pkg/lexicon/man/hash_sentiment_jockers.html">hash_sentiment_jockers</a></span>,
+    <span class="kw">SENTICNET</span> <span class="kw">=</span> <span class="kw pkg">lexicon</span><span class="kw ns">::</span><span class="no"><a href="https://rdrr.io/pkg/lexicon/man/hash_sentiment_senticnet.html">hash_sentiment_senticnet</a></span>,
+    <span class="kw">SOCAL</span> <span class="kw">=</span> <span class="kw pkg">lexicon</span><span class="kw ns">::</span><span class="no"><a href="https://rdrr.io/pkg/lexicon/man/hash_sentiment_socal_google.html">hash_sentiment_socal_google</a></span>
+  )
+)
+<span class="no">lex</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="kw">lexiconsIn</span> <span class="kw">=</span> <span class="no">lexiconsIn</span>,
+                      <span class="kw">valenceIn</span> <span class="kw">=</span> <span class="kw pkg">sentometrics</span><span class="kw ns">::</span><span class="no"><a href="../reference/list_valence_shifters.html">list_valence_shifters</a></span><span class="kw">[[</span><span class="st">"en"</span>]])</pre></body></html></div>
 </div>
 <div id="define-the-sentiment-index-aggregation-specifications" class="section level4">
 <h4 class="hasAnchor">
 <a href="#define-the-sentiment-index-aggregation-specifications" class="anchor"></a>Define the sentiment index aggregation specifications</h4>
-<div class="sourceCode" id="cb6"><html><body><pre class="r">ctrAggPred </pre></body></html></div>
+<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">ctrAggPred</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/ctr_agg.html">ctr_agg</a></span>(
+  <span class="kw">howWithin</span> <span class="kw">=</span> <span class="st">"proportionalPol"</span>,
+  <span class="kw">howDocs</span> <span class="kw">=</span> <span class="st">"equal_weight"</span>,
+  <span class="kw">howTime</span> <span class="kw">=</span> <span class="st">"beta"</span>, <span class="kw">by</span> <span class="kw">=</span> <span class="st">"day"</span>, <span class="kw">fill</span> <span class="kw">=</span> <span class="st">"latest"</span>, <span class="kw">lag</span> <span class="kw">=</span> <span class="fl">270</span>, <span class="kw">aBeta</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fl">3</span>, <span class="kw">bBeta</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fl">2</span>
+)</pre></body></html></div>
 </div>
 <div id="aggregate-the-corpus-into-textual-sentiment-time-series" class="section level4">
 <h4 class="hasAnchor">
 <a href="#aggregate-the-corpus-into-textual-sentiment-time-series" class="anchor"></a>Aggregate the corpus into textual sentiment time series</h4>
-<div class="sourceCode" id="cb7"><html><body><pre class="r">sentMeasPred </pre></body></html></div>
+<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">sentMeasPred</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_measures.html">sento_measures</a></span>(<span class="no">uscorpus</span>, <span class="kw">lexicons</span> <span class="kw">=</span> <span class="no">lex</span>, <span class="kw">ctr</span> <span class="kw">=</span> <span class="no">ctrAggPred</span>)
+
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">sentMeasPred</span>, <span class="kw">group</span> <span class="kw">=</span> <span class="st">"features"</span>)</pre></body></html></div>
+<p><img src="vix_files/figure-html/unnamed-chunk-8-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div id="retrieve-the-vix-data" class="section level4">
 <h4 class="hasAnchor">
 <a href="#retrieve-the-vix-data" class="anchor"></a>Retrieve the VIX data</h4>
-<div class="sourceCode" id="cb8"><html><body><pre class="r">library("repmis")
-vixObject </pre></body></html></div>
+<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"repmis"</span>)
+<span class="no">vixObject</span> <span class="kw">&lt;-</span> <span class="st">"https://github.com/sborms/sentometrics/blob/master/examples/vix.rda?raw=true"</span>
+<span class="fu"><a href="https://rdrr.io/pkg/repmis/man/source_data.html">source_data</a></span>(<span class="no">vixObject</span>)</pre></body></html></div>
+<pre><code>## [1] "vix"</code></pre>
 </div>
 <div id="align-the-sentiment-measures-and-the-vix-data" class="section level4">
 <h4 class="hasAnchor">
 <a href="#align-the-sentiment-measures-and-the-vix-data" class="anchor"></a>Align the sentiment measures and the VIX data</h4>
-<div class="sourceCode" id="cb9"><html><body><pre class="r">sentMeasIn </pre></body></html></div>
+<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">sentMeasIn</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span>(<span class="no">sentMeasPred</span>, <span class="no">date</span> <span class="kw">%in%</span> <span class="no">vix</span>$<span class="no">date</span>)
+<span class="no">datesIn</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/get_dates.html">get_dates</a></span>(<span class="no">sentMeasIn</span>)
+<span class="no">y</span> <span class="kw">&lt;-</span> <span class="no">vix</span>[<span class="no">vix</span>$<span class="no">date</span> <span class="kw">%in%</span> <span class="no">datesIn</span>, <span class="no">value</span>]
+<span class="no">x</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="kw">lag</span> <span class="kw">=</span> <span class="no">y</span>)</pre></body></html></div>
 </div>
 <div id="prepare-the-regression-model-specifications" class="section level4">
 <h4 class="hasAnchor">
 <a href="#prepare-the-regression-model-specifications" class="anchor"></a>Prepare the regression model specifications</h4>
-<div class="sourceCode" id="cb10"><html><body><pre class="r">ctrIter </pre></body></html></div>
+<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">ctrIter</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/ctr_model.html">ctr_model</a></span>(<span class="kw">model</span> <span class="kw">=</span> <span class="st">"gaussian"</span>,
+                     <span class="kw">type</span> <span class="kw">=</span> <span class="st">"BIC"</span>,
+                     <span class="kw">h</span> <span class="kw">=</span> <span class="fl">6</span>,
+                     <span class="kw">alphas</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="fl">0.1</span>, <span class="fl">0.3</span>, <span class="fl">0.5</span>, <span class="fl">0.7</span>, <span class="fl">0.9</span>, <span class="fl">1</span>),
+                     <span class="kw">do.iter</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
+                     <span class="kw">oos</span> <span class="kw">=</span> <span class="fl">5</span>, <span class="co"># h - 1</span>
+                     <span class="kw">nSample</span> <span class="kw">=</span> <span class="fl">60</span>,
+                     <span class="kw">nCore</span> <span class="kw">=</span> <span class="fl">1</span>)</pre></body></html></div>
 </div>
 <div id="fit-and-assess-the-elastic-net-model-iteratively-over-time" class="section level4">
 <h4 class="hasAnchor">
 <a href="#fit-and-assess-the-elastic-net-model-iteratively-over-time" class="anchor"></a>Fit and assess the elastic net model iteratively over time</h4>
-<div class="sourceCode" id="cb11"><html><body><pre class="r">out </pre></body></html></div>
+<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_model.html">sento_model</a></span>(<span class="no">sentMeasIn</span>, <span class="kw">x</span> <span class="kw">=</span> <span class="no">x</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">y</span>, <span class="kw">ctr</span> <span class="kw">=</span> <span class="no">ctrIter</span>)</pre></body></html></div>
+<pre><code>## Iteration: 1 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 2 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 3 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 4 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 5 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 6 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 7 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 8 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 9 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 10 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 11 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 12 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 13 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 14 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 15 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 16 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 17 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 18 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 19 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 20 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 21 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 22 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 23 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 24 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 25 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 26 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 27 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 28 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 29 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 30 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 31 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 32 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 33 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 34 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 35 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 36 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 37 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 38 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 39 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 40 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 41 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 42 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 43 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 44 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 45 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 46 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 47 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 48 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 49 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 50 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 51 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 52 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 53 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 54 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 55 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 56 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 57 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 58 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 59 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 60 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 61 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 62 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 63 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 64 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 65 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 66 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 67 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 68 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 69 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 70 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 71 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 72 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 73 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 74 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 75 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 76 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 77 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 78 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 79 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 80 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 81 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 82 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 83 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 84 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 85 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 86 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 87 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 88 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 89 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 90 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 91 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 92 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 93 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 94 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 95 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 96 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 97 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 98 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 99 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 100 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 101 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 102 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 103 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 104 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 105 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 106 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 107 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 108 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 109 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 110 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 111 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 112 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 113 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 114 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 115 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 116 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 117 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 118 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 119 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 120 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 121 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 122 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 123 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 124 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 125 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 126 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 127 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 128 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 129 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 130 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 131 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 132 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 133 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 134 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 135 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 136 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 137 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 138 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 139 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 140 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 141 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 142 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 143 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 144 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 145 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 146 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 147 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 148 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 149 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 150 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 151 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 152 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 153 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 154 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 155 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 156 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 157 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 158 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 159 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 160 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1
+## Iteration: 161 from 161
+## alphas run: 0, 0.1, 0.3, 0.5, 0.7, 0.9, 1</code></pre>
+<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">out</span>)</pre></body></html></div>
+<pre><code>## Model specification 
+## - - - - - - - - - - - - - - - - - - - - 
+##  
+## Model type: gaussian 
+## Calibration: via BIC information criterion 
+## Sample size: 60 
+## Total number of iterations/predictions: 161 
+## Optimal average elastic net alpha parameter: 0.92 
+## Optimal average elastic net lambda parameter: 2.8 
+##  
+## Out-of-sample performance 
+## - - - - - - - - - - - - - - - - - - - - 
+##  
+## Mean directional accuracy: 47.5 % 
+## Root mean squared prediction error: 10.42 
+## Mean absolute deviation: 8.2</code></pre>
+<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">out</span>)</pre></body></html></div>
+<p><img src="vix_files/figure-html/unnamed-chunk-12-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div id="compute-and-plot-the-sentiment-attributions" class="section level4">
 <h4 class="hasAnchor">
 <a href="#compute-and-plot-the-sentiment-attributions" class="anchor"></a>Compute and plot the sentiment attributions</h4>
-<div class="sourceCode" id="cb12"><html><body><pre class="r">attr </pre></body></html></div>
+<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="no">attr</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/attributions.html">attributions</a></span>(<span class="no">out</span>, <span class="no">sentMeasIn</span>, <span class="kw">do.lags</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">do.normalize</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
+
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">attr</span>, <span class="kw">group</span> <span class="kw">=</span> <span class="st">"features"</span>)</pre></body></html></div>
+<p><img src="vix_files/figure-html/unnamed-chunk-13-1.png" width="576" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">attr</span>, <span class="kw">group</span> <span class="kw">=</span> <span class="st">"lexicons"</span>)</pre></body></html></div>
+<p><img src="vix_files/figure-html/unnamed-chunk-13-2.png" width="576" style="display: block; margin: auto;"></p>
 </div>
   </div>
 
@@ -215,7 +614,7 @@ vixObject </pre></body></html></div>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

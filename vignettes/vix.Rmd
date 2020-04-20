@@ -7,8 +7,7 @@ vignette: >
 ---
 
 ```{r, include=FALSE}
-knitr::opts_chunk$set(eval = FALSE,
-                      warning = FALSE, message = FALSE, fig.width = 6, fig.height = 4, fig.align = "center")
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.width = 6, fig.height = 4, fig.align = "center")
 ```
 
 In this application, we show a recommended workflow to predict a variable, in this case the stock market volatility VIX index, using textual sentiment indices. It takes over and explains the example provided in the [vignette](https://doi.org/10.2139/ssrn.3067734).

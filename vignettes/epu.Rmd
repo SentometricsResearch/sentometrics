@@ -12,14 +12,15 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.width = 6, fig.heigh
 
 In this application, we create (a sentiment-adjusted version of) the well-known Economic Policy Uncertainty (EPU) index, which fits very will within the package's framework.
 
-## A "regular" EPU index
-
 #### Load packages
 
 ```{r}
 library("sentometrics")
 library("data.table")
+library("quanteda")
 ```
+
+## A "regular" EPU index
 
 #### Load and create corpus object
 
@@ -99,7 +100,7 @@ plot(sm4)
 
 ## A sentiment-adjusted EPU index
 
-#### Load and create corpus object
+#### Recreate corpus object
 
 ```{r}
 corpus <- sento_corpus(usnews[, c("id", "date", "texts", "wsj", "wapo")])
@@ -110,7 +111,6 @@ corpus <- sento_corpus(usnews[, c("id", "date", "texts", "wsj", "wapo")])
 ```{r}
 corpus <- add_features(corpus, keywords = keywords, do.binary = TRUE)
 
-library("quanteda")
 dv <- as.data.table(docvars(corpus))
 dv[, EPU := to_epu(.SD), .SDcols = c("E", "P", "U")]
 ```

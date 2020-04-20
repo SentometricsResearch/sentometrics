@@ -224,7 +224,7 @@
 <a href="#sentometrics-070" class="anchor"></a>sentometrics 0.7.0</h2>
 <ul>
 <li>New functions: <code><a href="../reference/measures_update.html">measures_update()</a></code>, <code><a href="../reference/subset.sento_measures.html">subset.sento_measures()</a></code>, <code><a href="../reference/as.sentiment.html">as.sentiment()</a></code>, <code>as.sento_measures()</code>, <code>as.data.table.sentiment()</code>, <code><a href="../reference/corpus_summarize.html">corpus_summarize()</a></code>, <code><a href="../reference/sentometrics-defunct.html">sento_app()</a></code>, and <code><a href="../reference/aggregate.sento_measures.html">aggregate.sento_measures()</a></code>.</li>
-<li>Defunct all deprecated functions as well as the functions replaced by the new functions (<em>wiping the slate cleanâ¦</em>).</li>
+<li>Defunct all deprecated functions as well as the functions replaced by the new functions (<em>wiping the slate clean…</em>).</li>
 <li>Handled reverse dependency issue raised by <strong><code>quanteda</code></strong> developers regarding their new corpus object.</li>
 <li>Renamed the class objects coming from any <code>sento_xyz()</code> function into the name of the function (e.g., the <code><a href="../reference/sento_measures.html">sento_measures()</a></code> function now gives a <code>sento_measures</code> object instead of a <code>sentomeasures</code> object).</li>
 <li>Fixed a small bug in the <code><a href="../reference/aggregate.sento_measures.html">aggregate.sento_measures()</a></code> (previously <code><a href="../reference/sentometrics-defunct.html">measures_merge()</a></code>) function to take the mean instead of the sum in a particular case.</li>
@@ -296,9 +296,9 @@
 <li>Trimmed the <code>list_lexicons</code> and <code>list_valence_shifters</code> built-in word lists by keeping only unigrams, and included same trimming procedure in the <code><a href="../reference/sento_lexicons.html">sento_lexicons()</a></code> function.</li>
 <li>Added a column type <code>"t"</code> to the <code>list_valence_shifters</code> built-in word list, and reset values of the <code>"y"</code> column from 2 to 1.8 and from 0.5 to 0.2.</li>
 <li>Updated the <code>epu</code> built-in dataset with the newest available series, up to July 2018.</li>
-<li>Corrected the word âspareslyâ to âsparselyâ in <code>list_valence_shifters[["en"]]</code>.</li>
+<li>Corrected the word ‘sparesly’ to ‘sparsely’ in <code>list_valence_shifters[["en"]]</code>.</li>
 <li>Further shortened project page to the bare essence.</li>
-<li>Omitted statement printed (âCompute sentimentâ¦ Done.â) in the <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code> function.</li>
+<li>Omitted statement printed (‘Compute sentiment… Done.’) in the <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code> function.</li>
 <li>Slightly modified <code><a href="https://rdrr.io/r/base/print.html">print()</a></code> generic for a <code>sentomeasures</code> object.</li>
 <li>Dropped the <code>"tf-idf"</code> option for within-document aggregation in the <code><a href="../reference/ctr_agg.html">ctr_agg()</a></code> function.</li>
 <li>The <code><a href="../reference/sento_lexicons.html">sento_lexicons()</a></code> function outputs a <code>sentolexicons</code> object, which the <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code>. function specifically requires as an input; a <code>sentolexicons</code> object also includes a <code><a href="https://rdrr.io/r/base/Extract.html">"["</a></code> class-preserving extractor function.</li>
@@ -315,10 +315,10 @@
 <li>New functions: <code><a href="../reference/sentometrics-defunct.html">measures_delete()</a></code>, <code><a href="../reference/nmeasures.html">nmeasures()</a></code>, <code><a href="https://rdrr.io/r/stats/nobs.html">nobs()</a></code>, and <code><a href="../reference/sentometrics-defunct.html">to_sentocorpus()</a></code>.</li>
 <li>Renamed following functions: any <code>xyz_measures()</code> to <code>measures_xyz()</code>, <code>extract_peakdocs()</code> to <code><a href="../reference/peakdocs.html">peakdocs()</a></code>.</li>
 <li>Dropped <code>do.normalizeAlm</code> argument in the <code><a href="../reference/ctr_agg.html">ctr_agg()</a></code> function (but kept in the <code><a href="../reference/sentometrics-defunct.html">almons()</a></code> function).</li>
-<li>Inverted order of rows in output of the <code><a href="../reference/sentometrics-defunct.html">almons()</a></code> function to be consistent with Ardia et al.Â (IJF, 2019) paper.</li>
+<li>Inverted order of rows in output of the <code><a href="../reference/sentometrics-defunct.html">almons()</a></code> function to be consistent with Ardia et al. (IJF, 2019) paper.</li>
 <li>Renamed <code>lexicons</code> to <code>list_lexicons</code>, and <code>valence</code> to <code>list_valence_shifters</code>.</li>
 <li>The <code>stats</code> element of a <code>sentomeasures</code> object is now also updated in <code><a href="../reference/measures_fill.html">measures_fill()</a></code>.</li>
-<li>Changed <code>"_eng"</code> to <code>"_en"</code>â in <code>list_lexicons</code> and <code>list_valence_shifters</code> objects, to be in accordance with two-letter ISO language naming.</li>
+<li>Changed <code>"_eng"</code> to <code>"_en"</code>’ in <code>list_lexicons</code> and <code>list_valence_shifters</code> objects, to be in accordance with two-letter ISO language naming.</li>
 <li>Changed <code>"valence_language"</code> naming to <code>"language"</code> in <code>list_valence_shifters</code> object.</li>
 <li>The <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code> function now also accepts a <strong><code>quanteda</code></strong> <code>corpus</code> object and a <code>character</code> vector.</li>
 <li>The <code><a href="../reference/add_features.html">add_features()</a></code> function now also accepts a <strong><code>quanteda</code></strong> <code>corpus</code> object.</li>
@@ -368,7 +368,7 @@
 <h2 class="hasAnchor">
 <a href="#sentometrics-010" class="anchor"></a>sentometrics 0.1.0</h2>
 <ul>
-<li>Google Summer of Code 2017 âreleaseâ (unstable).</li>
+<li>Google Summer of Code 2017 “release” (unstable).</li>
 </ul>
 </div>
   </div>
@@ -388,7 +388,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>
