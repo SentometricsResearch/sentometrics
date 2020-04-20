@@ -4,7 +4,7 @@ destination: docs
 
 template:
   params:
-    bootswatch: spacelab # https://bootswatch.com/
+    bootswatch: flatly # https://bootswatch.com
 
 toc:
   depth: 3

@@ -30,26 +30,29 @@ uscorpus <- sento_corpus(sentometrics::usnews)
 #### Fit a topic model
 
 ```{r}
-### TODO: check difference in output w.r.t. JSS output
 dfm <- quanteda::dfm(uscorpus, tolower = TRUE,
                      remove_punct = TRUE, remove_numbers = TRUE, remove = quanteda::stopwords("en")) %>%
   quanteda::dfm_remove(min_nchar = 3) %>%
   quanteda::dfm_trim(min_termfreq = 0.95, termfreq_type = "quantile") %>%
   quanteda::dfm_trim(max_docfreq = 0.10, docfreq_type = "prop")
 dfm <- quanteda::dfm_subset(dfm, quanteda::ntoken(dfm) > 0)
+
 topicModel <- stm::stm(dfm, K = 8, verbose = FALSE)
 topTerms <- t(stm::labelTopics(topicModel, n = 5)[["prob"]])
 
-topTerms
+topTerms[, 1:5] # first five topics
 ```
 
 #### Use the topic model output to enrich the corpus with features
+
+The final topic features distribution in the corpus is different than what is reported in the vignette. This is due to fundamental changes within the **`quanteda`** package regarding their tokenization. The sensitivity of the topical output is a good reminder about the importance of optimizing the preprocessing and the topic modelling itself (which is not dealt with in detail here).
 
 ```{r}
 keywords <- lapply(1:ncol(topTerms), function(i) topTerms[, i])
 names(keywords) <- paste0("TOPIC_", 1:length(keywords))
 uscorpus <- add_features(uscorpus, keywords = keywords, do.binary = FALSE, do.regex = FALSE)
 quanteda::docvars(uscorpus, c("uncertainty", "election", "economy", "noneconomy", "wsj", "wapo")) <- NULL
+
 colSums(quanteda::docvars(uscorpus)[, -1] != 0)
 ```
 
@@ -116,7 +119,8 @@ ctrIter <- ctr_model(model = "gaussian",
                      do.iter = TRUE,
                      oos = 5, # h - 1
                      nSample = 60,
-                     nCore = 1)
+                     nCore = 1,
+                     do.progress = FALSE)
 ```
 
 #### Fit and assess the elastic net model iteratively over time
