@@ -133,18 +133,21 @@
 <div id="preparation" class="section level5">
 <h5 class="hasAnchor">
 <a href="#preparation" class="anchor"></a>Preparation</h5>
-<div class="sourceCode" id="cb1"><html><body><pre class="r">library("sentometrics")
-library("quanteda")
+<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"sentometrics"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"quanteda"</span>)
 
-data("usnews")
-data("list_lexicons")
-data("list_valence_shifters")</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"usnews"</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"list_lexicons"</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"list_valence_shifters"</span>)</pre></body></html></div>
 </div>
 <div id="summarize-a-corpus-through-some-statistics-and-plots" class="section level3">
 <h3 class="hasAnchor">
 <a href="#summarize-a-corpus-through-some-statistics-and-plots" class="anchor"></a>Summarize a corpus through some statistics and plots</h3>
 <p>Quickly investigate how your corpus looks like in terms of number of documents, number of tokens and its metadata features.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r">corpus </pre></body></html></div>
+<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_corpus.html">sento_corpus</a></span>(<span class="no">usnews</span>)
+
+<span class="no">summ1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/corpus_summarize.html">corpus_summarize</a></span>(<span class="no">corpus</span>, <span class="kw">by</span> <span class="kw">=</span> <span class="st">"week"</span>)
+<span class="no">stats</span> <span class="kw">&lt;-</span> <span class="no">summ1</span><span class="kw">[[</span><span class="st">"stats"</span>]] <span class="co"># some weekly corpus statistics about tokens and features</span></pre></body></html></div>
 <div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">stats</span>[, <span class="fl">1</span>:<span class="fl">6</span>]</pre></body></html></div>
 <pre><code>##             date documents totalTokens meanTokens minTokens maxTokens
 ##    1: 1995-01-02         4         678   169.5000       110       213
@@ -171,7 +174,8 @@ data("list_valence_shifters")</pre></body></html></div>
 ## 1007: 2014-12-15   3    0       2          1
 ## 1008: 2014-12-22   6    0       2          4
 ## 1009: 2014-12-29   1    0       0          1</code></pre>
-<div class="sourceCode" id="cb7"><html><body><pre class="r">summ2 </pre></body></html></div>
+<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">summ2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/corpus_summarize.html">corpus_summarize</a></span>(<span class="no">corpus</span>, <span class="kw">by</span> <span class="kw">=</span> <span class="st">"year"</span>, <span class="kw">features</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"wsj"</span>, <span class="st">"wapo"</span>))
+<span class="no">plots</span> <span class="kw">&lt;-</span> <span class="no">summ2</span><span class="kw">[[</span><span class="st">"plots"</span>]]</pre></body></html></div>
 <div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">plots</span>$<span class="no">doc_plot</span> <span class="co"># yearly evolution of the number of documents</span></pre></body></html></div>
 <p><img src="corpus_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">plots</span>$<span class="no">feature_plot</span> <span class="co"># yearly evolution of the presence of the "wsj" and "wapo" features</span></pre></body></html></div>
@@ -182,12 +186,30 @@ data("list_valence_shifters")</pre></body></html></div>
 <div id="apply-quanteda-corpus-functions-on-a-sento_corpus-object" class="section level3">
 <h3 class="hasAnchor">
 <a href="#apply-quanteda-corpus-functions-on-a-sento_corpus-object" class="anchor"></a>Apply <strong><code>quanteda</code></strong> corpus functions on a <code>sento_corpus</code> object</h3>
-<div class="sourceCode" id="cb11"><html><body><pre class="r">corpus </pre></body></html></div>
+<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_corpus.html">sento_corpus</a></span>(<span class="no">usnews</span>)
+
+<span class="no">res</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/corpus_reshape.html">corpus_reshape</a></span>(<span class="no">corpus</span>, <span class="kw">to</span> <span class="kw">=</span> <span class="st">"sentences"</span>)
+<span class="no">sam</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/corpus_sample.html">corpus_sample</a></span>(<span class="no">corpus</span>, <span class="fl">100</span>)
+<span class="no">seg</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/corpus_segment.html">corpus_segment</a></span>(<span class="no">corpus</span>, <span class="kw">pattern</span> <span class="kw">=</span> <span class="st">"stock"</span>, <span class="kw">use_docvars</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
+<span class="no">sub</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/corpus_subset.html">corpus_subset</a></span>(<span class="no">corpus</span>, <span class="no">wsj</span> <span class="kw">==</span> <span class="fl">1</span>)
+<span class="no">tri</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/corpus_trim.html">corpus_trim</a></span>(<span class="no">corpus</span>, <span class="st">"documents"</span>, <span class="kw">min_ntoken</span> <span class="kw">=</span> <span class="fl">300</span>)
+<span class="no">trs</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/corpus_trim.html">corpus_trim</a></span>(<span class="no">corpus</span>, <span class="st">"sentences"</span>, <span class="kw">min_ntoken</span> <span class="kw">=</span> <span class="fl">40</span>)</pre></body></html></div>
 </div>
 <div id="enrich-a-sento_corpus-object-with-features" class="section level3">
 <h3 class="hasAnchor">
 <a href="#enrich-a-sento_corpus-object-with-features" class="anchor"></a>Enrich a <code>sento_corpus</code> object with features</h3>
-<div class="sourceCode" id="cb12"><html><body><pre class="r">corpus </pre></body></html></div>
+<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_corpus.html">sento_corpus</a></span>(<span class="no">usnews</span>[, <span class="fl">1</span>:<span class="fl">3</span>])
+
+<span class="no">keywords</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(
+  <span class="kw">E</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"economy"</span>, <span class="st">"economic"</span>),
+  <span class="kw">P</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"policy&amp;regulation"</span>),
+  <span class="kw">U</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"uncertainty"</span>, <span class="st">"uncertain"</span>)
+)
+
+<span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/add_features.html">add_features</a></span>(<span class="no">corpus</span>, <span class="kw">keywords</span> <span class="kw">=</span> <span class="no">keywords</span>, <span class="kw">do.binary</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">do.regex</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">FALSE</span>, <span class="fl">TRUE</span>, <span class="fl">FALSE</span>))
+<span class="fu"><a href="https://quanteda.io/reference/docvars.html">docvars</a></span>(<span class="no">corpus</span>, <span class="st">"featureDummy"</span>) <span class="kw">&lt;-</span> <span class="kw">NULL</span>
+
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="fu"><a href="https://quanteda.io/reference/docvars.html">docvars</a></span>(<span class="no">corpus</span>))</pre></body></html></div>
 <pre><code>##         date dummyFeature E U
 ## 1 1995-01-02            1 0 0
 ## 2 1995-01-05            1 0 0
@@ -213,7 +235,7 @@ data("list_valence_shifters")</pre></body></html></div>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

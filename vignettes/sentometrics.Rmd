@@ -11,7 +11,7 @@ You collected a large number of texts and think it is a good idea to summarize y
 
 ## What?
 
-The **`sentometrics`** package is an **integrated framework for textual sentiment time series aggregation and prediction**. It accounts for the intrinsic challenge that textual sentiment can be computed in many different ways, as well as the large number of possibilities to pool sentiment into a time series index. The package therefore integrates the fast _quantification_ of sentiment from texts, the _aggregation_ into different sentiment time series and the _prediction_ based on these measures. All in one coherent workflow!
+The **`sentometrics`** package is an **integrated framework for textual sentiment time series aggregation and prediction**. It accounts for the intrinsic challenge that textual sentiment can be computed in many different ways, as well as the large number of possibilities to pool sentiment into a time series index. The package integrates the fast _quantification_ of sentiment from texts, the _aggregation_ into different sentiment time series, and the _prediction_ based on these measures. All in one coherent workflow!
 
 ## Installation
 
@@ -35,11 +35,9 @@ Check out the **Examples** section. It includes tutorials with a bunch of exampl
 
 You might also want to have a look at the [**`sentometrics.app`**](https://github.com/sborms/sentometrics.app) package. Its `sento_app()` function embeds a Shiny application that displays many of **`sentometrics`**' functionalities. Enjoy!
 
-## Reading material
+## Readings
 
-Check out the **Research** section, especially our [vignette](https://ssrn.com/abstract=3067734) which explains the ins and outs of the software package along with accompanying code examples. 
-
-The complete documentation can be found on CRAN's [sentometrics](https://CRAN.R-project.org/package=sentometrics) page.
+Check out the **Research** section, especially our [vignette](https://ssrn.com/abstract=3067734) which explains the ins and outs of the software package along with accompanying code examples. The complete documentation can be found on the [sentometrics CRAN](https://CRAN.R-project.org/package=sentometrics) page.
 
 ## Media
 

@@ -19,7 +19,7 @@ during a follow-up [Google Summer of Code 2019](https://github.com/rstats-gsoc/g
 
 ### Reference
 
-Please cite **`sentometrics`** in publications. Use `citation("sentometrics")`.
+Please cite **`sentometrics`** in publications. See the **Citation** section on the right.
 
 ### Contact
 

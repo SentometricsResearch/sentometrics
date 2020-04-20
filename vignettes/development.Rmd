@@ -33,7 +33,7 @@ Overview of anticipated developments and known bugs or unfinished business. If y
 
 - Find additional computational speed gains (especially after recent additions which introduced some overhead).
 
-- Add a `"binary"` option to `get_hows()["words"]` that turns the sentiment computation into an indicator-like calculation (value of 1 if a text has at least one lexicon word).
+- Add a `"binary"` option to `get_hows()[["words"]]` that turns the sentiment computation into an indicator-like calculation (value of 1 if a text has at least one lexicon word).
 
 ### Tweaks and bugs
 
