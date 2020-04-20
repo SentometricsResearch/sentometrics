@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
 <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/spacelab/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
@@ -161,12 +161,26 @@
 <div id="compute-textual-sentiment" class="section level4">
 <h4 class="hasAnchor">
 <a href="#compute-textual-sentiment" class="anchor"></a>Compute textual sentiment</h4>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">s</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/compute_sentiment.html">compute_sentiment</a></span>(<span class="no">corpus</span>, <span class="no">lex</span>, <span class="st">"counts"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">s</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/compute_sentiment.html">compute_sentiment</a></span>(<span class="no">corpus</span>, <span class="no">lex</span>, <span class="st">"counts"</span>)
+
+<span class="no">s</span>[, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"word_count"</span>)]</pre></body></html></div>
+<pre><code>##              id       date E--wsj E--wapo P--wsj P--wapo U--wsj U--wapo
+##    1: 830981846 1995-01-02      0       0      0       0      0       0
+##    2: 842617067 1995-01-05      0       0      0       0      0       0
+##    3: 830982165 1995-01-05      0       1      0       0      0       0
+##    4: 830982389 1995-01-08      0       0      0       0      0       0
+##    5: 842615996 1995-01-09      0       0      0       0      0       0
+##   ---                                                                  
+## 4141: 842613758 2014-12-23      2       0      0       0      0       0
+## 4142: 842615135 2014-12-23      2       0      0       0      0       0
+## 4143: 842617266 2014-12-24      2       0      0       0      0       0
+## 4144: 842614354 2014-12-26      1       0      0       0      0       0
+## 4145: 842616130 2014-12-31      1       0      0       0      0       0</code></pre>
 </div>
 <div id="adjust-and-reconvert-to-a-sentiment-object" class="section level4">
 <h4 class="hasAnchor">
 <a href="#adjust-and-reconvert-to-a-sentiment-object" class="anchor"></a>Adjust and reconvert to a <code>sentiment</code> object</h4>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">sA</span> <span class="kw">&lt;-</span> <span class="no">s</span>[, <span class="fl">1</span>:<span class="fl">3</span>]
+<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">sA</span> <span class="kw">&lt;-</span> <span class="no">s</span>[, <span class="fl">1</span>:<span class="fl">3</span>]
 <span class="no">sB</span> <span class="kw">&lt;-</span> <span class="no">s</span>[, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>:<span class="fl">3</span>)]
 
 <span class="no">to_epu</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>) <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowSums</a></span>(<span class="no">x</span> <span class="kw">&gt;</span> <span class="fl">0</span>) <span class="kw">&gt;=</span> <span class="fl">2</span>) <span class="co"># &gt;= 3 is too strict for this corpus</span>
@@ -179,7 +193,7 @@
 <div id="aggregate-into-sentiment-measures" class="section level4">
 <h4 class="hasAnchor">
 <a href="#aggregate-into-sentiment-measures" class="anchor"></a>Aggregate into sentiment measures</h4>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">w</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="st">"simple"</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">0</span>, <span class="fl">11</span>), <span class="fl">1</span>), <span class="st">"linear"</span> <span class="kw">=</span> <span class="fu"><a href="../reference/weights_exponential.html">weights_exponential</a></span>(<span class="fl">12</span>, <span class="kw">alphas</span> <span class="kw">=</span> <span class="fl">10</span>^-<span class="fl">10</span>)[, <span class="fl">1</span>])
+<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">w</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="st">"simple"</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">0</span>, <span class="fl">11</span>), <span class="fl">1</span>), <span class="st">"linear"</span> <span class="kw">=</span> <span class="fu"><a href="../reference/weights_exponential.html">weights_exponential</a></span>(<span class="fl">12</span>, <span class="kw">alphas</span> <span class="kw">=</span> <span class="fl">10</span>^-<span class="fl">10</span>)[, <span class="fl">1</span>])
 <span class="no">ctr</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/ctr_agg.html">ctr_agg</a></span>(<span class="kw">howDocs</span> <span class="kw">=</span> <span class="st">"equal_weight"</span>, <span class="kw">do.ignoreZeros</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
                <span class="kw">howTime</span> <span class="kw">=</span> <span class="st">"own"</span>, <span class="kw">by</span> <span class="kw">=</span> <span class="st">"month"</span>, <span class="kw">lag</span> <span class="kw">=</span> <span class="fl">12</span>, <span class="kw">weights</span> <span class="kw">=</span> <span class="no">w</span>)
 
@@ -188,7 +202,7 @@
 <div id="scale-newspaper-level-epu-measures" class="section level4">
 <h4 class="hasAnchor">
 <a href="#scale-newspaper-level-epu-measures" class="anchor"></a>Scale newspaper-level EPU measures</h4>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">dt</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html">as.data.table</a></span>(<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/subset.data.table.html">subset</a></span>(<span class="no">sm</span>, <span class="no">date</span> <span class="kw">&lt;</span> <span class="st">"2005-01-01"</span>))
+<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">dt</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html">as.data.table</a></span>(<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/subset.data.table.html">subset</a></span>(<span class="no">sm</span>, <span class="no">date</span> <span class="kw">&lt;</span> <span class="st">"2005-01-01"</span>))
 <span class="no">sds</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>(<span class="no">dt</span>[, -<span class="fl">1</span>], <span class="fl">2</span>, <span class="no">sd</span>)
 
 <span class="no">sm2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/scale.html">scale</a></span>(<span class="no">sm</span>, <span class="kw">center</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">scale</span> <span class="kw">=</span> <span class="no">sds</span>/<span class="fl">100</span>)
@@ -203,7 +217,7 @@
 <div id="aggregate-measures-into-one-epu-index" class="section level4">
 <h4 class="hasAnchor">
 <a href="#aggregate-measures-into-one-epu-index" class="anchor"></a>Aggregate measures into one EPU index</h4>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">sm3</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span>(<span class="no">sm2</span>, <span class="kw">features</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">journals</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"wsj"</span>, <span class="st">"wapo"</span>)))
+<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="no">sm3</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span>(<span class="no">sm2</span>, <span class="kw">features</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">journals</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"wsj"</span>, <span class="st">"wapo"</span>)))
 
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">sm3</span>, <span class="st">"time"</span>)</pre></body></html></div>
 <p><img src="epu_files/figure-html/unnamed-chunk-9-1.png" width="576" style="display: block; margin: auto;"></p>
@@ -211,7 +225,7 @@
 <div id="rescale-into-final-epu-index" class="section level4">
 <h4 class="hasAnchor">
 <a href="#rescale-into-final-epu-index" class="anchor"></a>Rescale into final EPU index</h4>
-<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="no">sm4</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/scale.html">scale</a></span>(<span class="no">sm3</span>, <span class="kw">center</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(-<span class="fl">50</span>, <span class="fu"><a href="../reference/nmeasures.html">nmeasures</a></span>(<span class="no">sm3</span>)), <span class="kw">scale</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
+<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">sm4</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/scale.html">scale</a></span>(<span class="no">sm3</span>, <span class="kw">center</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(-<span class="fl">50</span>, <span class="fu"><a href="../reference/nmeasures.html">nmeasures</a></span>(<span class="no">sm3</span>)), <span class="kw">scale</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
 
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">sm4</span>)</pre></body></html></div>
 <p><img src="epu_files/figure-html/unnamed-chunk-10-1.png" width="576" style="display: block; margin: auto;"></p>
@@ -223,12 +237,12 @@
 <div id="recreate-corpus-object" class="section level4">
 <h4 class="hasAnchor">
 <a href="#recreate-corpus-object" class="anchor"></a>Recreate corpus object</h4>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_corpus.html">sento_corpus</a></span>(<span class="no">usnews</span>[, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"id"</span>, <span class="st">"date"</span>, <span class="st">"texts"</span>, <span class="st">"wsj"</span>, <span class="st">"wapo"</span>)])</pre></body></html></div>
+<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_corpus.html">sento_corpus</a></span>(<span class="no">usnews</span>[, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"id"</span>, <span class="st">"date"</span>, <span class="st">"texts"</span>, <span class="st">"wsj"</span>, <span class="st">"wapo"</span>)])</pre></body></html></div>
 </div>
 <div id="compute-epu-relevance" class="section level4">
 <h4 class="hasAnchor">
 <a href="#compute-epu-relevance" class="anchor"></a>Compute EPU relevance</h4>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/add_features.html">add_features</a></span>(<span class="no">corpus</span>, <span class="kw">keywords</span> <span class="kw">=</span> <span class="no">keywords</span>, <span class="kw">do.binary</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
+<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/add_features.html">add_features</a></span>(<span class="no">corpus</span>, <span class="kw">keywords</span> <span class="kw">=</span> <span class="no">keywords</span>, <span class="kw">do.binary</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
 
 <span class="no">dv</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html">as.data.table</a></span>(<span class="fu"><a href="https://quanteda.io/reference/docvars.html">docvars</a></span>(<span class="no">corpus</span>))
 <span class="no">dv</span>[, <span class="no">EPU</span> <span class="kw">:=</span> <span class="fu">to_epu</span>(<span class="no">.SD</span>), <span class="kw">.SDcols</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"E"</span>, <span class="st">"P"</span>, <span class="st">"U"</span>)]</pre></body></html></div>
@@ -236,7 +250,7 @@
 <div id="add-normalized-newspaper-features" class="section level4">
 <h4 class="hasAnchor">
 <a href="#add-normalized-newspaper-features" class="anchor"></a>Add normalized newspaper features</h4>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="co"># compute total number of articles per journal and month</span>
+<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="co"># compute total number of articles per journal and month</span>
 <span class="no">totArticles</span> <span class="kw">&lt;-</span> <span class="no">dv</span>[, <span class="no">date</span> <span class="kw">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span>(<span class="no">date</span>, <span class="st">"%Y-%m"</span>)][,
   <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">.SD</span>, <span class="no">sum</span>), <span class="kw">by</span> <span class="kw">=</span> <span class="no">date</span>, <span class="kw">.SDcols</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"wsj"</span>, <span class="st">"wapo"</span>)]
 <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setattr.html">setnames</a></span>(<span class="no">totArticles</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"wsj"</span>, <span class="st">"wapo"</span>), <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"wsjT"</span>, <span class="st">"wapoT"</span>))
@@ -252,13 +266,13 @@
 <div id="select-epu-corpus" class="section level4">
 <h4 class="hasAnchor">
 <a href="#select-epu-corpus" class="anchor"></a>Select EPU corpus</h4>
-<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/corpus_subset.html">corpus_subset</a></span>(<span class="no">corpus</span>, <span class="no">EPU</span> <span class="kw">==</span> <span class="fl">1</span>)
+<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/corpus_subset.html">corpus_subset</a></span>(<span class="no">corpus</span>, <span class="no">EPU</span> <span class="kw">==</span> <span class="fl">1</span>)
 <span class="fu"><a href="https://quanteda.io/reference/docvars.html">docvars</a></span>(<span class="no">corpus</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"E"</span>, <span class="st">"P"</span>, <span class="st">"U"</span>, <span class="st">"EPU"</span>)) <span class="kw">&lt;-</span> <span class="kw">NULL</span></pre></body></html></div>
 </div>
 <div id="aggregate-into-a-sentiment-adjusted-epu-index" class="section level4">
 <h4 class="hasAnchor">
 <a href="#aggregate-into-a-sentiment-adjusted-epu-index" class="anchor"></a>Aggregate into a sentiment-adjusted EPU index</h4>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">sentLex</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="kw pkg">sentometrics</span><span class="kw ns">::</span><span class="no"><a href="../reference/list_lexicons.html">list_lexicons</a></span>[<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"GI_en"</span>)])
+<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="no">sentLex</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="kw pkg">sentometrics</span><span class="kw ns">::</span><span class="no"><a href="../reference/list_lexicons.html">list_lexicons</a></span>[<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"GI_en"</span>)])
 <span class="no">ctr</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/ctr_agg.html">ctr_agg</a></span>(<span class="st">"counts"</span>, <span class="st">"equal_weight"</span>, <span class="st">"equal_weight"</span>, <span class="kw">by</span> <span class="kw">=</span> <span class="st">"month"</span>, <span class="kw">lag</span> <span class="kw">=</span> <span class="fl">12</span>)
 
 <span class="no">sm</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_measures.html">sento_measures</a></span>(<span class="no">corpus</span>, <span class="no">sentLex</span>, <span class="no">ctr</span>)

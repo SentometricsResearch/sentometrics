@@ -46,6 +46,8 @@ lex <- sento_lexicons(keywords_dt)
 
 ```{r}
 s <- compute_sentiment(corpus, lex, "counts")
+
+s[, -c("date", "word_count")]
 ```
 
 #### Adjust and reconvert to a `sentiment` object
