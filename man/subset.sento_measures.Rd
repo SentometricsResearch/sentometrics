@@ -16,7 +16,7 @@
 measures need to be selected, or as a \code{list} of \code{character} vectors, possibly with separately specified
 combinations (consisting of one unique lexicon, one unique feature, and one unique time weighting scheme at maximum).}
 
-\item{delete}{see the \code{select} argument.}
+\item{delete}{see the \code{select} argument, but to delete measures.}
 
 \item{...}{not used.}
 }

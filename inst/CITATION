@@ -4,8 +4,8 @@ link <- "https://doi.org/10.2139/ssrn.3067734"
 
 citHeader("To cite the R package 'sentometrics' in publications use:")
 
-citEntry(entry = "article",
-         header = "ArdiaBluteauBormsBoudt2020",
+citEntry(key = "ArdiaBluteauBormsBoudt2020",
+         entry = "article",
          title = "The R Package sentometrics to Compute, Aggregate and Predict with Textual Sentiment",
          author = personList(person("David","Ardia"),
                              person("Keven","Bluteau"),

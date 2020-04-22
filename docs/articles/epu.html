@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Creating Economic Policy Uncertainty (EPU) indices • sentometrics</title>
+<title>Creating EPU indices • sentometrics</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -17,7 +17,7 @@
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Creating Economic Policy Uncertainty (EPU) indices">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Creating EPU indices">
 <meta property="og:description" content="sentometrics">
 <meta property="og:image" content="https://sborms.github.io/sentometrics/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
       </span>
     </div>
 
@@ -68,7 +68,10 @@
       <a href="../articles/sentiment.html">Sentiment computation</a>
     </li>
     <li>
-      <a href="../articles/indexation.html">Indexation</a>
+      <a href="../articles/indexation.html">Index aggregation</a>
+    </li>
+    <li>
+      <a href="../articles/modeling.html">Modeling</a>
     </li>
     <li class="divider">
     <li class="dropdown-header">Applications</li>
@@ -119,7 +122,7 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Creating Economic Policy Uncertainty (EPU) indices</h1>
+      <h1 data-toc-skip>Creating EPU indices</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/sborms/sentometrics/blob/master/vignettes/epu.Rmd"><code>vignettes/epu.Rmd</code></a></small>
@@ -129,7 +132,7 @@
 
     
     
-<p>In this application, we create (a sentiment-adjusted version of) the well-known Economic Policy Uncertainty (EPU) index, which fits very will within the package’s framework.</p>
+<p>In this application, we create a regular and a sentiment-adjusted version of the well-known news-based <a href="https://www.policyuncertainty.com"><strong>Economic Policy Uncertainty (EPU)</strong></a> index. It fits very well within the package’s framework. Besides, the actual EPU index from January 1985 up to July 2018 for the U.S. is part of the package, see <code><a href="../reference/epu.html">sentometrics::epu</a></code>.</p>
 <div id="load-packages" class="section level4">
 <h4 class="hasAnchor">
 <a href="#load-packages" class="anchor"></a>Load packages</h4>
@@ -139,10 +142,12 @@
 </div>
 <div id="a-regular-epu-index" class="section level2">
 <h2 class="hasAnchor">
-<a href="#a-regular-epu-index" class="anchor"></a>A “regular” EPU index</h2>
+<a href="#a-regular-epu-index" class="anchor"></a>A regular EPU index</h2>
+<p>By a regular EPU index, we mean to largely follow the core methodology outlined <a href="https://www.policyuncertainty.com/methodology.html">here</a>.</p>
 <div id="load-and-create-corpus-object" class="section level4">
 <h4 class="hasAnchor">
 <a href="#load-and-create-corpus-object" class="anchor"></a>Load and create corpus object</h4>
+<p>We load and transform the built-in corpus of 4145 U.S. news articles between 1995 and 2014 into a <code>sento_corpus</code> object. We only include the journal features, indicating article source (one of The Wall Street Journal or The Washington Post).</p>
 <div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"usnews"</span>)
 
 <span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_corpus.html">sento_corpus</a></span>(<span class="no">usnews</span>[, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"id"</span>, <span class="st">"date"</span>, <span class="st">"texts"</span>, <span class="st">"wsj"</span>, <span class="st">"wapo"</span>)])</pre></body></html></div>
@@ -150,6 +155,7 @@
 <div id="define-list-of-keywords-and-turn-into-a-sento_lexicons-object" class="section level4">
 <h4 class="hasAnchor">
 <a href="#define-list-of-keywords-and-turn-into-a-sento_lexicons-object" class="anchor"></a>Define list of keywords and turn into a <code>sento_lexicons</code> object</h4>
+<p>We take the original keywords used to pinpoint coverage about the economy (E), policy concerns (P) and uncertainty (U), and organize them into a <code>sento_lexicons</code> object.</p>
 <div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">keywords</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(
   <span class="kw">E</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"economy"</span>, <span class="st">"economic"</span>),
   <span class="kw">P</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"congress"</span>, <span class="st">"legislation"</span>, <span class="st">"white house"</span>, <span class="st">"regulation"</span>, <span class="st">"deficit"</span>, <span class="st">"federal reserve"</span>),
@@ -160,26 +166,28 @@
 </div>
 <div id="compute-textual-sentiment" class="section level4">
 <h4 class="hasAnchor">
-<a href="#compute-textual-sentiment" class="anchor"></a>Compute textual sentiment</h4>
+<a href="#compute-textual-sentiment" class="anchor"></a>Compute “textual sentiment”</h4>
+<p>These keywords lexicons are used in the <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code> function. For each EPU dimension, the obtained scores represent the number of keywords present in a given news article.</p>
 <div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">s</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/compute_sentiment.html">compute_sentiment</a></span>(<span class="no">corpus</span>, <span class="no">lex</span>, <span class="st">"counts"</span>)
 
-<span class="no">s</span>[, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"word_count"</span>)]</pre></body></html></div>
-<pre><code>##              id       date E--wsj E--wapo P--wsj P--wapo U--wsj U--wapo
-##    1: 830981846 1995-01-02      0       0      0       0      0       0
-##    2: 842617067 1995-01-05      0       0      0       0      0       0
-##    3: 830982165 1995-01-05      0       1      0       0      0       0
-##    4: 830982389 1995-01-08      0       0      0       0      0       0
-##    5: 842615996 1995-01-09      0       0      0       0      0       0
-##   ---                                                                  
-## 4141: 842613758 2014-12-23      2       0      0       0      0       0
-## 4142: 842615135 2014-12-23      2       0      0       0      0       0
-## 4143: 842617266 2014-12-24      2       0      0       0      0       0
-## 4144: 842614354 2014-12-26      1       0      0       0      0       0
-## 4145: 842616130 2014-12-31      1       0      0       0      0       0</code></pre>
+<span class="no">s</span>[, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"date"</span>, <span class="st">"word_count"</span>)]</pre></body></html></div>
+<pre><code>##              id E--wsj E--wapo P--wsj P--wapo U--wsj U--wapo
+##    1: 830981846      0       0      0       0      0       0
+##    2: 842617067      0       0      0       0      0       0
+##    3: 830982165      0       1      0       0      0       0
+##    4: 830982389      0       0      0       0      0       0
+##    5: 842615996      0       0      0       0      0       0
+##   ---                                                       
+## 4141: 842613758      2       0      0       0      0       0
+## 4142: 842615135      2       0      0       0      0       0
+## 4143: 842617266      2       0      0       0      0       0
+## 4144: 842614354      1       0      0       0      0       0
+## 4145: 842616130      1       0      0       0      0       0</code></pre>
 </div>
 <div id="adjust-and-reconvert-to-a-sentiment-object" class="section level4">
 <h4 class="hasAnchor">
 <a href="#adjust-and-reconvert-to-a-sentiment-object" class="anchor"></a>Adjust and reconvert to a <code>sentiment</code> object</h4>
+<p>As we are not interested in the number of keywords, but only in whether a keyword was present, we need some adjustments. In particular, we split the <code>sentiment</code> object and compute an EPU column per newspaper, with a score of 1 if at least two categories’ keywords show up, and 0 if not.</p>
 <div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">sA</span> <span class="kw">&lt;-</span> <span class="no">s</span>[, <span class="fl">1</span>:<span class="fl">3</span>]
 <span class="no">sB</span> <span class="kw">&lt;-</span> <span class="no">s</span>[, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>:<span class="fl">3</span>)]
 
@@ -193,6 +201,7 @@
 <div id="aggregate-into-sentiment-measures" class="section level4">
 <h4 class="hasAnchor">
 <a href="#aggregate-into-sentiment-measures" class="anchor"></a>Aggregate into sentiment measures</h4>
+<p>This new <code>sentiment</code> object is aggregated into a monthly average and a 12-monthly linear moving average time series per newspaper. Setting <code>howDocs = "equal_weight"</code> and <code>do.ignoreZeros = FALSE</code> normalizes the monthly values by the combined number of news articles in that month.</p>
 <div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">w</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="st">"simple"</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">0</span>, <span class="fl">11</span>), <span class="fl">1</span>), <span class="st">"linear"</span> <span class="kw">=</span> <span class="fu"><a href="../reference/weights_exponential.html">weights_exponential</a></span>(<span class="fl">12</span>, <span class="kw">alphas</span> <span class="kw">=</span> <span class="fl">10</span>^-<span class="fl">10</span>)[, <span class="fl">1</span>])
 <span class="no">ctr</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/ctr_agg.html">ctr_agg</a></span>(<span class="kw">howDocs</span> <span class="kw">=</span> <span class="st">"equal_weight"</span>, <span class="kw">do.ignoreZeros</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
                <span class="kw">howTime</span> <span class="kw">=</span> <span class="st">"own"</span>, <span class="kw">by</span> <span class="kw">=</span> <span class="st">"month"</span>, <span class="kw">lag</span> <span class="kw">=</span> <span class="fl">12</span>, <span class="kw">weights</span> <span class="kw">=</span> <span class="no">w</span>)
@@ -202,6 +211,7 @@
 <div id="scale-newspaper-level-epu-measures" class="section level4">
 <h4 class="hasAnchor">
 <a href="#scale-newspaper-level-epu-measures" class="anchor"></a>Scale newspaper-level EPU measures</h4>
+<p>The next step is to scale the newspaper-level EPU time series to unit standard deviation before a certain date (in this case, before 2005). Rather than unit standard deviation, we standardize to a standard deviation of 100.</p>
 <div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">dt</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html">as.data.table</a></span>(<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/subset.data.table.html">subset</a></span>(<span class="no">sm</span>, <span class="no">date</span> <span class="kw">&lt;</span> <span class="st">"2005-01-01"</span>))
 <span class="no">sds</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>(<span class="no">dt</span>[, -<span class="fl">1</span>], <span class="fl">2</span>, <span class="no">sd</span>)
 
@@ -217,6 +227,7 @@
 <div id="aggregate-measures-into-one-epu-index" class="section level4">
 <h4 class="hasAnchor">
 <a href="#aggregate-measures-into-one-epu-index" class="anchor"></a>Aggregate measures into one EPU index</h4>
+<p>To then obtain the actual EPU index, the newspaper-level series are averaged by reapplying the <code><a href="https://rdrr.io/r/stats/aggregate.html">aggregate()</a></code> function. We are left with two series, one a moving average of the other.</p>
 <div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="no">sm3</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span>(<span class="no">sm2</span>, <span class="kw">features</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">journals</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"wsj"</span>, <span class="st">"wapo"</span>)))
 
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">sm3</span>, <span class="st">"time"</span>)</pre></body></html></div>
@@ -225,6 +236,7 @@
 <div id="rescale-into-final-epu-index" class="section level4">
 <h4 class="hasAnchor">
 <a href="#rescale-into-final-epu-index" class="anchor"></a>Rescale into final EPU index</h4>
+<p>The <code><a href="https://rdrr.io/r/base/scale.html">scale()</a></code> function can be used again to achieve final normalizations. For the sake of the example, we shift the indices upwards by a value of 50.</p>
 <div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">sm4</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/scale.html">scale</a></span>(<span class="no">sm3</span>, <span class="kw">center</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(-<span class="fl">50</span>, <span class="fu"><a href="../reference/nmeasures.html">nmeasures</a></span>(<span class="no">sm3</span>)), <span class="kw">scale</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
 
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">sm4</span>)</pre></body></html></div>
@@ -234,14 +246,17 @@
 <div id="a-sentiment-adjusted-epu-index" class="section level2">
 <h2 class="hasAnchor">
 <a href="#a-sentiment-adjusted-epu-index" class="anchor"></a>A sentiment-adjusted EPU index</h2>
+<p>A sentiment-adjusted EPU index adds a layer of news sentiment analysis to the typical creation process. The resulting index will fluctuate between negative and positive values depending on <em>how</em> news writes about topics related to economic policy uncertainty, rather than only analyzing <em>if</em> they write about it.</p>
 <div id="recreate-corpus-object" class="section level4">
 <h4 class="hasAnchor">
 <a href="#recreate-corpus-object" class="anchor"></a>Recreate corpus object</h4>
+<p>We start from scratch by reinitializing the corpus.</p>
 <div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_corpus.html">sento_corpus</a></span>(<span class="no">usnews</span>[, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"id"</span>, <span class="st">"date"</span>, <span class="st">"texts"</span>, <span class="st">"wsj"</span>, <span class="st">"wapo"</span>)])</pre></body></html></div>
 </div>
 <div id="compute-epu-relevance" class="section level4">
 <h4 class="hasAnchor">
 <a href="#compute-epu-relevance" class="anchor"></a>Compute EPU relevance</h4>
+<p>We move forward by adding binary features to the corpus for the E, P and U keywords defined earlier. Next, we compute an EPU feature, based on the same mechanism using the self-created <code>to_epu()</code> function.</p>
 <div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/add_features.html">add_features</a></span>(<span class="no">corpus</span>, <span class="kw">keywords</span> <span class="kw">=</span> <span class="no">keywords</span>, <span class="kw">do.binary</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
 
 <span class="no">dv</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html">as.data.table</a></span>(<span class="fu"><a href="https://quanteda.io/reference/docvars.html">docvars</a></span>(<span class="no">corpus</span>))
@@ -250,6 +265,7 @@
 <div id="add-normalized-newspaper-features" class="section level4">
 <h4 class="hasAnchor">
 <a href="#add-normalized-newspaper-features" class="anchor"></a>Add normalized newspaper features</h4>
+<p>Having detected the news articles to count in the EPU index, we need to normalize these counts. We do so per newspaper using some <strong><code>data.table</code></strong> magic, and then add the appropriate features to the corpus using <code><a href="../reference/add_features.html">add_features()</a></code>.</p>
 <div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="co"># compute total number of articles per journal and month</span>
 <span class="no">totArticles</span> <span class="kw">&lt;-</span> <span class="no">dv</span>[, <span class="no">date</span> <span class="kw">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span>(<span class="no">date</span>, <span class="st">"%Y-%m"</span>)][,
   <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">.SD</span>, <span class="no">sum</span>), <span class="kw">by</span> <span class="kw">=</span> <span class="no">date</span>, <span class="kw">.SDcols</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"wsj"</span>, <span class="st">"wapo"</span>)]
@@ -266,12 +282,14 @@
 <div id="select-epu-corpus" class="section level4">
 <h4 class="hasAnchor">
 <a href="#select-epu-corpus" class="anchor"></a>Select EPU corpus</h4>
+<p>We continue with a subsetted corpus carrying those articles discussing enough EPU material. We clean the features keeping only the normalized newspaper-level features.</p>
 <div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/corpus_subset.html">corpus_subset</a></span>(<span class="no">corpus</span>, <span class="no">EPU</span> <span class="kw">==</span> <span class="fl">1</span>)
 <span class="fu"><a href="https://quanteda.io/reference/docvars.html">docvars</a></span>(<span class="no">corpus</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"E"</span>, <span class="st">"P"</span>, <span class="st">"U"</span>, <span class="st">"EPU"</span>)) <span class="kw">&lt;-</span> <span class="kw">NULL</span></pre></body></html></div>
 </div>
 <div id="aggregate-into-a-sentiment-adjusted-epu-index" class="section level4">
 <h4 class="hasAnchor">
 <a href="#aggregate-into-a-sentiment-adjusted-epu-index" class="anchor"></a>Aggregate into a sentiment-adjusted EPU index</h4>
+<p>The news sentiment layer is added by applying the all-at-once sentiment computation and aggregation function <code><a href="../reference/sento_measures.html">sento_measures()</a></code>. The popular Harvard General Inquirer is the sentiment lexicon at service. Averaging across the newspaper series gives a final EPU index. Specific scaling as shown before is left aside.</p>
 <div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="no">sentLex</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="kw pkg">sentometrics</span><span class="kw ns">::</span><span class="no"><a href="../reference/list_lexicons.html">list_lexicons</a></span>[<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"GI_en"</span>)])
 <span class="no">ctr</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/ctr_agg.html">ctr_agg</a></span>(<span class="st">"counts"</span>, <span class="st">"equal_weight"</span>, <span class="st">"equal_weight"</span>, <span class="kw">by</span> <span class="kw">=</span> <span class="st">"month"</span>, <span class="kw">lag</span> <span class="kw">=</span> <span class="fl">12</span>)
 

@@ -2,6 +2,7 @@
 ## sentometrics 0.8.5 (devel)
 
 - Some documentation fixes.
+- Release of a **`pkgdown`** website.
 
 ## sentometrics 0.8.1
 

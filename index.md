@@ -25,3 +25,10 @@ Please cite **`sentometrics`** in publications. See the **Citation** section on 
 
 Reach out to [Samuel Borms](mailto:borms_sam@hotmail.com) if you have questions, suggestions or want to become a contributor. See the **News > Development** section to find out what you can help us with.
 
+### Media
+
+<p float="left">
+<iframe width="410" height="270" src="https://www.youtube.com/embed/KC8LSBNvZrQ" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+<iframe width="410" height="270" src="https://www.youtube.com/embed/nAlHzz4CP9E" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+</p>
+

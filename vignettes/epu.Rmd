@@ -1,5 +1,5 @@
 ---
-title: "Creating Economic Policy Uncertainty (EPU) indices"
+title: "Creating EPU indices"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
@@ -10,7 +10,7 @@ vignette: >
 knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.width = 6, fig.height = 4, fig.align = "center")
 ```
 
-In this application, we create (a sentiment-adjusted version of) the well-known Economic Policy Uncertainty (EPU) index, which fits very will within the package's framework.
+In this application, we create a regular and a sentiment-adjusted version of the well-known news-based [**Economic Policy Uncertainty (EPU)**](https://www.policyuncertainty.com) index. It fits very well within the package's framework. Besides, the actual EPU index from January 1985 up to July 2018 for the U.S. is part of the package, see `sentometrics::epu`.
 
 #### Load packages
 
@@ -20,9 +20,13 @@ library("data.table")
 library("quanteda")
 ```
 
-## A "regular" EPU index
+## A regular EPU index
+
+By a regular EPU index, we mean to largely follow the core methodology outlined [here](https://www.policyuncertainty.com/methodology.html).
 
 #### Load and create corpus object
+
+We load and transform the built-in corpus of 4145 U.S. news articles between 1995 and 2014 into a `sento_corpus` object. We only include the journal features, indicating article source (one of The Wall Street Journal or The Washington Post).
 
 ```{r}
 data("usnews")
@@ -31,6 +35,8 @@ corpus <- sento_corpus(usnews[, c("id", "date", "texts", "wsj", "wapo")])
 ```
 
 #### Define list of keywords and turn into a `sento_lexicons` object
+
+We take the original keywords used to pinpoint coverage about the economy (E), policy concerns (P) and uncertainty (U), and organize them into a `sento_lexicons` object.
 
 ```{r}
 keywords <- list(
@@ -42,7 +48,9 @@ keywords_dt <- lapply(keywords, function(kw) data.table(x = kw, y = 1))
 lex <- sento_lexicons(keywords_dt)
 ```
 
-#### Compute textual sentiment
+#### Compute "textual sentiment"
+
+These keywords lexicons are used in the `compute_sentiment()` function. For each EPU dimension, the obtained scores represent the number of keywords present in a given news article.
 
 ```{r}
 s <- compute_sentiment(corpus, lex, "counts")
@@ -51,6 +59,8 @@ s[, -c("date", "word_count")]
 ```
 
 #### Adjust and reconvert to a `sentiment` object
+
+As we are not interested in the number of keywords, but only in whether a keyword was present, we need some adjustments. In particular, we split the `sentiment` object and compute an EPU column per newspaper, with a score of 1 if at least two categories' keywords show up, and 0 if not.
 
 ```{r}
 sA <- s[, 1:3]
@@ -66,6 +76,8 @@ s2 <- as.sentiment(cbind(sA, sB[, c("EPU--wsj", "EPU--wapo")]))
 
 #### Aggregate into sentiment measures
 
+This new `sentiment` object is aggregated into a monthly average and a 12-monthly linear moving average time series per newspaper. Setting `howDocs = "equal_weight"` and `do.ignoreZeros = FALSE` normalizes the monthly values by the combined number of news articles in that month.
+
 ```{r}
 w <- data.frame("simple" = c(rep(0, 11), 1), "linear" = weights_exponential(12, alphas = 10^-10)[, 1])
 ctr <- ctr_agg(howDocs = "equal_weight", do.ignoreZeros = FALSE,
@@ -75,6 +87,8 @@ sm <- aggregate(s2, ctr)
 ```
 
 #### Scale newspaper-level EPU measures
+
+The next step is to scale the newspaper-level EPU time series to unit standard deviation before a certain date (in this case, before 2005). Rather than unit standard deviation, we standardize to a standard deviation of 100.
 
 ```{r}
 dt <- as.data.table(subset(sm, date < "2005-01-01"))
@@ -86,6 +100,8 @@ subset(sm2, date < "2005-01-01")[["stats"]]
 
 #### Aggregate measures into one EPU index
 
+To then obtain the actual EPU index, the newspaper-level series are averaged by reapplying the `aggregate()` function. We are left with two series, one a moving average of the other.
+
 ```{r}
 sm3 <- aggregate(sm2, features = list(journals = c("wsj", "wapo")))
 
@@ -93,6 +109,8 @@ plot(sm3, "time")
 ```
 
 #### Rescale into final EPU index
+
+The `scale()` function can be used again to achieve final normalizations. For the sake of the example, we shift the indices upwards by a value of 50.
 
 ```{r}
 sm4 <- scale(sm3, center = rep(-50, nmeasures(sm3)), scale = FALSE)
@@ -102,13 +120,19 @@ plot(sm4)
 
 ## A sentiment-adjusted EPU index
 
+A sentiment-adjusted EPU index adds a layer of news sentiment analysis to the typical creation process. The resulting index will fluctuate between negative and positive values depending on _how_ news writes about topics related to economic policy uncertainty, rather than only analyzing _if_ they write about it.
+
 #### Recreate corpus object
+
+We start from scratch by reinitializing the corpus.
 
 ```{r}
 corpus <- sento_corpus(usnews[, c("id", "date", "texts", "wsj", "wapo")])
 ```
 
 #### Compute EPU relevance
+
+We move forward by adding binary features to the corpus for the E, P and U keywords defined earlier. Next, we compute an EPU feature, based on the same mechanism using the self-created `to_epu()` function.
 
 ```{r}
 corpus <- add_features(corpus, keywords = keywords, do.binary = TRUE)
@@ -118,6 +142,8 @@ dv[, EPU := to_epu(.SD), .SDcols = c("E", "P", "U")]
 ```
 
 #### Add normalized newspaper features
+
+Having detected the news articles to count in the EPU index, we need to normalize these counts. We do so per newspaper using some **`data.table`** magic, and then add the appropriate features to the corpus using `add_features()`.
 
 ```{r}
 # compute total number of articles per journal and month
@@ -136,12 +162,16 @@ corpus <- add_features(corpus, featuresdf = dv[, c("wsj", "wapo", "EPU")])
 
 #### Select EPU corpus
 
+We continue with a subsetted corpus carrying those articles discussing enough EPU material. We clean the features keeping only the normalized newspaper-level features.
+
 ```{r}
 corpus <- corpus_subset(corpus, EPU == 1)
 docvars(corpus, c("E", "P", "U", "EPU")) <- NULL
 ```
 
 #### Aggregate into a sentiment-adjusted EPU index
+
+The news sentiment layer is added by applying the all-at-once sentiment computation and aggregation function `sento_measures()`. The popular Harvard General Inquirer is the sentiment lexicon at service. Averaging across the newspaper series gives a final EPU index. Specific scaling as shown before is left aside.
 
 ```{r}
 sentLex <- sento_lexicons(sentometrics::list_lexicons[c("GI_en")])

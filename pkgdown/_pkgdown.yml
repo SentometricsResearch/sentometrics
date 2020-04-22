@@ -22,8 +22,10 @@ navbar:
         href: articles/corpus.html
       - text: Sentiment computation
         href: articles/sentiment.html
-      - text: Indexation
+      - text: Index aggregation
         href: articles/indexation.html
+      - text: Modeling
+        href: articles/modeling.html
       - text: -------
       - text: Applications
       - text: Creating EPU indices
