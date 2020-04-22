@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
       </span>
     </div>
 
@@ -68,7 +68,10 @@
       <a href="../articles/sentiment.html">Sentiment computation</a>
     </li>
     <li>
-      <a href="../articles/indexation.html">Indexation</a>
+      <a href="../articles/indexation.html">Index aggregation</a>
+    </li>
+    <li>
+      <a href="../articles/modeling.html">Modeling</a>
     </li>
     <li class="divider">
     <li class="dropdown-header">Applications</li>
@@ -136,10 +139,11 @@
 <ul>
 <li><p>Implement a <code>sento_train()</code> function to for instance generate a lexicon from a corpus.</p></li>
 <li><p>Add straightforward topic modelling functionality into the <code><a href="../reference/add_features.html">add_features()</a></code> function (or as part of the <code>sento_train()</code> function).</p></li>
-<li><p>Expand the number of available models in the <code><a href="../reference/sento_model.html">sento_model()</a></code> function (e.g. constrained regression and PCA).</p></li>
+<li><p>Expand the number of available models in the <code><a href="../reference/sento_model.html">sento_model()</a></code> function (e.g. constrained regression, and PCA).</p></li>
 <li><p>Implement an optimization approach into the <code><a href="../reference/aggregate.sento_measures.html">aggregate.sento_measures(..., do.global = TRUE)</a></code> function to extract optimized weights across dimensions (make it possibly available through the <code><a href="../reference/sento_model.html">sento_model()</a></code> function); this includes allowing weights to be set in the <code><a href="../reference/aggregate.sento_measures.html">aggregate.sento_measures()</a></code> function instead of averaging by default.</p></li>
 <li><p>Implement fast textual sentiment computation for lexicons with ngrams.</p></li>
 <li><p>Implement a <code>scale.sentiment()</code> function.</p></li>
+<li><p>Add a <code>head.sento_measures()</code> and a <code>tail.sento_measures()</code> function.</p></li>
 <li><p>Implement a structure to support high-frequency intraday aggregation.</p></li>
 <li><p>Make more lexicons available (e.g. German and Spanish).</p></li>
 <li><p>Give more control to the user to play with <strong><code>glmnet</code></strong> parameters in the <code><a href="../reference/sento_model.html">sento_model()</a></code> function.</p></li>
@@ -159,7 +163,7 @@
 <li><p>Solve issue that column names of sentiment measures output do not deal well with weird characters (e.g. é) but still get through.</p></li>
 <li><p>Handle <code>data.frame</code> and <code>matrix</code> input in <code><a href="../reference/sento_model.html">sento_model(..., y, ...)</a></code> function more consistently.</p></li>
 <li><p>Add references to external <strong><code>textdata</code></strong> package in examples (e.g. for extra lexicons).</p></li>
-<li><p>Be more flexible for the features in a <code>sento_corpus</code> object by allowing also values outside 0 and 1.</p></li>
+<li><p>Be more flexible for the features in a <code>sento_corpus</code> object by also allowing values outside 0 and 1.</p></li>
 <li><p>Make sure subsetting does not maintain a <code>sentiment</code> object when it is not supposed to be.</p></li>
 <li><p>Drop horizontal 0-line automatically added in the <code><a href="../reference/plot.sento_measures.html">plot.sento_measures()</a></code> function (and maybe other plot functions) as it distorts graphs of time series with values far away from 0.</p></li>
 <li><p>Remove all but one (not all) duplicate entries in the <code><a href="../reference/sento_lexicons.html">sento_lexicons()</a></code> function.</p></li>

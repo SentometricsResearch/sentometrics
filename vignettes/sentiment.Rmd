@@ -12,7 +12,8 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.width = 7, fig.heigh
 
 This tutorial provides a guide on how to perform the textual sentiment computation.
 
-##### Preparation
+**Preparation**
+&nbsp;
 
 ```{r}
 library("sentometrics")
@@ -36,6 +37,7 @@ s <- compute_sentiment(
   sento_lexicons(list_lexicons[c("GI_en", "LM_en")]),
   how = "counts"
 )
+
 s
 ```
 
@@ -45,6 +47,7 @@ The same simple calculation as in Example 1, but using a `sento_corpus` object a
 
 ```{r}
 corpus <- sento_corpus(usnews)
+
 corpus
 ```
 
@@ -52,18 +55,20 @@ corpus
 lexicons <- sento_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")])
 
 s <- compute_sentiment(corpus, lexicons, how = "counts")
+
 head(s)
 ```
 
 ### Sentiment calculation from a **`tm`** `SimpleCorpus` object
 
-Again, a simple textual sentiment calculation, but this time using a **`tm`** package corpus object. Super flexible! The output is this time slightly different, as the scores are divided by the total number of words.
+Another simple sentiment calculation, this time using a **`tm`** package corpus object. Super flexible! The output is this time slightly different, as the scores are divided by the total number of words.
 
 ```{r}
 corpus <- SimpleCorpus(VectorSource(usnews[["texts"]]))
 lexicons <- sento_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")])
 
 s <- compute_sentiment(corpus, lexicons, how = "proportional")
+
 s
 ```
 
@@ -73,11 +78,11 @@ Even more flexibility in this example! You tokenize your corpus outside the sent
 
 ```{r}
 corpus <- sento_corpus(usnews)
-lexicons <- sento_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")])
-
 tks <- as.list(tokens(corpus, what = "fastestword"))
 
-s <- compute_sentiment(corpus, lexicons, how = "counts", tokens = tks)
+lexicons <- sento_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")])
+
+compute_sentiment(corpus, lexicons, how = "counts", tokens = tks)
 ```
 
 ### The three key approaches to the sentiment computation
@@ -114,11 +119,13 @@ s <- compute_sentiment(
   how = "proportionalPol",
   do.sentence = TRUE
 )
+
 s
 ```
 
 ```{r}
 sDocs <- aggregate(s, ctr_agg(howDocs = "proportional"), do.full = FALSE)
+
 sDocs
 ```
 
@@ -126,6 +133,7 @@ From these sentiment scores, we find the 4 documents where most positive sentime
 
 ```{r}
 peakDocsPos <- peakdocs(sDocs, n = 4, type = "pos")
+
 peakDocsPos
 ```
 
@@ -158,6 +166,7 @@ q <- unname(posScores - negScores)
 
 # sentometrics tf-idf sentiment calculation
 lex <- sento_lexicons(list(L = lexIn))
+
 s <- compute_sentiment(txts, lex, tokens = toks, "TFIDF")[["L"]]
 ```
 

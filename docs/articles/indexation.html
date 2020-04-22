@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
       </span>
     </div>
 
@@ -68,7 +68,10 @@
       <a href="../articles/sentiment.html">Sentiment computation</a>
     </li>
     <li>
-      <a href="../articles/indexation.html">Indexation</a>
+      <a href="../articles/indexation.html">Index aggregation</a>
+    </li>
+    <li>
+      <a href="../articles/modeling.html">Modeling</a>
     </li>
     <li class="divider">
     <li class="dropdown-header">Applications</li>
@@ -130,9 +133,7 @@
     
     
 <p>This tutorial provides a guide on how to flexibly aggregate a qualitative corpus into many time series indices.</p>
-<div id="preparation" class="section level5">
-<h5 class="hasAnchor">
-<a href="#preparation" class="anchor"></a>Preparation</h5>
+<p><strong>Preparation</strong>  </p>
 <div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"sentometrics"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"ggplot2"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"data.table"</span>)
@@ -140,7 +141,6 @@
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"usnews"</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"list_lexicons"</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"list_valence_shifters"</span>)</pre></body></html></div>
-</div>
 <div id="document-level-sentiment-aggregation-into-time-series" class="section level3">
 <h3 class="hasAnchor">
 <a href="#document-level-sentiment-aggregation-into-time-series" class="anchor"></a>Document-level sentiment aggregation into time series</h3>
@@ -153,8 +153,7 @@
   <span class="kw">how</span> <span class="kw">=</span> <span class="st">"counts"</span>
 )
 
-<span class="no">ctr</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/ctr_agg.html">ctr_agg</a></span>(<span class="kw">howDocs</span> <span class="kw">=</span> <span class="st">"proportional"</span>,
-               <span class="kw">howTime</span> <span class="kw">=</span> <span class="st">"equal_weight"</span>, <span class="kw">by</span> <span class="kw">=</span> <span class="st">"month"</span>, <span class="kw">lag</span> <span class="kw">=</span> <span class="fl">6</span>)
+<span class="no">ctr</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/ctr_agg.html">ctr_agg</a></span>(<span class="kw">howDocs</span> <span class="kw">=</span> <span class="st">"proportional"</span>, <span class="kw">howTime</span> <span class="kw">=</span> <span class="st">"equal_weight"</span>, <span class="kw">by</span> <span class="kw">=</span> <span class="st">"month"</span>, <span class="kw">lag</span> <span class="kw">=</span> <span class="fl">6</span>)
 <span class="no">measures</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span>(<span class="no">s</span>, <span class="no">ctr</span>)</pre></body></html></div>
 <p>The obtained measures can be plotted, all of them, or according to the three time series dimensions (the corpus features, the lexicons and the time weighting schemes).</p>
 <div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">measures</span>)</pre></body></html></div>
@@ -172,16 +171,18 @@
 <p>The aggregation into sentiment time series does not have to be done in two steps. Below one-step approach is recommended because very easy!</p>
 <div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_corpus.html">sento_corpus</a></span>(<span class="no">usnews</span>)
 <span class="no">lexicons</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="no">list_lexicons</span>[<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"GI_en"</span>, <span class="st">"LM_en"</span>, <span class="st">"HENRY_en"</span>)])
+
 <span class="no">ctr</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/ctr_agg.html">ctr_agg</a></span>(<span class="kw">howWithin</span> <span class="kw">=</span> <span class="st">"counts"</span>,
                <span class="kw">howDocs</span> <span class="kw">=</span> <span class="st">"proportional"</span>,
                <span class="kw">howTime</span> <span class="kw">=</span> <span class="st">"linear"</span>, <span class="kw">by</span> <span class="kw">=</span> <span class="st">"week"</span>, <span class="kw">lag</span> <span class="kw">=</span> <span class="fl">14</span>)
-
 <span class="no">measures</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_measures.html">sento_measures</a></span>(<span class="no">corpus</span>, <span class="no">lexicons</span>, <span class="no">ctr</span>)
+
 <span class="no">measures</span></pre></body></html></div>
 <pre><code>## A sento_measures object (12 textual sentiment time series, 1031 observations).</code></pre>
 <p>Similar to extracting the peak documents in a sentiment table, we extract here the peak dates in the sentiment time series matrix. Detected below are the 5 dates where average sentiment across all sentiment measures is lowest.</p>
 <div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">peakDatesNeg</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/peakdates.html">peakdates</a></span>(<span class="no">measures</span>, <span class="kw">n</span> <span class="kw">=</span> <span class="fl">5</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"neg"</span>, <span class="kw">do.average</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></body></html></div>
 <div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="no">dtPeaks</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html">as.data.table</a></span>(<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/subset.data.table.html">subset</a></span>(<span class="no">measures</span>, <span class="no">date</span> <span class="kw">%in%</span> <span class="no">peakDatesNeg</span>))
+
 <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(<span class="no">dtPeaks</span>[, <span class="st">"date"</span>], <span class="kw">avg</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowMeans</a></span>(<span class="no">dtPeaks</span>[, -<span class="fl">1</span>]))</pre></body></html></div>
 <pre><code>##          date       avg
 ## 1: 2008-01-28 -1.987907
@@ -215,12 +216,17 @@
 ## 
 ## $time
 ## [1] "linequal"</code></pre>
+<p>With the <code><a href="https://Rdatatable.gitlab.io/data.table/reference/subset.data.table.html">subset()</a></code> function, a <code>sento_measures</code> object can be subsetted based on a condition, and time series with certain dimension components can be selected or deleted.</p>
+<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">m1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/subset.data.table.html">subset</a></span>(<span class="no">measuresAgg</span>, <span class="fl">1</span>:<span class="fl">100</span>) <span class="co"># first 100 weeks</span>
+<span class="no">m2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/subset.data.table.html">subset</a></span>(<span class="no">measuresAgg</span>, <span class="no">date</span> <span class="kw">%in%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span>(<span class="fu"><a href="../reference/get_dates.html">get_dates</a></span>(<span class="no">measuresAgg</span>), <span class="fl">100</span>)) <span class="co"># last 100 weeks</span>
+<span class="no">m3</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/subset.data.table.html">subset</a></span>(<span class="no">measuresAgg</span>, <span class="kw">select</span> <span class="kw">=</span> <span class="st">"journal"</span>)
+<span class="no">m4</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/subset.data.table.html">subset</a></span>(<span class="no">measuresAgg</span>, <span class="kw">delete</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"economy"</span>, <span class="st">"GI_en"</span>), <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"noneconomy"</span>, <span class="st">"HENRY_en"</span>)))</pre></body></html></div>
 </div>
 <div id="sentiment-aggregation-into-time-series-bis" class="section level3">
 <h3 class="hasAnchor">
 <a href="#sentiment-aggregation-into-time-series-bis" class="anchor"></a>Sentiment aggregation into time series (bis)</h3>
 <p>To keep it at its simplest, all the sentiment measures computed can be condensed in a few global sentiment time series. The computation can be run in a weighted way as well.</p>
-<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_corpus.html">sento_corpus</a></span>(<span class="no">usnews</span>)
+<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_corpus.html">sento_corpus</a></span>(<span class="no">usnews</span>)
 <span class="no">lexicons</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="no">list_lexicons</span>[<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"GI_en"</span>, <span class="st">"LM_en"</span>, <span class="st">"HENRY_en"</span>)])
 <span class="no">ctr</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/ctr_agg.html">ctr_agg</a></span>(<span class="kw">howWithin</span> <span class="kw">=</span> <span class="st">"counts"</span>,
                <span class="kw">howDocs</span> <span class="kw">=</span> <span class="st">"proportional"</span>,
@@ -229,6 +235,7 @@
 <span class="no">measures</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_measures.html">sento_measures</a></span>(<span class="no">corpus</span>, <span class="no">lexicons</span>, <span class="no">ctr</span>)
 
 <span class="no">measuresGlobal</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span>(<span class="no">measures</span>, <span class="kw">do.global</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
+
 <span class="no">measuresGlobal</span></pre></body></html></div>
 <pre><code>##             date     globLex    globFeat    globTime      global
 ##    1: 1995-04-03  0.17818262  0.13363697  0.26727393  0.19303117
@@ -243,14 +250,14 @@
 ## 1030: 2014-12-22 -0.22851388 -0.17138541 -0.34277083 -0.24755671
 ## 1031: 2014-12-29 -0.21775030 -0.16331273 -0.32662546 -0.23589616</code></pre>
 <p>The output in this case is not a specific <strong><code>sentometrics</code></strong> <code>sento_measures</code> object, but a <code>data.table</code> object. Below produces a nice plot using the <strong><code>ggplot2</code></strong> package.</p>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/melt.data.table.html">melt</a></span>(<span class="no">measuresGlobal</span>, <span class="kw">id.vars</span> <span class="kw">=</span> <span class="st">"date"</span>)) +
+<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/melt.data.table.html">melt</a></span>(<span class="no">measuresGlobal</span>, <span class="kw">id.vars</span> <span class="kw">=</span> <span class="st">"date"</span>)) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">date</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">value</span>, <span class="kw">color</span> <span class="kw">=</span> <span class="no">variable</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>() +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_date.html">scale_x_date</a></span>(<span class="kw">name</span> <span class="kw">=</span> <span class="st">"Date"</span>, <span class="kw">date_labels</span> <span class="kw">=</span> <span class="st">"%m-%Y"</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span>(<span class="kw">name</span> <span class="kw">=</span> <span class="st">"Sentiment"</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>() +
-  <span class="kw pkg">sentometrics</span><span class="kw ns">:::</span><span class="fu">plot_theme</span>(<span class="kw">legendPos</span> <span class="kw">=</span> <span class="st">"top"</span>) <span class="co"># a trick to finetune the plot display</span></pre></body></html></div>
-<p><img src="indexation_files/figure-html/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;"></p>
+  <span class="kw pkg">sentometrics</span><span class="kw ns">:::</span><span class="fu">plot_theme</span>(<span class="kw">legendPos</span> <span class="kw">=</span> <span class="st">"top"</span>) <span class="co"># a trick to make the plot look nicer</span></pre></body></html></div>
+<p><img src="indexation_files/figure-html/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
   </div>
 

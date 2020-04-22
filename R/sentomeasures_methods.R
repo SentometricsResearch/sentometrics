@@ -322,7 +322,7 @@ as.data.frame.sento_measures <- function(x, ...) {
 #' @param select a \code{character} vector of the lexicon, feature and time weighting scheme names, to indicate which
 #' measures need to be selected, or as a \code{list} of \code{character} vectors, possibly with separately specified
 #' combinations (consisting of one unique lexicon, one unique feature, and one unique time weighting scheme at maximum).
-#' @param delete see the \code{select} argument.
+#' @param delete see the \code{select} argument, but to delete measures.
 #' @param ... not used.
 #'
 #' @return A modified \code{sento_measures} object, with only the remaining rows and sentiment measures,

@@ -23,29 +23,33 @@ library("lexicon")
 
 #### Convert the built-in corpus into a `sento_corpus` object 
 
+First, transform the built-in corpus of 4145 U.S. news articles between 1995 and 2014 into a `sento_corpus` object. This corpus object is the best basis for the later addition of new metadata features, and the aggregation into textual sentiment time series.
+
 ```{r}
 uscorpus <- sento_corpus(sentometrics::usnews)
 ```
 
 #### Fit a topic model
 
+To enrich the corpus, we fit a topic model to uncover a set of different latent items discussed across the news. To do the preprocessing into a document-term matrix, we use the **`quanteda`** package. The **`stm`** package is used to extract 8 topics.
+
 ```{r}
-dfm <- quanteda::dfm(uscorpus, tolower = TRUE,
-                     remove_punct = TRUE, remove_numbers = TRUE, remove = quanteda::stopwords("en")) %>%
-  quanteda::dfm_remove(min_nchar = 3) %>%
-  quanteda::dfm_trim(min_termfreq = 0.95, termfreq_type = "quantile") %>%
-  quanteda::dfm_trim(max_docfreq = 0.10, docfreq_type = "prop")
-dfm <- quanteda::dfm_subset(dfm, quanteda::ntoken(dfm) > 0)
+dfm <- dfm(uscorpus, tolower = TRUE, 
+           remove_punct = TRUE, remove_numbers = TRUE, remove = stopwords("en")) %>%
+  dfm_remove(min_nchar = 3) %>%
+  dfm_trim(min_termfreq = 0.95, termfreq_type = "quantile") %>%
+  dfm_trim(max_docfreq = 0.10, docfreq_type = "prop")
+dfm <- dfm_subset(dfm, ntoken(dfm) > 0)
 
 topicModel <- stm::stm(dfm, K = 8, verbose = FALSE)
 topTerms <- t(stm::labelTopics(topicModel, n = 5)[["prob"]])
 
-topTerms[, 1:5] # first five topics
+topTerms[, 1:4] # first 4 (out of 8) topics
 ```
 
 #### Use the topic model output to enrich the corpus with features
 
-The final topic features distribution in the corpus is different than what is reported in the vignette. This is due to fundamental changes within the **`quanteda`** package regarding their tokenization. The sensitivity of the topical output is a good reminder about the importance of optimizing the preprocessing and the topic modelling itself (which is not dealt with in detail here).
+A list of keywords that defines the new features is based on the 5 top terms associated to each of the 8 topics. We insert this list of keywords into the `add_features()` function. A feature value per news article, normalized between 0 and 1, is generated for each topic, depending on how often the 5 relevant words appear in the news.
 
 ```{r}
 keywords <- lapply(1:ncol(topTerms), function(i) topTerms[, i])
@@ -56,7 +60,11 @@ quanteda::docvars(uscorpus, c("uncertainty", "election", "economy", "noneconomy"
 colSums(quanteda::docvars(uscorpus)[, -1] != 0)
 ```
 
+The final topic features distribution in the corpus is different than what is reported in the vignette. This is due to fundamental changes within the **`quanteda`** package regarding their tokenization. The sensitivity of the topical output is a good reminder about the importance of optimizing the preprocessing and the topic modeling itself (which is not dealt with in detail here).
+
 #### Prepare the sentiment lexicons
+
+In total, we will compute the textual sentiment using 9 lexicons, here prepared (mainly cleaned and made coherent) into a `sento_lexicons` object.
 
 ```{r}
 lexiconsIn <- c(
@@ -76,6 +84,8 @@ lex <- sento_lexicons(lexiconsIn = lexiconsIn,
 
 #### Define the sentiment index aggregation specifications
 
+All the sentiment computation and aggregation parameters are specified in the `ctr_agg()` function. We go for daily textual sentiment time series as 270-day moving averages using Beta weighting schemes. On a given day, all documents are weighted equally. The individual news sentiment scores are normalized by the number of detected lexicon words (these words are referred to as polarized).
+
 ```{r}
 ctrAggPred <- ctr_agg(
   howWithin = "proportionalPol",
@@ -86,13 +96,23 @@ ctrAggPred <- ctr_agg(
 
 #### Aggregate the corpus into textual sentiment time series
 
+Calling the `sento_measures()` function with the corpus, lexicons and aggregation specifications defined before creates the many sentiment time series.
+
 ```{r}
 sentMeasPred <- sento_measures(uscorpus, lexicons = lex, ctr = ctrAggPred)
 
+nmeasures(sentMeasPred)
+```
+
+You can plot the measures very simply. Below, the plot shows the sentiment time series averaged per feature.
+
+```{r}
 plot(sentMeasPred, group = "features")
 ```
 
 #### Retrieve the VIX data
+
+We need time series data about the VIX index to predict it. An object with this information is stored on our GitHub repository, and can be retrieved as below. The data are monthly.
 
 ```{r}
 library("repmis")
@@ -102,6 +122,8 @@ source_data(vixObject)
 
 #### Align the sentiment measures and the VIX data
 
+To make sure the sentiment measures and the VIX data are aligned date-wise, we perform some rearrangements.
+
 ```{r}
 sentMeasIn <- subset(sentMeasPred, date %in% vix$date)
 datesIn <- get_dates(sentMeasIn)
@@ -110,6 +132,8 @@ x <- data.frame(lag = y)
 ```
 
 #### Prepare the regression model specifications
+
+The regression model we will run is the high-dimensional elastic net regression, given that we have many explanatory sentiment variables. For details about the high-dimensional regression framework, see the **`glmnet`** package. We want to do a true out-of-sample analysis rolling forward through time, hence we set `do.iter = TRUE` and define a sample size of 60. We are trying to predict the VIX variable 6 months ahead (`h = 6`).
 
 ```{r}
 ctrIter <- ctr_model(model = "gaussian",
@@ -125,18 +149,29 @@ ctrIter <- ctr_model(model = "gaussian",
 
 #### Fit and assess the elastic net model iteratively over time
 
+The `sento_model()` function runs the model estimations iteratively and keeps track of the out-of-sample performance. Through the `x` argument, we slide the VIX index as autoregressive component into the regression equation. Omit this argument if you only want to use the sentiment variables as explanatory variables.
+
 ```{r}
 out <- sento_model(sentMeasIn, x = x, y = y, ctr = ctrIter)
 
 summary(out)
+```
+
+The out-of-sample predictions versus the realized values are displayed in following plot. The predictions are not that bad, though they lag the true VIX evolutions. The coefficient attached to the lagged value of the VIX itself dominates often. 
+
+```{r}
 plot(out)
 ```
 
 #### Compute and plot the sentiment attributions
 
+As a diagnostic tool, one can compute the prediction attributions to the various dimensions of the sentiment measures (the features, the lexicons, and the time weighting schemes). This way, visualizations can show which elements steer the predictions and when.
+
 ```{r}
 attr <- attributions(out, sentMeasIn, do.lags = FALSE, do.normalize = FALSE)
+```
 
+```{r}
 plot(attr, group = "features")
 plot(attr, group = "lexicons")
 ```

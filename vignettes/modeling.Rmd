@@ -1,0 +1,145 @@
+---
+title: "Modeling"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.width = 7, fig.height = 4, fig.align = "center")
+```
+
+This tutorial learns how to use sentiment measures in both a high-dimensional regression context proposed by the package, as well as in any other (regression) model.
+
+**Preparation**
+&nbsp;
+
+```{r}
+library("sentometrics")
+library("ggplot2")
+library("data.table")
+library("zoo")
+
+data("usnews")
+data("epu")
+data("list_lexicons")
+data("list_valence_shifters")
+
+set.seed(505)
+```
+
+We create some sentiment time series to showcase the models with.
+
+```{r}
+corpus <- sento_corpus(usnews)
+lexicons <- sento_lexicons(list_lexicons[c("GI_en", "HENRY_en")])
+ctr <- ctr_agg("counts", "proportional", c("linear", "equal_weight"), by = "month", lag = 6)
+measures <- sento_measures(corpus, lexicons, ctr)
+```
+
+As target variable, we take the built-in Economic Policy Uncertainty (EPU) index, and randomly generate two other covariates.
+
+```{r}
+y <- epu[epu$date %in% get_dates(measures), "index"]
+x <- data.frame(x1 = runif(length(y)), x2 = rnorm(length(y))) # two other (random) x variables
+
+length(y) == nobs(measures)
+```
+
+**Background**
+&nbsp;
+
+The model supported is the elastic net regression, made available as a finetuned interface to the `glmnet::glmnet()` function. The elastic net has two hyperparameters which need to be calibrated: alpha (where if 1 one gets the LASSO regression, and if 0 one gets the Ridge regression), and lambda (which defines the degree of regularization, where if 0 there will be none). The possible options to calibrate these parameters are to use an information criterion, or to use time series cross-validation.
+
+### In-sample regression
+
+The regression specifications are defined through the `ctr_model()` function. A `"gaussian"` model means a linear regression. The `type` argument decides on the hyperparameter calibration method, in this case, a Bayesian information criterion will be used. The model is run with `sento_model()`, and results in a `sento_model` object.
+
+```{r}
+ctrIC <- ctr_model(model = "gaussian", type = "BIC") # same as ctr_model()
+out1 <- sento_model(measures, y, x, ctr = ctrIC)
+
+summary(out1)
+```
+
+To do predictions with the model, there is the `predict()` function.
+
+```{r}
+nx <- nmeasures(measures) + ncol(x)
+newx <- runif(nx) * cbind(as.data.table(measures)[, -1], x)[30:39, ] # 10 random new predictors
+
+predict(out1, newx = as.matrix(newx))
+```
+
+The `ctr_model()` function provides much more flexibility. Below setup uses a cross-validation calibration approach, for a rolling in-sample size of 70 and an out-of-sample test set of 10. This is typically more time-consuming, hence, we show how one can parallelize the single model call. We also take the differences of the target variable, and shift it four periods ahead. The data reorganization is handled internally.
+
+```{r}
+library("parallel")
+library("doParallel")
+
+cl <- makeCluster(2) # two cores
+registerDoParallel(cl)
+
+ctrCV <- ctr_model(model = "gaussian", type = "cv", h = 4, do.difference = TRUE, trainWindow = 70,
+                   testWindow = 10, alphas = c(0.10, 0.50, 0.90), do.progress = FALSE)
+out2 <- sento_model(measures, y, x = x, ctr = ctrCV)
+
+stopCluster(cl)
+registerDoSEQ() # ensures sequential processing hereafter
+
+summary(out2)
+```
+
+The `sento_model()` function supports both **linear** and **logistic** (binomial and multinomial) regression. It suffices to change the `model` argument in `ctr_model()` to switch between models, assuming you provide the right target input data.
+
+### Iterative regressions and out-of-sample prediction
+
+Setting `do.iter = TRUE` and picking a `nSample` size will run regressions iteratively moving forward over time. At every run, as in a real forecasting experiment, an out-of-sample prediction is generated and stored. To speed up the analysis, one could try to augment the `nCore` argument which will enact parallel computation across the different iterations.
+
+```{r}
+ctrIter <- ctr_model(model = "gaussian", type = "AIC", do.iter = TRUE, h = 3,
+                     oos = 2, alphas = c(0.25, 0.75), nSample = 75, do.progress = FALSE)
+out3 <- sento_model(measures, y, x = x, ctr = ctrIter)
+
+summary(out3)
+```
+
+The out-of-sample predictions can be plot against the true realizations of the target variable.
+
+```{r}
+plot(out3)
+```
+
+### Attribution analysis
+
+Take the model output from the previous example. To analyze the contribution of each sentiment variable component to a prediction, called attribution, the `attributions()` function does the trick.
+
+```{r}
+attr3 <- attributions(out3, measures, refDates = names(out3$models)[1:50])
+```
+
+```{r}
+plot(attr3, "lexicons")
+plot(attr3, "features")
+plot(attr3, "time")
+```
+
+For a very deep analysis, it is also possible to trace back the contribution of a single document to a prediction at a given point in time. As the time lag for the sentiment measures was set to 6 months, news articles up to 5 months before a prediction date have an impact, the degree depending on the sentiment and the associated time weight.
+
+```{r}
+attr3$documents$`2004-06-01`
+```
+
+### Other models
+
+The `sento_model()` function is no perfect toolbox. However, by converting the sentiment measures into a straight `data.table` (or a `data.frame`), one is not limited. For instance, below example shows how to do a low-dimensional regression using the `lm()` function, with some of the sentiment variables created in the package.
+
+```{r}
+dt <- as.data.table(measures)
+z <- zoo(dt[, 2:7], order.by = dt[["date"]])
+reg <- lm(y ~ z)
+```
+
+At some point we might integrate some other useful models into the `sento_model()` function, but having the sentiment measures at your disposal, you are already good to go elsewhere.
+

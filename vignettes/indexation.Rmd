@@ -12,7 +12,8 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.width = 7, fig.heigh
 
 This tutorial provides a guide on how to flexibly aggregate a qualitative corpus into many time series indices.
 
-##### Preparation
+**Preparation**
+&nbsp;
 
 ```{r}
 library("sentometrics")
@@ -37,8 +38,7 @@ s <- compute_sentiment(
   how = "counts"
 )
 
-ctr <- ctr_agg(howDocs = "proportional",
-               howTime = "equal_weight", by = "month", lag = 6)
+ctr <- ctr_agg(howDocs = "proportional", howTime = "equal_weight", by = "month", lag = 6)
 measures <- aggregate(s, ctr)
 ```
 
@@ -58,11 +58,12 @@ The aggregation into sentiment time series does not have to be done in two steps
 ```{r}
 corpus <- sento_corpus(usnews)
 lexicons <- sento_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")])
+
 ctr <- ctr_agg(howWithin = "counts",
                howDocs = "proportional",
                howTime = "linear", by = "week", lag = 14)
-
 measures <- sento_measures(corpus, lexicons, ctr)
+
 measures
 ```
 
@@ -74,6 +75,7 @@ peakDatesNeg <- peakdates(measures, n = 5, type = "neg", do.average = TRUE)
 
 ```{r}
 dtPeaks <- as.data.table(subset(measures, date %in% peakDatesNeg))
+
 data.table(dtPeaks[, "date"], avg = rowMeans(dtPeaks[, -1]))
 ```
 
@@ -97,6 +99,15 @@ measuresAgg <- aggregate(measures,
 get_dimensions(measuresAgg) # inspect the contents of the three dimensions
 ```
 
+With the `subset()` function, a `sento_measures` object can be subsetted based on a condition, and time series with certain dimension components can be selected or deleted.
+
+```{r}
+m1 <- subset(measuresAgg, 1:100) # first 100 weeks
+m2 <- subset(measuresAgg, date %in% tail(get_dates(measuresAgg), 100)) # last 100 weeks
+m3 <- subset(measuresAgg, select = "journal")
+m4 <- subset(measuresAgg, delete = list(c("economy", "GI_en"), c("noneconomy", "HENRY_en")))
+```
+
 ### Sentiment aggregation into time series (bis)
 
 To keep it at its simplest, all the sentiment measures computed can be condensed in a few global sentiment time series. The computation can be run in a weighted way as well.  
@@ -111,6 +122,7 @@ ctr <- ctr_agg(howWithin = "counts",
 measures <- sento_measures(corpus, lexicons, ctr)
 
 measuresGlobal <- aggregate(measures, do.global = TRUE)
+
 measuresGlobal
 ```
 
@@ -123,6 +135,6 @@ ggplot(melt(measuresGlobal, id.vars = "date")) +
   scale_x_date(name = "Date", date_labels = "%m-%Y") +
   scale_y_continuous(name = "Sentiment") +
   theme_bw() + 
-  sentometrics:::plot_theme(legendPos = "top") # a trick to finetune the plot display
+  sentometrics:::plot_theme(legendPos = "top") # a trick to make the plot look nicer
 ```
 
