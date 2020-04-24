@@ -96,7 +96,7 @@ measuresAgg <- aggregate(measures,
                          features = list("journal" = c("wsj", "wapo")),
                          time = list("linequal" = c("linear", "equal_weight")))
 
-get_dimensions(measuresAgg) # inspect the contents of the three dimensions
+get_dimensions(measuresAgg) # inspect the components of the three dimensions
 ```
 
 With the `subset()` function, a `sento_measures` object can be subsetted based on a condition, and time series with certain dimension components can be selected or deleted.

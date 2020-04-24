@@ -10,7 +10,7 @@ vignette: >
 knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.width = 7, fig.height = 4, fig.align = "center")
 ```
 
-This tutorial learns how to use sentiment measures in both a high-dimensional regression context proposed by the package, as well as in any other (regression) model.
+This tutorial learns how to use created sentiment measures in both a high-dimensional regression context proposed by the package, as well as in any other (regression) model.
 
 **Preparation**
 &nbsp;
@@ -142,4 +142,59 @@ reg <- lm(y ~ z)
 ```
 
 At some point we might integrate some other useful models into the `sento_model()` function, but having the sentiment measures at your disposal, you are already good to go elsewhere.
+
+### Classification using sentiment
+
+The above examples take a time series perspective. However, sentiment on text-level can also be useful to predict other attributes of a text. We illustrate one possible approach hereunder, where we try to predict if news discusses the economy using sentiment information.
+
+```{r}
+y <- as.factor(usnews$economy)
+```
+
+To calculate a couple of sentiment variables, we split the Harvard General Inquirer lexicon into 15 random groups.
+
+```{r}
+l <- list_lexicons$GI_en
+lg <- split(l, factor(round(14 * runif(nrow(l))), labels = paste0("s", 1:15)))
+lexicons <- sento_lexicons(lg)
+
+nrow(l) == nrow(rbindlist(lexicons))
+```
+
+Sentiment is computed in one go using the `compute_sentiment()` function, this time using an inverse U-shaped scheme for normalizing the scores.
+
+```{r}
+s <- compute_sentiment(usnews$texts, lexicons, "inverseUShaped")
+
+colnames(s)
+```
+
+The data is divided into a training set, and a test set for model validation.
+
+```{r}
+data <- cbind(y = y, s[, -c(1:2)])
+dataTrain <- data[1:3500, ]
+dataTest <- data[3501:nrow(data), ]
+```
+
+We employ support vector machine classification to estimate our model. 
+
+```{r}
+library("e1071")
+
+model <- svm(y ~ ., dataTrain)
+```
+
+Let's construct confusion matrices to see how well the model does in-sample, and in the test set.
+
+```{r}
+conf_matrix <- function(m, d) table(predict(m, d), d$y, dnn = c("Prediction", "Actual"))
+```
+
+```{r}
+conf_matrix(model, dataTrain)
+conf_matrix(model, dataTest)
+```
+
+Not good at all, none of the economic articles are picked up out-of-sample! Off-the-shelf modeling is rarely a good idea. Time to go back to the drawing table and better tune those sentiment predictors and model parameters. Maybe the random lexicon splitting was not such a good idea?
 

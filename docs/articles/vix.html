@@ -228,6 +228,7 @@
 <a href="#retrieve-the-vix-data" class="anchor"></a>Retrieve the VIX data</h4>
 <p>We need time series data about the VIX index to predict it. An object with this information is stored on our GitHub repository, and can be retrieved as below. The data are monthly.</p>
 <div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"repmis"</span>)
+
 <span class="no">vixObject</span> <span class="kw">&lt;-</span> <span class="st">"https://github.com/sborms/sentometrics/blob/master/examples/vix.rda?raw=true"</span>
 <span class="fu"><a href="https://rdrr.io/pkg/repmis/man/source_data.html">source_data</a></span>(<span class="no">vixObject</span>)</pre></body></html></div>
 <pre><code>## [1] "vix"</code></pre>

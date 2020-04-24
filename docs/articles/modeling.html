@@ -132,7 +132,7 @@
 
     
     
-<p>This tutorial learns how to use sentiment measures in both a high-dimensional regression context proposed by the package, as well as in any other (regression) model.</p>
+<p>This tutorial learns how to use created sentiment measures in both a high-dimensional regression context proposed by the package, as well as in any other (regression) model.</p>
 <p><strong>Preparation</strong>  </p>
 <div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"sentometrics"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"ggplot2"</span>)
@@ -186,9 +186,9 @@
 ## x2                                2.859282</code></pre>
 <p>To do predictions with the model, there is the <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> function.</p>
 <div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">nx</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/nmeasures.html">nmeasures</a></span>(<span class="no">measures</span>) + <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span>(<span class="no">x</span>)
-<span class="no">newx</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="no">nx</span>) * <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/data.table/man/as.data.table.html">as.data.table</a></span>(<span class="no">measures</span>)[, -<span class="fl">1</span>], <span class="no">x</span>)[<span class="fl">30</span>:<span class="fl">39</span>, ] <span class="co"># 10 random new predictors</span>
+<span class="no">newx</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="no">nx</span>) * <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html">as.data.table</a></span>(<span class="no">measures</span>)[, -<span class="fl">1</span>], <span class="no">x</span>)[<span class="fl">30</span>:<span class="fl">39</span>, ] <span class="co"># 10 random new predictors</span>
 
-<span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="no">out1</span>, <span class="kw">newx</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/as.matrix.html">as.matrix</a></span>(<span class="no">newx</span>))</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="no">out1</span>, <span class="kw">newx</span> <span class="kw">=</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.matrix.html">as.matrix</a></span>(<span class="no">newx</span>))</pre></body></html></div>
 <pre><code>##             s0
 ##  [1,] 116.9924
 ##  [2,] 144.2360
@@ -291,10 +291,52 @@
 <h3 class="hasAnchor">
 <a href="#other-models" class="anchor"></a>Other models</h3>
 <p>The <code><a href="../reference/sento_model.html">sento_model()</a></code> function is no perfect toolbox. However, by converting the sentiment measures into a straight <code>data.table</code> (or a <code>data.frame</code>), one is not limited. For instance, below example shows how to do a low-dimensional regression using the <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code> function, with some of the sentiment variables created in the package.</p>
-<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="no">dt</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/as.data.table.html">as.data.table</a></span>(<span class="no">measures</span>)
+<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="no">dt</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html">as.data.table</a></span>(<span class="no">measures</span>)
 <span class="no">z</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/zoo/man/zoo.html">zoo</a></span>(<span class="no">dt</span>[, <span class="fl">2</span>:<span class="fl">7</span>], <span class="kw">order.by</span> <span class="kw">=</span> <span class="no">dt</span><span class="kw">[[</span><span class="st">"date"</span>]])
 <span class="no">reg</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span>(<span class="no">y</span> ~ <span class="no">z</span>)</pre></body></html></div>
 <p>At some point we might integrate some other useful models into the <code><a href="../reference/sento_model.html">sento_model()</a></code> function, but having the sentiment measures at your disposal, you are already good to go elsewhere.</p>
+</div>
+<div id="classification-using-sentiment" class="section level3">
+<h3 class="hasAnchor">
+<a href="#classification-using-sentiment" class="anchor"></a>Classification using sentiment</h3>
+<p>The above examples take a time series perspective. However, sentiment on text-level can also be useful to predict other attributes of a text. We illustrate one possible approach hereunder, where we try to predict if news discusses the economy using sentiment information.</p>
+<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="no">y</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span>(<span class="no">usnews</span>$<span class="no">economy</span>)</pre></body></html></div>
+<p>To calculate a couple of sentiment variables, we split the Harvard General Inquirer lexicon into 15 random groups.</p>
+<div class="sourceCode" id="cb24"><html><body><pre class="r"><span class="no">l</span> <span class="kw">&lt;-</span> <span class="no">list_lexicons</span>$<span class="no">GI_en</span>
+<span class="no">lg</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/split.html">split</a></span>(<span class="no">l</span>, <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span>(<span class="fl">14</span> * <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">l</span>))), <span class="kw">labels</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="st">"s"</span>, <span class="fl">1</span>:<span class="fl">15</span>)))
+<span class="no">lexicons</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="no">lg</span>)
+
+<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">l</span>) <span class="kw">==</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html">rbindlist</a></span>(<span class="no">lexicons</span>))</pre></body></html></div>
+<pre><code>## [1] TRUE</code></pre>
+<p>Sentiment is computed in one go using the <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code> function, this time using an inverse U-shaped scheme for normalizing the scores.</p>
+<div class="sourceCode" id="cb26"><html><body><pre class="r"><span class="no">s</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/compute_sentiment.html">compute_sentiment</a></span>(<span class="no">usnews</span>$<span class="no">texts</span>, <span class="no">lexicons</span>, <span class="st">"inverseUShaped"</span>)
+
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">s</span>)</pre></body></html></div>
+<pre><code>##  [1] "id"         "word_count" "s1"         "s2"         "s3"        
+##  [6] "s4"         "s5"         "s6"         "s7"         "s8"        
+## [11] "s9"         "s10"        "s11"        "s12"        "s13"       
+## [16] "s14"        "s15"</code></pre>
+<p>The data is divided into a training set, and a test set for model validation.</p>
+<div class="sourceCode" id="cb28"><html><body><pre class="r"><span class="no">data</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="kw">y</span> <span class="kw">=</span> <span class="no">y</span>, <span class="no">s</span>[, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>:<span class="fl">2</span>)])
+<span class="no">dataTrain</span> <span class="kw">&lt;-</span> <span class="no">data</span>[<span class="fl">1</span>:<span class="fl">3500</span>, ]
+<span class="no">dataTest</span> <span class="kw">&lt;-</span> <span class="no">data</span>[<span class="fl">3501</span>:<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">data</span>), ]</pre></body></html></div>
+<p>We employ support vector machine classification to estimate our model.</p>
+<div class="sourceCode" id="cb29"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"e1071"</span>)
+
+<span class="no">model</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/e1071/man/svm.html">svm</a></span>(<span class="no">y</span> ~ <span class="no">.</span>, <span class="no">dataTrain</span>)</pre></body></html></div>
+<p>Let’s construct confusion matrices to see how well the model does in-sample, and in the test set.</p>
+<div class="sourceCode" id="cb30"><html><body><pre class="r"><span class="no">conf_matrix</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">m</span>, <span class="no">d</span>) <span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="no">m</span>, <span class="no">d</span>), <span class="no">d</span>$<span class="no">y</span>, <span class="kw">dnn</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Prediction"</span>, <span class="st">"Actual"</span>))</pre></body></html></div>
+<div class="sourceCode" id="cb31"><html><body><pre class="r"><span class="fu">conf_matrix</span>(<span class="no">model</span>, <span class="no">dataTrain</span>)</pre></body></html></div>
+<pre><code>##           Actual
+## Prediction    0    1
+##          0 2865  630
+##          1    0    5</code></pre>
+<div class="sourceCode" id="cb33"><html><body><pre class="r"><span class="fu">conf_matrix</span>(<span class="no">model</span>, <span class="no">dataTest</span>)</pre></body></html></div>
+<pre><code>##           Actual
+## Prediction   0   1
+##          0 514 131
+##          1   0   0</code></pre>
+<p>Not good at all, none of the economic articles are picked up out-of-sample! Off-the-shelf modeling is rarely a good idea. Time to go back to the drawing table and better tune those sentiment predictors and model parameters. Maybe the random lexicon splitting was not such a good idea?</p>
 </div>
   </div>
 

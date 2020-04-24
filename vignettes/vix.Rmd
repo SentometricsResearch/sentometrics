@@ -116,6 +116,7 @@ We need time series data about the VIX index to predict it. An object with this 
 
 ```{r}
 library("repmis")
+
 vixObject <- "https://github.com/sborms/sentometrics/blob/master/examples/vix.rda?raw=true"
 source_data(vixObject)
 ```
