@@ -5,6 +5,9 @@ destination: docs
 template:
   params:
     bootswatch: flatly # https://bootswatch.com
+    docsearch:
+      api_key: 29d61aa2be101325ab9a82514b58064b
+      index_name: sentometrics
 
 toc:
   depth: 3
@@ -12,7 +15,7 @@ toc:
 navbar:
   structure:
     left:  [home, intro, articles, research, news, reference]
-    right: [github]
+    right: [docsearch, github]
   components:
     articles:
       text: Examples

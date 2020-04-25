@@ -9,10 +9,6 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.width = 6, fig.heigh
 
 You collected a large number of texts and think it is a good idea to summarize your corpus into several textual sentiment time series, which you ponder could help predicting some variable you are interested in. However, you do not really know how to proceed next... Fortunately, you come across the **`sentometrics`** package, which does exactly what you need! Great!
 
-## What?
-
-The **`sentometrics`** package is an **integrated framework for textual sentiment time series aggregation and prediction**. It accounts for the intrinsic challenge that textual sentiment can be computed in many different ways, as well as the large number of possibilities to pool sentiment into a time series index. The package integrates the fast _quantification_ of sentiment from texts, the _aggregation_ into different sentiment time series, and the _prediction_ based on these measures. All in one coherent workflow!
-
 ## Installation
 
 To install the package from CRAN, simply do:
@@ -31,11 +27,20 @@ devtools::install_github("sborms/sentometrics")
 
 Check out the **Examples** section. It includes tutorials with a bunch of examples, from simple to a little less simple, and some larger-scale applications. Sentiment computation, aggregation, diagnostic tools, visualization, regression -- it's all in there.
 
+## Readings
+
+Check out the **Research** section, especially our [vignette](https://ssrn.com/abstract=3067734) which explains the ins and outs of the software package along with accompanying code examples. The complete documentation can be found on the [sentometrics CRAN](https://CRAN.R-project.org/package=sentometrics) page.
+
 ## Shiny app
 
 You might also want to have a look at the [**`sentometrics.app`**](https://github.com/sborms/sentometrics.app) package. Its `sento_app()` function embeds a Shiny application that displays many of **`sentometrics`**' functionalities. Enjoy!
 
-## Readings
+## Media
 
-Check out the **Research** section, especially our [vignette](https://ssrn.com/abstract=3067734) which explains the ins and outs of the software package along with accompanying code examples. The complete documentation can be found on the [sentometrics CRAN](https://CRAN.R-project.org/package=sentometrics) page.
+Earlier versions of the package were presented as a lightning talk at the eRum 2018 (Budapest) and useR! 2019 (Toulouse) conferences, and recorded!
+
+<p float="left">
+<iframe width="410" height="270" src="https://www.youtube.com/embed/KC8LSBNvZrQ" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+<iframe width="410" height="270" src="https://www.youtube.com/embed/nAlHzz4CP9E" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+</p>
 
