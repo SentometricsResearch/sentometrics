@@ -17,7 +17,9 @@
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction">
+<script src="pkgdown.js"></script><!-- docsearch --><script src="docsearch.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.3/docsearch.min.css" integrity="sha256-QOSRU/ra9ActyXkIBbiIB144aDBdtvXBcNc3OTNuX/Q=" crossorigin="anonymous">
+<link href="docsearch.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script><meta property="og:title" content="An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction">
 <meta property="og:description" content="Optimized prediction based on textual sentiment, accounting for the intrinsic challenge that sentiment can be computed and pooled across texts and time in various ways. See Ardia et al. (2020) &lt;doi:10.2139/ssrn.3067734&gt;.">
 <meta property="og:image" content="https://sborms.github.io/sentometrics/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -110,7 +112,13 @@
   </a>
 </li>
       </ul>
+<form class="navbar-form navbar-right hidden-xs hidden-sm" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
 </div>
+      </form>
+      
+    </div>
 <!--/.nav-collapse -->
   </div>
 <!--/.container -->
@@ -123,11 +131,15 @@
   <div class="contents col-md-9">
 <div id="sentometrics-" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
-<a href="#sentometrics-" class="anchor"></a>sentometrics <a href="https://www.sentometrics.org"><img src="reference/figures/logo.png" align="right" width="120"></a>
+<a href="#sentometrics-" class="anchor"></a>sentometrics <a href="https://www.sentometrics.org"><img src="reference/figures/logo.png" align="right" width="135"></a>
 </h1></div>
 <!-- badges: start -->
 
-<p>The <strong><code>sentometrics</code></strong> package offers an integrated framework for textual sentiment time series aggregation and prediction. Explore this package website to learn about what you can do and how so.</p>
+<div id="what" class="section level3">
+<h3 class="hasAnchor">
+<a href="#what" class="anchor"></a>What?</h3>
+<p>The <strong><code>sentometrics</code></strong> package offers an <strong>integrated framework for textual sentiment time series aggregation and prediction</strong>. It accounts for the intrinsic challenge that textual sentiment can be computed in many different ways, as well as the large number of possibilities to pool sentiment into a time series index. The package integrates the fast <em>quantification</em> of sentiment from texts, the <em>aggregation</em> into different sentiment time series, and the <em>prediction</em> based on these measures. All in one coherent workflow! Explore this package website to learn about what you can do and how so.</p>
+</div>
 <div id="acknowledgements" class="section level3">
 <h3 class="hasAnchor">
 <a href="#acknowledgements" class="anchor"></a>Acknowledgements</h3>
@@ -142,16 +154,6 @@
 <h3 class="hasAnchor">
 <a href="#contact" class="anchor"></a>Contact</h3>
 <p>Reach out to <a href="mailto:borms_sam@hotmail.com">Samuel Borms</a> if you have questions, suggestions or want to become a contributor. See the <strong>News &gt; Development</strong> section to find out what you can help us with.</p>
-</div>
-<div id="media" class="section level3">
-<h3 class="hasAnchor">
-<a href="#media" class="anchor"></a>Media</h3>
-<p float="left">
-<iframe width="410" height="270" src="https://www.youtube.com/embed/KC8LSBNvZrQ" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
-</iframe>
-<iframe width="410" height="270" src="https://www.youtube.com/embed/nAlHzz4CP9E" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
-</iframe>
-</p>
 </div>
 </div>
   </div>
@@ -221,7 +223,20 @@
 </div>
 
   
-
-
-  </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.1/docsearch.min.js" integrity="sha256-GKvGqXDznoRYHCwKXGnuchvKSwmx9SRMrZOTh2g4Sb0=" crossorigin="anonymous"></script><script>
+  docsearch({
+    
+    
+    apiKey: '29d61aa2be101325ab9a82514b58064b',
+    indexName: 'sentometrics',
+    inputSelector: 'input#search-input.form-control',
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
+  });
+</script>
+</body>
 </html>

@@ -1,5 +1,5 @@
 
-# sentometrics <a href='https://www.sentometrics.org'><img src='man/figures/logo.png' align="right" width="120"/></a>
+# sentometrics <a href='https://www.sentometrics.org'><img src='man/figures/logo.png' align="right" width="135"/></a>
 
 <!-- badges: start -->
 [![CRAN](http://www.r-pkg.org/badges/version/sentometrics)](https://cran.r-project.org/package=sentometrics)
@@ -9,7 +9,9 @@
 [![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/sentometrics?color=brightgreen)](http://www.r-pkg.org/pkg/sentometrics)
 <!-- badges: end -->
 
-The **`sentometrics`** package offers an integrated framework for textual sentiment time series aggregation and prediction. Explore this package website to learn about what you can do and how so.
+### What?
+
+The **`sentometrics`** package offers an **integrated framework for textual sentiment time series aggregation and prediction**. It accounts for the intrinsic challenge that textual sentiment can be computed in many different ways, as well as the large number of possibilities to pool sentiment into a time series index. The package integrates the fast _quantification_ of sentiment from texts, the _aggregation_ into different sentiment time series, and the _prediction_ based on these measures. All in one coherent workflow! Explore this package website to learn about what you can do and how so.
 
 ### Acknowledgements
 
@@ -24,11 +26,4 @@ Please cite **`sentometrics`** in publications. See the **Citation** section on 
 ### Contact
 
 Reach out to [Samuel Borms](mailto:borms_sam@hotmail.com) if you have questions, suggestions or want to become a contributor. See the **News > Development** section to find out what you can help us with.
-
-### Media
-
-<p float="left">
-<iframe width="410" height="270" src="https://www.youtube.com/embed/KC8LSBNvZrQ" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-<iframe width="410" height="270" src="https://www.youtube.com/embed/nAlHzz4CP9E" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-</p>
 
