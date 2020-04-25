@@ -136,9 +136,10 @@
 <p><strong>Preparation</strong>  </p>
 <div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"sentometrics"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"quanteda"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"stringi"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"lexicon"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"tm"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"stringi"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"data.table"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"lexicon"</span>)
 
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"usnews"</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"list_lexicons"</span>)
@@ -170,7 +171,7 @@
 <div id="sentiment-calculation-from-a-sento_corpus-object" class="section level3">
 <h3 class="hasAnchor">
 <a href="#sentiment-calculation-from-a-sento_corpus-object" class="anchor"></a>Sentiment calculation from a <code>sento_corpus</code> object</h3>
-<p>The same simple calculation as above, but using a <code>sento_corpus</code> object and the metadata features in the corpus.</p>
+<p>The same simple calculation as above, but using a <code>sento_corpus</code> object and the metadata features in the corpus. A <code>"date"</code> variable is always part of any <code>sento_corpus</code>, and is also considered a docvar.</p>
 <div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_corpus.html">sento_corpus</a></span>(<span class="no">usnews</span>)
 
 <span class="no">corpus</span></pre></body></html></div>
@@ -372,8 +373,35 @@
 
 <span class="no">s</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/compute_sentiment.html">compute_sentiment</a></span>(<span class="no">txts</span>, <span class="no">lex</span>, <span class="kw">tokens</span> <span class="kw">=</span> <span class="no">toks</span>, <span class="st">"TFIDF"</span>)<span class="kw">[[</span><span class="st">"L"</span>]]</pre></body></html></div>
 <p><em>R</em> they equal?</p>
-<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span>(<span class="no">q</span>, <span class="no">s</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/all.equal.data.table.html">all.equal</a></span>(<span class="no">q</span>, <span class="no">s</span>)</pre></body></html></div>
 <pre><code>## [1] TRUE</code></pre>
+</div>
+<div id="multi-language-sentiment-computation" class="section level3">
+<h3 class="hasAnchor">
+<a href="#multi-language-sentiment-computation" class="anchor"></a>Multi-language sentiment computation</h3>
+<p>Multi-language textual sentiment analysis requires only a few modifications to the corpus and lexicons setup. One needs first to have a non-numeric <code>"language"</code> feature to be integrated into a <code>sento_corpus</code> object. This feature’s task is to regulate the application of the input lexicons supplied in different languages to the texts based on their associated language tag.</p>
+<div class="sourceCode" id="cb25"><html><body><pre class="r"><span class="no">corpusdt</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(
+  <span class="kw">id</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span>(<span class="fl">1</span>:<span class="fl">3</span>),
+  <span class="kw">date</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html">Sys.Date</a></span>(),
+  <span class="kw">texts</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Dit is goed. Bien, good."</span>, <span class="st">"Çeci est bien. Goed, good."</span>, <span class="st">"This is good. Goed, bien."</span>),
+  <span class="kw">language</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"nl"</span>, <span class="st">"fr"</span>, <span class="st">"en"</span>),
+  <span class="kw">ftr</span> <span class="kw">=</span> <span class="fl">0.5</span> <span class="co"># a numeric feature</span>
+)
+<span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_corpus.html">sento_corpus</a></span>(<span class="no">corpusdt</span>)
+
+<span class="no">corpus</span></pre></body></html></div>
+<pre><code>## A sento_corpus consisting of 3 documents and 3 docvars.</code></pre>
+<div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="no">lexicons</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">nl</span> <span class="kw">=</span> <span class="fu"><a href="../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="st">"lexNL"</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="st">"goed"</span>, <span class="fl">1</span>))),
+                 <span class="kw">fr</span> <span class="kw">=</span> <span class="fu"><a href="../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="st">"lexFR"</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="st">"bien"</span>, <span class="fl">1</span>))),
+                 <span class="kw">en</span> <span class="kw">=</span> <span class="fu"><a href="../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="st">"lexEN"</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="st">"good"</span>, <span class="fl">1</span>))))
+
+<span class="no">s</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/compute_sentiment.html">compute_sentiment</a></span>(<span class="no">corpus</span>, <span class="no">lexicons</span>, <span class="st">"counts"</span>)
+
+<span class="no">s</span></pre></body></html></div>
+<pre><code>##    id       date word_count lexNL--ftr lexFR--ftr lexEN--ftr
+## 1:  1 2020-04-25          5        0.5        0.0        0.0
+## 2:  2 2020-04-25          5        0.0        0.5        0.0
+## 3:  3 2020-04-25          5        0.0        0.0        0.5</code></pre>
 </div>
   </div>
 

@@ -18,9 +18,10 @@ This tutorial provides a guide on how to perform the textual sentiment computati
 ```{r}
 library("sentometrics")
 library("quanteda")
-library("stringi")
-library("lexicon")
 library("tm")
+library("stringi")
+library("data.table")
+library("lexicon")
 
 data("usnews")
 data("list_lexicons")
@@ -43,7 +44,7 @@ s
 
 ### Sentiment calculation from a `sento_corpus` object 
 
-The same simple calculation as above, but using a `sento_corpus` object and the metadata features in the corpus.
+The same simple calculation as above, but using a `sento_corpus` object and the metadata features in the corpus. A ``"date"`` variable is always part of any `sento_corpus`, and is also considered a docvar.
 
 ```{r}
 corpus <- sento_corpus(usnews)
@@ -179,5 +180,32 @@ _R_ they equal?
 
 ```{r}
 all.equal(q, s)
+```
+
+### Multi-language sentiment computation
+
+Multi-language textual sentiment analysis requires only a few modifications to the corpus and lexicons setup. One needs first to have a non-numeric ``"language"`` feature to be integrated into a `sento_corpus` object. This feature's task is to regulate the application of the input lexicons supplied in different languages to the texts based on their associated language tag.
+
+```{r}
+corpusdt <- data.table(
+  id = as.character(1:3),
+  date = Sys.Date(),
+  texts = c("Dit is goed. Bien, good.", "Çeci est bien. Goed, good.", "This is good. Goed, bien."),
+  language = c("nl", "fr", "en"),
+  ftr = 0.5 # a numeric feature
+)
+corpus <- sento_corpus(corpusdt)
+
+corpus
+```
+
+```{r}
+lexicons <- list(nl = sento_lexicons(list("lexNL" = data.frame("goed", 1))), 
+                 fr = sento_lexicons(list("lexFR" = data.frame("bien", 1))),
+                 en = sento_lexicons(list("lexEN" = data.frame("good", 1))))
+
+s <- compute_sentiment(corpus, lexicons, "counts")
+
+s
 ```
 
