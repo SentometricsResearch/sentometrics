@@ -10,7 +10,7 @@ vignette: >
 knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.width = 7, fig.height = 4, fig.align = "center")
 ```
 
-This tutorial provides insights in how to create, enrich, transform, and analyze a corpus.
+This tutorial provides insights in how to create, enrich, transform, and analyze a `sento_corpus` object. A `sento_corpus` object is special because it always has a date column, and numeric metadata features.
 
 **Preparation**
 &nbsp;
@@ -67,7 +67,7 @@ trs <- corpus_trim(corpus, "sentences", min_ntoken = 40)
 
 ### Enrich a `sento_corpus` object with features 
 
-A `sento_corpus` object is special because it always has numeric metadata features. Using the `add_features()` function, additional features can be added, or generated through keywords or regex pattern matching.
+Using the `add_features()` function, additional features can be added to your corpus, or generated through keywords or regex pattern matching.
 
 ```{r}
 corpus <- sento_corpus(usnews[, 1:3])
