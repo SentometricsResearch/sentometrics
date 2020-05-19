@@ -44,7 +44,7 @@ s
 
 ### Sentiment calculation from a `sento_corpus` object 
 
-The same simple calculation as above, but using a `sento_corpus` object and the metadata features in the corpus. A ``"date"`` variable is always part of any `sento_corpus`, and is also considered a docvar.
+The same simple calculation as above, but using a `sento_corpus` object and the metadata features in the corpus. A `"date"` variable is always part of any `sento_corpus`, and is also considered a docvar.
 
 ```{r}
 corpus <- sento_corpus(usnews)
@@ -184,7 +184,7 @@ all.equal(q, s)
 
 ### Multi-language sentiment computation
 
-Multi-language textual sentiment analysis requires only a few modifications to the corpus and lexicons setup. One needs first to have a non-numeric ``"language"`` feature to be integrated into a `sento_corpus` object. This feature's task is to regulate the application of the input lexicons supplied in different languages to the texts based on their associated language tag.
+Multi-language textual sentiment analysis requires only a few modifications to the corpus and lexicons setup. One needs first to have a non-numeric `"language"` feature to be integrated into a `sento_corpus` object. This feature's task is to regulate the application of the input lexicons supplied in different languages to the texts based on their associated language tag.
 
 ```{r}
 corpusdt <- data.table(

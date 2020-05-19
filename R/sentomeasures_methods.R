@@ -220,12 +220,12 @@ summary.sento_measures <- function(object, ...) {
   cat("\n")
   cat("Following features are present:", sento_measures$features, "\n")
   cat("Following lexicons are used to calculate sentiment:", sento_measures$lexicons, "\n")
-  cat("Following scheme is applied for aggregation within documents:", sento_measures$within$howWithin, "\n")
-  cat("Following scheme is applied for aggregation across documents:", sento_measures$docs$howDocs, "\n")
+  cat("Following scheme is applied for aggregation within documents:", sento_measures$ctr$within$howWithin, "\n")
+  cat("Following scheme is applied for aggregation across documents:", sento_measures$ctr$docs$howDocs, "\n")
   cat("Following schemes are applied for aggregation across time:", sento_measures$time, "\n")
   cat("\n")
   cat("Aggregate average statistics:", "\n")
-  print(round(rowMeans(sento_measures$stats), 5))
+  print(round(rowMeans(sento_measures$stats, na.rm = TRUE), 5))
   cat()
 }
 

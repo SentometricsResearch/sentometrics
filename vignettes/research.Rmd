@@ -3,7 +3,7 @@ title: "Research"
 output: rmarkdown::html_vignette
 ---
 
-Here is an updated list of papers related the **`sentometrics`** package, or more broadly about textual sentiment analysis (most of which use the package for underlying calculations). These research projects are carried out by a joint group of collaborators working at the intersection of sentiment analysis and econometrics. 
+Here is an updated list of papers related to the **`sentometrics`** package, or more broadly about textual sentiment analysis (most of which use the package for underlying calculations). These research projects are carried out by a joint group of collaborators working at the intersection of sentiment analysis and econometrics.
 
 ### Vignette
 
@@ -23,9 +23,9 @@ _An overview of the required steps in a typical econometric analysis of sentimen
 
 - Algaba, A., Borms, S., Boudt, K. & Verbeken, B. (2020). **Monitoring consumer confidence: A real-time approach using media news articles**. Working paper.
 
-- Algaba, A., Borms, S., Boudt, K. & Van Pelt, J. (2020). **The Economic Policy Uncertainty index for Flanders, Wallonia and Belgium**. Working paper. [Link](https://ssrn.com/abstract=3580000).
+- Algaba, A., Borms, S., Boudt, K. & Van Pelt, J. (2020). **The Economic Policy Uncertainty index for Flanders, Wallonia and Belgium**. Research note. [Link](http://dx.doi.org/10.2139/ssrn.3580000).
 
 - Ardia, D., Bluteau, K. & Boudt, K. (2019). **Media and the stock market: Their relationship and abnormal dynamics around earnings announcements**. Working paper. [Link](http://dx.doi.org/10.2139/ssrn.3192064).
 
-- Ardia, D., Bluteau, K. & Boudt, K. (2019). **Questioning the news about economic growth: Sparse forecasting using thousands of news-based sentiment values**. International Journal of Forecasting 35, 1370–1386. [Link](https://doi.org/10.1016/j.ijforecast.2018.10.010).
+- Ardia, D., Bluteau, K. & Boudt, K. (2019). **Questioning the news about economic growth: Sparse forecasting using thousands of news-based sentiment values**. International Journal of Forecasting 35, 1370-1386. [Link](https://doi.org/10.1016/j.ijforecast.2018.10.010).
 
