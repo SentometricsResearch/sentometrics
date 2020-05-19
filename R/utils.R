@@ -378,27 +378,24 @@ compute_stats <- function(sento_measures) {
   stats["max", ] <- measures[, lapply(.SD, max, na.rm = TRUE)]
   stats["min", ] <- measures[, lapply(.SD, min, na.rm = TRUE)]
   if (ncol(measures) > 1) {
-    corrs <- stats::cor(measures)
+    corrs <- suppressWarnings(stats::cor(measures))
     corrs[corrs == 1] <- NA
     meanCorrs <- colMeans(corrs, na.rm = TRUE)
     stats["meanCorr", ] <- meanCorrs
   } else stats <- stats[row.names(stats) != "meanCorr", , drop = FALSE]
-  return(stats)
+  stats
 }
 
 compute_BIC <- function(y, dfA, RSS, sigma2) { # BIC-like criterion
-  BIC <- RSS/(nrow(y) * sigma2) + (log(nrow(y))/nrow(y)) * dfA
-  return(BIC)
+  RSS/(nrow(y) * sigma2) + (log(nrow(y))/nrow(y)) * dfA
 }
 
 compute_AIC <- function(y, dfA, RSS, sigma2) { # AIC-like criterion
-  AIC <- RSS/(nrow(y) * sigma2) + (2/nrow(y)) * dfA
-  return(AIC)
+  RSS/(nrow(y) * sigma2) + (2/nrow(y)) * dfA
 }
 
 compute_Cp <- function(y, dfA, RSS, sigma2) { # Mallows's Cp-like criterion
-  Cp <- RSS/nrow(y) + (2/nrow(y)) * dfA * sigma2
-  return(Cp)
+  RSS/nrow(y) + (2/nrow(y)) * dfA * sigma2
 }
 
 measures_to_long <- function(measures) { # changes format of sentiment measures data.table from wide to long

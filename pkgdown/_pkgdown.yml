@@ -14,7 +14,7 @@ toc:
 
 navbar:
   structure:
-    left:  [home, intro, articles, research, news, reference]
+    left:  [home, intro, articles, contributions, research, news, reference]
     right: [docsearch, github]
   components:
     articles:
@@ -35,6 +35,11 @@ navbar:
         href: articles/epu.html
       - text: Predicting the VIX index
         href: articles/vix.html
+    contributions:
+      text: Contributions
+      menu:
+      - text: Gopress data and sentometrics
+        href: articles/gopress.html
     research:
       text: Research
       href: articles/research.html

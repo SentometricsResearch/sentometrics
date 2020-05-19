@@ -208,8 +208,9 @@ ctr_agg <- function(howWithin = "proportional", howDocs = "equal_weight", howTim
 #' \item{features}{a \code{character} vector of the different features.}
 #' \item{lexicons}{a \code{character} vector of the different lexicons used.}
 #' \item{time}{a \code{character} vector of the different time weighting schemes used.}
-#' \item{stats}{a \code{data.frame} with a series of elementary statistics (mean, standard deviation, maximum, minimum, and
-#' average correlation with all other measures) for each individual sentiment measure.}
+#' \item{stats}{a \code{data.frame} with some elementary statistics (mean, standard deviation, maximum, minimum, and
+#' average correlation with the other measures) for each individual sentiment measure. In all computations, NAs are
+#' removed first.}
 #' \item{sentiment}{the document-level sentiment scores \code{data.table} with \code{"date"},
 #' \code{"word_count"} and lexicon-feature sentiment scores columns. The \code{"date"} column has the
 #' dates converted at the frequency for across-document aggregation. All zeros are replaced by \code{NA}
@@ -355,7 +356,7 @@ aggregate_docs <- function(sent, by, how = get_hows()$docs, weightingParamDocs) 
   lexNames <- unique(sapply(names, "[", 1))
   features <- unique(sapply(names, "[", 2))
 
-  data.table::setorder(sent, "date", na.last = FALSE)
+  data.table::setorder(sent, date, na.last = FALSE)
   attribWeights <- list(W = NA, B = NA) # list with weights useful in later attribution analysis
 
   # reformat dates so they can be aggregated at the specified 'by' level, and cast to Date format

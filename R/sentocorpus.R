@@ -15,14 +15,16 @@
 #' alter the very structure the corpus is meant to have (as defined in the \code{corpusdf} argument) to be able to be used as
 #' an input in other functions of the \pkg{sentometrics} package. There are functions, including
 #' \code{\link[quanteda]{corpus_sample}} or \code{\link[quanteda]{corpus_subset}}, that do not change the actual corpus
-#' structure and may come in handy. To add additional features, use \code{\link{add_features}}. Binary features are useful as
+#' structure and may come in handy.
+#'
+#' To add additional features, use \code{\link{add_features}}. Binary features are useful as
 #' a mechanism to select the texts which have to be integrated in the respective feature-based sentiment measure(s), but
 #' applies only when \code{do.ignoreZeros = TRUE}. Because of this (implicit) selection that can be performed, having
 #' complementary features (e.g., \code{"economy"} and \code{"noneconomy"}) makes sense.
 #'
 #' It is also possible to add one non-numerical feature, that is, \code{"language"}, to designate the language
-#' of the corpus texts. When this feature is provided on corpus-level, a list of lexicons for different
-#' languages is expected in the function \code{compute_sentiment}.
+#' of the corpus texts. When this feature is provided on corpus-level, a \code{list} of lexicons for different
+#' languages is expected in the \code{compute_sentiment} function.
 #'
 #' @param corpusdf a \code{data.frame} (or a \code{data.table}, or a \code{tbl}) with as named columns: a document \code{"id"}
 #' column (in \code{character} mode), a \code{"date"} column (as \code{"yyyy-mm-dd"}), a \code{"texts"} column
@@ -36,9 +38,8 @@
 #' This includes a brute force replacement of HTML tags and non-alphanumeric characters by an empty string. To use with care
 #' if the text is meant to have non-alphanumeric characters! Preferably, cleaning is done outside of this function call.
 #'
-#' @return A \code{sento_corpus} object, derived from a \pkg{quanteda} \code{\link[quanteda]{corpus}} classed \code{list}
-#' with elements \code{"documents"}, \code{"metadata"}, and \code{"settings"} kept. The first element incorporates
-#' the corpus represented as a \code{data.frame}.
+#' @return A \code{sento_corpus} object, derived from a \pkg{quanteda} \code{\link[quanteda]{corpus}}
+#' object. The corpus is ordered by date.
 #'
 #' @seealso \code{\link[quanteda]{corpus}}, \code{\link{add_features}}
 #'
@@ -96,6 +97,7 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
     stop("At least one feature name contains '-'. Please provide proper names.")
 
   corpusdf <- corpusdf[, c(nonfeatures, features)]
+  data.table::setorder(corpusdf, date) # oldest comes first
 
   info <- "This is a sento_corpus object based on the quanteda corpus object."
 
@@ -142,15 +144,15 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
   corp <- quanteda::corpus(x = corpusdf, docid_field = "id", text_field = "texts",
                            meta = list(info = info))
   class(corp) <- c("sento_corpus", class(corp))
-  data.table::setorder(quanteda::docvars(corp), date) # oldest comes first
-  return(corp)
+
+  corp
 }
 
 clean_texts <- function(corpusdf) {
   corpusdf$texts <- stringi::stri_replace_all(corpusdf$texts, replacement = "", regex = "<.*?>") # html tags
   corpusdf$texts <- stringi::stri_replace_all(corpusdf$texts, replacement = "", regex = '[\\"]')
   corpusdf$texts <- stringi::stri_replace_all(corpusdf$texts, replacement = "", regex = "[^-a-zA-Z0-9,&. ]")
-  return(corpusdf)
+  corpusdf
 }
 
 #' Add feature columns to a (sento_)corpus object
@@ -273,6 +275,7 @@ add_features <- function(corpus, featuresdf = NULL, keywords = NULL, do.binary =
     }
   }
   class(corpus) <- classIn
+
   corpus
 }
 
