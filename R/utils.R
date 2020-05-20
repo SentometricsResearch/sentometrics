@@ -107,7 +107,7 @@ weights_almon <- function(n, orders = 1:3, do.inverse = TRUE, do.normalize = TRU
 #'
 #' @seealso \code{\link{ctr_agg}}
 #'
-#' @references Ghysels, Sinko and Valkanov (2007). ``MIDAS regressions: Further results and new directions''.
+#' @references Ghysels, Sinko and Valkanov (2007). \strong{MIDAS regressions: Further results and new directions}.
 #' \emph{Econometric Reviews 26, 53-90}, \url{https://doi.org/10.1080/07474930600972467}.
 #'
 #' @export

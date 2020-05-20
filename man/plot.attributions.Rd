@@ -22,7 +22,7 @@ dimension is at maximum twelve.
 Shows a plot of the attributions along the dimension provided, stacked per date.
 }
 \details{
-See \code{\link{sento_model}} for an elaborate modelling example including the calculation and plotting of
+See \code{\link{sento_model}} for an elaborate modeling example including the calculation and plotting of
 attributions. This function does not handle the plotting of the attribution of individual documents, since there are
 often a lot of documents involved and they appear only once at one date (even though a document may contribute to
 predictions at several dates, depending on the number of lags in the time aggregation).

@@ -20,7 +20,7 @@ Displays a plot of all predictions made through the iterative model computation 
 input \code{sento_modelIter} object, as well as the corresponding true values.
 }
 \details{
-See \code{\link{sento_model}} for an elaborate modelling example including the plotting of out-of-sample
+See \code{\link{sento_model}} for an elaborate modeling example including the plotting of out-of-sample
 performance.
 }
 \author{

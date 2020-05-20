@@ -1,9 +1,9 @@
 
-#' Set up control for sentiment-based sparse regression modelling
+#' Set up control for sentiment-based sparse regression modeling
 #'
 #' @author Samuel Borms, Keven Bluteau
 #'
-#' @description Sets up control object for linear or nonlinear modelling of a response variable onto a large panel of
+#' @description Sets up control object for linear or nonlinear modeling of a response variable onto a large panel of
 #' textual sentiment measures (and potentially other variables). See \code{\link{sento_model}} for details on the
 #' estimation and calibration procedure.
 #'
@@ -60,9 +60,9 @@
 #'
 #' @seealso \code{\link{sento_model}}
 #'
-#' @references Tibshirani and Taylor (2012). ``Degrees of freedom in LASSO problems''.
+#' @references Tibshirani and Taylor (2012). \strong{Degrees of freedom in LASSO problems}.
 #' \emph{The Annals of Statistics 40, 1198-1232}, \url{https://doi.org/10.1214/12-AOS1003}.
-#' @references Zou, Hastie and Tibshirani (2007). ``On the `degrees of freedom' of the LASSO''.
+#' @references Zou, Hastie and Tibshirani (2007). \strong{On the degrees of freedom of the LASSO}.
 #' \emph{The Annals of Statistics 35, 2173-2192}, \url{https://doi.org/10.1214/009053607000000127}.
 #'
 #' @examples
@@ -93,7 +93,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 
   err <- NULL
   if (!(model %in% c("gaussian", "binomial", "multinomial"))) {
-    err <- c(err, "Provide a proper modelling type under 'model'.")
+    err <- c(err, "Provide a proper modeling type under 'model'.")
   }
   if (!(type %in% c("BIC", "AIC", "Cp", "cv"))) {
     err <- c(err, "Provide a proper calibration type under 'type'.")
@@ -118,7 +118,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
   }
   if (do.iter == FALSE) nSample <- start <- NULL
   if (do.iter == TRUE && is.null(nSample)) {
-    err <- c(err, "Iterative modelling requires a non-NULL sample size given by 'nSample'.")
+    err <- c(err, "Iterative modeling requires a non-NULL sample size given by 'nSample'.")
   }
   if (do.iter == TRUE && !is.null(nSample)) {
     if (nSample <= 0) {
@@ -441,7 +441,7 @@ sento_model <- function(sento_measures, y, x = NULL, ctr) {
       N <- max(sapply(dfs, function(df) return(length(df$lambda))))
       lambdasMat <- dfsMat <- RSSMat <- matrix(NA, nrow = length(dfs), ncol = N)
       for (i in 1:length(dfs)) { # for every alpha
-        df <- dfs[[i]] # list of lambdas, degrees-of-freedom and RSS
+        df <- dfs[[i]] # list of lambdas, degrees of freedom and RSS
         K <- length(df$lambda)
         lambdasMat[i, 1:K] <- df$lambda
         dfsMat[i, 1:K] <- unlist(df$df)
@@ -716,7 +716,7 @@ print.sento_modelIter <- function(x, ...) {
 #' @description Displays a plot of all predictions made through the iterative model computation as incorporated in the
 #' input \code{sento_modelIter} object, as well as the corresponding true values.
 #'
-#' @details See \code{\link{sento_model}} for an elaborate modelling example including the plotting of out-of-sample
+#' @details See \code{\link{sento_model}} for an elaborate modeling example including the plotting of out-of-sample
 #' performance.
 #'
 #' @param x a \code{sento_modelIter} object created using \code{\link{sento_model}}.
@@ -805,7 +805,7 @@ predict.sento_model <- function(object, newx, type = "response", offset = NULL, 
 #'
 #' @seealso \code{\link{sento_model}}, \code{\link[MCS]{MCSprocedure}}
 #'
-#' @references Hansen, Lunde and Nason (2011). ``The model confidence set''. \emph{Econometrica 79, 453-497},
+#' @references Hansen, Lunde and Nason (2011). \strong{The model confidence set}. \emph{Econometrica 79, 453-497},
 #' \url{https://doi.org/10.3982/ECTA5771}.
 #'
 #' @examples

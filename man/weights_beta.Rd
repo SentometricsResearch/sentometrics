@@ -32,7 +32,7 @@ from 1 to \eqn{n}, \eqn{a} and \eqn{b} are two decay parameters, and
 the \code{\link{gamma}} function.
 }
 \references{
-Ghysels, Sinko and Valkanov (2007). ``MIDAS regressions: Further results and new directions''.
+Ghysels, Sinko and Valkanov (2007). \strong{MIDAS regressions: Further results and new directions}.
 \emph{Econometric Reviews 26, 53-90}, \url{https://doi.org/10.1080/07474930600972467}.
 }
 \seealso{

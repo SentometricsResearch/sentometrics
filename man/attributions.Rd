@@ -47,7 +47,7 @@ Computes the attributions to predictions for a (given) number of dates at all po
 based on the coefficients associated to each sentiment measure, as estimated in the provided model object.
 }
 \details{
-See \code{\link{sento_model}} for an elaborate modelling example including the calculation and plotting of
+See \code{\link{sento_model}} for an elaborate modeling example including the calculation and plotting of
 attributions. The attribution for logistic models is represented in terms of log odds. For binomial models, it is
 calculated with respect to the last factor level or factor column. A \code{NULL} value for document-level attribution
 on a given date means no documents are directly implicated in the associated prediction.

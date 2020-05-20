@@ -152,130 +152,112 @@
 
     
     
-<p>Tutorial contributed by <a href="delmarcelle.olivier@gmail.com">Olivier Delmarcelle</a> (PhD student, Ghent University).</p>
+<p>Tutorial contributed by <a href="mailto:delmarcelle.olivier@gmail.com">Olivier Delmarcelle</a> (PhD student, Ghent University).</p>
 <div id="introduction" class="section level2">
 <h2 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h2>
-<p>Textual analysis has become more and more popular nowadays as a tool to extract and derive meaningful information from the enormous amount of content available online.</p>
-<p>Printed newspapers used to be one of the primary sources of information. As they evolved by extending their offer through online services and subscription, newspapers remain today an important information media. Even more interesting, it is now possible to perform wide textual analysis on these online versions, identifying trends across years and newspapers.</p>
-<p>Thanks to <strong>Gopress Academic</strong>, students from various universities in Belgium are able to access a large database containing news articles from the main Belgian newspaper. These articles are the perfect material for textual analysis, such as a sentiment computation with the help of the <strong><code>sentometrics</code></strong> package.</p>
-<p>This contributed tutorial describes how to make use of the database of <strong>Gopress Academic</strong>, which contains news articles from the main Belgian newspapers, in order to create a corpus of documents formatted for analysis through the <strong><code>sentometrics</code></strong> package.</p>
-<p>In this small tutorial, you will learn how to:</p>
+<p>Textual analysis has become very popular nowadays as a tool to extract and derive meaningful information from the enormous amounts of content available online.</p>
+<p>Newspapers remain one of the primary sources of information. They have been evolving by extending their offerings online, including the setting up of news archives. That makes it possible to perform wide textual analysis on these archives stored online, for instance, to identify trends across years and newspapers.</p>
+<p>With the <strong>Gopress Academic</strong> database, students from various universities in Belgium are able to access news articles from all main Belgian newspapers. These articles are the perfect material for textual analysis, such as topic modeling or sentiment computation with the help of the <strong><code>sentometrics</code></strong> package.</p>
+<p>This contributed tutorial describes how to use the <strong>Gopress Academic</strong> database to create a corpus of documents formatted for analysis with <strong><code>sentometrics</code></strong>. You will learn how to:</p>
 <ul>
 <li>Access and retrieve documents from the <strong>Gopress Academic</strong> database.</li>
 <li>Import the Gopress documents to R and prepare them for a textual analysis.</li>
-<li>Use the <strong><code>sentometrics</code></strong> package to calculate and analyze sentiment from a corpus of documents.</li>
+<li>Use the <strong><code>sentometrics</code></strong> package to analyze the corpus of news.</li>
 </ul>
 </div>
 <div id="obtain-data-from-gopress" class="section level2">
 <h2 class="hasAnchor">
 <a href="#obtain-data-from-gopress" class="anchor"></a>Obtain data from Gopress</h2>
-<p>The Gopress Academic platform is available <a href="https://academic.gopress.be/en">here</a>. You should be able to register with your university e-mail address to gain access to the database.</p>
-<p>After signing in, the Search page should appear and allow search across the database. The search tool allows to specify the time of publication, the newspaper, and the number of words contained in the articles. A least one keyword should always be used as a basis for the search. The results of the search appear at the bottom of the page. Returned articles will show up with a short extract.</p>
-<p>Unfortunately, Gopress does not allow downloading in bulk the articles resulting from a search. Instead, the easiest method is to save articles of interest in “Read Later” by clicking on the star button, as shown in the following screenshot. This should be done for each article of interest.</p>
+<p>The <strong>Gopress Academic</strong> platform is available <a href="https://academic.gopress.be/en">here</a>. You should be able to register with your university e-mail address to gain access to the database.</p>
+<p>After signing in, the Search page appears. The search tool allows to specify the time of publication, the newspaper, and the number of words contained in the articles. A least one keyword should always be used as basis for the search. The returned articles appear at the bottom of the page, with a short extract.</p>
+<p>Unfortunately, <strong>Gopress</strong> does not allow downloading in bulk the articles resulting from a search. Instead, one should save articles of interest as “Read Later” by clicking on the star button, as shown below. This should be done for each article of interest.</p>
 <p><img src="gopress_figures/save_as.jpg"></p>
-<p>The saved articles will appear in the “Read Later” section, accessible through the “Read Later” button at the top right of the page. From there, it is possible to download the set of saved articles in various formats, as shown in the following screenshot. For the purpose of this guide, we will only make use of articles saved in the RTF format, with one different file for each article.</p>
+<p>The saved articles will appear in the “Read Later” section, accessible through the “Read Later” button at the top right of the page. From there, it is possible to download the saved articles in various formats. In this tutorial, we save the articles in RTF format, with one file per article.</p>
 <p><img src="gopress_figures/read_later.jpg"></p>
 </div>
 <div id="massage-the-gopress-data-in-r" class="section level2">
 <h2 class="hasAnchor">
 <a href="#massage-the-gopress-data-in-r" class="anchor"></a>Massage the Gopress data in R</h2>
-<p>To easily import the data to R, the downloaded articles should be stored in one single folder, preferably containing only the articles.</p>
-<p>With the help of the <strong><code>striprtf</code></strong> package, articles can be imported to R.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"striprtf"</span>)
-
-<span class="no">folder</span> <span class="kw">&lt;-</span> <span class="st">"gopress_downloads/"</span> <span class="co"># the folder's path for the downloaded articles</span>
+<p>Let’s first load all the packages used throughout the tutorial.</p>
+<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"sentometrics"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"data.table"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"quanteda"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"stringi"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"stm"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"lubridate"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"striprtf"</span>)</pre></body></html></div>
+<p>To easily import the data into R, the downloaded articles should be stored in one single folder, preferably containing only the articles. With the help of the <strong><code>striprtf</code></strong> package, the articles can then be imported to R.</p>
+<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">folder</span> <span class="kw">&lt;-</span> <span class="st">"gopress_downloads/"</span> <span class="co"># the folder's path for the downloaded articles</span>
 <span class="no">filelist</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span>(<span class="kw">path</span> <span class="kw">=</span> <span class="no">folder</span>, <span class="kw">pattern</span> <span class="kw">=</span> <span class="st">"*rtf"</span>)
 <span class="no">filelist</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(<span class="no">folder</span>, <span class="no">filelist</span>, <span class="kw">sep</span> <span class="kw">=</span> <span class="st">""</span>)
 <span class="no">rawCorpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">filelist</span>, <span class="kw">FUN</span> <span class="kw">=</span> <span class="no">read_rtf</span>)
 
-<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(<span class="no">rawCorpus</span>, <span class="kw">list.len</span> <span class="kw">=</span> <span class="fl">3</span>)</pre></body></html></div>
-<pre><code>## List of 1434
-##  $ : chr [1:53] "Help, ik heb de saaiste naam van Vlaanderen!" "De Morgen* - 07 Mar. 2020 -  22" "* DM Magazine" " " ...
-##  $ : chr [1:53] "Help, ik heb de saaiste naam van Vlaanderen!" "De Morgen* - 07 Mar. 2020 -  25" "* DM Magazine" " " ...
-##  $ : chr [1:27] "Coronapaniek slaat wild om zich heen in Italië" "De Morgen* - 05 Mar. 2020 -  1" "* " " " ...
-##   [list output truncated]</code></pre>
-<p>Note that the documents in <code>rawCorpus</code> are presented as lists of paragraphs, which is inappropriate for most textual analysis packages. The subsequent steps serve to create a corpus object in a full-text format. The first thing to do is to extract the dates and the issuing newspapers from the articles (as in <code>rawCorpus</code>, everything is concatenated).</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"stringi"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"lubridate"</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(<span class="no">rawCorpus</span>[<span class="fl">10</span>:<span class="fl">12</span>])</pre></body></html></div>
+<pre><code>## List of 3
+##  $ : chr [1:31] "Wilmès moet nu perspectief bieden" "De Morgen* - 24 Apr. 2020 -  1" "* " " " ...
+##  $ : chr [1:17] "'Bij ons zou al lang een volksopstand zijn uitgebroken'" "De Morgen* - 27 Apr. 2020 -  10" "* " " " ...
+##  $ : chr [1:31] "Goedkope vliegtickets, even goedkope service" "De Morgen* - 23 Apr. 2020 -  10" "* " " " ...</code></pre>
+<p>The text and metadata in <code>rawCorpus</code> are presented as lists of paragraphs, which is inappropriate for most textual analysis packages. The subsequent steps serve to create a corpus object in a full-text format. The first thing to do is to extract the dates and the issuing newspapers from the articles.</p>
+<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">secpars</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span>(<span class="no">rawCorpus</span>, <span class="st">"[["</span>, <span class="fl">2</span>) <span class="co"># extract metadata paragraph from all articles</span>
 
-<span class="no">secpars</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span>(<span class="no">rawCorpus</span>, <span class="st">"[["</span>, <span class="fl">2</span>) <span class="co"># extract second paragraphs from all articles</span>
-
-<span class="co"># extract dates</span>
 <span class="no">dates</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/stringi/man/stri_extract.html">stri_extract</a></span>(<span class="no">secpars</span>, <span class="kw">regex</span> <span class="kw">=</span> <span class="st">"\\d\\d[ ]....[ ]\\d\\d\\d\\d"</span>) <span class="co"># extract dates</span>
 <span class="no">dates</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span>(<span class="fu"><a href="http://lubridate.tidyverse.org/reference/parse_date_time.html">parse_date_time</a></span>(<span class="no">dates</span>, <span class="st">"d b y"</span>, <span class="kw">locale</span> <span class="kw">=</span> <span class="st">"English_Belgium.1252"</span>)) <span class="co"># reformat dates</span>
 
-<span class="co"># extract newspapers</span>
-<span class="no">sources</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/stringi/man/stri_extract.html">stri_extract</a></span>(<span class="no">secpars</span>, <span class="kw">regex</span> <span class="kw">=</span> <span class="st">".*\\*"</span>) <span class="co"># extract the newspaper name</span>
-<span class="no">sources</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/stringi/man/stri_extract.html">stri_extract</a></span>(<span class="no">sources</span>, <span class="kw">regex</span> <span class="kw">=</span> <span class="st">"[^[\\*]]*"</span>) <span class="co"># remove asterisks</span>
-<span class="no">sources</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"-"</span>, <span class="st">"_"</span>, <span class="no">sources</span>) <span class="co"># "-" causes issues so replace with "_"</span>
+<span class="no">sources</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/stringi/man/stri_extract.html">stri_extract</a></span>(<span class="no">secpars</span>, <span class="kw">regex</span> <span class="kw">=</span> <span class="st">".*\\*"</span>) <span class="co"># extract newspapers</span>
+<span class="no">sources</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/stringi/man/stri_replace.html">stri_replace_all</a></span>(<span class="no">sources</span>, <span class="st">""</span>, <span class="kw">regex</span> <span class="kw">=</span> <span class="st">"\\*"</span>) <span class="co"># remove asterisks</span>
+<span class="no">sources</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/stringi/man/stri_replace.html">stri_replace_all</a></span>(<span class="no">sources</span>, <span class="st">"_"</span>, <span class="kw">fixed</span> <span class="kw">=</span> <span class="st">"-"</span>) <span class="co"># replace "-" with "_"</span>
 <span class="no">sources</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/iconv.html">iconv</a></span>(<span class="no">sources</span>, <span class="kw">from</span> <span class="kw">=</span> <span class="st">"UTF-8"</span>, <span class="kw">to</span> <span class="kw">=</span> <span class="st">"ASCII//TRANSLIT"</span>) <span class="co"># remove accents</span></pre></body></html></div>
-<p>The two vectors <code>dates</code> and <code>sources</code> now contain properly formatted dates and issuing newspapers. Note that <code><a href="https://rdrr.io/r/base/Arithmetic.html">"-"</a></code> and accent characters were removed from the newspapers names as the <strong><code>sentometrics</code></strong> package does not support these characters in the feature names.</p>
-<p>It is important to emphasize the role of the locale for date conversion, which depends on the language of the Gopress website used when downloading the data. The assumption here is that the English version of the website was used. For documents downloaded using the Dutch or French version of the website, use <code>"Dutch_Belgium.1252"</code> or <code>"French_Belgium.1252"</code> instead.</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="no">dates</span>))</pre></body></html></div>
-<pre><code>## dates
-## 2020-03-02 2020-03-03 2020-03-04 2020-03-05 2020-03-06 2020-03-07 
-##          5         32         44         40         20         48</code></pre>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="no">sources</span>)</pre></body></html></div>
+<p>The two vectors <code>dates</code> and <code>sources</code> now contain properly formatted dates and issuing newspapers. Note that <code><a href="https://rdrr.io/r/base/Arithmetic.html">"-"</a></code> and accent characters were removed from the newspaper names because the <strong><code>sentometrics</code></strong> package does not like these characters when used as feature names.</p>
+<p>It is important to emphasize the role of the <code>locale</code> argument in the date reformatting. This depends on the language of the <strong>Gopress</strong> website used when downloading the data. We used the English version of the website. For documents downloaded using the Dutch or French version of the website, use <code>"Dutch_Belgium.1252"</code> or <code>"French_Belgium.1252"</code> instead.</p>
+<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="no">sources</span>)</pre></body></html></div>
 <pre><code>## sources
 ## De Morgen   De Tijd    L'Echo   Le Soir  Metro FR  Metro NL 
 ##       212       388       494       332         6         2</code></pre>
-<p>The next step is to extract the content of articles, found from the fifth paragraph. The fifth paragraph usually contains a small summary of the article’s content and may or may not be included. The below code removes the first four paragraphs of all articles.</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">texts</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span>(<span class="fl">1</span>:<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">rawCorpus</span>), <span class="kw">function</span>(<span class="no">i</span>) <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span>(<span class="no">rawCorpus</span><span class="kw">[[</span><span class="no">i</span>]][-<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>:<span class="fl">4</span>)]), <span class="kw">collapse</span> <span class="kw">=</span> <span class="st">" "</span>))</pre></body></html></div>
-<p>It is also a good moment to do some text cleaning!</p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"tm"</span>)
-
-<span class="co"># some text cleaning, feel free to adjust...</span>
-<span class="no">texts</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/stringi/man/stri_trans_casemap.html">stri_trans_tolower</a></span>(<span class="no">texts</span>)
-<span class="no">texts</span> <span class="kw">&lt;-</span> <span class="kw pkg">tm</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/tm/man/removeNumbers.html">removeNumbers</a></span>(<span class="no">texts</span>)
-<span class="no">texts</span> <span class="kw">&lt;-</span> <span class="kw pkg">tm</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/tm/man/removePunctuation.html">removePunctuation</a></span>(<span class="no">texts</span>)
-<span class="no">texts</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"[^[:alnum:]]"</span>, <span class="st">" "</span>, <span class="no">texts</span>)
-<span class="no">texts</span> <span class="kw">&lt;-</span> <span class="kw pkg">tm</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/tm/man/stripWhitespace.html">stripWhitespace</a></span>(<span class="no">texts</span>)
+<p>The next step is to extract the content of articles, found from the fifth paragraph. The fifth paragraph usually contains a small summary of the article’s content and may or may not be included. The below code removes the first four paragraphs in all articles.</p>
+<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">texts</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span>(<span class="fl">1</span>:<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">rawCorpus</span>), <span class="kw">function</span>(<span class="no">i</span>) <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="no">rawCorpus</span><span class="kw">[[</span><span class="no">i</span>]][-<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>:<span class="fl">4</span>)], <span class="kw">collapse</span> <span class="kw">=</span> <span class="st">" "</span>))</pre></body></html></div>
+<p>After the content extraction, time for some text cleaning! We limit ourselves here to the minimum (as we trust in the tokenization done later internally by <strong><code>sentometrics</code></strong>), but feel free to adjust the cleaning steps to your liking.</p>
+<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">texts</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/stringi/man/stri_trans_casemap.html">stri_trans_tolower</a></span>(<span class="no">texts</span>)
+<span class="no">texts</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/stringi/man/stri_replace.html">stri_replace_all</a></span>(<span class="no">texts</span>, <span class="st">" "</span>, <span class="kw">regex</span> <span class="kw">=</span> <span class="st">"\\s+"</span>) <span class="co"># shorten sequences of spaces</span>
 <span class="no">texts</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/stringi/man/stri_trim.html">stri_trim_both</a></span>(<span class="no">texts</span>)</pre></body></html></div>
-<p>Lastly, our goal is to create a <code>data.table</code> ready to be used within the <strong><code>sentometrics</code></strong> package. The <code><a href="../reference/sento_corpus.html">sento_corpus()</a></code> function takes as argument a <code>data.frame</code> type object with an <code>"id"</code> column, a <code>"texts"</code> column, a <code>"date"</code> column, and a number of optional numeric columns representing features of the corpus. Therefore, there is a need to transform the one-dimensional column <code>"source"</code> to a number of numeric columns. This can be done using the <strong><code>reshape</code></strong> package.</p>
-<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"reshape"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"data.table"</span>)
+<p>Lastly, our goal is to create a <code>data.table</code> ready to be used within the <strong><code>sentometrics</code></strong> package. The <code><a href="../reference/sento_corpus.html">sento_corpus()</a></code> function takes as argument a <code>data.frame</code>-like object with an <code>"id"</code> column, a <code>"texts"</code> column, a <code>"date"</code> column, an optional <code>"language"</code> column, and a number of optional numeric columns representing features of the corpus. Therefore, the initiated one-dimensional column <code>"source"</code> needs to be transformed to a number of numeric columns.</p>
+<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(<span class="kw">id</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">dates</span>), <span class="kw">date</span> <span class="kw">=</span> <span class="no">dates</span>, <span class="kw">texts</span> <span class="kw">=</span> <span class="no">texts</span>, <span class="kw">source</span> <span class="kw">=</span> <span class="no">sources</span>, <span class="kw">value</span> <span class="kw">=</span> <span class="fl">1</span>)
+<span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/dcast.data.table.html">dcast</a></span>(<span class="no">corpus</span>, <span class="no">id</span> + <span class="no">date</span> + <span class="no">texts</span> ~ <span class="no">source</span>, <span class="kw">fill</span> <span class="kw">=</span> <span class="fl">0</span>) <span class="co"># one column per source</span>
+<span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="no">corpus</span>[<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setorder.html">order</a></span>(<span class="no">date</span>)] <span class="co"># order the corpus by date</span></pre></body></html></div>
+<p>As the corpus contains newspapers written in Dutch and in French, we also add the <code>"language"</code> feature, which allows to analyze articles in different languages independently.</p>
+<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="no">lng</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fifelse.html">ifelse</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowSums</a></span>(<span class="no">corpus</span>[, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"L'Echo"</span>, <span class="st">"Le Soir"</span>, <span class="st">"Metro FR"</span>)]) <span class="kw">==</span> <span class="fl">1</span>, <span class="st">"fr"</span>, <span class="st">"nl"</span>)
+<span class="no">corpus</span>[, <span class="no">language</span> <span class="kw">:=</span> <span class="no">lng</span>]
 
-<span class="no">id</span> <span class="kw">&lt;-</span> <span class="fl">1</span>:<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">dates</span>) <span class="co"># create an id column</span>
-<span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(<span class="kw">date</span> <span class="kw">=</span> <span class="no">dates</span>, <span class="kw">source</span> <span class="kw">=</span> <span class="no">sources</span>, <span class="kw">id</span> <span class="kw">=</span> <span class="no">id</span>, <span class="kw">value</span> <span class="kw">=</span> <span class="fl">1</span>) <span class="co"># initialize a corpus data.table</span>
-<span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html">as.data.table</a></span>(<span class="kw pkg">reshape</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/reshape/man/cast-9g.html">cast</a></span>(<span class="no">corpus</span>, <span class="no">date</span> + <span class="no">id</span> ~ <span class="no">source</span>, <span class="kw">fill</span> <span class="kw">=</span> <span class="fl">0</span>)) <span class="co"># one column per source</span>
-
-<span class="co"># create a temporary data.table to store texts in the correct order and then merge on common ids</span>
-<span class="no">idTexts</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(<span class="no">id</span>, <span class="no">texts</span>)
-<span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/merge.html">merge</a></span>(<span class="no">corpus</span>, <span class="no">idTexts</span>, <span class="kw">by</span> <span class="kw">=</span> <span class="st">"id"</span>)</pre></body></html></div>
-<p>As the corpus contains newspapers written in Dutch and in French, it would be interesting to have a feature that denotes the newspaper language. Adding a <code>"language"</code> feature allows to analyze articles in different languages independently.</p>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">lng</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fifelse.html">ifelse</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowSums</a></span>(<span class="no">corpus</span>[, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"L'Echo"</span>, <span class="st">"Le Soir"</span>, <span class="st">"Metro FR"</span>)]) <span class="kw">==</span> <span class="fl">1</span>, <span class="st">"fr"</span>, <span class="st">"nl"</span>)
-<span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="no">corpus</span>, <span class="kw">language</span> <span class="kw">=</span> <span class="no">lng</span>)</pre></body></html></div>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(<span class="no">corpus</span>, <span class="kw">give.attr</span> <span class="kw">=</span> <span class="fl">FALSE</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(<span class="no">corpus</span>, <span class="kw">give.attr</span> <span class="kw">=</span> <span class="fl">FALSE</span>)</pre></body></html></div>
 <pre><code>## Classes 'data.table' and 'data.frame':   1434 obs. of  10 variables:
-##  $ id       : int  1 2 3 4 5 6 7 8 9 10 ...
-##  $ date     : Date, format: "2020-03-07" "2020-03-07" ...
-##  $ De Morgen: num  1 1 1 1 1 1 1 1 1 1 ...
-##  $ De Tijd  : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ id       : int  115 161 619 849 926 40 106 141 228 244 ...
+##  $ date     : Date, format: "2020-03-02" "2020-03-02" ...
+##  $ texts    : chr  "de politieke actualiteit volgens ugent-politicoloog en de morgen-columnist carl devos. er zijn veel redenen waa"| __truncated__ "het rondrazende coronavirus neemt ook grote happen uit de wereldeconomie. bedrijven die thuiszitters vermaken, "| __truncated__ "au cours de l’année écoulée, 10.000 demandes de primes à l’énergie ont été accordées en région bruxelloise. ced"| __truncated__ "après les inondations de 1926 à liège, le chantier du démergement s’est étendu à toutes les zones minières en w"| __truncated__ ...
+##  $ De Morgen: num  1 1 0 0 0 1 1 1 0 0 ...
+##  $ De Tijd  : num  0 0 0 0 0 0 0 0 1 1 ...
 ##  $ L'Echo   : num  0 0 0 0 0 0 0 0 0 0 ...
-##  $ Le Soir  : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ Le Soir  : num  0 0 1 1 1 0 0 0 0 0 ...
 ##  $ Metro FR : num  0 0 0 0 0 0 0 0 0 0 ...
 ##  $ Metro NL : num  0 0 0 0 0 0 0 0 0 0 ...
-##  $ texts    : chr  "natuurlijk we kunnen niet allemaal kenji gooris of nahima lanjri heten maar met een banale alledaagse naam word"| __truncated__ "natuurlijk we kunnen niet allemaal kenji gooris of nahima lanjri heten maar met een banale alledaagse naam word"| __truncated__ "scholen en universiteiten gaan per direct op slot sportwedstrijden met publiek worden tot begin volgende maand "| __truncated__ "ons land staat voor een cruciale week tegen vrijdag moet een plan klaarliggen voor een vlotte en verantwoorde e"| __truncated__ ...
-##  $ language : chr  "nl" "nl" "nl" "nl" ...</code></pre>
-<p>The <code>corpus</code> object is now ready for use!</p>
+##  $ language : chr  "nl" "nl" "fr" "fr" ...</code></pre>
+<p>The <code>corpus</code> object is now ready to be analyzed!</p>
 </div>
 <div id="corpus-analysis-with-sentometrics" class="section level2">
 <h2 class="hasAnchor">
 <a href="#corpus-analysis-with-sentometrics" class="anchor"></a>Corpus analysis with <strong><code>sentometrics</code></strong>
 </h2>
-<p>The <strong><code>sentometrics</code></strong> package is a powerful package that allows to quickly compute the sentiments of a corpus of documents. It includes the use of lexicons, valences shifters (to correctly compute bigrams such as ‘not good’) and permits the creation of time series of sentiments.</p>
-<p>Let’s start using <strong><code>sentometrics</code></strong> in our example by creating a <code>sento_corpus</code> object, the main object on which most methods of the package are applied. Note how spaces in feature names were replaced by the character <code>"_"</code> in the <code>sentoCorpus</code> object.</p>
-<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"sentometrics"</span>)
+<p>The <strong><code>sentometrics</code></strong> package is a powerful package that allows to quickly compute the sentiment of a corpus of documents. It includes the use of lexicons, valences shifters (to correctly compute bigrams such as ‘not good’) and permits the creation of textual sentiment time series.</p>
+<p>Let’s start using <strong><code>sentometrics</code></strong> by creating a <code>sento_corpus</code> object, the typical starting point.</p>
+<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">sentoCorpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_corpus.html">sento_corpus</a></span>(<span class="no">corpus</span>)
+<span class="no">sentoCorpus</span></pre></body></html></div>
+<pre><code>## A sento_corpus consisting of 1,434 documents and 8 docvars.</code></pre>
+<p>To have a quick understanding of what is inside your corpus, you can call <code><a href="../reference/corpus_summarize.html">corpus_summarize()</a></code> and then plot one of its outputs.</p>
+<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">summ</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/corpus_summarize.html">corpus_summarize</a></span>(<span class="no">sentoCorpus</span>, <span class="kw">features</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"L'Echo"</span>, <span class="st">"Le_Soir"</span>, <span class="st">"Metro_FR"</span>))
 
-<span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="no">corpus</span>[<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setorder.html">order</a></span>(<span class="no">date</span>)] <span class="co"># order the corpus by date first</span>
-<span class="no">sentoCorpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_corpus.html">sento_corpus</a></span>(<span class="no">corpus</span>)
-
-<span class="no">summary</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/corpus_summarize.html">corpus_summarize</a></span>(<span class="no">sentoCorpus</span>,  <span class="kw">features</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"L'Echo"</span>, <span class="st">"Le_Soir"</span>, <span class="st">"Metro_FR"</span>)) <span class="co"># summarize corpus</span>
-
-<span class="no">summary</span>$<span class="no">plots</span>$<span class="no">feature_plot</span> <span class="co"># present the frequencies for the features selected above</span></pre></body></html></div>
-<p><img src="gopress_files/figure-html/sento%20corpus-1.png" width="576" style="display: block; margin: auto;"></p>
-<p>The news features can now be used to compute sentiment with the help of the <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code> function and using a lexicon. <strong><code>sentometrics</code></strong> already provides built-in lexicons in English, Dutch and French. The list of available lexicons is accessible through the <code>list_lexicons</code> data object. A list of lexicons for the sentiment computation, considering the language, can be prepared as below.</p>
+<span class="no">summ</span>$<span class="no">plots</span>$<span class="no">feature_plot</span></pre></body></html></div>
+<p><img src="gopress_files/figure-html/unnamed-chunk-3-1.png" width="576" style="display: block; margin: auto;"></p>
+<p>Note how spaces in the feature names were replaced by <code>"_"</code>.</p>
+<p>The news features can now be used to compute sentiment with the help of the <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code> function and lexicons plugged in. The <strong><code>sentometrics</code></strong> package has built-in lexicons in English, Dutch and French. The list of available lexicons is accessible through the <code>list_lexicons</code> data object. The lexicons to use in the sentiment computation, considering the language, can be prepared as below.</p>
 <div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">lexicons</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(
   <span class="kw">nl</span> <span class="kw">=</span> <span class="fu"><a href="../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="no">list_lexicons</span>[<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"GI_nl_tr"</span>, <span class="st">"HENRY_nl_tr"</span>, <span class="st">"LM_nl_tr"</span>)]),
   <span class="kw">fr</span> <span class="kw">=</span> <span class="fu"><a href="../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="no">list_lexicons</span>[<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"GI_fr_tr"</span>, <span class="st">"HENRY_fr_tr"</span>, <span class="st">"LM_fr_tr"</span>)])
@@ -289,18 +271,18 @@
 ## 4:       affaiblir -1
 ## 5: affaiblissement -1
 ## 6:       affaiblit -1</code></pre>
-<p>The result of the computation is stored in the object <code>s</code>, which contains a document’s sentiment values for each lexicon applied on each feature, resulting in many sentiment vectors.</p>
+<p>The result of the computation is stored in the object <code>s</code>, which contains for every document the sentiment values for each lexicon applied to each feature, resulting in many sentiment vectors.</p>
 <div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="no">s</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/compute_sentiment.html">compute_sentiment</a></span>(<span class="no">sentoCorpus</span>, <span class="no">lexicons</span>, <span class="kw">how</span> <span class="kw">=</span> <span class="st">"counts"</span>)
 
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">s</span>[, <span class="fl">1</span>:<span class="fl">5</span>])</pre></body></html></div>
 <pre><code>##     id       date word_count GI_nl_tr--De_Morgen GI_nl_tr--De_Tijd
-## 1: 115 2020-03-02        753                  -1                 0
-## 2: 161 2020-03-02        668                  -1                 0
-## 3: 619 2020-03-02        515                   0                 0
-## 4: 849 2020-03-02       1035                   0                 0
-## 5: 926 2020-03-02        559                   0                 0
-## 6:  40 2020-03-03        852                   4                 0</code></pre>
-<p>In order to present the evolution of sentiment over time, the previous calculation needs to be aggregated by the dates. This is done using the <code><a href="https://rdrr.io/r/stats/aggregate.html">aggregate()</a></code> function, and by specifying beforehand a control object for the aggregation with <code><a href="../reference/ctr_agg.html">ctr_agg()</a></code>. The following code aggregates by giving more importance to larger documents and creates a moving average accros a period of 7 days. The <code>measures</code> object stores the result of the aggregation, and a <code><a href="https://rdrr.io/r/graphics/plot.html">plot()</a></code> method is defined for it.</p>
+## 1: 115 2020-03-02        762                  -1                 0
+## 2: 161 2020-03-02        673                  -1                 0
+## 3: 619 2020-03-02        486                   0                 0
+## 4: 849 2020-03-02        978                   0                 0
+## 5: 926 2020-03-02        523                   0                 0
+## 6:  40 2020-03-03        857                   3                 0</code></pre>
+<p>To present the evolution of sentiment over time, we need aggregation by dates. This is done using the <code><a href="https://rdrr.io/r/stats/aggregate.html">aggregate()</a></code> function, and by specifying beforehand a control object for the aggregation with <code><a href="../reference/ctr_agg.html">ctr_agg()</a></code>. Here, we aggregate by giving more importance to larger documents and creating a 7-day moving average. The <code>measures</code> object stores the result of the aggregation, and can be <code><a href="https://rdrr.io/r/graphics/plot.html">plot()</a></code>ted.</p>
 <div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="no">ctr</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/ctr_agg.html">ctr_agg</a></span>(<span class="kw">howDocs</span> <span class="kw">=</span> <span class="st">"proportional"</span>, <span class="kw">howTime</span> <span class="kw">=</span> <span class="st">"equal_weight"</span>, <span class="kw">by</span> <span class="kw">=</span> <span class="st">"day"</span>, <span class="kw">lag</span> <span class="kw">=</span> <span class="fl">7</span>) <span class="co"># control object</span>
 <span class="no">measures</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span>(<span class="no">s</span>, <span class="no">ctr</span>) <span class="co"># aggregate the sentiment into a sento_measures object</span>
 
@@ -311,67 +293,60 @@
                                                 <span class="st">"nl"</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"De_Tijd"</span>, <span class="st">"De_Morgen"</span>, <span class="st">"Metro_NL"</span>)))
 
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">measures</span>, <span class="st">"features"</span>) <span class="co"># by language</span></pre></body></html></div>
-<p><img src="gopress_files/figure-html/unnamed-chunk-3-1.png" width="576" style="display: block; margin: auto;"></p>
-<p>The tools available through <strong><code>sentometrics</code></strong> can as well be complementary to other analyses, such as topic model analyses. Let’s have a look at what a topic model procudes for the french part of our dataset, creating a document-feature matrix using <strong><code>quanteda</code></strong> methods and using a model from the <strong><code>stm</code></strong> package.</p>
-<div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"quanteda"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"stm"</span>)
+<p><img src="gopress_files/figure-html/unnamed-chunk-4-1.png" width="576" style="display: block; margin: auto;"></p>
+<p>The tools available in <strong><code>sentometrics</code></strong> are complementary to other analyses, such as a topic model analysis. Let’s have a look at what a topic model procudes for the french part of our dataset, creating a document-feature matrix using <strong><code>quanteda</code></strong> methods, and fitting a topic model with the <strong><code>stm</code></strong> package.</p>
+<div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="no">frenchCorpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/corpus_subset.html">corpus_subset</a></span>(<span class="no">sentoCorpus</span>, <span class="no">language</span> <span class="kw">==</span> <span class="st">"fr"</span>) <span class="co"># subset using the language feature</span>
 
-<span class="no">frenchCorpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/corpus_subset.html">corpus_subset</a></span>(<span class="no">sentoCorpus</span>, <span class="no">language</span> <span class="kw">==</span> <span class="st">"fr"</span>) <span class="co"># easy subsetting using the language feature</span>
-
-<span class="co"># create and clean a document-feature matrix</span>
-<span class="no">dfm</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/dfm.html">dfm</a></span>(<span class="no">frenchCorpus</span>, <span class="kw">tolower</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">remove_punct</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">remove_numbers</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
-           <span class="kw">remove</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fu"><a href="https://quanteda.io/reference/reexports.html">stopwords</a></span>(<span class="st">"fr"</span>), <span class="fu"><a href="https://quanteda.io/reference/reexports.html">stopwords</a></span>(<span class="st">"nl"</span>))) <span class="kw">%&gt;%</span>
+<span class="no">dfm</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/dfm.html">dfm</a></span>(<span class="no">frenchCorpus</span>, <span class="kw">tolower</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="co"># create and clean a document-feature matrix</span>
+           <span class="kw">remove_punct</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">remove_numbers</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">remove</span> <span class="kw">=</span> <span class="fu"><a href="https://quanteda.io/reference/reexports.html">stopwords</a></span>(<span class="st">"fr"</span>)) <span class="kw">%&gt;%</span>
   <span class="fu"><a href="https://quanteda.io/reference/dfm_select.html">dfm_remove</a></span>(<span class="kw">min_nchar</span> <span class="kw">=</span> <span class="fl">3</span>) <span class="kw">%&gt;%</span>
   <span class="fu"><a href="https://quanteda.io/reference/dfm_trim.html">dfm_trim</a></span>(<span class="kw">min_termfreq</span> <span class="kw">=</span> <span class="fl">0.95</span>, <span class="kw">termfreq_type</span> <span class="kw">=</span> <span class="st">"quantile"</span>) <span class="kw">%&gt;%</span>
   <span class="fu"><a href="https://quanteda.io/reference/dfm_trim.html">dfm_trim</a></span>(<span class="kw">max_docfreq</span> <span class="kw">=</span> <span class="fl">0.10</span>, <span class="kw">docfreq_type</span> <span class="kw">=</span> <span class="st">"prop"</span>)
 <span class="no">dfm</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/dfm_subset.html">dfm_subset</a></span>(<span class="no">dfm</span>, <span class="fu"><a href="https://quanteda.io/reference/ntoken.html">ntoken</a></span>(<span class="no">dfm</span>) <span class="kw">&gt;</span> <span class="fl">0</span>)
 
-<span class="co"># apply a topic model with 5 topics</span>
-<span class="no">topicModel</span> <span class="kw">&lt;-</span> <span class="kw pkg">stm</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/stm/man/stm.html">stm</a></span>(<span class="no">dfm</span>, <span class="kw">K</span> <span class="kw">=</span> <span class="fl">5</span>, <span class="kw">verbose</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
-<span class="no">topTerms</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="kw pkg">stm</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/stm/man/labelTopics.html">labelTopics</a></span>(<span class="no">topicModel</span>, <span class="kw">n</span> <span class="kw">=</span> <span class="fl">10</span>)<span class="kw">[[</span><span class="st">"prob"</span>]])
+<span class="no">topicModel</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/stm/man/stm.html">stm</a></span>(<span class="no">dfm</span>, <span class="kw">K</span> <span class="kw">=</span> <span class="fl">5</span>, <span class="kw">verbose</span> <span class="kw">=</span> <span class="fl">FALSE</span>) <span class="co"># apply a topic model with 5 topics</span>
+<span class="no">topTerms</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/stm/man/labelTopics.html">labelTopics</a></span>(<span class="no">topicModel</span>, <span class="kw">n</span> <span class="kw">=</span> <span class="fl">10</span>)<span class="kw">[[</span><span class="st">"prob"</span>]])
 
 <span class="no">topTerms</span></pre></body></html></div>
-<pre><code>##       [,1]           [,2]          [,3]            [,4]          [,5]        
-##  [1,] "wallon"       "bce"         "déconfinement" "partis"      "trump"     
-##  [2,] "région"       "revenus"     "enfants"       "ministres"   "américain" 
-##  [3,] "paiement"     "ménages"     "hôpitaux"      "etats"       "pétrole"   
-##  [4,] "olivier"      "obligations" "écoles"        "nva"         "etatsunis" 
-##  [5,] "report"       "dividende"   "école"         "parti"       "bourse"    
-##  [6,] "fédération"   "revenu"      "social"        "michel"      "américains"
-##  [7,] "ceo"          "bancaire"    "soins"         "parlement"   "new"       
-##  [8,] "horeca"       "centrales"   "données"       "proposition" "chinois"   
-##  [9,] "eau"          "crédits"     "parfois"       "corona"      "donald"    
-## [10,] "construction" "actifs"      "maisons"       "chambre"     "paris"</code></pre>
-<p>We can now use the result of this topic model to build new features to analyse for our <code>sentoCorpus</code> object. This time, the <code><a href="../reference/add_features.html">add_features()</a></code> function will be used with keywords to automatically assign features to documents. The <code>keywords</code> object represent lists of words associated to each topics. Documents will receive a score between 0 and 1 based on the frequencies of the document’s words for each topic. At the end of the process, the new features will behave similarly to the previous ones. Notice that old features were removed by setting them to <code>NULL</code>.</p>
-<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="no">keywords</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="fl">1</span>:<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span>(<span class="no">topTerms</span>), <span class="kw">function</span>(<span class="no">i</span>) <span class="no">topTerms</span>[, <span class="no">i</span>]) <span class="co"># build the keywords object</span>
+<pre><code>##       [,1]           [,2]            [,3]        [,4]          [,5]       
+##  [1,] "wallon"       "trump"         "bce"       "l'ue"        "partis"   
+##  [2,] "entreprise"   "déconfinement" "bourse"    "états"       "n-va"     
+##  [3,] "paiement"     "chinois"       "actions"   "etats"       "parti"    
+##  [4,] "région"       "écoles"        "centrales" "l'italie"    "social"   
+##  [5,] "l'entreprise" "enfants"       "trimestre" "l'allemagne" "chambre"  
+##  [6,] "van"          "experts"       "ménages"   "michel"      "parfois"  
+##  [7,] "olivier"      "données"       "pétrole"   "ministres"   "l'etat"   
+##  [8,] "ceo"          "nord"          "dividende" "climat"      "confiance"
+##  [9,] "fédération"   "morts"         "d'intérêt" "présidente"  "spéciaux" 
+## [10,] "activité"     "donald"        "brut"      "corona"      "loi"</code></pre>
+<p>We can now use the result of this topic model to build new features to analyze for our <code>sentoCorpus</code> object. This time, the <code><a href="../reference/add_features.html">add_features()</a></code> function will be used with keywords to automatically assign features to documents. The <code>keywords</code> object represent lists of words associated to each topics. Documents receive a score between 0 and 1 based on the frequency of appearance of the keywords for each topic. Notice that we remove the original features.</p>
+<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="no">featuresToRemove</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="fu"><a href="https://quanteda.io/reference/docvars.html">docvars</a></span>(<span class="no">frenchCorpus</span>))[-<span class="fl">1</span>] <span class="co"># store the current features to remove</span>
+
+<span class="no">keywords</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="fl">1</span>:<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span>(<span class="no">topTerms</span>), <span class="kw">function</span>(<span class="no">i</span>) <span class="no">topTerms</span>[, <span class="no">i</span>])
 <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">keywords</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="st">"TOPIC_"</span>, <span class="fl">1</span>:<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">keywords</span>)) <span class="co"># define the feature names</span>
-
-<span class="no">featuresToRemove</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="fu"><a href="https://quanteda.io/reference/docvars.html">docvars</a></span>(<span class="no">frenchCorpus</span>))[-<span class="fl">1</span>] <span class="co"># store the current features that will be removed</span>
-
-<span class="co"># add features based on the appearence of the topic keywords within documents, and remove old features</span>
 <span class="no">frenchCorpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/add_features.html">add_features</a></span>(<span class="no">frenchCorpus</span>, <span class="kw">keywords</span> <span class="kw">=</span> <span class="no">keywords</span>, <span class="kw">do.binary</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">do.regex</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
-<span class="fu"><a href="https://quanteda.io/reference/docvars.html">docvars</a></span>(<span class="no">frenchCorpus</span>, <span class="no">featuresToRemove</span>) <span class="kw">&lt;-</span> <span class="kw">NULL</span>
+
+<span class="fu"><a href="https://quanteda.io/reference/docvars.html">docvars</a></span>(<span class="no">frenchCorpus</span>, <span class="no">featuresToRemove</span>) <span class="kw">&lt;-</span> <span class="kw">NULL</span> <span class="co"># remove old features</span>
 
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="fu"><a href="https://quanteda.io/reference/docvars.html">docvars</a></span>(<span class="no">frenchCorpus</span>)) <span class="co"># new features of the corpus</span></pre></body></html></div>
-<pre><code>##         date    TOPIC_1 TOPIC_2    TOPIC_3    TOPIC_4    TOPIC_5
-## 1 2020-03-02 0.15789474    0.10 0.00000000 0.00000000 0.00000000
-## 2 2020-03-02 0.78947368    0.00 0.11111111 0.00000000 0.00000000
-## 3 2020-03-02 0.05263158    0.04 0.00000000 0.00000000 0.00000000
-## 4 2020-03-03 0.15789474    0.00 0.02777778 0.04545455 0.00000000
-## 5 2020-03-03 0.05263158    0.08 0.00000000 0.00000000 0.00000000
-## 6 2020-03-03 0.10526316    0.00 0.00000000 0.04545455 0.03333333</code></pre>
-<p>Finally, we can once again compute sentiments based on those new features. This will present how sentiment evolved over time, with regard to the different topics of the model. However, we’re going to use a slightly different method to obtain a time series of the sentiment values by using the <code><a href="../reference/sento_measures.html">sento_measures()</a></code> function. This function effectively combines <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code> and <code><a href="https://rdrr.io/r/stats/aggregate.html">aggregate()</a></code> and returns a <code>sento_measures</code> object as output. We define a new <code>sento_lexicons</code> object containing the french lexicons, and since we already defined the <code>ctr</code> object earlier, we can simply use it again.</p>
-<div class="sourceCode" id="cb25"><html><body><pre class="r"><span class="no">frenchLexicons</span> <span class="kw">&lt;-</span> <span class="no">lexicons</span><span class="kw">[[</span><span class="st">"fr"</span>]]
-<span class="no">topicMeasures</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_measures.html">sento_measures</a></span>(<span class="no">frenchCorpus</span>, <span class="no">frenchLexicons</span>, <span class="no">ctr</span>)
+<pre><code>##         date    TOPIC_1    TOPIC_2    TOPIC_3 TOPIC_4    TOPIC_5
+## 1 2020-03-02 0.16666667 0.00000000 0.06666667    0.00 0.00000000
+## 2 2020-03-02 0.27777778 0.02941176 0.00000000    0.00 0.04878049
+## 3 2020-03-02 0.00000000 0.00000000 0.00000000    0.00 0.00000000
+## 4 2020-03-03 0.16666667 0.02941176 0.03333333    0.04 0.04878049
+## 5 2020-03-03 0.05555556 0.00000000 0.00000000    0.00 0.00000000
+## 6 2020-03-03 0.05555556 0.05882353 0.00000000    0.08 0.14634146</code></pre>
+<p>Finally, we recompute sentiment based on those new features. This will present how sentiment evolved over time with regards to the different topics extracted. We use the <code><a href="../reference/sento_measures.html">sento_measures()</a></code> function, as it combines <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code> and <code><a href="https://rdrr.io/r/stats/aggregate.html">aggregate()</a></code> straight away. We apply the french lexicons only, and use again the <code>ctr</code> object defined earlier.</p>
+<div class="sourceCode" id="cb25"><html><body><pre class="r"><span class="no">topicMeasures</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_measures.html">sento_measures</a></span>(<span class="no">frenchCorpus</span>, <span class="no">lexicons</span><span class="kw">[[</span><span class="st">"fr"</span>]], <span class="no">ctr</span>)
 
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">topicMeasures</span>, <span class="st">"features"</span>)</pre></body></html></div>
 <p><img src="gopress_files/figure-html/sento%20topic%203-1.png" width="576" style="display: block; margin: auto;"></p>
-<p>This is as far as we will go. We covered some functionalities from <strong><code>sentometrics</code></strong> but there is more to see! Notably, the <code><a href="../reference/sento_model.html">sento_model()</a></code> function which can be used to model a sentiment-based regression. It is also possible to use more complex weighting schemes and valence-enhanced lexicons.</p>
+<p>This is as far as we will go. We covered some functionalities from <strong><code>sentometrics</code></strong> but there is more to see! Notably, the <code><a href="../reference/sento_model.html">sento_model()</a></code> function to fit a sentiment-based high-dimensional regression. It is also possible to use more complex weighting schemes and valence-enhanced lexicons in the sentiment calculation.</p>
 <p>You can find more examples and information about the <strong><code>sentometrics</code></strong> package on the <a href="https://sborms.github.io/sentometrics/index.html">website</a> and in the package’s <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3067734">vignette</a>.</p>
 <div id="acknowledgements" class="section level4">
 <h4 class="hasAnchor">
 <a href="#acknowledgements" class="anchor"></a>Acknowledgements</h4>
-<p>Thanks to Eline Vandewalle for writing early versions of some of the code examples. Thanks to the Belga News Agency for providing us with the Gopress database, and to Innoviris for the financial support under the Team Up and Launch programs.</p>
+<p>Thanks to Eline Vandewalle for writing early versions of some of the code examples. Thanks to the Belga News Agency for maintaining the <strong>Gopress</strong> database, and to Innoviris for the financial support under the Team Up and Launch programs.</p>
 </div>
 </div>
   </div>
