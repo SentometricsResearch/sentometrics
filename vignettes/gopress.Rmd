@@ -81,13 +81,13 @@ sources <- iconv(sources, from = "UTF-8", to = "ASCII//TRANSLIT") # remove accen
 
 The two vectors `dates` and `sources` now contain properly formatted dates and issuing newspapers. Note that `"-"` and accent characters were removed from the newspaper names because the **`sentometrics`** package does not like these characters when used as feature names.
 
-It is important to emphasize the role of the `locale` argument in the date reformatting. This depends on the language of the **Gopress** website used when downloading the data. We used the English version of the website. For documents downloaded using the Dutch or French version of the website, use `"Dutch_Belgium.1252"` or `"French_Belgium.1252"` instead.
+It is important to emphasize the role of the `locale` argument in the date reformatting. This depends on the language of the **Gopress** website used when downloading the data. We used the English version of the website. For documents downloaded using the Dutch or French version, use `"Dutch_Belgium.1252"` or `"French_Belgium.1252"` instead.
 
 ```{r date source2}
 table(sources)
 ```
 
-The next step is to extract the content of articles, found from the fifth paragraph. The fifth paragraph usually contains a small summary of the article's content and may or may not be included. The below code removes the first four paragraphs in all articles.
+The next step is to extract the actual body of the articles, found from the fifth paragraph. The fifth paragraph usually contains a small summary of the article's content and may or may not be included. The below code removes the first four paragraphs in all articles.
 
 ```{r text, message=FALSE}
 texts <- sapply(1:length(rawCorpus), function(i) paste0(rawCorpus[[i]][-c(1:4)], collapse = " "))
@@ -166,7 +166,7 @@ To present the evolution of sentiment over time, we need aggregation by dates. T
 ctr <- ctr_agg(howDocs = "proportional", howTime = "equal_weight", by = "day", lag = 7) # control object
 measures <- aggregate(s, ctr) # aggregate the sentiment into a sento_measures object
 
-plot(measures, "features") # by newspapers
+plot(measures, "features")
 ```
 
 To study the sentiment per language, we can redefine the features based on the existing newspaper features, according to the language of the outlet.
@@ -175,7 +175,7 @@ To study the sentiment per language, we can redefine the features based on the e
 measures <- aggregate(measures, features = list("fr" = c("L'Echo", "Le_Soir", "Metro_FR"), 
                                                 "nl" = c("De_Tijd", "De_Morgen", "Metro_NL")))
 
-plot(measures, "features") # by language
+plot(measures, "features")
 ```
 
 The tools available in **`sentometrics`** are complementary to other analyses, such as a topic model analysis. Let's have a look at what a topic model procudes for the french part of our dataset, creating a document-feature matrix using **`quanteda`** methods, and fitting a topic model with the **`stm`** package.
@@ -218,11 +218,11 @@ topicMeasures <- sento_measures(frenchCorpus, lexicons[["fr"]], ctr)
 plot(topicMeasures, "features")
 ```
 
-This is as far as we will go. We covered some functionalities from **`sentometrics`** but there is more to see! Notably, the `sento_model()` function to fit a sentiment-based high-dimensional regression. It is also possible to use more complex weighting schemes and valence-enhanced lexicons in the sentiment calculation.
+This is as far as we will go. We covered some functionalities from **`sentometrics`** but there is more to see! Most notably, there is the `sento_model()` function to fit a sentiment-based high-dimensional regression. It is also possible to use more complex weighting schemes and valence-enhanced lexicons in the sentiment calculation.
 
-You can find more examples and information about the **`sentometrics`** package on the [website](https://sborms.github.io/sentometrics/index.html) and in the package's [vignette](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3067734).
+You can find more examples and information about the **`sentometrics`** package in the **Examples** section of this website, and in the package's [vignette](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3067734).
 
 #### Acknowledgements
 
-Thanks to Eline Vandewalle for writing early versions of some of the code examples. Thanks to the Belga News Agency for maintaining the **Gopress** database, and to Innoviris for the financial support under the Team Up and Launch programs.
+Thanks to Eline Vandewalle for writing early versions of some of the code examples, and to Samuel Borms for going over the tutorial. Thanks to the Belga News Agency for maintaining the **Gopress** database, and to Innoviris for the financial support under the Team Up and Launch programs.
 
