@@ -36,7 +36,7 @@ Unfortunately, **Gopress** does not allow downloading in bulk the articles resul
 
 ![](gopress_figures/save_as.jpg)
 
-The saved articles will appear in the "Read Later" section, accessible through the "Read Later" button at the top right of the page. From there, it is possible to download the saved articles in various formats. In this tutorial, we save the articles in RTF format, with one file per article.
+The saved articles will appear in the "Read Later" section, accessible through the "Read Later" button at the top right of the page. From there, one can download the saved articles in various formats. In this tutorial, we save the articles in RTF format, with one file per article.
 
 ![](gopress_figures/read_later.jpg)
 
@@ -122,9 +122,9 @@ The `corpus` object is now ready to be analyzed!
 
 ## Corpus analysis with **`sentometrics`**
 
-The **`sentometrics`** package is a powerful library that allows quickly computing the sentiment of documents within a large corpus. Its sentiment calculation is based on a lexicons approach with valence shifters (to correct for bigrams such as 'not good'). The package also specializes in the creation and analysis of textual sentiment time series.
+The **`sentometrics`** package is a powerful library that allows quickly computing the sentiment of documents within a large corpus. Its sentiment calculation is based on a lexicons approach possibly with valence shifters (to correct for bigrams such as 'not good'). The package also specializes in the creation and analysis of textual sentiment time series.
 
-Let's start using **`sentometrics`** by creating a `sento_corpus` object, the typical starting point.
+Let's start using **`sentometrics`** by creating a `sento_corpus` object, the typical ice breaker.
 
 ```{r sento corpus, message=FALSE}
 sentoCorpus <- sento_corpus(corpus)
