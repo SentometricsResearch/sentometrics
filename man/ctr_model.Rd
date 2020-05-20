@@ -2,7 +2,7 @@
 % Please edit documentation in R/sentomodel.R
 \name{ctr_model}
 \alias{ctr_model}
-\title{Set up control for sentiment-based sparse regression modelling}
+\title{Set up control for sentiment-based sparse regression modeling}
 \usage{
 ctr_model(
   model = c("gaussian", "binomial", "multinomial"),
@@ -92,7 +92,7 @@ whenever a parallel backend is set up. See the examples in \code{\link{sento_mod
 A \code{list} encapsulating the control parameters.
 }
 \description{
-Sets up control object for linear or nonlinear modelling of a response variable onto a large panel of
+Sets up control object for linear or nonlinear modeling of a response variable onto a large panel of
 textual sentiment measures (and potentially other variables). See \code{\link{sento_model}} for details on the
 estimation and calibration procedure.
 }
@@ -115,10 +115,10 @@ ctrCV4 <- ctr_model(model = "gaussian", type = "cv", do.iter = TRUE, h = 0, trai
 
 }
 \references{
-Tibshirani and Taylor (2012). ``Degrees of freedom in LASSO problems''.
+Tibshirani and Taylor (2012). \strong{Degrees of freedom in LASSO problems}.
 \emph{The Annals of Statistics 40, 1198-1232}, \url{https://doi.org/10.1214/12-AOS1003}.
 
-Zou, Hastie and Tibshirani (2007). ``On the `degrees of freedom' of the LASSO''.
+Zou, Hastie and Tibshirani (2007). \strong{On the degrees of freedom of the LASSO}.
 \emph{The Annals of Statistics 35, 2173-2192}, \url{https://doi.org/10.1214/009053607000000127}.
 }
 \seealso{

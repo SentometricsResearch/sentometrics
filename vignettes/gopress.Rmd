@@ -10,149 +10,138 @@ vignette: >
 knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.width = 6, fig.height = 4, fig.align = "center")
 ```
 
-Tutorial contributed by [Olivier Delmarcelle](delmarcelle.olivier@gmail.com) (PhD student, Ghent University).
+Tutorial contributed by [Olivier Delmarcelle](mailto:delmarcelle.olivier@gmail.com) (PhD student, Ghent University).
 
 ## Introduction
 
-Textual analysis has become more and more popular nowadays as a tool to extract and derive meaningful information from the enormous amount of content available online.
+Textual analysis has become very popular nowadays as a tool to extract and derive meaningful information from the enormous amounts of content available online.
 
-Printed newspapers used to be one of the primary sources of information. As they evolved by extending their offer through online services and subscription, newspapers remain today an important information media. Even more interesting, it is now possible to perform wide textual analysis on these online versions, identifying trends across years and newspapers.
+Newspapers remain one of the primary sources of information. They have been evolving by extending their offerings online, including the setting up of news archives. That makes it possible to perform wide textual analysis on these archives stored online, for instance, to identify trends across years and newspapers.
 
-Thanks to **Gopress Academic**, students from various universities in Belgium are able to access a large database containing news articles from the main Belgian newspaper. These articles are the perfect material for textual analysis, such as a sentiment computation with the help of the **`sentometrics`** package.
+With the **Gopress Academic** database, students from various universities in Belgium are able to access news articles from all main Belgian newspapers. These articles are the perfect material for textual analysis, such as topic modeling or sentiment computation with the help of the **`sentometrics`** package.
 
-This contributed tutorial describes how to make use of the database of **Gopress Academic**, which contains news articles from the main Belgian newspapers, in order to create a corpus of documents formatted for analysis through the **`sentometrics`** package.
-
-In this small tutorial, you will learn how to:
+This contributed tutorial describes how to use the **Gopress Academic** database to create a corpus of documents formatted for analysis with **`sentometrics`**. You will learn how to:
 
 * Access and retrieve documents from the **Gopress Academic** database.
 * Import the Gopress documents to R and prepare them for a textual analysis.
-* Use the **`sentometrics`** package to calculate and analyze sentiment from a corpus of documents.
+* Use the **`sentometrics`** package to analyze the corpus of news.
 
 ## Obtain data from Gopress
 
-The Gopress Academic platform is available [here](https://academic.gopress.be/en). You should be able to register with your university e-mail address to gain access to the database.
+The **Gopress Academic** platform is available [here](https://academic.gopress.be/en). You should be able to register with your university e-mail address to gain access to the database.
 
-After signing in, the Search page should appear and allow search across the database. The search tool allows to specify the time of publication, the newspaper, and the number of words contained in the articles. A least one keyword should always be used as a basis for the search. The results of the search appear at the bottom of the page. Returned articles will show up with a short extract.
+After signing in, the Search page appears. The search tool allows to specify the time of publication, the newspaper, and the number of words contained in the articles. A least one keyword should always be used as basis for the search. The returned articles appear at the bottom of the page, with a short extract.
 
-Unfortunately, Gopress does not allow downloading in bulk the articles resulting from a search. Instead, the easiest method is to save articles of interest in "Read Later" by clicking on the star button, as shown in the following screenshot. This should be done for each article of interest.  
-  
+Unfortunately, **Gopress** does not allow downloading in bulk the articles resulting from a search. Instead, one should save articles of interest as "Read Later" by clicking on the star button, as shown below. This should be done for each article of interest.
+
 ![](gopress_figures/save_as.jpg)
 
-The saved articles will appear in the "Read Later" section, accessible through the "Read Later" button at the top right of the page. From there, it is possible to download the set of saved articles in various formats, as shown in the following screenshot. For the purpose of this guide, we will only make use of articles saved in the RTF format, with one different file for each article. 
+The saved articles will appear in the "Read Later" section, accessible through the "Read Later" button at the top right of the page. From there, it is possible to download the saved articles in various formats. In this tutorial, we save the articles in RTF format, with one file per article.
 
 ![](gopress_figures/read_later.jpg)
 
 ## Massage the Gopress data in R
 
-To easily import the data to R, the downloaded articles should be stored in one single folder, preferably containing only the articles.
+Let's first load all the packages used throughout the tutorial. 
 
-With the help of the **`striprtf`** package, articles can be imported to R.
+```{r, message=FALSE}
+library("sentometrics")
+library("data.table")
+library("quanteda")
+library("stringi")
+library("stm")
+library("lubridate")
+library("striprtf")
+```
+
+To easily import the data into R, the downloaded articles should be stored in one single folder, preferably containing only the articles. With the help of the **`striprtf`** package, the articles can then be imported to R.
 
 ```{r rtf, message=FALSE}
-library("striprtf")
-
 folder <- "gopress_downloads/" # the folder's path for the downloaded articles
 filelist <- list.files(path = folder, pattern = "*rtf")
 filelist <- paste(folder, filelist, sep = "")
 rawCorpus <- lapply(filelist, FUN = read_rtf)
 
-str(rawCorpus, list.len = 3)
+str(rawCorpus[10:12])
 ```
 
-Note that the documents in `rawCorpus` are presented as lists of paragraphs, which is inappropriate for most textual analysis packages. The subsequent steps serve to create a corpus object in a full-text format. The first thing to do is to extract the dates and the issuing newspapers from the articles (as in `rawCorpus`, everything is concatenated).
+The text and metadata in `rawCorpus` are presented as lists of paragraphs, which is inappropriate for most textual analysis packages. The subsequent steps serve to create a corpus object in a full-text format. The first thing to do is to extract the dates and the issuing newspapers from the articles.
 
 ```{r date source, message=FALSE}
-library("stringi")
-library("lubridate")
+secpars <- sapply(rawCorpus, "[[", 2) # extract metadata paragraph from all articles
 
-secpars <- sapply(rawCorpus, "[[", 2) # extract second paragraphs from all articles
-
-# extract dates
 dates <- stri_extract(secpars, regex = "\\d\\d[ ]....[ ]\\d\\d\\d\\d") # extract dates
 dates <- as.Date(parse_date_time(dates, "d b y", locale = "English_Belgium.1252")) # reformat dates
 
-# extract newspapers
-sources <- stri_extract(secpars, regex = ".*\\*") # extract the newspaper name
-sources <- stri_extract(sources, regex = "[^[\\*]]*") # remove asterisks
-sources <- gsub("-", "_", sources) # "-" causes issues so replace with "_"
+sources <- stri_extract(secpars, regex = ".*\\*") # extract newspapers
+sources <- stri_replace_all(sources, "", regex = "\\*") # remove asterisks
+sources <- stri_replace_all(sources, "_", fixed = "-") # replace "-" with "_"
 sources <- iconv(sources, from = "UTF-8", to = "ASCII//TRANSLIT") # remove accents
 ```
 
-The two vectors `dates` and `sources` now contain properly formatted dates and issuing newspapers. Note that `"-"` and accent characters were removed from the newspapers names as the **`sentometrics`** package does not support these characters in the feature names.
+The two vectors `dates` and `sources` now contain properly formatted dates and issuing newspapers. Note that `"-"` and accent characters were removed from the newspaper names because the **`sentometrics`** package does not like these characters when used as feature names.
 
-It is important to emphasize the role of the locale for date conversion, which depends on the language of the Gopress website used when downloading the data. The assumption here is that the English version of the website was used. For documents downloaded using the Dutch or French version of the website, use `"Dutch_Belgium.1252"` or `"French_Belgium.1252"` instead.
+It is important to emphasize the role of the `locale` argument in the date reformatting. This depends on the language of the **Gopress** website used when downloading the data. We used the English version of the website. For documents downloaded using the Dutch or French version of the website, use `"Dutch_Belgium.1252"` or `"French_Belgium.1252"` instead.
 
 ```{r date source2}
-head(table(dates))
 table(sources)
 ```
 
-The next step is to extract the content of articles, found from the fifth paragraph. The fifth paragraph usually contains a small summary of the article's content and may or may not be included. The below code removes the first four paragraphs of all articles.
+The next step is to extract the content of articles, found from the fifth paragraph. The fifth paragraph usually contains a small summary of the article's content and may or may not be included. The below code removes the first four paragraphs in all articles.
 
 ```{r text, message=FALSE}
-texts <- sapply(1:length(rawCorpus), function(i) paste(unlist(rawCorpus[[i]][-c(1:4)]), collapse = " "))
+texts <- sapply(1:length(rawCorpus), function(i) paste0(rawCorpus[[i]][-c(1:4)], collapse = " "))
 ```
 
-It is also a good moment to do some text cleaning!
+After the content extraction, time for some text cleaning! We limit ourselves here to the minimum (as we trust in the tokenization done later internally by **`sentometrics`**), but feel free to adjust the cleaning steps to your liking.
 
 ```{r text2, message=FALSE}
-library("tm")
-
-# some text cleaning, feel free to adjust...
 texts <- stri_trans_tolower(texts)
-texts <- tm::removeNumbers(texts)
-texts <- tm::removePunctuation(texts)
-texts <- gsub("[^[:alnum:]]", " ", texts)
-texts <- tm::stripWhitespace(texts)
+texts <- stri_replace_all(texts, " ", regex = "\\s+") # shorten sequences of spaces
 texts <- stri_trim_both(texts)
 ```
 
-Lastly, our goal is to create a `data.table` ready to be used within the **`sentometrics`** package. The `sento_corpus()` function takes as argument a `data.frame` type object with an `"id"` column, a `"texts"` column, a `"date"` column, and a number of optional numeric columns representing features of the corpus. Therefore, there is a need to transform the one-dimensional column `"source"` to a number of numeric columns. This can be done using the **`reshape`** package.
+Lastly, our goal is to create a `data.table` ready to be used within the **`sentometrics`** package. The `sento_corpus()` function takes as argument a `data.frame`-like object with an `"id"` column, a `"texts"` column, a `"date"` column, an optional `"language"` column, and a number of optional numeric columns representing features of the corpus. Therefore, the initiated one-dimensional column `"source"` needs to be transformed to a number of numeric columns.
 
 ```{r reshape, message=FALSE}
-library("reshape")
-library("data.table")
-
-id <- 1:length(dates) # create an id column
-corpus <- data.table(date = dates, source = sources, id = id, value = 1) # initialize a corpus data.table
-corpus <- as.data.table(reshape::cast(corpus, date + id ~ source, fill = 0)) # one column per source
-
-# create a temporary data.table to store texts in the correct order and then merge on common ids
-idTexts <- data.table(id, texts)
-corpus <- merge(corpus, idTexts, by = "id")
+corpus <- data.table(id = 1:length(dates), date = dates, texts = texts, source = sources, value = 1)
+corpus <- dcast(corpus, id + date + texts ~ source, fill = 0) # one column per source
+corpus <- corpus[order(date)] # order the corpus by date
 ```
 
-As the corpus contains newspapers written in Dutch and in French, it would be interesting to have a feature that denotes the newspaper language. Adding a `"language"` feature allows to analyze articles in different languages independently.
+As the corpus contains newspapers written in Dutch and in French, we also add the `"language"` feature, which allows to analyze articles in different languages independently.
 
 ```{r sento corpus language, message=FALSE}
 lng <- ifelse(rowSums(corpus[, c("L'Echo", "Le Soir", "Metro FR")]) == 1, "fr", "nl")
-corpus <- cbind(corpus, language = lng)
-```
+corpus[, language := lng]
 
-```{r, message=FALSE}
 str(corpus, give.attr = FALSE)
 ```
 
-The `corpus` object is now ready for use!
+The `corpus` object is now ready to be analyzed!
 
 ## Corpus analysis with **`sentometrics`**
 
-The **`sentometrics`** package is a powerful package that allows to quickly compute the sentiments of a corpus of documents. It includes the use of lexicons, valences shifters (to correctly compute bigrams such as 'not good') and permits the creation of time series of sentiments.
+The **`sentometrics`** package is a powerful package that allows to quickly compute the sentiment of a corpus of documents. It includes the use of lexicons, valences shifters (to correctly compute bigrams such as 'not good') and permits the creation of textual sentiment time series.
 
-Let's start using **`sentometrics`**  in our example by creating a `sento_corpus` object, the main object on which most methods of the package are applied. Note how spaces in feature names were replaced by the character `"_"` in the `sentoCorpus` object.
+Let's start using **`sentometrics`** by creating a `sento_corpus` object, the typical starting point.
 
 ```{r sento corpus, message=FALSE}
-library("sentometrics")
-
-corpus <- corpus[order(date)] # order the corpus by date first
 sentoCorpus <- sento_corpus(corpus)
-
-summary <- corpus_summarize(sentoCorpus,  features = c("L'Echo", "Le_Soir", "Metro_FR")) # summarize corpus
-
-summary$plots$feature_plot # present the frequencies for the features selected above
+sentoCorpus
 ```
 
-The news features can now be used to compute sentiment with the help of the `compute_sentiment()` function and using a lexicon. **`sentometrics`** already provides built-in lexicons in English, Dutch and French. The list of available lexicons is accessible through the `list_lexicons` data object. A list of lexicons for the sentiment computation, considering the language, can be prepared as below.
+To have a quick understanding of what is inside your corpus, you can call `corpus_summarize()` and then plot one of its outputs.
+
+```{r, message=FALSE}
+summ <- corpus_summarize(sentoCorpus, features = c("L'Echo", "Le_Soir", "Metro_FR"))
+
+summ$plots$feature_plot
+```
+
+Note how spaces in the feature names were replaced by `"_"`.
+
+The news features can now be used to compute sentiment with the help of the `compute_sentiment()` function and lexicons plugged in. The **`sentometrics`** package has built-in lexicons in English, Dutch and French. The list of available lexicons is accessible through the `list_lexicons` data object. The lexicons to use in the sentiment computation, considering the language, can be prepared as below.
 
 ```{r sento sentiment, message=FALSE}
 lexicons <- list(
@@ -163,7 +152,7 @@ lexicons <- list(
 head(lexicons$fr$HENRY_fr_tr)
 ```
 
-The result of the computation is stored in the object `s`, which contains a document's sentiment values for each lexicon applied on each feature, resulting in many sentiment vectors.
+The result of the computation is stored in the object `s`, which contains for every document the sentiment values for each lexicon applied to each feature, resulting in many sentiment vectors.
 
 ```{r sento sentiment2, message=FALSE}
 s <- compute_sentiment(sentoCorpus, lexicons, how = "counts")
@@ -171,7 +160,7 @@ s <- compute_sentiment(sentoCorpus, lexicons, how = "counts")
 head(s[, 1:5])
 ```
 
-In order to present the evolution of sentiment over time, the previous calculation needs to be aggregated by the dates. This is done using the `aggregate()` function, and by specifying beforehand a control object for the aggregation with `ctr_agg()`. The following code aggregates by giving more importance to larger documents and creates a moving average accros a period of 7 days. The `measures` object stores the result of the aggregation, and a `plot()` method is defined for it.
+To present the evolution of sentiment over time, we need aggregation by dates. This is done using the `aggregate()` function, and by specifying beforehand a control object for the aggregation with `ctr_agg()`. Here, we aggregate by giving more importance to larger documents and creating a 7-day moving average. The `measures` object stores the result of the aggregation, and can be `plot()`ted.
 
 ```{r sento 3, message=FALSE}
 ctr <- ctr_agg(howDocs = "proportional", howTime = "equal_weight", by = "day", lag = 7) # control object
@@ -189,58 +178,51 @@ measures <- aggregate(measures, features = list("fr" = c("L'Echo", "Le_Soir", "M
 plot(measures, "features") # by language
 ```
 
-The tools available through **`sentometrics`** can as well be complementary to other analyses, such as topic model analyses. Let's have a look at what a topic model procudes for the french part of our dataset, creating a document-feature matrix using **`quanteda`** methods and using a model from the **`stm`** package.
+The tools available in **`sentometrics`** are complementary to other analyses, such as a topic model analysis. Let's have a look at what a topic model procudes for the french part of our dataset, creating a document-feature matrix using **`quanteda`** methods, and fitting a topic model with the **`stm`** package.
 
 ```{r sento topic, message=FALSE}
-library("quanteda")
-library("stm")
+frenchCorpus <- corpus_subset(sentoCorpus, language == "fr") # subset using the language feature
 
-frenchCorpus <- corpus_subset(sentoCorpus, language == "fr") # easy subsetting using the language feature
-
-# create and clean a document-feature matrix
-dfm <- dfm(frenchCorpus, tolower = TRUE, remove_punct = TRUE, remove_numbers = TRUE, 
-           remove = c(stopwords("fr"), stopwords("nl"))) %>%
+dfm <- dfm(frenchCorpus, tolower = TRUE, # create and clean a document-feature matrix
+           remove_punct = TRUE, remove_numbers = TRUE, remove = stopwords("fr")) %>%
   dfm_remove(min_nchar = 3) %>%
   dfm_trim(min_termfreq = 0.95, termfreq_type = "quantile") %>%
   dfm_trim(max_docfreq = 0.10, docfreq_type = "prop")
 dfm <- dfm_subset(dfm, ntoken(dfm) > 0)
 
-# apply a topic model with 5 topics
-topicModel <- stm::stm(dfm, K = 5, verbose = FALSE)
-topTerms <- t(stm::labelTopics(topicModel, n = 10)[["prob"]])
+topicModel <- stm(dfm, K = 5, verbose = FALSE) # apply a topic model with 5 topics
+topTerms <- t(labelTopics(topicModel, n = 10)[["prob"]])
 
 topTerms
 ```
 
-We can now use the result of this topic model to build new features to analyse for our `sentoCorpus` object. This time, the `add_features()` function will be used with keywords to automatically assign features to documents. The `keywords` object represent lists of words associated to each topics. Documents will receive a score between 0 and 1 based on the frequencies of the document's words for each topic. At the end of the process, the new features will behave similarly to the previous ones. Notice that old features were removed by setting them to `NULL`.
+We can now use the result of this topic model to build new features to analyze for our `sentoCorpus` object. This time, the `add_features()` function will be used with keywords to automatically assign features to documents. The `keywords` object represent lists of words associated to each topics. Documents receive a score between 0 and 1 based on the frequency of appearance of the keywords for each topic. Notice that we remove the original features.
 
 ```{r sento topic 2, message=FALSE}
-keywords <- lapply(1:ncol(topTerms), function(i) topTerms[, i]) # build the keywords object
+featuresToRemove <- colnames(docvars(frenchCorpus))[-1] # store the current features to remove
+
+keywords <- lapply(1:ncol(topTerms), function(i) topTerms[, i])
 names(keywords) <- paste0("TOPIC_", 1:length(keywords)) # define the feature names
-
-featuresToRemove <- names(docvars(frenchCorpus))[-1] # store the current features that will be removed
-
-# add features based on the appearence of the topic keywords within documents, and remove old features
 frenchCorpus <- add_features(frenchCorpus, keywords = keywords, do.binary = FALSE, do.regex = FALSE)
-docvars(frenchCorpus, featuresToRemove) <- NULL
+
+docvars(frenchCorpus, featuresToRemove) <- NULL # remove old features
 
 head(docvars(frenchCorpus)) # new features of the corpus
 ```
 
-Finally, we can once again compute sentiments based on those new features. This will present how sentiment evolved over time, with regard to the different topics of the model. However, we're going to use a slightly different method to obtain a time series of the sentiment values by using the `sento_measures()` function. This function effectively combines `compute_sentiment()` and `aggregate()` and returns a `sento_measures` object as output. We define a new `sento_lexicons` object containing the french lexicons, and since we already defined the `ctr` object earlier, we can simply use it again.
+Finally, we recompute sentiment based on those new features. This will present how sentiment evolved over time with regards to the different topics extracted. We use the `sento_measures()` function, as it combines `compute_sentiment()` and `aggregate()` straight away. We apply the french lexicons only, and use again the `ctr` object defined earlier.
 
 ```{r sento topic 3, message=FALSE}
-frenchLexicons <- lexicons[["fr"]]
-topicMeasures <- sento_measures(frenchCorpus, frenchLexicons, ctr)
+topicMeasures <- sento_measures(frenchCorpus, lexicons[["fr"]], ctr)
 
 plot(topicMeasures, "features")
 ```
 
-This is as far as we will go. We covered some functionalities from **`sentometrics`** but there is more to see! Notably, the `sento_model()` function which can be used to model a sentiment-based regression. It is also possible to use more complex weighting schemes and valence-enhanced lexicons.
+This is as far as we will go. We covered some functionalities from **`sentometrics`** but there is more to see! Notably, the `sento_model()` function to fit a sentiment-based high-dimensional regression. It is also possible to use more complex weighting schemes and valence-enhanced lexicons in the sentiment calculation.
 
 You can find more examples and information about the **`sentometrics`** package on the [website](https://sborms.github.io/sentometrics/index.html) and in the package's [vignette](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3067734).
 
 #### Acknowledgements
 
-Thanks to Eline Vandewalle for writing early versions of some of the code examples. Thanks to the Belga News Agency for providing us with the Gopress database, and to Innoviris for the financial support under the Team Up and Launch programs.
+Thanks to Eline Vandewalle for writing early versions of some of the code examples. Thanks to the Belga News Agency for maintaining the **Gopress** database, and to Innoviris for the financial support under the Team Up and Launch programs.
 

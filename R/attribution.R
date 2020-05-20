@@ -229,7 +229,7 @@ attributions.sento_modelIter <- compiler::cmpfun(.attributions.sento_modelIter)
 #' @description Computes the attributions to predictions for a (given) number of dates at all possible sentiment dimensions,
 #' based on the coefficients associated to each sentiment measure, as estimated in the provided model object.
 #'
-#' @details See \code{\link{sento_model}} for an elaborate modelling example including the calculation and plotting of
+#' @details See \code{\link{sento_model}} for an elaborate modeling example including the calculation and plotting of
 #' attributions. The attribution for logistic models is represented in terms of log odds. For binomial models, it is
 #' calculated with respect to the last factor level or factor column. A \code{NULL} value for document-level attribution
 #' on a given date means no documents are directly implicated in the associated prediction.
@@ -269,7 +269,7 @@ attributions <- function(model, sento_measures, do.lags = TRUE, do.normalize = F
 #'
 #' @description Shows a plot of the attributions along the dimension provided, stacked per date.
 #'
-#' @details See \code{\link{sento_model}} for an elaborate modelling example including the calculation and plotting of
+#' @details See \code{\link{sento_model}} for an elaborate modeling example including the calculation and plotting of
 #' attributions. This function does not handle the plotting of the attribution of individual documents, since there are
 #' often a lot of documents involved and they appear only once at one date (even though a document may contribute to
 #' predictions at several dates, depending on the number of lags in the time aggregation).

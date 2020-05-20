@@ -5,6 +5,8 @@ output: rmarkdown::html_vignette
 
 Here is an updated list of papers related to the **`sentometrics`** package, or more broadly about textual sentiment analysis (most of which use the package for underlying calculations). These research projects are carried out by a joint group of collaborators working at the intersection of sentiment analysis and econometrics.
 
+Go to this [page](https://sborms.github.io/econometrics-meets-sentiment/) if you are interested in a more exhaustive account of relevant research literature.
+
 ### Vignette
 
 _An extensive introduction to the package._

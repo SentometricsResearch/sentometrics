@@ -5,7 +5,7 @@
 using namespace arma;
 using namespace Rcpp;
 
-// elastic net degrees-of-freedom estimator (Tibshirani and Taylor, 2012)
+// elastic net degrees of freedom estimator (Tibshirani and Taylor, 2012)
 
 // [[Rcpp::export]]
 Rcpp::NumericVector compute_df(double alpha,
