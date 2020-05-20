@@ -173,7 +173,7 @@
 <p>After signing in, the Search page appears. In the search tool you can specify the time of publication, the newspaper, and the number of words contained in the articles. A least one keyword should always be used as basis for the search. The returned articles appear at the bottom of the page, with a short extract.</p>
 <p>Unfortunately, <strong>Gopress</strong> does not allow downloading in bulk the articles resulting from a search. Instead, one should save articles of interest as “Read Later” by clicking on the star button, as shown below. This should be done for each article of interest.</p>
 <p><img src="gopress_figures/save_as.jpg"></p>
-<p>The saved articles will appear in the “Read Later” section, accessible through the “Read Later” button at the top right of the page. From there, it is possible to download the saved articles in various formats. In this tutorial, we save the articles in RTF format, with one file per article.</p>
+<p>The saved articles will appear in the “Read Later” section, accessible through the “Read Later” button at the top right of the page. From there, one can download the saved articles in various formats. In this tutorial, we save the articles in RTF format, with one file per article.</p>
 <p><img src="gopress_figures/read_later.jpg"></p>
 </div>
 <div id="massage-the-gopress-data-in-r" class="section level2">
@@ -246,8 +246,8 @@
 <h2 class="hasAnchor">
 <a href="#corpus-analysis-with-sentometrics" class="anchor"></a>Corpus analysis with <strong><code>sentometrics</code></strong>
 </h2>
-<p>The <strong><code>sentometrics</code></strong> package is a powerful library that allows quickly computing the sentiment of documents within a large corpus. Its sentiment calculation is based on a lexicons approach with valence shifters (to correct for bigrams such as ‘not good’). The package also specializes in the creation and analysis of textual sentiment time series.</p>
-<p>Let’s start using <strong><code>sentometrics</code></strong> by creating a <code>sento_corpus</code> object, the typical starting point.</p>
+<p>The <strong><code>sentometrics</code></strong> package is a powerful library that allows quickly computing the sentiment of documents within a large corpus. Its sentiment calculation is based on a lexicons approach possibly with valence shifters (to correct for bigrams such as ‘not good’). The package also specializes in the creation and analysis of textual sentiment time series.</p>
+<p>Let’s start using <strong><code>sentometrics</code></strong> by creating a <code>sento_corpus</code> object, the typical ice breaker.</p>
 <div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">sentoCorpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_corpus.html">sento_corpus</a></span>(<span class="no">corpus</span>)
 <span class="no">sentoCorpus</span></pre></body></html></div>
 <pre><code>## A sento_corpus consisting of 1,434 documents and 8 docvars.</code></pre>
