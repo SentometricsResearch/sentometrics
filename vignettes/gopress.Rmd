@@ -30,7 +30,7 @@ This contributed tutorial describes how to use the **Gopress Academic** database
 
 The **Gopress Academic** platform is available [here](https://academic.gopress.be/en). You should be able to register with your university e-mail address to gain access to the database.
 
-After signing in, the Search page appears. The search tool allows to specify the time of publication, the newspaper, and the number of words contained in the articles. A least one keyword should always be used as basis for the search. The returned articles appear at the bottom of the page, with a short extract.
+After signing in, the Search page appears. In the search tool you can specify the time of publication, the newspaper, and the number of words contained in the articles. A least one keyword should always be used as basis for the search. The returned articles appear at the bottom of the page, with a short extract.
 
 Unfortunately, **Gopress** does not allow downloading in bulk the articles resulting from a search. Instead, one should save articles of interest as "Read Later" by clicking on the star button, as shown below. This should be done for each article of interest.
 
@@ -109,7 +109,7 @@ corpus <- dcast(corpus, id + date + texts ~ source, fill = 0) # one column per s
 corpus <- corpus[order(date)] # order the corpus by date
 ```
 
-As the corpus contains newspapers written in Dutch and in French, we also add the `"language"` feature, which allows to analyze articles in different languages independently.
+As the corpus contains newspapers written in Dutch and in French, we also add a `"language"` identifier, which allows to analyze articles in different languages independently.
 
 ```{r sento corpus language, message=FALSE}
 lng <- ifelse(rowSums(corpus[, c("L'Echo", "Le Soir", "Metro FR")]) == 1, "fr", "nl")
@@ -122,7 +122,7 @@ The `corpus` object is now ready to be analyzed!
 
 ## Corpus analysis with **`sentometrics`**
 
-The **`sentometrics`** package is a powerful package that allows to quickly compute the sentiment of a corpus of documents. It includes the use of lexicons, valences shifters (to correctly compute bigrams such as 'not good') and permits the creation of textual sentiment time series.
+The **`sentometrics`** package is a powerful library that allows quickly computing the sentiment of documents within a large corpus. Its sentiment calculation is based on a lexicons approach with valence shifters (to correct for bigrams such as 'not good'). The package also specializes in the creation and analysis of textual sentiment time series.
 
 Let's start using **`sentometrics`** by creating a `sento_corpus` object, the typical starting point.
 
@@ -160,7 +160,7 @@ s <- compute_sentiment(sentoCorpus, lexicons, how = "counts")
 head(s[, 1:5])
 ```
 
-To present the evolution of sentiment over time, we need aggregation by dates. This is done using the `aggregate()` function, and by specifying beforehand a control object for the aggregation with `ctr_agg()`. Here, we aggregate by giving more importance to larger documents and creating a 7-day moving average. The `measures` object stores the result of the aggregation, and can be `plot()`ted.
+To present the evolution of sentiment over time, we need aggregation across dates. This is done using the `aggregate()` function, and by specifying beforehand a control object with `ctr_agg()` to define the aggregation specifics. Here, we aggregate by giving more importance to larger documents and creating a 7-day moving average. The `measures` object stores the result of the aggregation.
 
 ```{r sento 3, message=FALSE}
 ctr <- ctr_agg(howDocs = "proportional", howTime = "equal_weight", by = "day", lag = 7) # control object
@@ -178,10 +178,10 @@ measures <- aggregate(measures, features = list("fr" = c("L'Echo", "Le_Soir", "M
 plot(measures, "features")
 ```
 
-The tools available in **`sentometrics`** are complementary to other analyses, such as a topic model analysis. Let's have a look at what a topic model procudes for the french part of our dataset, creating a document-feature matrix using **`quanteda`** methods, and fitting a topic model with the **`stm`** package.
+The tools available in **`sentometrics`** are complementary to other text mining analyses, such as topic modeling. Let's have a look at what a topic model produces for the French subset of our corpus. We create a document-feature (also called document-term) matrix using **`quanteda`**, and fit a topic model with the **`stm`** package.
 
 ```{r sento topic, message=FALSE}
-frenchCorpus <- corpus_subset(sentoCorpus, language == "fr") # subset using the language feature
+frenchCorpus <- corpus_subset(sentoCorpus, language == "fr")
 
 dfm <- dfm(frenchCorpus, tolower = TRUE, # create and clean a document-feature matrix
            remove_punct = TRUE, remove_numbers = TRUE, remove = stopwords("fr")) %>%
@@ -196,7 +196,7 @@ topTerms <- t(labelTopics(topicModel, n = 10)[["prob"]])
 topTerms
 ```
 
-We can now use the result of this topic model to build new features to analyze for our `sentoCorpus` object. This time, the `add_features()` function will be used with keywords to automatically assign features to documents. The `keywords` object represent lists of words associated to each topics. Documents receive a score between 0 and 1 based on the frequency of appearance of the keywords for each topic. Notice that we remove the original features.
+We can now use the results of this topic model to build new features for our `sentoCorpus` object. The `add_features()` function is used with keywords to automatically assign features to documents. The `keywords` object represents lists of words associated to each topic. Documents receive a score between 0 and 1 based on the frequency of appearance of the keywords for every topic. Notice that we remove the original features at the end.
 
 ```{r sento topic 2, message=FALSE}
 featuresToRemove <- colnames(docvars(frenchCorpus))[-1] # store the current features to remove
