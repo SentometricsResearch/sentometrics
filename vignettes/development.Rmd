@@ -57,3 +57,5 @@ Here is an overview of anticipated developments, and known bugs or unfinished bu
 
 - Remove all but one (not all) duplicate entries in the `sento_lexicons()` function.
 
+- Make sure you can also add the `"language"` identifier to a corpus with `add_features()`.
+
