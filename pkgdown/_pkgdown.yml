@@ -38,7 +38,7 @@ navbar:
     contributions:
       text: Contributions
       menu:
-      - text: Gopress data and sentometrics
+      - text: Analyzing Gopress data
         href: articles/gopress.html
     research:
       text: Research
