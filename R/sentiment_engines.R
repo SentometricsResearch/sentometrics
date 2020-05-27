@@ -33,7 +33,7 @@ compute_sentiment_lexicons <- function(x, tokens, dv, lexicons, how, do.sentence
   threads <- min(RcppParallel::defaultNumThreads(), nCore)
   RcppParallel::setThreadOptions(numThreads = threads)
   if (is_only_character(x)) x <- quanteda::corpus(x)
-  if (do.sentence == TRUE | is.null(tokens) ) {
+  if (do.sentence == TRUE | !is.null(tokens) ) {
     tokens <- tokenize_texts(quanteda::texts(x), tokens, type = "sentence")
     valenceType <- ifelse(is.null(lexicons[["valence"]]), 0,
                           ifelse(colnames(lexicons[["valence"]])[2] == "y", 1, 2))
