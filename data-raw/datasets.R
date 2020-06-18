@@ -17,7 +17,7 @@ days <- lapply(stringi::stri_split(useconomy$date, regex = "/"), "[", 2)
 years <- lapply(stringi::stri_split(useconomy$date, regex = "/"), "[", 3)
 yearsLong <- lapply(years, function(x) if (as.numeric(x) > 14) return(paste0("19", x)) else return(paste0("20", x)))
 datesNew <- paste0(paste0(unlist(months), "/"), paste0(unlist(days), "/"), unlist(yearsLong))
-datesNew <- as.character(as.Date(datesNew, format = "%m/%d/%Y")) # character date is input requirement
+datesNew <- as.character(as.Date(datesNew, format = "%m/%d/%Y"))
 useconomy$dateNew <- datesNew
 
 USECONOMYNEWS <- useconomy
@@ -43,7 +43,7 @@ USECONOMYNEWS$relevance <- USECONOMYNEWS$positivity <- USECONOMYNEWS$headline <-
 USECONOMYNEWS <- data.table::as.data.table(USECONOMYNEWS)
 USECONOMYNEWS <- USECONOMYNEWS[order(date)]
 colnames(USECONOMYNEWS)[1] <- "id"
-USECONOMYNEWS <- subset(USECONOMYNEWS, date >= "1995-01-01") # drop all before 1980
+USECONOMYNEWS <- subset(USECONOMYNEWS, date >= "1995-01-01") # limit scope
 setcolorder(USECONOMYNEWS, c("id", "date", "texts", "wsj", "wapo", "economy", "noneconomy"))
 useconomynews <- as.data.frame(USECONOMYNEWS) # back to lowercase before saving
 useconomynews$id <- as.character(useconomynews$id)
