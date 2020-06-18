@@ -80,7 +80,7 @@ s
 
 ### Sentiment calculation from own tokenization
 
-Even more flexibility in this example! You tokenize your corpus outside the sentiment computation function call, so you control exactly which words the lexicons are going to look into.
+This example showcases some more flexibility. You can tokenize your corpus outside the sentiment computation function call, to control exactly which words the lexicons are going to look into.
 
 ```{r}
 corpus <- sento_corpus(usnews)
@@ -88,7 +88,16 @@ tks <- as.list(tokens(corpus, what = "fastestword"))
 
 lexicons <- sento_lexicons(list_lexicons[c("GI_en", "LM_en", "HENRY_en")])
 
-compute_sentiment(corpus, lexicons, how = "counts", tokens = tks)
+compute_sentiment(texts(corpus), lexicons, how = "counts", tokens = tks)
+```
+
+To provide your own tokenized input on sentence-level, beware that you need to provide a `list` of `list`s, and set `do.sentence = TRUE`. See one of the next examples for more info about sentence-level sentiment calculation.
+
+```{r}
+sentences <- tokens(corpus, what = "sentence")
+tks2 <- lapply(sentences, function(s) as.list(tokens(s, what = "word")))
+
+compute_sentiment(texts(corpus), lexicons[2:3], how = "counts", tokens = tks2, do.sentence = TRUE)
 ```
 
 ### The three key approaches to the sentiment computation

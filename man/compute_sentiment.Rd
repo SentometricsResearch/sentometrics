@@ -27,7 +27,7 @@ case of a \code{character} vector, sentiment is only computed across lexicons.}
 documents or sentences. For available options, see \code{\link{get_hows}()$words}.}
 
 \item{tokens}{a \code{list} of tokenized documents, or if \code{do.sentence = TRUE} a \code{list} of
-a \code{list} of tokenized sentences. This allows to specify your own tokenization scheme. Can result from the
+\code{list}s of tokenized sentences. This allows to specify your own tokenization scheme. Can result from the
 \pkg{quanteda}'s \code{\link[quanteda]{tokens}} function, the \pkg{tokenizers} package, or other. Make sure the tokens are
 constructed from (the texts from) the \code{x} argument, are unigrams, and preferably set to lowercase, otherwise, results
 may be spurious and errors could occur. By default set to \code{NULL}.}

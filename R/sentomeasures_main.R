@@ -323,7 +323,8 @@ aggregate.sentiment <- function(x, ctr, do.full = TRUE, ...) {
     #   return(x)
     # }
   }
-  # if (!("date" %in% cols)) stop("A document-level sentiment input should have a 'date' column for full aggregation.")
+  # if (!("date" %in% cols))
+  #  stop("A document-level sentiment input should have a 'date' column for full aggregation.")
 
   aggDocs <- aggregate_docs(x, by = by, how = howDocs, weightingParamDocs = weightingParamDocs)
   aggDocs$ctr <- ctr
@@ -375,8 +376,11 @@ aggregate_docs <- function(sent, by, how = get_hows()$docs, weightingParamDocs) 
   sent$date <- dates
 
   do.ignoreZeros <- weightingParamDocs$do.ignoreZeros
-  if (do.ignoreZeros == TRUE) # ignore documents with zero sentiment in aggregation
-    sent[, names(sent)] <- sent[, names(sent), with = FALSE][, lapply(.SD, function(x) replace(x, which(x == 0), NA))]
+  if (do.ignoreZeros == TRUE) { # ignore documents with zero sentiment in aggregation
+    nms <- names(sent)[-c(1:3)]
+    sent[, nms] <-
+      sent[, lapply(.SD, function(x) replace(x, which(x == 0), NA)), .SDcols = nms]
+  }
 
   alphaExpDocs <- weightingParamDocs$alphaExpDocs
   weights <- weights_across(sent, how, do.ignoreZeros, alphaExpDocs, by = "date")

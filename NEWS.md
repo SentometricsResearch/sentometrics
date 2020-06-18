@@ -5,7 +5,8 @@
 - Release of a **`pkgdown`** website.
 - Fixed bug in `sento_corpus()` function that did not always order input correctly by date.
 - Fixed two minor bugs in `summary.sento_measures()`; the first one prevented printing of document-level weighting schemes, the second one did not remove `NA`s when averaging over correlations.
- 
+- Small bug fix in yearly aggregation (it did not account for the fact that `1970-01-01` is considered day zero).
+
 ## sentometrics 0.8.1
 
 - Alignment with released **`quanteda`** v2.0.

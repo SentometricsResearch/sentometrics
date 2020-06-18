@@ -136,7 +136,7 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
 #' @param how a single \code{character} vector defining how to perform aggregation within
 #' documents or sentences. For available options, see \code{\link{get_hows}()$words}.
 #' @param tokens a \code{list} of tokenized documents, or if \code{do.sentence = TRUE} a \code{list} of
-#' a \code{list} of tokenized sentences. This allows to specify your own tokenization scheme. Can result from the
+#' \code{list}s of tokenized sentences. This allows to specify your own tokenization scheme. Can result from the
 #' \pkg{quanteda}'s \code{\link[quanteda]{tokens}} function, the \pkg{tokenizers} package, or other. Make sure the tokens are
 #' constructed from (the texts from) the \code{x} argument, are unigrams, and preferably set to lowercase, otherwise, results
 #' may be spurious and errors could occur. By default set to \code{NULL}.
@@ -231,8 +231,13 @@ compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, 
     stop("Please select an appropriate aggregation 'how'.")
   if (length(nCore) != 1 || !is.numeric(nCore))
     stop("The 'nCore' argument should be a numeric vector of size one.")
-  if (!is.null(tokens)) stopifnot(is.list(tokens))
-  if (!is.null(tokens) && do.sentence == TRUE) stopifnot(all(sapply(tokens, is.list)))
+  if (!is.null(tokens)) {
+    stopifnot(is.list(tokens))
+    if (do.sentence == TRUE)
+      stopifnot(all(sapply(tokens, is.list))) # should be list of lists
+    else
+      stopifnot(all(sapply(tokens, is.character)))
+  }
   if (!inherits(lexicons, "sento_lexicons")) { # if a list
     for (lex in lexicons) {
       check_class(lex, "sento_lexicons")

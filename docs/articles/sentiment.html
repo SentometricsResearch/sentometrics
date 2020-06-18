@@ -254,55 +254,48 @@
 <div id="sentiment-calculation-from-own-tokenization" class="section level3">
 <h3 class="hasAnchor">
 <a href="#sentiment-calculation-from-own-tokenization" class="anchor"></a>Sentiment calculation from own tokenization</h3>
-<p>Even more flexibility in this example! You tokenize your corpus outside the sentiment computation function call, so you control exactly which words the lexicons are going to look into.</p>
+<p>This example showcases some more flexibility. You can tokenize your corpus outside the sentiment computation function call, to control exactly which words the lexicons are going to look into.</p>
 <div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_corpus.html">sento_corpus</a></span>(<span class="no">usnews</span>)
 <span class="no">tks</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">as.list</a></span>(<span class="fu"><a href="https://quanteda.io/reference/tokens.html">tokens</a></span>(<span class="no">corpus</span>, <span class="kw">what</span> <span class="kw">=</span> <span class="st">"fastestword"</span>))
 
 <span class="no">lexicons</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="no">list_lexicons</span>[<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"GI_en"</span>, <span class="st">"LM_en"</span>, <span class="st">"HENRY_en"</span>)])
 
-<span class="fu"><a href="../reference/compute_sentiment.html">compute_sentiment</a></span>(<span class="no">corpus</span>, <span class="no">lexicons</span>, <span class="kw">how</span> <span class="kw">=</span> <span class="st">"counts"</span>, <span class="kw">tokens</span> <span class="kw">=</span> <span class="no">tks</span>)</pre></body></html></div>
-<pre><code>##              id       date word_count GI_en--wsj GI_en--wapo GI_en--economy
-##    1: 830981846 1995-01-02        216          0           0              0
-##    2: 842617067 1995-01-05        120          4           0              0
-##    3: 830982165 1995-01-05        215          0           3              0
-##    4: 830982389 1995-01-08        155          0           1              0
-##    5: 842615996 1995-01-09        257          0           0              0
-##   ---                                                                      
-## 4141: 842613758 2014-12-23        198          4           0              0
-## 4142: 842615135 2014-12-23        149          0           0              0
-## 4143: 842617266 2014-12-24        189          4           0              4
-## 4144: 842614354 2014-12-26        173          0           0              0
-## 4145: 842616130 2014-12-31        186         -4           0              0
-##       GI_en--noneconomy LM_en--wsj LM_en--wapo LM_en--economy LM_en--noneconomy
-##    1:                 0          0          -1             -1                 0
-##    2:                 4          3           0              0                 3
-##    3:                 3          0          -3              0                -3
-##    4:                 1          0           3              0                 3
-##    5:                 0         -5           0              0                -5
-##   ---                                                                          
-## 4141:                 4          2           0              0                 2
-## 4142:                 0          0           0              0                 0
-## 4143:                 0          3           0              3                 0
-## 4144:                 0         -3           0              0                -3
-## 4145:                -4         -2           0              0                -2
-##       HENRY_en--wsj HENRY_en--wapo HENRY_en--economy HENRY_en--noneconomy
-##    1:             0              0                 0                    0
-##    2:             3              0                 0                    3
-##    3:             0              4                 0                    4
-##    4:             0              3                 0                    3
-##    5:             1              0                 0                    1
-##   ---                                                                    
-## 4141:            11              0                 0                   11
-## 4142:             5              0                 0                    5
-## 4143:            10              0                10                    0
-## 4144:             2              0                 0                    2
-## 4145:             2              0                 0                    2</code></pre>
+<span class="fu"><a href="../reference/compute_sentiment.html">compute_sentiment</a></span>(<span class="fu"><a href="https://quanteda.io/reference/texts.html">texts</a></span>(<span class="no">corpus</span>), <span class="no">lexicons</span>, <span class="kw">how</span> <span class="kw">=</span> <span class="st">"counts"</span>, <span class="kw">tokens</span> <span class="kw">=</span> <span class="no">tks</span>)</pre></body></html></div>
+<pre><code>##              id word_count GI_en LM_en HENRY_en
+##    1: 830981846        216     0    -1        0
+##    2: 842617067        120     4     3        3
+##    3: 830982165        215     3    -3        4
+##    4: 830982389        155     1     3        3
+##    5: 842615996        257     0    -5        1
+##   ---                                          
+## 4141: 842613758        198     4     2       11
+## 4142: 842615135        149     0     0        5
+## 4143: 842617266        189     4     3       10
+## 4144: 842614354        173     0    -3        2
+## 4145: 842616130        186    -4    -2        2</code></pre>
+<p>To provide your own tokenized input on sentence-level, beware that you need to provide a <code>list</code> of <code>list</code>s, and set <code>do.sentence = TRUE</code>. See one of the next examples for more info about sentence-level sentiment calculation.</p>
+<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">sentences</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/tokens.html">tokens</a></span>(<span class="no">corpus</span>, <span class="kw">what</span> <span class="kw">=</span> <span class="st">"sentence"</span>)
+<span class="no">tks2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">sentences</span>, <span class="kw">function</span>(<span class="no">s</span>) <span class="fu"><a href="https://rdrr.io/r/base/list.html">as.list</a></span>(<span class="fu"><a href="https://quanteda.io/reference/tokens.html">tokens</a></span>(<span class="no">s</span>, <span class="kw">what</span> <span class="kw">=</span> <span class="st">"word"</span>)))
+
+<span class="fu"><a href="../reference/compute_sentiment.html">compute_sentiment</a></span>(<span class="fu"><a href="https://quanteda.io/reference/texts.html">texts</a></span>(<span class="no">corpus</span>), <span class="no">lexicons</span>[<span class="fl">2</span>:<span class="fl">3</span>], <span class="kw">how</span> <span class="kw">=</span> <span class="st">"counts"</span>, <span class="kw">tokens</span> <span class="kw">=</span> <span class="no">tks2</span>, <span class="kw">do.sentence</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></body></html></div>
+<pre><code>##               id sentence_id word_count LM_en HENRY_en
+##     1: 830981846           1         13     1        1
+##     2: 830981846           2         20     0        0
+##     3: 830981846           3         15     0        0
+##     4: 830981846           4         19    -1        0
+##     5: 830981846           5         20    -3        0
+##    ---                                                
+## 43250: 842616130           5         22    -1        1
+## 43251: 842616130           6         27     0        0
+## 43252: 842616130           7         11    -1       -1
+## 43253: 842616130           8         40     0        1
+## 43254: 842616130           9         26     0        1</code></pre>
 </div>
 <div id="the-three-key-approaches-to-the-sentiment-computation" class="section level3">
 <h3 class="hasAnchor">
 <a href="#the-three-key-approaches-to-the-sentiment-computation" class="anchor"></a>The three key approaches to the sentiment computation</h3>
 <p>We offer three main approaches to do the lexicon-based sentiment calculation: account only for unigrams <em>(simple)</em>, consider valence shifting in a bigrams perspective <em>(valence)</em>, or consider valence shifting in a cluster of words around a detected polarized word <em>(cluster)</em>. Read the <a href="https://ssrn.com/abstract=3067734">vignette</a> for more details! Here we demonstrate how to plot the different approaches for comparison.</p>
-<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">txts</span> <span class="kw">&lt;-</span> <span class="no">usnews</span>[<span class="fl">1</span>:<span class="fl">200</span>, <span class="st">"texts"</span>]
+<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="no">txts</span> <span class="kw">&lt;-</span> <span class="no">usnews</span>[<span class="fl">1</span>:<span class="fl">200</span>, <span class="st">"texts"</span>]
 
 <span class="no">vals</span> <span class="kw">&lt;-</span> <span class="no">list_valence_shifters</span><span class="kw">[[</span><span class="st">"en"</span>]]
 
@@ -316,13 +309,13 @@
 
 <span class="fu"><a href="https://rdrr.io/r/graphics/matplot.html">matplot</a></span>(<span class="no">s</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"l"</span>, <span class="kw">lty</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">ylab</span> <span class="kw">=</span> <span class="st">"Sentiment"</span>, <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">"Text"</span>)
 <span class="fu"><a href="https://rdrr.io/r/graphics/legend.html">legend</a></span>(<span class="st">"topright"</span>, <span class="kw">col</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fl">3</span>, <span class="kw">legend</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">s</span>), <span class="kw">lty</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">cex</span> <span class="kw">=</span> <span class="fl">0.7</span>, <span class="kw">bty</span> <span class="kw">=</span> <span class="st">"n"</span>)</pre></body></html></div>
-<p><img src="sentiment_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="sentiment_files/figure-html/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div id="sentence-level-sentiment-calculation-and-aggregation" class="section level3">
 <h3 class="hasAnchor">
 <a href="#sentence-level-sentiment-calculation-and-aggregation" class="anchor"></a>Sentence-level sentiment calculation and aggregation</h3>
 <p>A textual sentiment computation on sentence-level, starting from a document-level corpus, and normalized dividing by the number of detected polarized words. Subsequently, the resulting sentence-level scores are aggregated into document-level scores.</p>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_corpus.html">sento_corpus</a></span>(<span class="no">usnews</span>[, <span class="fl">1</span>:<span class="fl">3</span>])
+<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sento_corpus.html">sento_corpus</a></span>(<span class="no">usnews</span>[, <span class="fl">1</span>:<span class="fl">3</span>])
 
 <span class="no">s</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/compute_sentiment.html">compute_sentiment</a></span>(
   <span class="no">corpus</span>,
@@ -344,7 +337,7 @@
 ## 44802: 842616130           7 2014-12-31         10                  -1
 ## 44803: 842616130           8 2014-12-31         38                   0
 ## 44804: 842616130           9 2014-12-31         25                   0</code></pre>
-<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="no">sDocs</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span>(<span class="no">s</span>, <span class="fu"><a href="../reference/ctr_agg.html">ctr_agg</a></span>(<span class="kw">howDocs</span> <span class="kw">=</span> <span class="st">"proportional"</span>), <span class="kw">do.full</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
+<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="no">sDocs</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span>(<span class="no">s</span>, <span class="fu"><a href="../reference/ctr_agg.html">ctr_agg</a></span>(<span class="kw">howDocs</span> <span class="kw">=</span> <span class="st">"proportional"</span>), <span class="kw">do.full</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
 
 <span class="no">sDocs</span></pre></body></html></div>
 <pre><code>##              id       date word_count LM_en--dummyFeature
@@ -360,17 +353,17 @@
 ## 4144: 842614354 2014-12-26        182         -0.88333333
 ## 4145: 842616130 2014-12-31        196         -0.52000000</code></pre>
 <p>From these sentiment scores, we find the 4 documents where most positive sentiment scores were detected.</p>
-<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="no">peakDocsPos</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/peakdocs.html">peakdocs</a></span>(<span class="no">sDocs</span>, <span class="kw">n</span> <span class="kw">=</span> <span class="fl">4</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"pos"</span>)
+<div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="no">peakDocsPos</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/peakdocs.html">peakdocs</a></span>(<span class="no">sDocs</span>, <span class="kw">n</span> <span class="kw">=</span> <span class="fl">4</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"pos"</span>)
 
 <span class="no">peakDocsPos</span></pre></body></html></div>
 <pre><code>## [1] "842614712" "842617067" "830982389" "830985188"</code></pre>
-<div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="no">corpusPeaks</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/corpus_subset.html">corpus_subset</a></span>(<span class="no">corpus</span>, <span class="fu"><a href="https://quanteda.io/reference/docnames.html">docnames</a></span>(<span class="no">corpus</span>) <span class="kw">%in%</span> <span class="no">peakDocsPos</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="no">corpusPeaks</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/corpus_subset.html">corpus_subset</a></span>(<span class="no">corpus</span>, <span class="fu"><a href="https://quanteda.io/reference/docnames.html">docnames</a></span>(<span class="no">corpus</span>) <span class="kw">%in%</span> <span class="no">peakDocsPos</span>)</pre></body></html></div>
 </div>
 <div id="tf-idf-sentiment-calculation-as-in-the-quanteda-package" class="section level3">
 <h3 class="hasAnchor">
 <a href="#tf-idf-sentiment-calculation-as-in-the-quanteda-package" class="anchor"></a>Tf-idf sentiment calculation as in the <strong><code>quanteda</code></strong> package</h3>
 <p>The term frequency-inverse document frequency statistic is widely used to quantify term importance in a corpus. Its use extends to sentiment calculation simply by adding the polarity of the words to the equation. This example shows that the tf-idf sentiment output from <strong><code>sentometrics</code></strong> is the same as the output obtained using the text mining package <strong><code>quanteda</code></strong>.</p>
-<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="co"># ensure same tokenization for full comparability</span>
+<div class="sourceCode" id="cb24"><html><body><pre class="r"><span class="co"># ensure same tokenization for full comparability</span>
 <span class="no">txts</span> <span class="kw">&lt;-</span> <span class="no">usnews</span>$<span class="no">texts</span>[<span class="fl">1</span>:<span class="fl">100</span>]
 <span class="no">toks</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/stringi/man/stri_split_boundaries.html">stri_split_boundaries</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/stringi/man/stri_trans_casemap.html">stri_trans_tolower</a></span>(<span class="no">txts</span>), <span class="kw">type</span> <span class="kw">=</span> <span class="st">"word"</span>,
                               <span class="kw">skip_word_none</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
@@ -393,14 +386,14 @@
 
 <span class="no">s</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/compute_sentiment.html">compute_sentiment</a></span>(<span class="no">txts</span>, <span class="no">lex</span>, <span class="kw">tokens</span> <span class="kw">=</span> <span class="no">toks</span>, <span class="st">"TFIDF"</span>)<span class="kw">[[</span><span class="st">"L"</span>]]</pre></body></html></div>
 <p><em>R</em> they equal?</p>
-<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/all.equal.data.table.html">all.equal</a></span>(<span class="no">q</span>, <span class="no">s</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb25"><html><body><pre class="r"><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/all.equal.data.table.html">all.equal</a></span>(<span class="no">q</span>, <span class="no">s</span>)</pre></body></html></div>
 <pre><code>## [1] TRUE</code></pre>
 </div>
 <div id="multi-language-sentiment-computation" class="section level3">
 <h3 class="hasAnchor">
 <a href="#multi-language-sentiment-computation" class="anchor"></a>Multi-language sentiment computation</h3>
 <p>Multi-language textual sentiment analysis requires only a few modifications to the corpus and lexicons setup. One needs first to have a non-numeric <code>"language"</code> feature to be integrated into a <code>sento_corpus</code> object. This feature’s task is to regulate the application of the input lexicons supplied in different languages to the texts based on their associated language tag.</p>
-<div class="sourceCode" id="cb25"><html><body><pre class="r"><span class="no">corpusdt</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(
+<div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="no">corpusdt</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(
   <span class="kw">id</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span>(<span class="fl">1</span>:<span class="fl">3</span>),
   <span class="kw">date</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html">Sys.Date</a></span>(),
   <span class="kw">texts</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Dit is goed. Bien, good."</span>, <span class="st">"Çeci est bien. Goed, good."</span>, <span class="st">"This is good. Goed, bien."</span>),
@@ -411,7 +404,7 @@
 
 <span class="no">corpus</span></pre></body></html></div>
 <pre><code>## A sento_corpus consisting of 3 documents and 3 docvars.</code></pre>
-<div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="no">lexicons</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">nl</span> <span class="kw">=</span> <span class="fu"><a href="../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="st">"lexNL"</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="st">"goed"</span>, <span class="fl">1</span>))),
+<div class="sourceCode" id="cb29"><html><body><pre class="r"><span class="no">lexicons</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">nl</span> <span class="kw">=</span> <span class="fu"><a href="../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="st">"lexNL"</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="st">"goed"</span>, <span class="fl">1</span>))),
                  <span class="kw">fr</span> <span class="kw">=</span> <span class="fu"><a href="../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="st">"lexFR"</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="st">"bien"</span>, <span class="fl">1</span>))),
                  <span class="kw">en</span> <span class="kw">=</span> <span class="fu"><a href="../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="st">"lexEN"</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="st">"good"</span>, <span class="fl">1</span>))))
 
@@ -419,9 +412,9 @@
 
 <span class="no">s</span></pre></body></html></div>
 <pre><code>##    id       date word_count lexNL--ftr lexFR--ftr lexEN--ftr
-## 1:  1 2020-05-23          5        0.5        0.0        0.0
-## 2:  2 2020-05-23          5        0.0        0.5        0.0
-## 3:  3 2020-05-23          5        0.0        0.0        0.5</code></pre>
+## 1:  1 2020-05-28          5        0.5        0.0        0.0
+## 2:  2 2020-05-28          5        0.0        0.5        0.0
+## 3:  3 2020-05-28          5        0.0        0.0        0.5</code></pre>
 </div>
   </div>
 
