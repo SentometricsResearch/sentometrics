@@ -18,7 +18,7 @@ Textual analysis has become very popular nowadays as a tool to extract and deriv
 
 Newspapers remain one of the primary sources of information. They have been evolving by extending their offerings online, including the setting up of news archives. That makes it possible to perform wide textual analysis on these archives stored online, for instance, to identify trends across years and newspapers.
 
-With the **Gopress Academic** database, students from various universities in Belgium are able to access news articles from all main Belgian newspapers. These articles are the perfect material for textual analysis, such as topic modeling or sentiment computation with the help of the **`sentometrics`** package.
+With the **Gopress Academic** database, students from various universities in Belgium are able to access news articles from all main Belgian newspapers. These articles are the perfect material for a topic modeling analysis, or textual sentiment computation with the help of the **`sentometrics`** package.
 
 This contributed tutorial describes how to use the **Gopress Academic** database to create a corpus of documents formatted for analysis with **`sentometrics`**. You will learn how to:
 

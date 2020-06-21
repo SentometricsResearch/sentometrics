@@ -23,11 +23,11 @@ This software package originates from a
 [Google Summer of Code 2017](https://github.com/rstats-gsoc/gsoc2017/wiki/Sentometrics:-An-integrated-framework-for-text-based-multivariate-time-series-modeling-and-forecasting) project, was further developed 
 during a follow-up [Google Summer of Code 2019](https://github.com/rstats-gsoc/gsoc2019/wiki/sentometrics) project, and benefited generally from financial support by [Innoviris](https://innoviris.brussels), [IVADO](https://www.ivado.ca), [swissuniversities](https://www.swissuniversities.ch), and the [Swiss National Science Foundation](http://www.snf.ch) (grants #179281 and #191730).
 
-<img height="71" src="man/figures/gsoc.png" alt="GSoC" style="margin-right:8px"/>
+<!-- <img height="71" src="man/figures/gsoc.png" alt="GSoC" style="margin-right:8px"/>
 <img height="79" src="man/figures/innoviris.png" alt="Innoviris" style="display:inline-block;margin-right:8px"/>
 <img height="77" src="man/figures/ivado.png" alt="IVADO" style="display:inline-block;margin-right:8px"/>
 <img height="79" src="man/figures/swissuniversities.png" alt="swissuniversities" style="display:inline-block;margin-right:8px"/>
-<img height="88" src="man/figures/snsf.png" alt="SNSF" style="display:inline-block;margin-right:8px"/>
+<img height="88" src="man/figures/snsf.png" alt="SNSF" style="display:inline-block;margin-right:8px"/> -->
 
 ### Contact
 
