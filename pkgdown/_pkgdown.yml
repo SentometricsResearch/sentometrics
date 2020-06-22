@@ -40,6 +40,8 @@ navbar:
       menu:
       - text: Analyzing Gopress data
         href: articles/gopress.html
+      - text: Intratextual sentiment analysis
+        href: articles/isa.html
     research:
       text: Research
       href: articles/research.html
