@@ -95,6 +95,9 @@
 <li>
       <a href="../articles/gopress.html">Analyzing Gopress data</a>
     </li>
+    <li>
+      <a href="../articles/isa.html">Intratextual sentiment analysis</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -139,13 +142,11 @@
 
       
 
-      </header><div class="row">
+      </header><script src="isa_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Intratextual Sentiment Analysis</h1>
-                        <h4 class="author">Olivier Delmarcelle, Ghent University, VUB</h4>
             
-            <h4 class="date">17/06/2020</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/sborms/sentometrics/blob/master/vignettes/isa.Rmd"><code>vignettes/isa.Rmd</code></a></small>
       <div class="hidden name"><code>isa.Rmd</code></div>
@@ -154,6 +155,7 @@
 
     
     
+<p>Tutorial contributed by <a href="mailto:delmarcelle.olivier@gmail.com">Olivier Delmarcelle</a> (PhD student, Ghent University).</p>
 <div id="introduction" class="section level2">
 <h2 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h2>
@@ -164,9 +166,6 @@
 <p>Does the position of positive and negative words within a text matter? That’s a question investigated by <a href="https://doi.org/10.1111/fima.12219">Boudt &amp; Thewissen, 2019</a> during their research regarding sentiment implied by CEO letters. Based on a large dataset of letters, they analyze how sentiment-bearing words are positioned within the text. They find that CEOs tend to emphasize sentiment at the beginning and the end of their letter, in the hopes of leaving a positive impression to the reader.</p>
 <p>Their results confirm generally accepted theories of linguistics saying that readers remember best the first (primacy effect) and the last (recency effect) portions of a text, and that the end of the text contributes the most to the reader’s final feeling.</p>
 <p>One can wonder whether other types of texts follow a similar structure? Indeed, the world is full of different text media, from Twitter posts to news articles, and most of them are less cautiously written than CEO letters. Let’s investigate together one of these with the help of the <strong><code>sentometrics</code></strong> package!</p>
-<!-- ### How to identify Intratextual Structure? -->
-<!-- We will investigate two different methods to identify Intratextual structure within a corpus of text. A first method is to separate each document in equal-sized portions, called *bins*. Specific *bins* (e.g., the first *bin* of each document) can be aggregated across all document to identify a behaviour for this specific *bin*. Such measures can then be compared between discinct *bins* (e.g. the behaviour of the first *bin* against the behaviour of the last *bin*). The second method is to use the Herfindahl-Hirschman Index to compute the concentration of sentiments within texts. -->
-<!-- The documents used in the following analysis are articles from popular newspapers from 1971 to the last decade.  -->
 </div>
 <div id="learning-outcomes" class="section level3">
 <h3 class="hasAnchor">
@@ -299,8 +298,10 @@
 <div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">nBins</span> <span class="kw">&lt;-</span> <span class="fl">10</span>
 
 <span class="no">usnews2Bins</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="fl">1</span>:<span class="no">nBins</span>)
+
 <span class="kw">for</span>(<span class="no">i</span> <span class="kw">in</span> <span class="fl">1</span>:<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">usnews2Toks</span>)){
-  <span class="no">usnews2Bins</span><span class="kw">[[</span><span class="no">i</span>]] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="kw pkg">parallel</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/splitIndices.html">splitIndices</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">usnews2Toks</span><span class="kw">[[</span><span class="no">i</span>]]), <span class="no">nBins</span>), <span class="kw">function</span>(<span class="no">x</span>){<span class="no">usnews2Toks</span><span class="kw">[[</span><span class="no">i</span>]][<span class="no">x</span>]})
+  <span class="no">usnews2Bins</span><span class="kw">[[</span><span class="no">i</span>]] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="kw pkg">parallel</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/splitIndices.html">splitIndices</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">usnews2Toks</span><span class="kw">[[</span><span class="no">i</span>]]), <span class="no">nBins</span>),
+                             <span class="kw">function</span>(<span class="no">x</span>){<span class="no">usnews2Toks</span><span class="kw">[[</span><span class="no">i</span>]][<span class="no">x</span>]})
 }
 <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">usnews2Bins</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">usnews2Toks</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">usnews2Bins</span><span class="kw">[[</span><span class="fl">1</span>]], <span class="fl">2</span>)</pre></body></html></div>
@@ -337,9 +338,11 @@
 <h3 class="hasAnchor">
 <a href="#absolute-sentiment" class="anchor"></a>Absolute sentiment</h3>
 <p>We expect that the first <em>bin</em> in each article presents on average more sentiment than in the rest of the text. Since news can either be positive or negative, it will easier to identify sentiment intensity using the absolute value lexicon prepared earlier. This way, we avoid the cancelling effect between positive and negative sentiments. Simply plotting the mean sentiment values for each <em>bin</em> across documents can give us some insight on the intratextual structure. Once again, we rely on <code>data.table</code>’s <code>[]</code> operator to easily group sentiment values per <code>sentence_id</code> (remember, these represent the <em>bin</em> number!). In addition to this, a boxplot can be useful to ensure that the mean sentiments are not driven by extreme outliers.</p>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mfrow</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>,<span class="fl">2</span>))
+<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mfrow</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">2</span>))
+
 <span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">sentiment</span>[, <span class="fu">.</span>(<span class="kw">s</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="no">`absoluteLex--dummyFeature`</span>)), <span class="kw">by</span> <span class="kw">=</span> <span class="no">sentence_id</span>], <span class="kw">type</span> <span class="kw">=</span> <span class="st">"l"</span>,
      <span class="kw">ylab</span> <span class="kw">=</span> <span class="st">"Mean absolute sentiment"</span>, <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">"Bin"</span>)
+
 <span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html">boxplot</a></span>(<span class="no">sentiment</span>$<span class="no">`absoluteLex--dummyFeature`</span> ~ <span class="no">sentiment</span>$<span class="no">sentence_id</span>, <span class="kw">ylab</span> <span class="kw">=</span> <span class="st">"Absolute sentiment"</span>, <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">"Bin"</span>,
         <span class="kw">outline</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">range</span> <span class="kw">=</span> <span class="fl">0.5</span>)</pre></body></html></div>
 <p><img src="isa_files/figure-html/unnamed-chunk-10-1.png" width="1152"></p>
@@ -408,8 +411,8 @@
 <a href="#specifying-your-own-weights" class="anchor"></a>Specifying your own weights</h3>
 <p>This is exactly the situation where we would like to test a specific weighting scheme! Say that instead of giving 10% importance to each <em>bin</em> in the document sentiment computation, we would give only about 5% importance to the first one and share the rest between the remaining <em>bins</em>. Sadly, <strong><code>sentometrics</code></strong> does not directly provide us with the tool for this kind of computation, we will need to create our weighting scheme and aggregate by hands. Luckily, the use of <code>data.table</code> makes these customisations painless.</p>
 <p>First, we define our customized weights for <em>bins</em>:</p>
-<div class="sourceCode" id="cb25"><html><body><pre class="r"><span class="no">w</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">1</span>/(<span class="no">nBins</span>-<span class="fl">0.5</span>),<span class="no">nBins</span>)
-<span class="no">w</span>[<span class="fl">1</span>] <span class="kw">&lt;-</span>  <span class="no">w</span>[<span class="fl">1</span>]*<span class="fl">0.5</span>
+<div class="sourceCode" id="cb25"><html><body><pre class="r"><span class="no">w</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">1</span> / (<span class="no">nBins</span> - <span class="fl">0.5</span>), <span class="no">nBins</span>)
+<span class="no">w</span>[<span class="fl">1</span>] <span class="kw">&lt;-</span>  <span class="no">w</span>[<span class="fl">1</span>] * <span class="fl">0.5</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">sum</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">w</span>), <span class="kw">w</span> <span class="kw">=</span> <span class="no">w</span>)</pre></body></html></div>
 <pre><code>## $sum
@@ -419,7 +422,7 @@
 ##  [1] 0.05263158 0.10526316 0.10526316 0.10526316 0.10526316 0.10526316 0.10526316 0.10526316
 ##  [9] 0.10526316 0.10526316</code></pre>
 <p>Second, we can create a function that will aggregate <em>bins</em> based on our customized weights. This is simply the sum of element-wise vector multiplications.</p>
-<div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="no">aggregate_bins</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>,<span class="no">w</span>){<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">x</span>*<span class="no">w</span>)}
+<div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="no">aggregate_bins</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>,<span class="no">w</span>){ <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">x</span> * <span class="no">w</span>) }
 
 <span class="fu">aggregate_bins</span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>), <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0.5</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>))</pre></body></html></div>
 <pre><code>## [1] 1.75</code></pre>
@@ -457,7 +460,7 @@
 <div class="sourceCode" id="cb33"><html><body><pre class="r"><span class="no">Qd</span> <span class="kw">&lt;-</span> <span class="fl">200</span> <span class="co"># number of words in the documents</span>
 <span class="no">i</span> <span class="kw">&lt;-</span> <span class="fl">1</span>:<span class="no">Qd</span>
 
-<span class="no">ushape</span> <span class="kw">&lt;-</span> (<span class="no">i</span> - (<span class="no">Qd</span>+<span class="fl">1</span>)/<span class="fl">2</span> )^<span class="fl">2</span>
+<span class="no">ushape</span> <span class="kw">&lt;-</span> (<span class="no">i</span> - (<span class="no">Qd</span>+<span class="fl">1</span>) / <span class="fl">2</span> )^<span class="fl">2</span>
 <span class="no">ushape</span> <span class="kw">&lt;-</span> <span class="no">ushape</span>/<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">ushape</span>)
 
 <span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">ushape</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">'l'</span>, <span class="kw">ylab</span> <span class="kw">=</span> <span class="st">"Weight"</span>, <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">"Word position index"</span>, <span class="kw">main</span> <span class="kw">=</span> <span class="st">"U-shaped weight scheme"</span>)</pre></body></html></div>
@@ -471,7 +474,7 @@
 <span class="no">sentimentValues</span>$<span class="no">bins</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/compute_sentiment.html">compute_sentiment</a></span>(<span class="no">usnews2Sento</span>, <span class="no">sentoLexicon</span>, <span class="kw">tokens</span> <span class="kw">=</span> <span class="no">usnews2Bins</span>, <span class="kw">how</span> <span class="kw">=</span> <span class="st">"proportional"</span>,
                                           <span class="kw">do.sentence</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
 
-<span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">sentimentValues</span>, <span class="no">head</span>, <span class="kw">n</span><span class="kw">=</span><span class="fl">3</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">sentimentValues</span>, <span class="no">head</span>, <span class="kw">n</span> <span class="kw">=</span> <span class="fl">3</span>)</pre></body></html></div>
 <pre><code>## $default
 ##           id       date word_count baseLex--dummyFeature absoluteLex--dummyFeature
 ## 1: 830981632 1971-01-12        192          -0.010156250                0.10130208
@@ -502,7 +505,7 @@
                                              <span class="kw">by</span> <span class="kw">=</span> <span class="fu">.</span>(<span class="no">id</span>, <span class="no">date</span>),
                                              <span class="kw">.SDcols</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">sentiment</span>), -<span class="fl">4</span>)]
 
-<span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">sentimentValues</span>[<span class="fl">3</span>:<span class="fl">4</span>], <span class="no">head</span>, <span class="kw">n</span><span class="kw">=</span><span class="fl">3</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">sentimentValues</span>[<span class="fl">3</span>:<span class="fl">4</span>], <span class="no">head</span>, <span class="kw">n</span> <span class="kw">=</span> <span class="fl">3</span>)</pre></body></html></div>
 <pre><code>## $sentences
 ##           id       date word_count baseLex--dummyFeature absoluteLex--dummyFeature
 ## 1: 830981632 1971-01-12        202          -0.016162828                0.11392764
