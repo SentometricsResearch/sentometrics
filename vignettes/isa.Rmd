@@ -1,14 +1,17 @@
 ---
 title: "Intratextual Sentiment Analysis"
-author: "Olivier Delmarcelle, Ghent University, VUB"
-date: "17/06/2020"
-output: html_document
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 options(width=100)
 ```
+
+Tutorial contributed by [Olivier Delmarcelle](mailto:delmarcelle.olivier@gmail.com) (PhD student, Ghent University).
 
 ## Introduction
 
@@ -21,12 +24,6 @@ Does the position of positive and negative words within a text matter? That's a 
 Their results confirm generally accepted theories of linguistics saying that readers remember best the first (primacy effect) and the last (recency effect) portions of a text, and that the end of the text contributes the most to the reader's final feeling.
 
 One can wonder whether other types of texts follow a similar structure? Indeed, the world is full of different text media, from Twitter posts to news articles, and most of them are less cautiously written than CEO letters. Let's investigate together one of these with the help of the **`sentometrics`** package!
-
-<!-- ### How to identify Intratextual Structure? -->
-
-<!-- We will investigate two different methods to identify Intratextual structure within a corpus of text. A first method is to separate each document in equal-sized portions, called *bins*. Specific *bins* (e.g., the first *bin* of each document) can be aggregated across all document to identify a behaviour for this specific *bin*. Such measures can then be compared between discinct *bins* (e.g. the behaviour of the first *bin* against the behaviour of the last *bin*). The second method is to use the Herfindahl-Hirschman Index to compute the concentration of sentiments within texts. -->
-
-<!-- The documents used in the following analysis are articles from popular newspapers from 1971 to the last decade.  -->
 
 ### Learning outcomes
 
@@ -138,8 +135,10 @@ This can be done with the help of the convenient function `parallel::splitIndice
 nBins <- 10
 
 usnews2Bins <- list(1:nBins)
+
 for(i in 1:length(usnews2Toks)){
-  usnews2Bins[[i]] <- lapply(parallel::splitIndices(length(usnews2Toks[[i]]), nBins), function(x){usnews2Toks[[i]][x]})
+  usnews2Bins[[i]] <- lapply(parallel::splitIndices(length(usnews2Toks[[i]]), nBins),
+                             function(x){usnews2Toks[[i]][x]})
 }
 names(usnews2Bins) <- names(usnews2Toks)
 head(usnews2Bins[[1]], 2)
@@ -164,9 +163,11 @@ In their analysis of CEO letters, [Boudt & Thewissen, 2019](https://doi.org/10.1
 We expect that the first *bin* in each article presents on average more sentiment than in the rest of the text. Since news can either be positive or negative, it will easier to identify sentiment intensity using the absolute value lexicon prepared earlier. This way, we avoid the cancelling effect between positive and negative sentiments. Simply plotting the mean sentiment values for each *bin* across documents can give us some insight on the intratextual structure. Once again, we rely on `data.table`'s `[]` operator to easily group sentiment values per `sentence_id` (remember, these represent the *bin* number!). In addition to this, a boxplot can be useful to ensure that the mean sentiments are not driven by extreme outliers. 
 
 ```{r,fig.width = 12, fig.height = 5}
-par(mfrow = c(1,2))
+par(mfrow = c(1, 2))
+
 plot(sentiment[, .(s = mean(`absoluteLex--dummyFeature`)), by = sentence_id], type = "l",
      ylab = "Mean absolute sentiment", xlab = "Bin")
+
 boxplot(sentiment$`absoluteLex--dummyFeature` ~ sentiment$sentence_id, ylab = "Absolute sentiment", xlab = "Bin",
         outline = FALSE, range = 0.5)
 ```
@@ -223,15 +224,15 @@ This is exactly the situation where we would like to test a specific weighting s
 
 First, we define our customized weights for *bins*:
 ```{r}
-w <- rep(1/(nBins-0.5),nBins)
-w[1] <-  w[1]*0.5
+w <- rep(1 / (nBins - 0.5), nBins)
+w[1] <-  w[1] * 0.5
 
 list(sum = sum(w), w = w)
 ```
 Second, we can create a function that will aggregate *bins* based on our customized weights. This is simply the sum of element-wise vector multiplications.
 
 ```{r}
-aggregate_bins <- function(x,w){sum(x*w)}
+aggregate_bins <- function(x,w){ sum(x * w) }
 
 aggregate_bins(c(1, 2, 3), c(0.5, 0.25, 0.25))
 ```
@@ -274,7 +275,7 @@ The U-shaped weighting is something we haven't seen before. This is a weighting 
 Qd <- 200 # number of words in the documents
 i <- 1:Qd
 
-ushape <- (i - (Qd+1)/2 )^2
+ushape <- (i - (Qd+1) / 2 )^2
 ushape <- ushape/sum(ushape)
 
 plot(ushape, type = 'l', ylab = "Weight", xlab = "Word position index", main = "U-shaped weight scheme")
@@ -291,7 +292,7 @@ sentimentValues$sentences <- compute_sentiment(usnews2Sento, sentoLexicon, how =
 sentimentValues$bins <- compute_sentiment(usnews2Sento, sentoLexicon, tokens = usnews2Bins, how = "proportional",
                                           do.sentence = TRUE) 
 
-lapply(sentimentValues, head, n=3)
+lapply(sentimentValues, head, n = 3)
 ```
 
 Before going further, we need to aggregate the two last results to a document level sentiment measure. We are going to aggregate sentences using the `aggregate()` function while we will repeat the same operation as before to compute the *bins* aggregation with the custom weights. 
@@ -303,7 +304,7 @@ sentimentValues$bins <- sentimentValues$bins[, c(word_count = sum(word_count), l
                                              by = .(id, date),
                                              .SDcols = tail(names(sentiment), -4)]
 
-lapply(sentimentValues[3:4], head, n=3)
+lapply(sentimentValues[3:4], head, n = 3)
 ```
 
 Finally, what remains to do is test our results against the variable `s` from `usnews2`. Since we know the number of positive and negative news in `s`, we can quickly and in a naive way measure the accuracy by ordering the documents by sentiment values.
