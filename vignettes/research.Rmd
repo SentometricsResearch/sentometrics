@@ -17,7 +17,7 @@ _An extensive introduction to the package._
 
 _An overview of the required steps in a typical econometric analysis of sentiment from textual data._
 
-- Algaba, A., Ardia, D., Bluteau, K., Borms & S., Boudt, K. (2020). **Econometrics meets sentiment: An overview of methodology and applications**. Forthcoming in Journal of Economic Surveys. [Link](https://doi.org/10.1111/joes.12370).
+- Algaba, A., Ardia, D., Bluteau, K., Borms & S., Boudt, K. (2020). **Econometrics meets sentiment: An overview of methodology and applications**. Journal of Economic Surveys 34, 512-547. [Link](https://doi.org/10.1111/joes.12370).
 
 ### Empirical applications
 

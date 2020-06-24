@@ -7,12 +7,13 @@ articles:
   epu: epu.html
   gopress: gopress.html
   indexation: indexation.html
+  isa: isa.html
   modeling: modeling.html
   research: research.html
   sentiment: sentiment.html
   sentometrics: sentometrics.html
   vix: vix.html
-last_built: 2020-05-23T08:52Z
+last_built: 2020-06-24T09:38Z
 urls:
   reference: https://sborms.github.io/sentometrics/reference
   article: https://sborms.github.io/sentometrics/articles

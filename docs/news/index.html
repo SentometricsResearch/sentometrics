@@ -85,7 +85,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.2</span>
       </span>
     </div>
 
@@ -140,6 +140,9 @@
     <li>
       <a href="../articles/gopress.html">Analyzing Gopress data</a>
     </li>
+    <li>
+      <a href="../articles/isa.html">Intratextual sentiment analysis</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -191,14 +194,18 @@
       <small>Source: <a href='https://github.com/sborms/sentometrics/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div id="sentometrics-085-devel" class="section level2">
+    <div id="sentometrics-082" class="section level2">
 <h2 class="hasAnchor">
-<a href="#sentometrics-085-devel" class="anchor"></a>sentometrics 0.8.5 (devel)</h2>
+<a href="#sentometrics-082" class="anchor"></a>sentometrics 0.8.2</h2>
 <ul>
 <li>Some documentation fixes.</li>
 <li>Release of a <strong><code>pkgdown</code></strong> website.</li>
 <li>Fixed bug in <code><a href="../reference/sento_corpus.html">sento_corpus()</a></code> function that did not always order input correctly by date.</li>
 <li>Fixed two minor bugs in <code>summary.sento_measures()</code>; the first one prevented printing of document-level weighting schemes, the second one did not remove <code>NA</code>s when averaging over correlations.</li>
+<li>Small bug fix in yearly aggregation (it did not account for the fact that <code>1970-01-01</code> is considered day zero).</li>
+<li>Dropped horizontal 0-line automatically added in the <code><a href="../reference/plot.sento_measures.html">plot.sento_measures()</a></code> function as it distorts graphs of time series with values far away from zero.</li>
+<li>Stopped exporting all defunct functions to clean up namespace.</li>
+<li>The function <code>print.sento_corpus()</code> now shows when corpus is multi-lingual.</li>
 </ul>
 </div>
     <div id="sentometrics-081" class="section level2">
@@ -332,7 +339,7 @@
 <li>Slightly modified <code><a href="https://rdrr.io/r/base/print.html">print()</a></code> generic for a <code>sentomeasures</code> object.</li>
 <li>Dropped the <code>"tf-idf"</code> option for within-document aggregation in the <code><a href="../reference/ctr_agg.html">ctr_agg()</a></code> function.</li>
 <li>The <code><a href="../reference/sento_lexicons.html">sento_lexicons()</a></code> function outputs a <code>sentolexicons</code> object, which the <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code>. function specifically requires as an input; a <code>sentolexicons</code> object also includes a <code><a href="https://rdrr.io/r/base/Extract.html">"["</a></code> class-preserving extractor function.</li>
-<li>The <code><a href="../reference/attributions.html">attributions()</a></code> function outputs an <code>attributions</code> object; the <code>plot_attribtutions()</code> function is therefore replaced by the <code><a href="https://rdrr.io/r/graphics/plot.html">plot()</a></code> generic.</li>
+<li>The <code><a href="../reference/attributions.html">attributions()</a></code> function outputs an <code>attributions</code> object; the <code>plot_attribtutions()</code> function is therefore replaced by the <code><a href="https://rdrr.io/r/base/plot.html">plot()</a></code> generic.</li>
 <li>Defunct the <code><a href="../reference/sentometrics-defunct.html">perform_MCS()</a></code> function, but the output of the <code><a href="../reference/get_loss_data.html">get_loss_data()</a></code> function can easily be used as an input to the <code>MCSprocedure()</code> function from the <strong><code>MCS</code></strong> package (discarded from Imports).</li>
 <li>Moved the <strong><code>parallel</code></strong> and <strong><code>doParallel</code></strong> packages to Suggests, as only needed (if enacted) in the <code><a href="../reference/sento_model.html">sento_model()</a></code> function.</li>
 <li>Sligthly modified appearance of plotting functions, to drop <strong><code>ggthemes</code></strong> from Imports.</li>

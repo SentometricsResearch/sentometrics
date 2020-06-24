@@ -1,7 +1,13 @@
 
-## submission (version 0.8.1) [11/03/2020]
+## submission (version 0.8.2) [24/06/2020]
 
-**new**: compliance fixes related to new quanteda release
+**new**: minor bug and documentation fixes, release of website
+
+- solves open CRAN errors on some platforms
+
+<!--- ## submission (version 0.8.1) [11/03/2020]
+
+**new**: compliance fixes related to new quanteda release --->
 
 <!--- ## submission (version 0.8) [13/01/2020]
 
@@ -64,7 +70,6 @@
 ## submission (version 0.3) [18/03/2018]
 
 **new**: several additional functions and arguments, small bug fixes and clarifications in documentation 
-
 - marked UTF-8 strings will remain; this is intentional and comes from the built-in French (mostly) and Dutch word lists --->
 
 <!--- ## Re-submission (version 0.2) [12/11/2017]
