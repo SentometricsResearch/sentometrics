@@ -46,7 +46,7 @@ applies only when \code{do.ignoreZeros = TRUE}. Because of this (implicit) selec
 complementary features (e.g., \code{"economy"} and \code{"noneconomy"}) makes sense.
 
 It is also possible to add one non-numerical feature, that is, \code{"language"}, to designate the language
-of the corpus texts. When this feature is provided on corpus-level, a \code{list} of lexicons for different
+of the corpus texts. When this feature is provided, a \code{list} of lexicons for different
 languages is expected in the \code{compute_sentiment} function.
 }
 \examples{

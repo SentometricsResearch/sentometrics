@@ -3,7 +3,7 @@ title: "Future development"
 output: rmarkdown::html_vignette
 ---
 
-Here is an overview of anticipated developments, and known bugs or minor unfinished business. The main objective is to converge towards a stable 1.0.0 release. If you want to help out on some of these things, contact the maintainer, or file a pull request on GitHub.
+Here is an overview of some of the (not all!) anticipated developments, and known bugs or minor unfinished business. The main objective is to converge towards a stable 1.0.0 release. If you want to help out on some of these things, contact the maintainer, or file a pull request on GitHub.
 
 ### Extensions
 
@@ -52,8 +52,6 @@ Here is an overview of anticipated developments, and known bugs or minor unfinis
 - Be more flexible for the features in a `sento_corpus` object by also allowing values outside 0 and 1.
 
 - Make sure subsetting does not maintain a `sentiment` object when it is not supposed to be.
-
-- Drop horizontal 0-line automatically added in the `plot.sento_measures()` function (and maybe other plot functions) as it distorts graphs of time series with values far away from 0.
 
 - Remove all but one (not all) duplicate entries in the `sento_lexicons()` function.
 

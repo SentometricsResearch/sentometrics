@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.2</span>
       </span>
     </div>
 
@@ -94,6 +94,9 @@
   <ul class="dropdown-menu" role="menu">
 <li>
       <a href="../articles/gopress.html">Analyzing Gopress data</a>
+    </li>
+    <li>
+      <a href="../articles/isa.html">Intratextual sentiment analysis</a>
     </li>
   </ul>
 </li>
@@ -152,7 +155,7 @@
 
     
     
-<p>Here is an overview of anticipated developments, and known bugs or minor unfinished business. The main objective is to converge towards a stable 1.0.0 release. If you want to help out on some of these things, contact the maintainer, or file a pull request on GitHub.</p>
+<p>Here is an overview of some of the (not all!) anticipated developments, and known bugs or minor unfinished business. The main objective is to converge towards a stable 1.0.0 release. If you want to help out on some of these things, contact the maintainer, or file a pull request on GitHub.</p>
 <div id="extensions" class="section level3">
 <h3 class="hasAnchor">
 <a href="#extensions" class="anchor"></a>Extensions</h3>
@@ -185,7 +188,6 @@
 <li><p>Add references to external <strong><code>textdata</code></strong> package in examples (e.g. for extra lexicons).</p></li>
 <li><p>Be more flexible for the features in a <code>sento_corpus</code> object by also allowing values outside 0 and 1.</p></li>
 <li><p>Make sure subsetting does not maintain a <code>sentiment</code> object when it is not supposed to be.</p></li>
-<li><p>Drop horizontal 0-line automatically added in the <code><a href="../reference/plot.sento_measures.html">plot.sento_measures()</a></code> function (and maybe other plot functions) as it distorts graphs of time series with values far away from 0.</p></li>
 <li><p>Remove all but one (not all) duplicate entries in the <code><a href="../reference/sento_lexicons.html">sento_lexicons()</a></code> function.</p></li>
 <li><p>Make sure you can also add the <code>"language"</code> identifier to a corpus with <code><a href="../reference/add_features.html">add_features()</a></code>.</p></li>
 </ul>

@@ -87,7 +87,7 @@ object in one plot, or the average along one of the lexicons, features and time 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.2</span>
       </span>
     </div>
 
@@ -141,6 +141,9 @@ object in one plot, or the average along one of the lexicons, features and time 
   <ul class="dropdown-menu" role="menu">
     <li>
       <a href="../articles/gopress.html">Analyzing Gopress data</a>
+    </li>
+    <li>
+      <a href="../articles/isa.html">Intratextual sentiment analysis</a>
     </li>
   </ul>
 </li>
@@ -200,7 +203,7 @@ object in one plot, or the average along one of the lexicons, features and time 
     </div>
 
     <pre class="usage"><span class='co'># S3 method for sento_measures</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>x</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='st'>"all"</span>, <span class='no'>...</span>)</pre>
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>x</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='st'>"all"</span>, <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -234,14 +237,14 @@ graphs plotted and <code>group</code> is different from <code>"all"</code>.</p>
 <span class='no'>l</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sento_lexicons.html'>sento_lexicons</a></span>(<span class='kw pkg'>sentometrics</span><span class='kw ns'>::</span><span class='no'><a href='list_lexicons.html'>list_lexicons</a></span>[<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"LM_en"</span>)],
                     <span class='kw pkg'>sentometrics</span><span class='kw ns'>::</span><span class='no'><a href='list_valence_shifters.html'>list_valence_shifters</a></span><span class='kw'>[[</span><span class='st'>"en"</span>]])
 <span class='no'>ctr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='ctr_agg.html'>ctr_agg</a></span>(<span class='kw'>howTime</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"equal_weight"</span>, <span class='st'>"linear"</span>), <span class='kw'>by</span> <span class='kw'>=</span> <span class='st'>"month"</span>, <span class='kw'>lag</span> <span class='kw'>=</span> <span class='fl'>3</span>)
-<span class='no'>sento_measures</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sento_measures.html'>sento_measures</a></span>(<span class='no'>corpusSample</span>, <span class='no'>l</span>, <span class='no'>ctr</span>)
+<span class='no'>sm</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sento_measures.html'>sento_measures</a></span>(<span class='no'>corpusSample</span>, <span class='no'>l</span>, <span class='no'>ctr</span>)
 
 <span class='co'># plot sentiment measures</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>sento_measures</span>, <span class='st'>"features"</span>)</div><div class='img'><img src='plot.sento_measures-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>sm</span>, <span class='st'>"features"</span>)</div><div class='img'><img src='plot.sento_measures-1.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
 <span class='co'># adjust appearance of plot</span>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='st'>"ggplot2"</span>)
-<span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>sento_measures</span>)
+<span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>sm</span>)
 <span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='no'>p</span> +
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_date.html'>scale_x_date</a></span>(<span class='kw'>name</span> <span class='kw'>=</span> <span class='st'>"year"</span>, <span class='kw'>date_labels</span> <span class='kw'>=</span> <span class='st'>"%Y"</span>) +
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_y_continuous</a></span>(<span class='kw'>name</span> <span class='kw'>=</span> <span class='st'>"newName"</span>)
