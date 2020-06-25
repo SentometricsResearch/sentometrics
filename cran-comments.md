@@ -1,9 +1,13 @@
 
-## submission (version 0.8.2) [24/06/2020]
+## resubmission (version 0.8.2) [25/06/2020]
+
+- modified invalid doi markup in CITATION file
+
+<!--- ## submission (version 0.8.2) [24/06/2020]
 
 **new**: minor bug and documentation fixes, release of website
 
-- solves open CRAN errors on some platforms
+- solves open CRAN errors on some platforms --->
 
 <!--- ## submission (version 0.8.1) [11/03/2020]
 
