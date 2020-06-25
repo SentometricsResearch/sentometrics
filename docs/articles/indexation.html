@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.2</span>
       </span>
     </div>
 
@@ -94,6 +94,9 @@
   <ul class="dropdown-menu" role="menu">
 <li>
       <a href="../articles/gopress.html">Analyzing Gopress data</a>
+    </li>
+    <li>
+      <a href="../articles/isa.html">Intratextual sentiment analysis</a>
     </li>
   </ul>
 </li>
@@ -176,13 +179,13 @@
 <span class="no">ctr</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/ctr_agg.html">ctr_agg</a></span>(<span class="kw">howDocs</span> <span class="kw">=</span> <span class="st">"proportional"</span>, <span class="kw">howTime</span> <span class="kw">=</span> <span class="st">"equal_weight"</span>, <span class="kw">by</span> <span class="kw">=</span> <span class="st">"month"</span>, <span class="kw">lag</span> <span class="kw">=</span> <span class="fl">6</span>)
 <span class="no">measures</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span>(<span class="no">s</span>, <span class="no">ctr</span>)</pre></body></html></div>
 <p>The obtained measures can be plotted, all of them, or according to the three time series dimensions (the corpus features, the lexicons and the time weighting schemes).</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">measures</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">measures</span>)</pre></body></html></div>
 <p><img src="indexation_files/figure-html/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">measures</span>, <span class="st">"features"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">measures</span>, <span class="st">"features"</span>)</pre></body></html></div>
 <p><img src="indexation_files/figure-html/unnamed-chunk-4-2.png" width="672" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">measures</span>, <span class="st">"lexicons"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">measures</span>, <span class="st">"lexicons"</span>)</pre></body></html></div>
 <p><img src="indexation_files/figure-html/unnamed-chunk-4-3.png" width="672" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">measures</span>, <span class="st">"time"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">measures</span>, <span class="st">"time"</span>)</pre></body></html></div>
 <p><img src="indexation_files/figure-html/unnamed-chunk-4-4.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div id="document-level-sentiment-aggregation-into-time-series-bis" class="section level3">

@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.2</span>
       </span>
     </div>
 
@@ -94,6 +94,9 @@
   <ul class="dropdown-menu" role="menu">
 <li>
       <a href="../articles/gopress.html">Analyzing Gopress data</a>
+    </li>
+    <li>
+      <a href="../articles/isa.html">Intratextual sentiment analysis</a>
     </li>
   </ul>
 </li>
@@ -250,7 +253,7 @@
 <p>To then obtain the actual EPU index, the newspaper-level series are averaged by reapplying the <code><a href="https://rdrr.io/r/stats/aggregate.html">aggregate()</a></code> function. We are left with two series, one a moving average of the other.</p>
 <div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="no">sm3</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span>(<span class="no">sm2</span>, <span class="kw">features</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">journals</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"wsj"</span>, <span class="st">"wapo"</span>)))
 
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">sm3</span>, <span class="st">"time"</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">sm3</span>, <span class="st">"time"</span>)</pre></body></html></div>
 <p><img src="epu_files/figure-html/unnamed-chunk-9-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div id="rescale-into-final-epu-index" class="section level4">
@@ -259,7 +262,7 @@
 <p>The <code><a href="https://rdrr.io/r/base/scale.html">scale()</a></code> function can be used again to achieve final normalizations. For the sake of the example, we shift the indices upwards by a value of 50.</p>
 <div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">sm4</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/scale.html">scale</a></span>(<span class="no">sm3</span>, <span class="kw">center</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(-<span class="fl">50</span>, <span class="fu"><a href="../reference/nmeasures.html">nmeasures</a></span>(<span class="no">sm3</span>)), <span class="kw">scale</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
 
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">sm4</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">sm4</span>)</pre></body></html></div>
 <p><img src="epu_files/figure-html/unnamed-chunk-10-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 </div>
@@ -317,7 +320,7 @@
 
 <span class="no">sm2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span>(<span class="no">sm</span>, <span class="kw">features</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">journals</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"wsj"</span>, <span class="st">"wapo"</span>)))
 
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">sm2</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">sm2</span>)</pre></body></html></div>
 <p><img src="epu_files/figure-html/unnamed-chunk-15-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 </div>

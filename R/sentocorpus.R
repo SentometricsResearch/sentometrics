@@ -23,7 +23,7 @@
 #' complementary features (e.g., \code{"economy"} and \code{"noneconomy"}) makes sense.
 #'
 #' It is also possible to add one non-numerical feature, that is, \code{"language"}, to designate the language
-#' of the corpus texts. When this feature is provided on corpus-level, a \code{list} of lexicons for different
+#' of the corpus texts. When this feature is provided, a \code{list} of lexicons for different
 #' languages is expected in the \code{compute_sentiment} function.
 #'
 #' @param corpusdf a \code{data.frame} (or a \code{data.table}, or a \code{tbl}) with as named columns: a document \code{"id"}
@@ -537,7 +537,8 @@ as.data.frame.sento_corpus <- function(x, ...) {
 # this function is directly taken from the quanteda package
 #' @export
 print.sento_corpus <- function(x, ...) {
-  cat("A sento_corpus consisting of ", format(quanteda::ndoc(x), big.mark = ","), " document",
+  if ("language" %in% colnames(quanteda::docvars(x))) ml <- "multi-language " else ml <- NULL
+  cat("A ", ml, "sento_corpus consisting of ", format(quanteda::ndoc(x), big.mark = ","), " document",
       if (quanteda::ndoc(x) > 1L) "s" else "", sep = "")
   if (ncol(quanteda::docvars(x)))
     cat(" and ", format(ncol(quanteda::docvars(x)), big.mark = ","), " docvar",

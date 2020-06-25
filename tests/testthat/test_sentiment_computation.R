@@ -46,8 +46,6 @@ names(lexWrong)[2] <- "frr"
 
 ### tests from here ###
 
-load(system.file("extdata", "test_data.rda", package = "sentometrics")) # benchmark sentiment scores
-
 sanity_sentiment <- function(texts, lexicon, valence = NULL) {
   setkey(lexicon, "x")
   if (!is.null(valence)) setkey(valence, "x")
@@ -104,6 +102,11 @@ sentimentList <- list(
 )
 
 # compute_sentiment
+# load(system.file("extdata", "test_data.rda", package = "sentometrics")) # benchmark sentiment scores
+# test_that("Agreement between legacy benchmark and current produced sentiment scores", {
+#   expect_equal(test_data, sentimentList[1:11])
+# })
+
 test_that("Agreement between sentiment scores on document-level across input objects", {
   expect_true(all(unlist(lapply(sentimentList, function(s) nrow(s) == 250))))
   expect_true(all(unlist(lapply(sentimentList[-1], function(s) all(s$word_count == sentimentList$s1$word_count)))))
@@ -122,7 +125,6 @@ test_that("Agreement between sentiment scores on document-level across input obj
   expect_error(compute_sentiment(corpusLang, lex, how = "proportional"))
   expect_true("language" %in% colnames(quanteda::docvars(corpusLang)))
   expect_error(compute_sentiment(corpusLang, lexWrong, how = "proportional"))
-  expect_equal(test_data, sentimentList[1:11]) # compare with old sentiment scores
   expect_true(all.equal(sentimentList$s1$GI_en, sanity_sentiment(quanteda::texts(corpus), lex$GI_en, lex$valence)))
   expect_true(all.equal(sentimentList$s2$GI_en, sanity_sentiment(quanteda::texts(corpus), lex$GI_en)))
 })
