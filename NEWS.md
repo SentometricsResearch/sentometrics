@@ -1,11 +1,14 @@
 
-## sentometrics 0.8.5 (devel)
+## sentometrics 0.8.2
 
 - Some documentation fixes.
 - Release of a **`pkgdown`** website.
 - Fixed bug in `sento_corpus()` function that did not always order input correctly by date.
 - Fixed two minor bugs in `summary.sento_measures()`; the first one prevented printing of document-level weighting schemes, the second one did not remove `NA`s when averaging over correlations.
 - Small bug fix in yearly aggregation (it did not account for the fact that `1970-01-01` is considered day zero).
+- Dropped horizontal 0-line automatically added in the `plot.sento_measures()` function as it distorts graphs of time series with values far away from zero.
+- Stopped exporting all defunct functions to clean up namespace.
+- The function `print.sento_corpus()` now shows when corpus is multi-lingual.
 
 ## sentometrics 0.8.1
 

@@ -51,14 +51,14 @@ NULL
 #'
 #' @param ... allowed input arguments.
 #'
-#' @export
+# #' @export
 ctr_merge <- function(...) {
   .Defunct(package = "sentometrics")
 }
 
 #' @rdname sentometrics-defunct
 #'
-#' @export
+# #' @export
 perform_MCS <- function(...) {
   .Defunct(package = "sentometrics")
 }
@@ -67,7 +67,7 @@ perform_MCS <- function(...) {
 #'
 #' @param ... allowed input arguments.
 #'
-#' @export
+# #' @export
 fill_measures <- function(...) {
   .Defunct("measures_fill", package = "sentometrics")
 }
@@ -76,7 +76,7 @@ fill_measures <- function(...) {
 #'
 #' @param ... allowed input arguments.
 #'
-#' @export
+# #' @export
 merge_measures <- function(...) {
   .Defunct("aggregate.sento_measures", package = "sentometrics")
 }
@@ -85,7 +85,7 @@ merge_measures <- function(...) {
 #'
 #' @param ... allowed input arguments.
 #'
-#' @export
+# #' @export
 to_global <- function(...) {
   .Defunct("aggregate.sento_measures", package = "sentometrics")
 }
@@ -94,7 +94,7 @@ to_global <- function(...) {
 #'
 #' @param ... allowed input arguments.
 #'
-#' @export
+# #' @export
 subset_measures <- function(...) {
   .Defunct("subset", package = "sentometrics")
 }
@@ -103,7 +103,7 @@ subset_measures <- function(...) {
 #'
 #' @param ... allowed input arguments.
 #'
-#' @export
+# #' @export
 select_measures <- function(...) {
   .Defunct("subset", package = "sentometrics")
 }
@@ -112,7 +112,7 @@ select_measures <- function(...) {
 #'
 #' @param ... allowed input arguments.
 #'
-#' @export
+# #' @export
 setup_lexicons <- function(...) {
   .Defunct("sento_lexicons", package = "sentometrics")
 }
@@ -121,7 +121,7 @@ setup_lexicons <- function(...) {
 #'
 #' @param ... allowed input arguments.
 #'
-#' @export
+# #' @export
 retrieve_attributions <- function(...) {
   .Defunct("attributions", package = "sentometrics")
 }
@@ -130,7 +130,7 @@ retrieve_attributions <- function(...) {
 #'
 #' @param ... allowed input arguments.
 #'
-#' @export
+# #' @export
 perform_agg <- function(...) {
   .Defunct("aggregate.sentiment", package = "sentometrics")
 }
@@ -139,7 +139,7 @@ perform_agg <- function(...) {
 #'
 #' @param ... allowed input arguments.
 #'
-#' @export
+# #' @export
 plot_attributions <- function(...) {
   .Defunct("plot.attributions", package = "sentometrics")
 }
@@ -148,7 +148,7 @@ plot_attributions <- function(...) {
 #'
 #' @param ... allowed input arguments.
 #'
-#' @export
+# #' @export
 almons <- function(...) {
   .Defunct("weights_almon", package = "sentometrics")
 }
@@ -157,7 +157,7 @@ almons <- function(...) {
 #'
 #' @param ... allowed input arguments.
 #'
-#' @export
+# #' @export
 exponentials <- function(...) {
   .Defunct("weights_exponential", package = "sentometrics")
 }
@@ -166,7 +166,7 @@ exponentials <- function(...) {
 #'
 #' @param ... allowed input arguments.
 #'
-#' @export
+# #' @export
 to_sentocorpus <- function(...) {
   .Defunct("as.sento_corpus", package = "sentometrics")
 }
@@ -175,7 +175,7 @@ to_sentocorpus <- function(...) {
 #'
 #' @param ... allowed input arguments.
 #'
-#' @export
+# #' @export
 to_sentiment <- function(...) {
   .Defunct("as.sentiment", package = "sentometrics")
 }
@@ -184,7 +184,7 @@ to_sentiment <- function(...) {
 #'
 #' @param ... allowed input arguments.
 #'
-#' @export
+# #' @export
 get_measures <- function(...) {
   .Defunct("as.data.table.sento_measures", package = "sentometrics")
 }
@@ -193,7 +193,7 @@ get_measures <- function(...) {
 #'
 #' @param ... allowed input arguments.
 #'
-#' @export
+# #' @export
 measures_subset <- function(...) {
   .Defunct("subset", package = "sentometrics")
 }
@@ -202,7 +202,7 @@ measures_subset <- function(...) {
 #'
 #' @param ... allowed input arguments.
 #'
-#' @export
+# #' @export
 measures_select <- function(...) {
   .Defunct("subset", package = "sentometrics")
 }
@@ -211,7 +211,7 @@ measures_select <- function(...) {
 #'
 #' @param ... allowed input arguments.
 #'
-#' @export
+# #' @export
 measures_delete <- function(...) {
   .Defunct("subset", package = "sentometrics")
 }
@@ -220,7 +220,7 @@ measures_delete <- function(...) {
 #'
 #' @param ... allowed input arguments.
 #'
-#' @export
+# #' @export
 sentiment_bind <- function(...) {
   .Defunct("merge", package = "sentometrics")
 }
@@ -229,7 +229,7 @@ sentiment_bind <- function(...) {
 #'
 #' @param ... allowed input arguments.
 #'
-#' @export
+# #' @export
 measures_merge <- function(...) {
   .Defunct("aggregate.sento_measures", package = "sentometrics")
 }
@@ -238,7 +238,7 @@ measures_merge <- function(...) {
 #'
 #' @param ... allowed input arguments.
 #'
-#' @export
+# #' @export
 measures_global <- function(...) {
   .Defunct("aggregate.sento_measures", package = "sentometrics")
 }
@@ -247,7 +247,7 @@ measures_global <- function(...) {
 #'
 #' @param ... allowed input arguments.
 #'
-#' @export
+# #' @export
 sento_app <- function(...) {
   stop("Use the sento_app() function from the sentometrics.app package.")
 }

@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.2</span>
       </span>
     </div>
 
@@ -94,6 +94,9 @@
   <ul class="dropdown-menu" role="menu">
 <li>
       <a href="../articles/gopress.html">Analyzing Gopress data</a>
+    </li>
+    <li>
+      <a href="../articles/isa.html">Intratextual sentiment analysis</a>
     </li>
   </ul>
 </li>
@@ -278,7 +281,7 @@
 ## Root mean squared prediction error: 52.55 
 ## Mean absolute deviation: 40.61</code></pre>
 <p>The out-of-sample predictions can be plot against the true realizations of the target variable.</p>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">out3</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">out3</span>)</pre></body></html></div>
 <p><img src="modeling_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div id="attribution-analysis" class="section level3">
@@ -286,11 +289,11 @@
 <a href="#attribution-analysis" class="anchor"></a>Attribution analysis</h3>
 <p>Take the model output from the previous example. To analyze the contribution of each sentiment variable component to a prediction, called attribution, the <code><a href="../reference/attributions.html">attributions()</a></code> function does the trick.</p>
 <div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="no">attr3</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/attributions.html">attributions</a></span>(<span class="no">out3</span>, <span class="no">measures</span>, <span class="kw">refDates</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">out3</span>$<span class="no">models</span>)[<span class="fl">1</span>:<span class="fl">50</span>])</pre></body></html></div>
-<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">attr3</span>, <span class="st">"lexicons"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">attr3</span>, <span class="st">"lexicons"</span>)</pre></body></html></div>
 <p><img src="modeling_files/figure-html/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">attr3</span>, <span class="st">"features"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">attr3</span>, <span class="st">"features"</span>)</pre></body></html></div>
 <p><img src="modeling_files/figure-html/unnamed-chunk-11-2.png" width="672" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">attr3</span>, <span class="st">"time"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">attr3</span>, <span class="st">"time"</span>)</pre></body></html></div>
 <p><img src="modeling_files/figure-html/unnamed-chunk-11-3.png" width="672" style="display: block; margin: auto;"></p>
 <p>For a very deep analysis, it is also possible to trace back the contribution of a single document to a prediction at a given point in time. As the time lag for the sentiment measures was set to 6 months, news articles up to 5 months before a prediction date have an impact, the degree depending on the sentiment and the associated time weight.</p>
 <div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="no">attr3</span>$<span class="no">documents</span>$<span class="no">`2004-06-01`</span></pre></body></html></div>
