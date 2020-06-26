@@ -340,14 +340,15 @@ aggregate_sentences <- function(sentiment, how, weightingParamDocs) {
 
   weights <- weights_across(sentiment, how, do.ignoreZeros, alphaExpDocs, by = "id")
 
-  if ("date" %in% colnames(sentiment)) {
+  if ("date" %in% colnames(sentiment)) { # inherits(sentiment, "sentiment")
     sw <- data.table::data.table(id = sentiment[["id"]], sentiment[, .(date)], wc, sentiment[, -1:-4] * weights)
     s <- sw[, lapply(.SD, sum, na.rm = TRUE), by = c("id", "date")] # assumes all id and date combinations are unique
+    class(s) <- c("sentiment", class(s))
   } else {
     sw <- data.table::data.table(id = sentiment[["id"]], wc, sentiment[, -1:-3] * weights)
     s <- sw[, lapply(.SD, sum, na.rm = TRUE), by = "id"]
   }
-  class(s) <- c("sentiment", class(s))
+
   s
 }
 
