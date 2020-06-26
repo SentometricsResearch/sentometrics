@@ -17,7 +17,7 @@ Tutorial contributed by [Olivier Delmarcelle](mailto:delmarcelle.olivier@gmail.c
 
 The **`sentometrics`** package introduces simple functions to quickly compute the sentiment of texts within a corpus. This easy-to-use approach does not prevent more advanced analysis, and the **`sentometrics`** functions remain a solid choice for cutting-edge research. This tutorial will present how to go beyond the basic **`sentometrics`** settings in order to analyse the intratextual sentiment structure of texts.
 
-### Intratextual Sentiment Structure
+### Intratextual sentiment structure
 
 Does the position of positive and negative words within a text matter? That's a question investigated by [Boudt & Thewissen, 2019](https://doi.org/10.1111/fima.12219) during their research regarding sentiment implied by CEO letters. Based on a large dataset of letters, they analyze how sentiment-bearing words are positioned within the text. They find that CEOs tend to emphasize sentiment at the beginning and the end of their letter, in the hopes of leaving a positive impression to the reader.
 
@@ -30,7 +30,7 @@ One can wonder whether other types of texts follow a similar structure? Indeed, 
 As part of this tutorial, you will learn how to:
 
 * Decompose your texts into *bins* (equal-sized containers of words) or sentences.
-* Compute sentiments with a variety of weighting schemes.
+* Compute sentiment with a variety of weighting schemes.
 * Create and use your own weighting scheme for a classification task.
 
 ## Preparation
@@ -55,7 +55,7 @@ table(usnews2$s)
 The variable `s` indicates whether the news is more positive or negative, based on an expert's opinion. We are going to try to predict this value at the end of the tutorial.
 
 We can already prepare a `sento_corpus` and a `sento_lexicon` for our future sentiment computation. 
-For the `sento_corpus`, we will also create a `dummyFeature` filled with 1's. Since sentiment computations are multiplied by the features of a `sento_corpus`, we want this dummy feature to observe the whole corpus's sentiments. This `dummyFeature` is created by default whenever there's no feature at the creation of the `sento_corpus`.
+For the `sento_corpus`, we will also create a `dummyFeature` filled with 1's. Since sentiment computations are multiplied by the features of a `sento_corpus`, we want this dummy feature to observe the whole corpus's sentiment. This `dummyFeature` is created by default whenever there's no feature at the creation of the `sento_corpus`.
 
 Finally, we remove the feature `s` from the `sento_corpus`, as we do not need it for sentiment computation.
 
@@ -66,7 +66,7 @@ usnews2Sento <- add_features(usnews2Sento, data.frame(dummyFeature = rep(1, leng
 docvars(usnews2Sento, "s") <- NULL # R-removing the feature
 ```
 
-We will use a single lexicon for this analysis, the combined Jockers & Rinker lexicon, obtained from the **`lexicon`** package. However, we will prepare a second and different version of this lexicon where the sentiments assigned to words are all positive, regardless of their original signs. This second lexicon will be useful to better detect the sentiment intensity conveyed.
+We will use a single lexicon for this analysis, the combined Jockers & Rinker lexicon, obtained from the **`lexicon`** package. However, we will prepare a second and different version of this lexicon where the sentiment assigned to words are all positive, regardless of their original signs. This second lexicon will be useful to better detect the sentiment intensity conveyed.
 
 We used the `data.table` operator `[]` to create the second lexicon in a very efficient way. Most **`sentometrics`** objects are based on `data.table` and this allows to perform complex data transformations. If this is the first time you are seeing the `data.table` way of using `[]`, we recommend you to have a look at their [Introduction vignette](https://cran.r-project.org/web/packages/data.table/vignettes/datatable-intro.html) and enjoy this powerful tool!
 
@@ -82,18 +82,18 @@ lapply(sentoLexicon, head)
 
 `compute_sentiment()` is at the base of sentiment analysis with **`sentometrics`**. That's also the function we are going to use to analyse intratextual sentiment. This requires, however, to play with the most advanced features of the function. Before doing that, let us review the different computation settings to really understand what's going on.
 
-### Default computation - from words to document sentiments
+### Default computation - from words to document sentiment
 
-When using the default settings (i.e., only specifying the `how` argument), the sentiment for each word within a text will be determined according to the provided lexicons. These word sentiments are then aggregated using the method defined by the `how` argument, aggregating up to the document level to form a sentiment value for the document.
+When using the default settings (i.e., only specifying the `how` argument), the sentiment for each word within a text will be determined according to the provided lexicons. These word sentiment are then aggregated using the method defined by the `how` argument, aggregating up to the document level to form a sentiment value for the document.
 
 ```{r}
 sentiment <- compute_sentiment(usnews2Sento, sentoLexicon, how = "proportional")
 head(sentiment)
 ```
 
-In this case, the `how = "proportional"` simply sum words' sentiments then divide it by the number of words in a document. The different settings for `how` can be accessed using the `get_hows()` function. We are going to present the use of a more complex setting at the end of this tutorial.
+In this case, the `how = "proportional"` simply sum words' sentiment then divide it by the number of words in a document. The different settings for `how` can be accessed using the `get_hows()` function. We are going to present the use of a more complex setting at the end of this tutorial.
 
-### Setting `do.sentence = TRUE` - from words to sentences sentiments
+### Setting `do.sentence = TRUE` - from words to sentences sentiment
 
 A drastic change in the behaviour of `compute_sentiment()` can be induced by specifying `do.sentence = TRUE` in the function call. If true, the output of `compute_sentiment` will no longer return a sentiment value for each document, but each sentence. Sentiment values within each sentence are still computed using the method provided in the `how` argument, but the function stops there.
 
@@ -102,11 +102,11 @@ sentiment <- compute_sentiment(usnews2Sento, sentoLexicon, how = "proportional",
 head(sentiment)
 ```
 
-The new column `sentence_id` in the output is used to identify the sentences of a single document. This result can be used as-is for analysis at the sentence level, or sentences sentiments can be aggregated to obtain documents sentiments, as in the default setting. One way to aggregate sentences sentiments up to documents sentiments is to use the `aggregate()` method of **`sentometrics`**.
+The new column `sentence_id` in the output is used to identify the sentences of a single document. This result can be used as-is for analysis at the sentence level, or sentences sentiment can be aggregated to obtain documents sentiment, as in the default setting. One way to aggregate sentences sentiment up to documents sentiment is to use the `aggregate()` method of **`sentometrics`**.
 
 ### Trick with *bins* in a list, `do.sentence` and `tokens`
 
-Analyzing the sentiment of individual sentences is already a nice approach to observe intra-document sentiment, but sometimes it is better to define a custom container for which sentiments are going to be computed. This is the approach used by [Boudt & Thewissen, 2019](https://doi.org/10.1111/fima.12219), where they define *bins*, equal-sized containers of texts. The idea is to divide a document into equal-sized portion and to analyze each of them independently. Let's say we decide to split a document of 200 words into 10 *bins*. To do so, we are going to store the first 20 words in the first *bin*, the words 21 to 40 in the second *bin*, and so on... This way, each *bin* will account for 10% of the text. By repeating the procedure for all texts of a corpus, we can easily compare specific text portions (e.g., the first 10%) between multiples documents.
+Analyzing the sentiment of individual sentences is already a nice approach to observe intra-document sentiment, but sometimes it is better to define a custom container for which sentiment are going to be computed. This is the approach used by [Boudt & Thewissen, 2019](https://doi.org/10.1111/fima.12219), where they define *bins*, equal-sized containers of texts. The idea is to divide a document into equal-sized portion and to analyse each of them independently. Let's say we decide to split a document of 200 words into 10 *bins*. To do so, we are going to store the first 20 words in the first *bin*, the words 21 to 40 in the second *bin*, and so on... This way, each *bin* will account for 10% of the text. By repeating the procedure for all texts of a corpus, we can easily compare specific text portions (e.g., the first 10%) between multiples documents.
 
 Let's split our documents into sets of *bins*. The first step is to obtain a vector of characters for each document. This is done easily with the `tokens` function from the **`quanteda`** (remember that **`sentometrics`** objects are also based on **`quanteda`**, letting us free to use most functions from this package).
 
@@ -154,13 +154,13 @@ head(sentiment)
 
 In this case, the `sentence_id` simply refers to the number of the *bin*. Let's now see what we can do with the *bins* we just computed.
 
-## Exposing Intratextual Sentiment Structure with *bins*
+## Exposing intratextual sentiment structure with *bins*
 
-In their analysis of CEO letters, [Boudt & Thewissen, 2019](https://doi.org/10.1111/fima.12219) identified an intratextual sentiment structure: CEOs would deliberately emphasize sentiments at the beginning and end of the letter, and pay attention to leave out a positive message and the end. Our dataset of news articles is radically different from these letters so we don't expect to find a similar structure. However, based on our knowledge of news, we can formulate a hypothesis: news articles tend to use strong sentiments in their headlines to attract readers' eyes. Let's investigate this using our *bins*!
+In their analysis of CEO letters, [Boudt & Thewissen, 2019](https://doi.org/10.1111/fima.12219) identified an intratextual sentiment structure: CEOs would deliberately emphasize sentiment at the beginning and end of the letter, and pay attention to leave out a positive message and the end. Our dataset of news articles is radically different from these letters so we don't expect to find a similar structure. However, based on our knowledge of news, we can formulate a hypothesis: news articles tend to use strong sentiment in their headlines to attract readers' eyes. Let's investigate this using our *bins*!
 
 ### Absolute sentiment
 
-We expect that the first *bin* in each article presents on average more sentiment than in the rest of the text. Since news can either be positive or negative, it will easier to identify sentiment intensity using the absolute value lexicon prepared earlier. This way, we avoid the cancelling effect between positive and negative sentiments. Simply plotting the mean sentiment values for each *bin* across documents can give us some insight on the intratextual structure. Once again, we rely on `data.table`'s `[]` operator to easily group sentiment values per `sentence_id` (remember, these represent the *bin* number!). In addition to this, a boxplot can be useful to ensure that the mean sentiments are not driven by extreme outliers. 
+We expect that the first *bin* in each article presents on average more sentiment than in the rest of the text. Since news can either be positive or negative, it will easier to identify sentiment intensity using the absolute value lexicon prepared earlier. This way, we avoid the cancelling effect between positive and negative sentiment. Simply plotting the mean sentiment values for each *bin* across documents can give us some insight on the intratextual structure. Once again, we rely on `data.table`'s `[]` operator to easily group sentiment values per `sentence_id` (remember, these represent the *bin* number!). In addition to this, a boxplot can be useful to ensure that the mean sentiment are not driven by extreme outliers. 
 
 ```{r,fig.width = 12, fig.height = 5}
 par(mfrow = c(1, 2))
@@ -176,7 +176,7 @@ We can see that the first two *bins* of articles tend to show a larger absolute 
 
 ### Herfindahl-Hirschman Index
 
-Another way to study the intratextual sentiment structure is to compute the Herfindahl-Hirschman Index across all documents. This is a popular index of concentration, mainly used in measuring competition between firms on a given market. A value close to 0 indicates large dispersion between *bins* while a value of 1 indicated that all sentiments are found in a single *bin*. The formula to compute the index of a single document is:
+Another way to study the intratextual sentiment structure is to compute the Herfindahl-Hirschman Index across all documents. This is a popular index of concentration, mainly used in measuring competition between firms on a given market. A value close to 0 indicates large dispersion between *bins* while a value of 1 indicated that all sentiment are found in a single *bin*. The formula to compute the index of a single document is:
 
 $$H = \sum_{b=1}^{B} s_b^2$$
 where $b$ are *bin* indexes and $s$ the proportion of the document sentiment found in a single *bin*.
@@ -189,7 +189,7 @@ herfindahl <- herfindahl[, .(h = sum(s^2)), by = id]
 mean(herfindahl$h)
 ```
 
-A result that shows there is concentration toward some *bins*! Note that this result is heavily dependent on the number of *bins* considered. Only index values computed with the same number of *bins* should be compared. Let's show the index's value if sentiments were uniformly positioned within the text: 
+A result that shows there is concentration toward some *bins*! Note that this result is heavily dependent on the number of *bins* considered. Only index values computed with the same number of *bins* should be compared. Let's show the index's value if sentiment were uniformly positioned within the text: 
 
 ```{r}
 x <- data.table(id = sentiment$id, s = rep(1, nrow(sentiment)))
@@ -201,15 +201,15 @@ mean(herfindahl$h)
 
 ## Computing sentiment with different weights
 
-The **`sentometrics`** comes with a lot of different weightings methods to compute sentiment and aggregate them into document sentiments or even time series. These weightings methods can be accessed with the functions `get_hows`.
+The **`sentometrics`** comes with a lot of different weightings methods to compute sentiment and aggregate them into document sentiment or even time series. These weightings methods can be accessed with the functions `get_hows`.
 
 ```{r}
 get_hows()
 ```
 
-So far, we've been using the `proportional` method from the `$words` set. The `$words` set contains the valid options for the `hows` argument of `compute_sentiment()`. The other two sets are used within the `aggregate()` function, to respectively aggregate sentences sentiment into documents or document sentiments into time series.
+So far, we've been using the `proportional` method from the `$words` set. The `$words` set contains the valid options for the `hows` argument of `compute_sentiment()`. The other two sets are used within the `aggregate()` function, to respectively aggregate sentences sentiment into documents or document sentiment into time series.
 
-With our earlier computation of sentiments using `do.sentences = TRUE`, we computed sentiments for sentences and *bins*. Now, for our next application, we need to aggregate these sentences and *bins* sentiments into documents sentiments. One option is to `aggregate()` using one of the methods shown above. Note the use of `do.full = FALSE` to stop the aggregation at the document level (otherwise, it would directly aggregate up to a time series).
+With our earlier computation of sentiment using `do.sentences = TRUE`, we computed sentiment for sentences and *bins*. Now, for our next application, we need to aggregate these sentences and *bins* sentiment into documents sentiment. One option is to `aggregate()` using one of the methods shown above. Note the use of `do.full = FALSE` to stop the aggregation at the document level (otherwise, it would directly aggregate up to a time series).
 
 ```{r message=FALSE}
 docsSentiment <- aggregate(sentiment, ctr_agg(howDocs = "equal_weight"), do.full = FALSE)
@@ -223,6 +223,7 @@ But as we have seen, some *bins* are more likely to present strong sentiment val
 This is exactly the situation where we would like to test a specific weighting scheme! Say that instead of giving 10% importance to each *bin* in the document sentiment computation, we would give only about 5% importance to the first one and share the rest between the remaining  *bins*. Sadly, **`sentometrics`** does not directly provide us with the tool for this kind of computation, we will need to create our weighting scheme and aggregate by hands. Luckily, the use of `data.table` makes these customisations painless.
 
 First, we define our customized weights for *bins*:
+
 ```{r}
 w <- rep(1 / (nBins - 0.5), nBins)
 w[1] <-  w[1] * 0.5
@@ -261,15 +262,15 @@ class(docsSentiment)
 
 Let's now put all of this in a concrete example. We've been using a modified dataset `usnews2` since the beginning because we wanted to have a variable identifying whether the document is positive or negative. Our goal is now to try to predict this value.
 
-To do so, we will consider 4 different approaches, in the form of four different weighting methods. We will study which weighting is the best to predict document's sentiments.
+To do so, we will consider 4 different approaches, in the form of four different weighting methods. We will study which weighting is the best to predict document's sentiment.
 The four weighting methods will be:
 
 * The default weighting based on word frequencies, regardless of the position.
 * A U-shaped weighting of words, where words at the beginning or end of the text are given more weights.
-* A sentence-weighting, where word sentiments are proportionally weighted up to a sentence sentiment level, then sentences are aggregated with an equal weighting to obtain the document sentiment.
-* The *bin* based approach, where word sentiments are proportionally weighted up to a *bin* sentiment level, then *bins* are aggregated with our custom weights: the first *bin* given half the weight and the other *bins* sharing the rest.
+* A sentence weighting, where word sentiment are proportionally weighted up to a sentence sentiment level, then sentences are aggregated with an equal weighting to obtain the document sentiment.
+* The *bin* based approach, where word sentiment are proportionally weighted up to a *bin* sentiment level, then *bins* are aggregated with our custom weights: the first *bin* given half the weight and the other *bins* sharing the rest.
 
-The U-shaped weighting is something we haven't seen before. This is a weighting method for words as per `get_words()` that gives more weight to the beginning and end of a text. Its exact formulation can be found at the end of the [Sentometrics vignette](https://doi.org/10.2139/ssrn.3067734), along with the other available weighting. This weighting scheme can be visualized as follows:
+The U-shaped weighting is something we haven't seen before. This is a weighting method for words, as we can learn from `get_hows()`. This scheme gives more weight to the beginning and end of a text. Its exact formulation can be found at the end of the [Sentometrics vignette](https://doi.org/10.2139/ssrn.3067734), along with the other available weightings. This weighting scheme can be visualized as follows:
 
 ```{r}
 Qd <- 200 # number of words in the documents
@@ -281,7 +282,7 @@ ushape <- ushape/sum(ushape)
 plot(ushape, type = 'l', ylab = "Weight", xlab = "Word position index", main = "U-shaped weight scheme")
 ```
 
-Let's compute sentiments with the four different weighting schemes. We will store the results in a list, `sentimentValues`.
+Let's compute sentiment with the four different weighting schemes. We will store the results in a list, `sentimentValues`.
 
 ```{r}
 sentimentValues <- list()
@@ -292,7 +293,7 @@ sentimentValues$sentences <- compute_sentiment(usnews2Sento, sentoLexicon, how =
 sentimentValues$bins <- compute_sentiment(usnews2Sento, sentoLexicon, tokens = usnews2Bins, how = "proportional",
                                           do.sentence = TRUE) 
 
-lapply(sentimentValues, head, n = 3)
+lapply(sentimentValues[c(1,3)], head, n = 3)
 ```
 
 Before going further, we need to aggregate the two last results to a document level sentiment measure. We are going to aggregate sentences using the `aggregate()` function while we will repeat the same operation as before to compute the *bins* aggregation with the custom weights. 
@@ -307,7 +308,7 @@ sentimentValues$bins <- sentimentValues$bins[, c(word_count = sum(word_count), l
 lapply(sentimentValues[3:4], head, n = 3)
 ```
 
-Finally, what remains to do is test our results against the variable `s` from `usnews2`. Since we know the number of positive and negative news in `s`, we can quickly and in a naive way measure the accuracy by ordering the documents by sentiment values.
+Finally, what remains to do is to test our results against the variable `s` from `usnews2`. Since we know the number of positive and negative news in `s`, we can quickly and in a naive way measure the accuracy by ordering the documents by sentiment values.
 
 ```{r}
 table(usnews2$s)
@@ -319,7 +320,8 @@ Let's start by adding the `s` variable to the existing measures by merging each 
 
 ```{r}
 sentimentValues <- lapply(sentimentValues, function(x) merge.data.frame(x, usnews2[, c("id","s")]))
-lapply(sentimentValues, head, n = 3)
+
+head(sentimentValues$default)
 ```
 
 Since we used `merge.data.frame`, we need to convert the objects back to `data.table` and then we can order each of these tables.
@@ -329,7 +331,7 @@ sentimentValues <- lapply(sentimentValues, as.data.table) # converting back to d
 
 sentimentValues <- lapply(sentimentValues, function(x) x[order(`baseLex--dummyFeature`)]) # order based on the baseLex sentiment values
 
-lapply(sentimentValues, head, n = 3)
+head(sentimentValues$default)
 ```
 
 Finally, we compute the accuracy by counting the number of times the value of `s` is -1 in the first 605 documents and the number of time the value is 1 in the last 344 documents. We obtain a balanced accuracy measure by combining the true negative rate and the true positive rate.
@@ -340,12 +342,60 @@ index <- table(usnews2$s)[[1]]
 rates <- cbind(trueNegativeRate = sapply(sentimentValues, function(x){sum(x[1:index, s == -1]) / sum(x[, s == -1])}),
                truePositiveRate = sapply(sentimentValues, function(x){sum(x[(1 + index):nrow(x), s == 1]) / sum(x[, s == 1])}))
 
-cbind(rates, balancedAccuracy = (rates[,1] + rates[,2]) / 2 )
+cbind(rates, balancedAccuracy = (rates[, 1] + rates[, 2]) / 2 )
 ```
 
 In this case, the U-shaped weighting performs best but we can already see the improvement brought by our custom weights in comparison with the default settings. In a supervised learning setting, it can be useful to optimize a custom weights scheme on a training dataset. An example of such a model can be found in the paper of [Boudt & Thewissen, 2019](https://doi.org/10.1111/fima.12219), where *bins* weights are optimized to predict firm performance.
 
-That's the end of this tutorial. Want to go further? Have a try creating weird *bins*! They actually don't have to be of equal size, their specification is up to anyone. Also, keep in mind that we have only covered news articles in this tutorial, which is not representative of all type of texts, feel free to investigate how sentiments are positioned within different types of documents.
+## Hierarchical aggregation - *bins* of sentences
+
+As we learned through this tutorial, we can always define more complex methods to compute and aggregate sentiment. The reason why we use different aggregation levels such as *bins* or sentences is that looking at words does not capture the semantic structure of the text. The most appropriate way to compute sentiment should be through sentences, as sentences usually convey a single statement.
+
+Earlier, we implemented the *bins* approach by creating equal-sized containers of words. Each *bin* then contained a similar number of words. This naive split had the effect of cutting some sentences between two bins. From a semantic point of view, this not desirable. Hence, we're going to define here a new *bins* approach that respects sentences integrity: *bins* of sentences.
+
+This approach is similar to the previous one, but instead of dividing the texts into equal-sized containers of words, we are going to divide them into equal-sized containers of sentences. This means that each bin will contain approximately the same number of sentences.
+
+To implement it, we will need to play a bit with `data.table` operations to aggregate from sentences to *bins* of sentences. The first step is to compute sentence sentiment using `compute_sentiment()`. Then, we're going to add a column to the resulting sentiment object. This additional column will contain information about the future *bin* in which each sentence will be aggregated. This is a mapping from sentences to *bins* of sentences.
+
+The following operation creating `bin_id` is slightly complex. The best way to understand it is by following the logic from the most internal part of the script up to the final `apply()`. The innermost function here is `splitIndices`, which is used to split the `sentence_id` of each document in equal-sized vectors. The second level, the `sapply()` function, determines to which split vector belongs each `sentence_id` and returns boolean vectors for each. Finally, the last `apply()` call the function `which()` on each of these vectors, resulting in the correct *bin* indices. 
+
+```{r}
+sentiment <- compute_sentiment(usnews2Sento, sentoLexicon, how = "proportional", do.sentence = TRUE)
+nBins <- 5
+
+sentiment <- sentiment[, cbind(bin_id = apply(
+                                 sapply(parallel::splitIndices(max(sentence_id), nBins),
+                                        '%in%', x = sentence_id),
+                                 which,
+                                 MARGIN = 1
+                                 ),
+                               .SD), by = id]
+
+sentiment[id == 830981632, 1:6]
+```
+
+With this result, we can now use the new column `bin_id` for grouping. We cannot use the **`sentometrics`** functions here, as they are not built to take into account a `bin_id` column. Instead, we use a `data.table` operation similar to what we did to compute the *bins* aggregation with custom weights. This time, however, we will simply use the `mean()` function, meaning that each *bin* of sentences will contain the average sentiment value of the constituent sentences.
+
+```{r}
+sentiment <- sentiment[, c(word_count = sum(word_count), sentence_count = length(sentence_id), lapply(.SD, mean)),
+                                             by = .(id, date, bin_id),
+                                             .SDcols = tail(names(sentiment), -5)]
+head(sentiment[, 1:6])
+```
+
+Finally, we can re-create the graphs used for our initial analysis of the intratextual sentiment structure, but using *bins* of sentences. In this case, there's not much difference with the previous analysis. However, using *bins* of sentences paves the way to more complex and semantically accurate analyses.  
+
+```{r,fig.width = 12, fig.height = 5}
+par(mfrow = c(1, 2))
+
+plot(sentiment[, .(s = mean(`absoluteLex--dummyFeature`)), by = bin_id], type = "l",
+     ylab = "Mean absolute sentiment", xlab = "Bin of sentences")
+
+boxplot(sentiment$`absoluteLex--dummyFeature` ~ sentiment$bin_id, ylab = "Absolute sentiment", xlab = "Bin of sentences",
+        outline = FALSE, range = 0.5)
+```
+
+That's the end of this tutorial. Want to go further? Have a try creating more weird *bins*! They actually don't have to be of equal size, their specification is up to anyone. Also, keep in mind that we have only covered news articles in this tutorial, which is not representative of all type of texts, feel free to investigate how sentiment are positioned within different types of documents.
 
 ## Acknowledgements
 
