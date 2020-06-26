@@ -91,10 +91,9 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
   if ("language" %in% cols) {
     nonfeatures <- c(nonfeatures, "language")
   }
-  # check if feature names are correctly formatted
+
   features <- cols[!(cols %in% nonfeatures)]
-  if (!is_names_correct(features))
-    stop("At least one feature name contains '-'. Please provide proper names.")
+  check_feature_names(features) # check if feature names are correctly formatted
 
   corpusdf <- corpusdf[, c(nonfeatures, features)]
   data.table::setorder(corpusdf, date) # oldest comes first
@@ -110,7 +109,7 @@ sento_corpus <- function(corpusdf, do.clean = FALSE) {
       stop(paste0("Names of feature columns are not unique. Following names occur at least twice: ",
                   paste0(duplics, collapse = ", "), "."))
     }
-    isNumeric <- sapply(features, function(x) return(is.numeric(corpusdf[[x]])))
+    isNumeric <- sapply(features, function(x) is.numeric(corpusdf[[x]]))
     if (any(!isNumeric)) {
       toDrop <- names(which(!isNumeric))
       corpusdf[, toDrop] <- NULL

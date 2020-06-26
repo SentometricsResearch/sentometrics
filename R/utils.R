@@ -417,6 +417,13 @@ measures_to_long <- function(measures) { # changes format of sentiment measures 
 
 is_names_correct <- function(x) !any(stringi::stri_detect(x, regex = "-"))
 
+check_feature_names <- function(x) {
+  if (any(x %in% c("id", "sentence_id", "date", "word_count", "texts")))
+    stop("At least one feature name is 'id', 'sentence_id', 'date', 'word_count' or 'texts'. These are reserved for internal purposes, please rename.")
+  if (any(stringi::stri_detect(x, regex = "-")))
+    stop("At least one feature name contains '-'. Please provide proper names.")
+}
+
 check_nCore <- function(nCore) {
   # if (any(nCore < 1)) {
   #   nCore[which(nCore < 1)] <- 1
