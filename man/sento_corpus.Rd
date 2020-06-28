@@ -8,7 +8,7 @@ sento_corpus(corpusdf, do.clean = FALSE)
 }
 \arguments{
 \item{corpusdf}{a \code{data.frame} (or a \code{data.table}, or a \code{tbl}) with as named columns: a document \code{"id"}
-column (in \code{character} mode), a \code{"date"} column (as \code{"yyyy-mm-dd"}), a \code{"texts"} column
+column (coercible to \code{character} mode), a \code{"date"} column (as \code{"yyyy-mm-dd"}), a \code{"texts"} column
 (in \code{character} mode), an optional \code{"language"} column (in \code{character} mode), and a series of
 feature columns of type \code{numeric}, with values between 0 and 1 to specify the degree of connectedness of
 a feature to a document. Features could be for instance topics (e.g., legal or economic) or article sources (e.g., online or
