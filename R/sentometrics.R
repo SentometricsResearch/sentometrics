@@ -149,7 +149,7 @@
 #' November 1, 2017.
 "usnews"
 
-#' Monthly Economic Policy Uncertainty Index
+#' Monthly U.S. Economic Policy Uncertainty index
 #'
 #' @docType data
 #'

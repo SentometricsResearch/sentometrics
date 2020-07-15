@@ -13,3 +13,4 @@
 ^pkgdown$
 ^vignettes$
 ^index\.md$
+^_TODO$

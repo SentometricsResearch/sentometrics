@@ -12,8 +12,8 @@ Maintainer: Samuel Borms <samuel.borms@unine.ch>
 Description: Optimized prediction based on textual sentiment, accounting for the intrinsic challenge that sentiment can be computed and pooled across texts and time in various ways. See Ardia et al. (2020) <doi:10.2139/ssrn.3067734>.
 Depends: R (>= 3.3.0)
 License: GPL (>= 2)
-BugReports: https://github.com/sborms/sentometrics/issues
-URL: https://sborms.github.io/sentometrics
+BugReports: https://github.com/SentometricsResearch/sentometrics/issues
+URL: https://SentometricsResearch.github.io/sentometrics
 Encoding: UTF-8
 LazyData: true
 Suggests: covr, 

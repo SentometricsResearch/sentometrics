@@ -44,8 +44,8 @@ predict with textual sentiment}. \emph{Forthcoming in Journal of Statistical Sof
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://sborms.github.io/sentometrics}
-  \item Report bugs at \url{https://github.com/sborms/sentometrics/issues}
+  \item \url{https://SentometricsResearch.github.io/sentometrics}
+  \item Report bugs at \url{https://github.com/SentometricsResearch/sentometrics/issues}
 }
 
 }
