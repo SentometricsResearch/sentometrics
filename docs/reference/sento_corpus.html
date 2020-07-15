@@ -58,7 +58,7 @@ corpus object. The quanteda package provides a robust text mining infrastructure
 (see quanteda), including a handy corpus manipulation toolset. This function
 performs a set of checks on the input data and prepares the corpus for further analysis by structurally
 integrating a date dimension and numeric metadata features." />
-<meta property="og:image" content="https://sborms.github.io/sentometrics/logo.png" />
+<meta property="og:image" content="https://sentometricsresearch.github.io/sentometrics/logo.png" />
 
 
 
@@ -114,24 +114,24 @@ integrating a date dimension and numeric metadata features." />
   <ul class="dropdown-menu" role="menu">
     <li class="dropdown-header">Tutorials</li>
     <li>
-      <a href="../articles/corpus.html">Corpus manipulation</a>
+      <a href="../articles/examples/corpus.html">Corpus manipulation</a>
     </li>
     <li>
-      <a href="../articles/sentiment.html">Sentiment computation</a>
+      <a href="../articles/examples/sentiment.html">Sentiment computation</a>
     </li>
     <li>
-      <a href="../articles/indexation.html">Index aggregation</a>
+      <a href="../articles/examples/indexation.html">Index aggregation</a>
     </li>
     <li>
-      <a href="../articles/modeling.html">Modeling</a>
+      <a href="../articles/examples/modeling.html">Modeling</a>
     </li>
     <li class="divider"></li>
     <li class="dropdown-header">Applications</li>
     <li>
-      <a href="../articles/epu.html">Creating EPU indices</a>
+      <a href="../articles/applications/epu.html">Creating EPU indices</a>
     </li>
     <li>
-      <a href="../articles/vix.html">Predicting the VIX index</a>
+      <a href="../articles/applications/vix.html">Predicting the VIX index</a>
     </li>
   </ul>
 </li>
@@ -143,15 +143,12 @@ integrating a date dimension and numeric metadata features." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/gopress.html">Analyzing Gopress data</a>
+      <a href="../articles/contributions/gopress.html">Analyzing Gopress data</a>
     </li>
     <li>
-      <a href="../articles/isa.html">Intratextual sentiment analysis</a>
+      <a href="../articles/contributions/isa.html">Intratextual sentiment analysis</a>
     </li>
   </ul>
-</li>
-<li>
-  <a href="../articles/research.html">Research</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -171,7 +168,7 @@ integrating a date dimension and numeric metadata features." />
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/sborms/sentometrics/">
+  <a href="https://github.com/SentometricsResearch/sentometrics/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -196,7 +193,7 @@ integrating a date dimension and numeric metadata features." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Create a sento_corpus object</h1>
-    <small class="dont-index">Source: <a href='https://github.com/sborms/sentometrics/blob/master/R/sentocorpus.R'><code>R/sentocorpus.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/SentometricsResearch/sentometrics/blob/master/R/sentocorpus.R'><code>R/sentocorpus.R</code></a></small>
     <div class="hidden name"><code>sento_corpus.Rd</code></div>
     </div>
 
@@ -216,7 +213,7 @@ integrating a date dimension and numeric metadata features.</p>
     <tr>
       <th>corpusdf</th>
       <td><p>a <code>data.frame</code> (or a <code>data.table</code>, or a <code>tbl</code>) with as named columns: a document <code>"id"</code>
-column (in <code>character</code> mode), a <code>"date"</code> column (as <code>"yyyy-mm-dd"</code>), a <code>"texts"</code> column
+column (coercible to <code>character</code> mode), a <code>"date"</code> column (as <code>"yyyy-mm-dd"</code>), a <code>"texts"</code> column
 (in <code>character</code> mode), an optional <code>"language"</code> column (in <code>character</code> mode), and a series of
 feature columns of type <code>numeric</code>, with values between 0 and 1 to specify the degree of connectedness of
 a feature to a document. Features could be for instance topics (e.g., legal or economic) or article sources (e.g., online or

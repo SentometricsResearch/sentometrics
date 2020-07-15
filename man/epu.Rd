@@ -3,7 +3,7 @@
 \docType{data}
 \name{epu}
 \alias{epu}
-\title{Monthly Economic Policy Uncertainty Index}
+\title{Monthly U.S. Economic Policy Uncertainty index}
 \format{
 A \code{data.frame} with 403 rows and 4 columns.
 }

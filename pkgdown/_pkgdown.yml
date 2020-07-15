@@ -1,4 +1,4 @@
-url: https://sborms.github.io/sentometrics
+url: https://sentometricsresearch.github.io/sentometrics
 
 destination: docs
 
@@ -14,7 +14,7 @@ toc:
 
 navbar:
   structure:
-    left:  [home, intro, articles, contributions, research, news, reference]
+    left:  [home, intro, articles, contributions, news, reference]
     right: [docsearch, github]
   components:
     articles:
@@ -22,29 +22,26 @@ navbar:
       menu:
       - text: Tutorials
       - text: Corpus manipulation
-        href: articles/corpus.html
+        href: articles/examples/corpus.html
       - text: Sentiment computation
-        href: articles/sentiment.html
+        href: articles/examples/sentiment.html
       - text: Index aggregation
-        href: articles/indexation.html
+        href: articles/examples/indexation.html
       - text: Modeling
-        href: articles/modeling.html
+        href: articles/examples/modeling.html
       - text: -------
       - text: Applications
       - text: Creating EPU indices
-        href: articles/epu.html
+        href: articles/applications/epu.html
       - text: Predicting the VIX index
-        href: articles/vix.html
+        href: articles/applications/vix.html
     contributions:
       text: Contributions
       menu:
       - text: Analyzing Gopress data
-        href: articles/gopress.html
+        href: articles/contributions/gopress.html
       - text: Intratextual sentiment analysis
-        href: articles/isa.html
-    research:
-      text: Research
-      href: articles/research.html
+        href: articles/contributions/isa.html
     news:
       text: News
       menu:
