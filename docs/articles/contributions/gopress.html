@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.3</span>
       </span>
     </div>
 
@@ -250,7 +250,7 @@
 <p>Let’s start using <strong><code>sentometrics</code></strong> by creating a <code>sento_corpus</code> object, the typical ice breaker.</p>
 <div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">sentoCorpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/sento_corpus.html">sento_corpus</a></span>(<span class="no">corpus</span>)
 <span class="no">sentoCorpus</span></pre></body></html></div>
-<pre><code>## A sento_corpus consisting of 1,434 documents and 8 docvars.</code></pre>
+<pre><code>## A multi-language sento_corpus consisting of 1,434 documents and 8 docvars.</code></pre>
 <p>To have a quick understanding of what is inside your corpus, you can call <code><a href="../../reference/corpus_summarize.html">corpus_summarize()</a></code> and then plot one of its outputs.</p>
 <div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">summ</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/corpus_summarize.html">corpus_summarize</a></span>(<span class="no">sentoCorpus</span>, <span class="kw">features</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"L'Echo"</span>, <span class="st">"Le_Soir"</span>, <span class="st">"Metro_FR"</span>))
 

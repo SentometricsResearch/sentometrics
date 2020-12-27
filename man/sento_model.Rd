@@ -21,7 +21,7 @@ default set to \code{NULL}.}
 }
 \value{
 If \code{ctr$do.iter = FALSE}, a \code{sento_model} object which is a \code{list} containing:
-\item{reg}{optimized regression, i.e., a model-specific \code{glmnet} object, including for example the estimated
+\item{reg}{optimized regression, i.e., a model-specific \pkg{glmnet} object, including for example the estimated
 coefficients.}
 \item{model}{the input argument \code{ctr$model}, to indicate the type of model estimated.}
 \item{alpha}{calibrated alpha.}

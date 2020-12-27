@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.3</span>
       </span>
     </div>
 
@@ -152,13 +152,13 @@
 
     
     
-<p>Here is an overview of some of the (not all!) anticipated developments, and known bugs or minor unfinished business. The main objective is to converge towards a stable 1.0.0 release. If you want to help out on some of these things, contact the maintainer, or file a pull request on GitHub.</p>
+<p>Here is an overview of the most important anticipated developments, and known bugs or minor unfinished business. The main objective is to converge towards a stable 1.0.0 release. If you want to help out on some of these things, contact <a href="mailto:borms_sam@hotmail.com">Samuel Borms</a>, or file a pull request on GitHub.</p>
 <div id="extensions" class="section level3">
 <h3 class="hasAnchor">
 <a href="#extensions" class="anchor"></a>Extensions</h3>
 <ul>
 <li><p>Implement a <code>sento_train()</code> function to for instance generate a lexicon from a corpus.</p></li>
-<li><p>Add straightforward topic modelling functionality into the <code><a href="../reference/add_features.html">add_features()</a></code> function (or as part of the <code>sento_train()</code> function).</p></li>
+<li><p>Add topic modeling functionality into the <code><a href="../reference/add_features.html">add_features()</a></code> function (or as part of the <code>sento_train()</code> function).</p></li>
 <li><p>Expand the number of available models in the <code><a href="../reference/sento_model.html">sento_model()</a></code> function (e.g. constrained regression, and PCA).</p></li>
 <li><p>Implement an optimization approach into the <code><a href="../reference/aggregate.sento_measures.html">aggregate.sento_measures(..., do.global = TRUE)</a></code> function to extract optimized weights across dimensions (make it possibly available through the <code><a href="../reference/sento_model.html">sento_model()</a></code> function); this includes allowing weights to be set in the <code><a href="../reference/aggregate.sento_measures.html">aggregate.sento_measures()</a></code> function instead of averaging by default.</p></li>
 <li><p>Implement fast textual sentiment computation for lexicons with ngrams.</p></li>
@@ -180,7 +180,7 @@
 <ul>
 <li><p>Optimize parallelization of iterative model runs (e.g. avoid unnecessary copying of objects across cores).</p></li>
 <li><p>Add a <code>delete_features()</code> function as an intuitive counterpart to <code><a href="../reference/add_features.html">add_features()</a></code>.</p></li>
-<li><p>Solve issue that column names of sentiment measures output do not deal well with weird characters (e.g. é) but still get through.</p></li>
+<li><p>Solve issue that column names of sentiment measures output do not deal well with special characters but still get through.</p></li>
 <li><p>Handle <code>data.frame</code> and <code>matrix</code> input in <code><a href="../reference/sento_model.html">sento_model(..., y, ...)</a></code> function more consistently.</p></li>
 <li><p>Add references to external <strong><code>textdata</code></strong> package in examples (e.g. for extra lexicons).</p></li>
 <li><p>Be more flexible for the features in a <code>sento_corpus</code> object by also allowing values outside 0 and 1.</p></li>

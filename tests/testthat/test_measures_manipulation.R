@@ -1,7 +1,6 @@
 
 context("Measures manipulation")
 
-library("sentometrics")
 library("data.table")
 library("quanteda")
 

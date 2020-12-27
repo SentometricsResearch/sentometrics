@@ -33,7 +33,7 @@ Check out the **Research** section, especially our [vignette](https://ssrn.com/a
 
 ## Shiny app
 
-You might also want to have a look at the [**`sentometrics.app`**](https://github.com/sborms/sentometrics.app) package. Its `sento_app()` function embeds a Shiny application that displays many of **`sentometrics`**' functionalities. Enjoy!
+You might also want to have a look at the [**`sentometrics.app`**](https://github.com/sborms/sentometrics.app) package. Its `sentometrics.app::sento_app()` function embeds a Shiny application that displays many of **`sentometrics`**' functionalities. Enjoy!
 
 ## Media
 

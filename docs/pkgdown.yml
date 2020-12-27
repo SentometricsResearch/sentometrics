@@ -12,7 +12,7 @@ articles:
   modeling: examples/modeling.html
   sentiment: examples/sentiment.html
   sentometrics: sentometrics.html
-last_built: 2020-07-15T08:52Z
+last_built: 2020-12-27T13:28Z
 urls:
   reference: https://sentometricsresearch.github.io/sentometrics/reference
   article: https://sentometricsresearch.github.io/sentometrics/articles

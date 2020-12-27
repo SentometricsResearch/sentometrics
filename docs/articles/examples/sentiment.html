@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.3</span>
       </span>
     </div>
 
@@ -167,7 +167,7 @@
 <div id="ready-to-use-sentiment-calculation" class="section level3">
 <h3 class="hasAnchor">
 <a href="#ready-to-use-sentiment-calculation" class="anchor"></a>Ready-to-use sentiment calculation</h3>
-<p>A simple calculation of sentiment. Every score is the difference between the number of positive lexicon words (those with a score of 1) and the number of negative lexicon words (those with a score of –1) detected in the text.</p>
+<p>A simple calculation of sentiment. Given that the two used lexicons are so-called binary, every final score, with the <code>"counts"</code> option, is the difference between the number of positive lexicon words (those with a score of 1) and the number of negative lexicon words (those with a score of –1) detected in the text.</p>
 <div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">s</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/compute_sentiment.html">compute_sentiment</a></span>(
   <span class="no">usnews</span><span class="kw">[[</span><span class="st">"texts"</span>]],
   <span class="fu"><a href="../../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="no">list_lexicons</span>[<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"GI_en"</span>, <span class="st">"LM_en"</span>)]),
@@ -384,7 +384,7 @@
 <span class="co"># sentometrics tf-idf sentiment calculation</span>
 <span class="no">lex</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">L</span> <span class="kw">=</span> <span class="no">lexIn</span>))
 
-<span class="no">s</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/compute_sentiment.html">compute_sentiment</a></span>(<span class="no">txts</span>, <span class="no">lex</span>, <span class="kw">tokens</span> <span class="kw">=</span> <span class="no">toks</span>, <span class="st">"TFIDF"</span>)<span class="kw">[[</span><span class="st">"L"</span>]]</pre></body></html></div>
+<span class="no">s</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/compute_sentiment.html">compute_sentiment</a></span>(<span class="no">txts</span>, <span class="no">lex</span>, <span class="kw">how</span> <span class="kw">=</span> <span class="st">"TFIDF"</span>, <span class="kw">tokens</span> <span class="kw">=</span> <span class="no">toks</span>)<span class="kw">[[</span><span class="st">"L"</span>]]</pre></body></html></div>
 <p><em>R</em> they equal?</p>
 <div class="sourceCode" id="cb25"><html><body><pre class="r"><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/all.equal.data.table.html">all.equal</a></span>(<span class="no">q</span>, <span class="no">s</span>)</pre></body></html></div>
 <pre><code>## [1] TRUE</code></pre>
@@ -403,7 +403,7 @@
 <span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/sento_corpus.html">sento_corpus</a></span>(<span class="no">corpusdt</span>)
 
 <span class="no">corpus</span></pre></body></html></div>
-<pre><code>## A sento_corpus consisting of 3 documents and 3 docvars.</code></pre>
+<pre><code>## A multi-language sento_corpus consisting of 3 documents and 3 docvars.</code></pre>
 <div class="sourceCode" id="cb29"><html><body><pre class="r"><span class="no">lexicons</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">nl</span> <span class="kw">=</span> <span class="fu"><a href="../../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="st">"lexNL"</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="st">"goed"</span>, <span class="fl">1</span>))),
                  <span class="kw">fr</span> <span class="kw">=</span> <span class="fu"><a href="../../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="st">"lexFR"</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="st">"bien"</span>, <span class="fl">1</span>))),
                  <span class="kw">en</span> <span class="kw">=</span> <span class="fu"><a href="../../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="st">"lexEN"</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="st">"good"</span>, <span class="fl">1</span>))))
@@ -412,9 +412,9 @@
 
 <span class="no">s</span></pre></body></html></div>
 <pre><code>##    id       date word_count lexNL--ftr lexFR--ftr lexEN--ftr
-## 1:  1 2020-07-15          5        0.5        0.0        0.0
-## 2:  2 2020-07-15          5        0.0        0.5        0.0
-## 3:  3 2020-07-15          5        0.0        0.0        0.5</code></pre>
+## 1:  1 2020-12-27          5        0.5        0.0        0.0
+## 2:  2 2020-12-27          5        0.0        0.5        0.0
+## 3:  3 2020-12-27          5        0.0        0.0        0.5</code></pre>
 </div>
   </div>
 

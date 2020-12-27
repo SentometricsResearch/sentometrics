@@ -206,7 +206,7 @@ ctr_model <- function(model = c("gaussian", "binomial", "multinomial"), type = c
 #' @param ctr output from a \code{\link{ctr_model}} call.
 #'
 #' @return If \code{ctr$do.iter = FALSE}, a \code{sento_model} object which is a \code{list} containing:
-#' \item{reg}{optimized regression, i.e., a model-specific \code{glmnet} object, including for example the estimated
+#' \item{reg}{optimized regression, i.e., a model-specific \pkg{glmnet} object, including for example the estimated
 #' coefficients.}
 #' \item{model}{the input argument \code{ctr$model}, to indicate the type of model estimated.}
 #' \item{alpha}{calibrated alpha.}

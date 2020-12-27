@@ -90,7 +90,7 @@ bag-of-words sentiment analysis." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.3</span>
       </span>
     </div>
 
@@ -214,7 +214,7 @@ bag-of-words sentiment analysis.</p>
       <th>lexiconsIn</th>
       <td><p>a named <code>list</code> of (raw) lexicons, each element as a <code>data.table</code> or a <code>data.frame</code> with
 respectively a <code>character</code> column (the words) and a <code>numeric</code> column (the polarity scores). This argument can be
-one of the built-in lexicons accessible via <code>list_lexicons</code>.</p></td>
+one of the built-in lexicons accessible via <code><a href='list_lexicons.html'>sentometrics::list_lexicons</a></code>.</p></td>
     </tr>
     <tr>
       <th>valenceIn</th>
@@ -224,7 +224,7 @@ shifting, and <code>"t"</code> has the types of the valence shifter for a cluste
 (supported types: <code>1</code> = negators, <code>2</code> = amplifiers, <code>3</code> = deamplifiers, <code>4</code> = adversative conjunctions).
 Type <code>4</code> is only used in a clusters-based sentence-level sentiment calculation.
 If three columns are provided, only the first two will be considered. This argument can be one of the
-built-in valence word lists accessible via <code>list_valence_shifters</code>. A word that appears in both a
+built-in valence word lists accessible via <code><a href='list_valence_shifters.html'>sentometrics::list_valence_shifters</a></code>. A word that appears in both a
 lexicon and the valence word list is prioritized as a lexical entry during sentiment calculation. If
 <code>NULL</code>, valence shifting is not applied in the sentiment analysis.</p></td>
     </tr>

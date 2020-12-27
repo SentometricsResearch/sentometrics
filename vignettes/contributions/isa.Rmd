@@ -33,9 +33,9 @@ As part of this tutorial, you will learn how to:
 * Compute sentiment with a variety of weighting schemes.
 * Create and use your own weighting scheme for a classification task.
 
-## Preparation
+## Picking up the instruments
 
-We load the required packages first.
+We first prepare some of the key inputs, the instruments so to speak, for the analysis. We start off with loading the required packages.
 
 ```{r message=FALSE}
 library("rio")           # package for extracting data from GitHub
@@ -78,7 +78,7 @@ lapply(sentoLexicon, head)
 
 The `compute_sentiment()` function offers the core of the textual sentiment computation with **`sentometrics`**. Before jumping to intraxtual sentiment calculation, let us review the different computation settings to really understand what is happening.
 
-### From words to document sentiment by default
+### From words to document sentiment
 
 When using the default settings (i.e., only specifying the `how` argument), the sentiment for each word within a text will be determined according to the provided lexicons. This word-level sentiment is then aggregated using the method defined by the `how` argument, aggregating up to the document level to form a sentiment value for the document.
 
@@ -89,7 +89,7 @@ head(sentiment)
 
 In this case, the `how = "proportional"` option sums word-level sentiment, and then divides by the number of words in a document. The different settings for `how` can be accessed using the `get_hows()` function. We are going to present the use of a more complex setting at the end of this tutorial.
 
-### From words to sentences sentiment setting `do.sentence = TRUE`
+### From words to sentences sentiment with `do.sentence = TRUE`
 
 A drastic change in the behaviour of `compute_sentiment()` can be induced by specifying `do.sentence = TRUE` in the function call. If true, the output of `compute_sentiment` will no longer return a sentiment value for each document, but each sentence. Sentiment values within each sentence are still computed using the method provided in the `how` argument, but the function stops there.
 
@@ -195,7 +195,7 @@ mean(herfindahl$h)
 
 ## Computing sentiment with different weights
 
-The **`sentometrics`** comes with a lot of different weightings methods to compute sentiment and aggregate them into document sentiment or even time series. These weightings methods can be accessed with the functions `get_hows`.
+The **`sentometrics`** package brings a lot of different weighting methods to compute sentiment and aggregate them into document-level sentiment and time series. These weighting methods can be accessed with the function `get_hows()`.
 
 ```{r}
 get_hows()
@@ -337,11 +337,11 @@ In this case, the U-shaped weighting performs best but we can already see the im
 
 ## Bins of sentences
 
-As we learned through this tutorial, we can always define more complex methods to compute and aggregate sentiment. The reason why we use different aggregation levels such as *bins* or sentences is that looking at words does not capture the semantic structure of the text. The most appropriate way to compute sentiment should be through sentences, as sentences usually convey a single statement.
+As we learned in this tutorial, we can always define more complex methods to compute and aggregate sentiment. The reason for using different aggregation levels such as *bins* or sentences is that words alone do not always capture the semantic structure of the text well. The most appropriate way to compute sentiment is through sentences, as they usually convey a single statement.
 
-Earlier, we implemented the *bins* approach by creating equal-sized containers of words. Each *bin* then contained a similar number of words. This naive split had the effect of splitting some sentences across two *bins*. From a semantic point of view, this not desirable. Hence, we need to define a new *bins* approach that respects the integrity of the sentences: quite simply, *bins* of sentences.
+Earlier, we implemented the *bins* approach by creating equal-sized containers of words. Each *bin* then contains a similar number of words. This naive split has the effect of splitting some sentences across two *bins*. From a semantic point of view, this is not desirable. Hence, to respect the integrity of the sentences, we propose to use *bins* of sentences.
 
-This approach is similar to the previous one, but instead of dividing the texts into equal-sized containers of words, we are going to divide them into equal-sized containers of sentences. This means that each *bin* will contain approximately the same number of sentences.
+This approach is similar to the previous one, but instead of dividing the texts into equal-sized containers of words, we divide them into equal-sized containers of sentences. This means that each *bin* will contain approximately the same number of sentences.
 
 To implement it, we will need to play a bit with `data.table` operations to aggregate from sentences to *bins* of sentences. The first step is to compute sentence sentiment using `compute_sentiment()`. Then, we're going to add a column to the resulting sentiment object. This additional column will contain information about the future *bin* in which each sentence will be aggregated. This is a mapping from sentences to *bins* of sentences.
 

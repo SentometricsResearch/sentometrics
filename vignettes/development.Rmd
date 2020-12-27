@@ -3,13 +3,13 @@ title: "Future development"
 output: rmarkdown::html_vignette
 ---
 
-Here is an overview of some of the (not all!) anticipated developments, and known bugs or minor unfinished business. The main objective is to converge towards a stable 1.0.0 release. If you want to help out on some of these things, contact the maintainer, or file a pull request on GitHub.
+Here is an overview of the most important anticipated developments, and known bugs or minor unfinished business. The main objective is to converge towards a stable 1.0.0 release. If you want to help out on some of these things, contact [Samuel Borms](mailto:borms_sam@hotmail.com), or file a pull request on GitHub.
 
 ### Extensions
 
 - Implement a `sento_train()` function to for instance generate a lexicon from a corpus.
 
-- Add straightforward topic modelling functionality into the `add_features()` function (or as part of the `sento_train()` function).
+- Add topic modeling functionality into the `add_features()` function (or as part of the `sento_train()` function).
 
 - Expand the number of available models in the `sento_model()` function (e.g. constrained regression, and PCA).
 
@@ -43,7 +43,7 @@ Here is an overview of some of the (not all!) anticipated developments, and know
 
 - Add a `delete_features()` function as an intuitive counterpart to `add_features()`.
 
-- Solve issue that column names of sentiment measures output do not deal well with weird characters (e.g. é) but still get through.
+- Solve issue that column names of sentiment measures output do not deal well with special characters but still get through.
 
 - Handle `data.frame` and `matrix` input in `sento_model(..., y, ...)` function more consistently.
 
