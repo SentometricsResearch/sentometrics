@@ -82,6 +82,7 @@ sento_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
   lexNames <- names(lexiconsIn)
   lexicons <- suppressWarnings(lapply(lexiconsIn, sento_as_key)) # suppress warnings on removal of duplicated values
   names(lexicons) <- lexNames
+
   if (do.split == TRUE) { # split each lexicon into a positive and a negative polarity words only lexicon
     lexiconsPos <- lapply(lexicons, function(lex) return(lex[lex$y > 0]))
     names(lexiconsPos) <- paste0(names(lexicons), "_POS")
@@ -90,7 +91,8 @@ sento_lexicons <- function(lexiconsIn, valenceIn = NULL, do.split = FALSE) {
     lexicons <- c(lexiconsPos, lexiconsNeg)
   }
 
-  lexicons <- lapply(lexicons, function(l) l[!stringi::stri_detect(l$x, regex = "\\s+"), ])
+  lexicons <- lapply(lexicons, function(l) l[!stringi::stri_detect(l$x, regex = "\\s+"), ]) # only unigrams
+
   if (!is.null(valenceIn)) {
     if (!all(names(valenceIn) %in% c("x", "y", "t")) || !(ncol(valenceIn) %in% c(2, 3)))
       stop("Provide columns 'x' and 'y' and/or 't' to the 'valenceIn' argument.")
