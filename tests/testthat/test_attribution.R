@@ -3,7 +3,6 @@ context("Attribution")
 
 cat("\n")
 
-library("sentometrics")
 library("data.table")
 library("quanteda")
 

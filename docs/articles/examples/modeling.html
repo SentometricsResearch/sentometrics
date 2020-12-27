@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.3</span>
       </span>
     </div>
 
@@ -158,6 +158,7 @@
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"ggplot2"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"data.table"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"zoo"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"e1071"</span>)
 
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"usnews"</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"epu"</span>)
@@ -165,7 +166,7 @@
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"list_valence_shifters"</span>)
 
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">505</span>)</pre></body></html></div>
-<p>We create some sentiment time series to showcase the models with.</p>
+<p>We create several sentiment time series to use in the models.</p>
 <div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/sento_corpus.html">sento_corpus</a></span>(<span class="no">usnews</span>)
 <span class="no">lexicons</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="no">list_lexicons</span>[<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"GI_en"</span>, <span class="st">"HENRY_en"</span>)])
 <span class="no">ctr</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/ctr_agg.html">ctr_agg</a></span>(<span class="st">"counts"</span>, <span class="st">"proportional"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"linear"</span>, <span class="st">"equal_weight"</span>), <span class="kw">by</span> <span class="kw">=</span> <span class="st">"month"</span>, <span class="kw">lag</span> <span class="kw">=</span> <span class="fl">6</span>)
@@ -310,11 +311,11 @@
 <div id="other-models" class="section level3">
 <h3 class="hasAnchor">
 <a href="#other-models" class="anchor"></a>Other models</h3>
-<p>The <code><a href="../../reference/sento_model.html">sento_model()</a></code> function is no perfect toolbox. However, by converting the sentiment measures into a straight <code>data.table</code> (or a <code>data.frame</code>), one is not limited. For instance, below example shows how to do a low-dimensional regression using the <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code> function, with some of the sentiment variables created in the package.</p>
+<p>The <code><a href="../../reference/sento_model.html">sento_model()</a></code> function is no perfect toolbox. However, by converting the sentiment measures into a straight <code>data.table</code> (or a <code>data.frame</code>), you are not limited. For instance, below example shows how to do a low-dimensional regression using the <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code> function, with some of the sentiment variables created in the package.</p>
 <div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="no">dt</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html">as.data.table</a></span>(<span class="no">measures</span>)
 <span class="no">z</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/zoo/man/zoo.html">zoo</a></span>(<span class="no">dt</span>[, <span class="fl">2</span>:<span class="fl">7</span>], <span class="kw">order.by</span> <span class="kw">=</span> <span class="no">dt</span><span class="kw">[[</span><span class="st">"date"</span>]])
 <span class="no">reg</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span>(<span class="no">y</span> ~ <span class="no">z</span>)</pre></body></html></div>
-<p>At some point we might integrate some other useful models into the <code><a href="../../reference/sento_model.html">sento_model()</a></code> function, but having the sentiment measures at your disposal, you are already good to go elsewhere.</p>
+<p>At some point we might integrate other useful models into the <code><a href="../../reference/sento_model.html">sento_model()</a></code> function, but having the sentiment measures at your disposal, you are already good to go elsewhere.</p>
 </div>
 <div id="classification-using-sentiment" class="section level3">
 <h3 class="hasAnchor">
@@ -341,9 +342,7 @@
 <span class="no">dataTrain</span> <span class="kw">&lt;-</span> <span class="no">data</span>[<span class="fl">1</span>:<span class="fl">3500</span>, ]
 <span class="no">dataTest</span> <span class="kw">&lt;-</span> <span class="no">data</span>[<span class="fl">3501</span>:<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">data</span>), ]</pre></body></html></div>
 <p>We employ support vector machine classification to estimate our model.</p>
-<div class="sourceCode" id="cb29"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"e1071"</span>)
-
-<span class="no">model</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/e1071/man/svm.html">svm</a></span>(<span class="no">y</span> ~ <span class="no">.</span>, <span class="no">dataTrain</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb29"><html><body><pre class="r"><span class="no">model</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/e1071/man/svm.html">svm</a></span>(<span class="no">y</span> ~ <span class="no">.</span>, <span class="no">dataTrain</span>)</pre></body></html></div>
 <p>Let’s construct confusion matrices to see how well the model does in-sample, and in the test set.</p>
 <div class="sourceCode" id="cb30"><html><body><pre class="r"><span class="no">conf_matrix</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">m</span>, <span class="no">d</span>) <span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="no">m</span>, <span class="no">d</span>), <span class="no">d</span>$<span class="no">y</span>, <span class="kw">dnn</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Prediction"</span>, <span class="st">"Actual"</span>))</pre></body></html></div>
 <div class="sourceCode" id="cb31"><html><body><pre class="r"><span class="fu">conf_matrix</span>(<span class="no">model</span>, <span class="no">dataTrain</span>)</pre></body></html></div>

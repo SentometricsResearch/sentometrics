@@ -1,7 +1,6 @@
 
 context("Aggregation")
 
-library("sentometrics")
 library("data.table")
 library("quanteda")
 

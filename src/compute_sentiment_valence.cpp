@@ -16,7 +16,7 @@ Rcpp::NumericMatrix compute_sentiment_valence(std::vector< std::vector<std::stri
                                               std::string how) {
 
   int N = texts.size(); // already tokenized texts
-  int nL = lexicons.size() - 1; // the last one is the valence shifter
+  int nL = lexicons.size() - 1; // the last one has the valence shifters
   bool isFreqWeighting = is_frequency_weighting(how);
   Rcpp::CharacterVector colNames = prepare_column_names(lexicons.names(), nL);
 

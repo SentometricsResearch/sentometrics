@@ -3,7 +3,6 @@
 
 context("Sentiment computation")
 
-library("sentometrics")
 library("data.table")
 library("quanteda")
 library("tm")

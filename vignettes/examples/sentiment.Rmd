@@ -30,7 +30,7 @@ data("list_valence_shifters")
 
 ### Ready-to-use sentiment calculation
 
-A simple calculation of sentiment. Every score is the difference between the number of positive lexicon words (those with a score of 1) and the number of negative lexicon words (those with a score of --1) detected in the text.
+A simple calculation of sentiment. Given that the two used lexicons are so-called binary, every final score, with the `"counts"` option, is the difference between the number of positive lexicon words (those with a score of 1) and the number of negative lexicon words (those with a score of --1) detected in the text.
 
 ```{r}
 s <- compute_sentiment(
@@ -182,7 +182,7 @@ q <- unname(posScores - negScores)
 # sentometrics tf-idf sentiment calculation
 lex <- sento_lexicons(list(L = lexIn))
 
-s <- compute_sentiment(txts, lex, tokens = toks, "TFIDF")[["L"]]
+s <- compute_sentiment(txts, lex, how = "TFIDF", tokens = toks)[["L"]]
 ```
 
 _R_ they equal?

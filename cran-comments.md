@@ -1,7 +1,13 @@
 
-## resubmission (version 0.8.2) [25/06/2020]
+## submission (version 0.8.3) [xx/xx/2021]
 
-- modified invalid doi markup in CITATION file
+**new**: minor bug and documentation fixes
+
+- replacement of some order() calls as per CRAN request
+
+<!--- ## resubmission (version 0.8.2) [25/06/2020]
+
+- modified invalid doi markup in CITATION file --->
 
 <!--- ## submission (version 0.8.2) [24/06/2020]
 

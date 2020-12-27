@@ -27,7 +27,7 @@ object. The corpus is ordered by date.
 \description{
 Formalizes a collection of texts into a \code{sento_corpus} object derived from the \pkg{quanteda}
 \code{\link[quanteda]{corpus}} object. The \pkg{quanteda} package provides a robust text mining infrastructure
-(see \href{http://quanteda.io/index.html}{quanteda}), including a handy corpus manipulation toolset. This function
+(see their \href{http://quanteda.io/index.html}{website}), including a handy corpus manipulation toolset. This function
 performs a set of checks on the input data and prepares the corpus for further analysis by structurally
 integrating a date dimension and numeric metadata features.
 }

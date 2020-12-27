@@ -20,6 +20,7 @@ library("sentometrics")
 library("ggplot2")
 library("data.table")
 library("zoo")
+library("e1071")
 
 data("usnews")
 data("epu")
@@ -29,7 +30,7 @@ data("list_valence_shifters")
 set.seed(505)
 ```
 
-We create some sentiment time series to showcase the models with.
+We create several sentiment time series to use in the models.
 
 ```{r}
 corpus <- sento_corpus(usnews)
@@ -133,7 +134,7 @@ attr3$documents$`2004-06-01`
 
 ### Other models
 
-The `sento_model()` function is no perfect toolbox. However, by converting the sentiment measures into a straight `data.table` (or a `data.frame`), one is not limited. For instance, below example shows how to do a low-dimensional regression using the `lm()` function, with some of the sentiment variables created in the package.
+The `sento_model()` function is no perfect toolbox. However, by converting the sentiment measures into a straight `data.table` (or a `data.frame`), you are not limited. For instance, below example shows how to do a low-dimensional regression using the `lm()` function, with some of the sentiment variables created in the package.
 
 ```{r}
 dt <- as.data.table(measures)
@@ -141,7 +142,7 @@ z <- zoo(dt[, 2:7], order.by = dt[["date"]])
 reg <- lm(y ~ z)
 ```
 
-At some point we might integrate some other useful models into the `sento_model()` function, but having the sentiment measures at your disposal, you are already good to go elsewhere.
+At some point we might integrate other useful models into the `sento_model()` function, but having the sentiment measures at your disposal, you are already good to go elsewhere.
 
 ### Classification using sentiment
 
@@ -180,8 +181,6 @@ dataTest <- data[3501:nrow(data), ]
 We employ support vector machine classification to estimate our model. 
 
 ```{r}
-library("e1071")
-
 model <- svm(y ~ ., dataTrain)
 ```
 

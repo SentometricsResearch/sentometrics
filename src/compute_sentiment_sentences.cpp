@@ -17,11 +17,9 @@ Rcpp::NumericMatrix compute_sentiment_sentences(std::vector<std::vector<std::str
                                                 int valenceType) {
 
   int N = texts.size(); // already tokenized texts
-  int nL = 0;
+  int nL = lexicons.size();
   if (valenceType != 0) {
-    nL = lexicons.size() - 1;
-  } else {
-    nL = lexicons.size();
+    nL = lexicons.size() - 1; // the last one has the valence shifters
   }
   bool isFreqWeighting = is_frequency_weighting(how);
 
@@ -33,10 +31,9 @@ Rcpp::NumericMatrix compute_sentiment_sentences(std::vector<std::vector<std::str
   if (isFreqWeighting) {
     make_frequency_maps(frequencyMap, inverseFrequencyMap, texts);
   }
-  Rcpp::List valenceList;
   std::unordered_map< std::string, double > valenceMap;
   if (valenceType != 0) {
-    valenceList = lexicons[nL];
+    Rcpp::List valenceList = lexicons[nL];
     valenceMap = make_valence_map(valenceList);
   }
 

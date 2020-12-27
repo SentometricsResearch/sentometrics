@@ -1,7 +1,6 @@
 
 context("Corpus building")
 
-library("sentometrics")
 library("data.table")
 library("quanteda")
 library("tm")
