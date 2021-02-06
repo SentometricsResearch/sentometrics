@@ -2,8 +2,8 @@
 ## sentometrics 0.8.3 (devel)
 
 - Features (or docvars) with names `"id"`, `"sentence_id"`, `"date"`, `"word_count"` or `"texts"` will not be accepted even when `numeric`, to avoid duplicate column names down the line. A clear error message is issued to alert users.
-- Some small documentation fixes.
 - Replacement of `order()` calls where needed to avoid CRAN complaints.
+- Some small documentation fixes.
 
 ## sentometrics 0.8.2
 
@@ -26,7 +26,7 @@
 - Package update followed by release of a substantial update of the vignette (see https://doi.org/10.2139/ssrn.3067734).
 - Changed some `warning()` calls to `message()` calls to be more kind to the user.
 - Altered internal code to comply with the `corpus` object from **`quanteda`** >= v2.0.
-- Dropped all `"TF"`-inspired weights for within-document aggregation except for `"TFIDF"`, and made this option return the same sentiment scores as would when using the **`quanteda`** package (see the example on https://sborms.github.io/sentometrics).
+- Dropped all `"TF"`-inspired weights for within-document aggregation except for `"TFIDF"`, and made this option return the same sentiment scores as would when using the **`quanteda`** package (see the example on https://sentometrics-research.com/sentometrics/articles/examples/sentiment.html).
 
 ## sentometrics 0.7.6
 
