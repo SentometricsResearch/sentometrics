@@ -7,9 +7,9 @@
 [![CRAN](http://www.r-pkg.org/badges/version/sentometrics)](https://cran.r-project.org/package=sentometrics)
 <!-- [![Build Status](https://travis-ci.org/SentometricsResearch/sentometrics.svg?branch=master)](https://travis-ci.org/SentometricsResearch/sentometrics) -->
 <!-- [![codecov](https://codecov.io/github/SentometricsResearch/sentometrics/branch/master/graphs/badge.svg)](https://codecov.io/github/SentometricsResearch/sentometrics) -->
-[![Downloads](http://cranlogs.r-pkg.org/badges/last-day/sentometrics?color=orange)](http://www.r-pkg.org/pkg/sentometrics)
-[![Downloads](http://cranlogs.r-pkg.org/badges/sentometrics?color=orange)](http://www.r-pkg.org/pkg/sentometrics)
-[![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/sentometrics?color=orange)](http://www.r-pkg.org/pkg/sentometrics)
+[![Downloads](http://cranlogs.r-pkg.org/badges/last-day/sentometrics?color=ff69b4)](http://www.r-pkg.org/pkg/sentometrics)
+[![Downloads](http://cranlogs.r-pkg.org/badges/sentometrics?color=ff69b4)](http://www.r-pkg.org/pkg/sentometrics)
+[![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/sentometrics?color=ff69b4)](http://www.r-pkg.org/pkg/sentometrics)
 <!-- [![Pending Pull-Requests](http://githubbadges.herokuapp.com/SentometricsResearch/sentometrics/pulls.svg?style=flat)](https://github.com/SentometricsResearch/sentometrics/pulls) -->
 <!-- [![Github Issues](http://githubbadges.herokuapp.com/SentometricsResearch/sentometrics/issues.svg)](https://github.com/SentometricsResearch/sentometrics/issues) -->
 <!-- badges: end -->
