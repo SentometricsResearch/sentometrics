@@ -1,10 +1,10 @@
 
 <!-- badges: start -->
 [![CRAN](http://www.r-pkg.org/badges/version/sentometrics)](https://cran.r-project.org/package=sentometrics)
-[![Build Status](https://travis-ci.org/sborms/sentometrics.svg?branch=master)](https://travis-ci.org/sborms/sentometrics)
-[![codecov](https://codecov.io/github/sborms/sentometrics/branch/master/graphs/badge.svg)](https://codecov.io/github/sborms/sentometrics)
-[![Downloads](http://cranlogs.r-pkg.org/badges/sentometrics?color=brightgreen)](http://www.r-pkg.org/pkg/sentometrics)
-[![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/sentometrics?color=brightgreen)](http://www.r-pkg.org/pkg/sentometrics)
+[![codecov](https://codecov.io/github/SentometricsResearch/sentometrics/branch/master/graphs/badge.svg)](https://codecov.io/github/SentometricsResearch/sentometrics)
+[![Downloads](http://cranlogs.r-pkg.org/badges/last-day/sentometrics?color=ff69b4)](http://www.r-pkg.org/pkg/sentometrics)
+[![Downloads](http://cranlogs.r-pkg.org/badges/sentometrics?color=ff69b4)](http://www.r-pkg.org/pkg/sentometrics)
+[![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/sentometrics?color=ff69b4)](http://www.r-pkg.org/pkg/sentometrics)
 <!-- badges: end -->
 
 # sentometrics <a href='https://www.sentometrics.org'><img src='man/figures/logo.png' style="padding-left:2px" align="right" width="160"/></a>
