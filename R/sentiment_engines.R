@@ -508,7 +508,7 @@ peakdocs <- function(sentiment, n = 10, type = "both", do.average = FALSE) {
     ids <- sentiment[["id"]]
   } else ids <- rep(sentiment[["id"]], m)
   if (type == "both") s <- abs(s)
-  indx <- order(s, decreasing = ifelse(type == "neg", FALSE, TRUE))[1:(m * n)]
+  indx <- order(unlist(s), decreasing = ifelse(type == "neg", FALSE, TRUE))[1:(m * n)]
   peakIds <- unique(ids[indx])[1:n]
   peakIds
 }

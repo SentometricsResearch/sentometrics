@@ -1,8 +1,8 @@
 
-## sentometrics 0.8.3 (devel)
+## sentometrics 0.8.3
 
 - Features (or docvars) with names `"id"`, `"sentence_id"`, `"date"`, `"word_count"` or `"texts"` will not be accepted even when `numeric`, to avoid duplicate column names down the line. A clear error message is issued to alert users.
-- Replacement of `order()` calls where needed to avoid CRAN complaints.
+- Replacement of `order()` calls on `data.frame`s where needed to avoid CRAN complaints.
 - Some small documentation fixes.
 
 ## sentometrics 0.8.2
