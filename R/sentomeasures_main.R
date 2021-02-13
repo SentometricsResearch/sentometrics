@@ -510,7 +510,7 @@ peakdates <- function(sento_measures, n = 10, type = "both", do.average = FALSE)
     dates <- get_dates(sento_measures)
   } else dates <- rep(get_dates(sento_measures), m)
   if (type == "both") measures <- abs(measures)
-  indx <- order(measures, decreasing = ifelse(type == "neg", FALSE, TRUE))[1:(m * n)]
+  indx <- order(unlist(measures), decreasing = ifelse(type == "neg", FALSE, TRUE))[1:(m * n)]
   peakDates <- unique(dates[indx])[1:n]
   peakDates
 }

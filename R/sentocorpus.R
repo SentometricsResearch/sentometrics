@@ -221,7 +221,7 @@ add_features <- function(corpus, featuresdf = NULL, keywords = NULL, do.binary =
   check_class(corpus, "corpus")
 
   classIn <- class(corpus)
-  class(corpus) <- c("corpus", "list") # needed to avoid use of `docvars<-.sento_corpus`() function
+  class(corpus) <- c("corpus", "character") # needed to avoid use of `docvars<-.sento_corpus`() function
 
   if (!is.null(featuresdf)) {
     stopifnot(is.data.frame(featuresdf))
