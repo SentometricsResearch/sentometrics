@@ -3,7 +3,7 @@
 
 **new**: minor bug and documentation fixes
 
-- replacement of some order() calls as per CRAN request
+- replacement of some order() calls, to get package back on CRAN
 
 <!--- ## resubmission (version 0.8.2) [25/06/2020]
 
