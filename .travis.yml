@@ -29,3 +29,6 @@ r:
 
 after_success:
  - Rscript -e 'covr::codecov()'
+
+notifications:
+  email: false

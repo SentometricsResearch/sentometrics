@@ -1,7 +1,7 @@
 
 ## resubmission (version 0.8.3) [15/02/2021]
 
-- adjusted some URL and doi links
+- adjusted some URL and doi links that gave NOTEs
 
 <!--- ## submission (version 0.8.3) [13/02/2021]
 
