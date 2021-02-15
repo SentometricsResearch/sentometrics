@@ -15,7 +15,7 @@ Outputs the supported aggregation arguments. Call for information purposes only.
 \code{\link{ctr_agg}} to check if supplied aggregation hows are supported.
 }
 \details{
-See the package's \href{https://ssrn.com/abstract=3067734}{vignette} for a detailed explanation of all
+See the package's \href{https://www.ssrn.com/abstract=3067734}{vignette} for a detailed explanation of all
 aggregation options.
 }
 \seealso{

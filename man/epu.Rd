@@ -35,6 +35,6 @@ head(epu)
 }
 \references{
 Baker, Bloom and Davis (2016). \strong{Measuring Economic Policy Uncertainty}.
-\emph{The Quarterly Journal of Economics 131, 1593-1636}, \url{https://doi.org/10.1093/qje/qjw024}.
+\emph{The Quarterly Journal of Economics 131, 1593-1636}, \doi{10.1093/qje/qjw024}.
 }
 \keyword{datasets}

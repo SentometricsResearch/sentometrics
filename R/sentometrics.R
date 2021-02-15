@@ -26,10 +26,10 @@
 #'
 #' @references Ardia, Bluteau and Boudt (2019). \strong{Questioning the news about economic growth: Sparse forecasting using
 #' thousands of news-based sentiment values}. \emph{International Journal of Forecasting 35, 1370-1386},
-#' \url{https://doi.org/10.1016/j.ijforecast.2018.10.010}.
+#' \doi{10.1016/j.ijforecast.2018.10.010}.
 #' @references Ardia, Bluteau, Borms and Boudt (2020). \strong{The R package sentometrics to compute, aggregate and
 #' predict with textual sentiment}. \emph{Forthcoming in Journal of Statistical Software},
-#' \url{https://doi.org/10.2139/ssrn.3067734}.
+#' \doi{10.2139/ssrn.3067734}.
 "_PACKAGE"
 
 #' Built-in lexicons
@@ -72,17 +72,17 @@
 #' @format A \code{list} with all built-in lexicons, appropriately named as \code{"NAME_language(_tr)"} .
 #'
 #' @references Abdaoui, \enc{Azé}{Aze}, Bringay and Poncelet (2017). \strong{FEEL: French Expanded Emotion Lexicon}.
-#' \emph{Language Resources & Evaluation 51, 833-855}, \url{https://doi.org/10.1007/s10579-016-9364-5}.
+#' \emph{Language Resources & Evaluation 51, 833-855}, \doi{10.1007/s10579-016-9364-5}.
 #' @references Henry (2008). \strong{Are investors influenced by how earnings press releases are written?}.
-#' \emph{Journal of Business Communication 45, 363-407}, \url{https://doi.org/10.1177/0021943608319388}.
+#' \emph{Journal of Business Communication 45, 363-407}, \doi{10.1177/0021943608319388}.
 #' @references Loughran and McDonald (2011). \strong{When is a liability not a liability? Textual analysis, dictionaries, and 10-Ks}.
-#' \emph{Journal of Finance 66, 35-65}, \url{https://doi.org/10.1111/j.1540-6261.2010.01625.x}.
+#' \emph{Journal of Finance 66, 35-65}, \doi{10.1111/j.1540-6261.2010.01625.x}.
 #'
 #' @source \href{https://doi.org/10.1007/s10579-016-9364-5}{FEEL lexicon}. Retrieved November 1, 2017.
 #' @source \href{http://www.wjh.harvard.edu/~inquirer/spreadsheet_guide.htm}{GI lexicon}. Retrieved November 1, 2017.
 #' @source \href{https://doi.org/10.1177/0021943608319388}{HENRY lexicon}. Retrieved
 #' November 1, 2017.
-#' @source \href{https://sraf.nd.edu/textual-analysis/resources}{LM lexicon}. Retrieved
+#' @source \href{https://sraf.nd.edu/textual-analysis/resources/}{LM lexicon}. Retrieved
 #' November 1, 2017.
 "list_lexicons"
 
@@ -176,7 +176,7 @@
 #' @format A \code{data.frame} with 403 rows and 4 columns.
 #'
 #' @references Baker, Bloom and Davis (2016). \strong{Measuring Economic Policy Uncertainty}.
-#' \emph{The Quarterly Journal of Economics 131, 1593-1636}, \url{https://doi.org/10.1093/qje/qjw024}.
+#' \emph{The Quarterly Journal of Economics 131, 1593-1636}, \doi{10.1093/qje/qjw024}.
 #'
 #' @source \href{http://www.policyuncertainty.com/us_monthly.html}{Measuring Economic Policy Uncertainty}. Retrieved
 #' August 24, 2018.

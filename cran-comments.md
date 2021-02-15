@@ -1,9 +1,13 @@
 
-## submission (version 0.8.3) [13/02/2021]
+## resubmission (version 0.8.3) [15/02/2021]
+
+- adjusted some URL and doi links
+
+<!--- ## submission (version 0.8.3) [13/02/2021]
 
 **new**: minor bug and documentation fixes
 
-- replacement of some order() calls, to get package back on CRAN
+- replacement of some order() calls, to get package back on CRAN --->
 
 <!--- ## resubmission (version 0.8.2) [25/06/2020]
 

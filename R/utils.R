@@ -108,7 +108,7 @@ weights_almon <- function(n, orders = 1:3, do.inverse = TRUE, do.normalize = TRU
 #' @seealso \code{\link{ctr_agg}}
 #'
 #' @references Ghysels, Sinko and Valkanov (2007). \strong{MIDAS regressions: Further results and new directions}.
-#' \emph{Econometric Reviews 26, 53-90}, \url{https://doi.org/10.1080/07474930600972467}.
+#' \emph{Econometric Reviews 26, 53-90}, \doi{10.1080/07474930600972467}.
 #'
 #' @export
 weights_beta <- function(n, a = 1:4, b = 1:4, do.normalize = TRUE) {
@@ -165,7 +165,7 @@ setup_time_weights <- function(how, param) {
 #' \code{\link{ctr_agg}} to check if supplied aggregation hows are supported.
 #'
 #' @details
-#' See the package's \href{https://ssrn.com/abstract=3067734}{vignette} for a detailed explanation of all
+#' See the package's \href{https://www.ssrn.com/abstract=3067734}{vignette} for a detailed explanation of all
 #' aggregation options.
 #'
 # Weighting within documents or sentences (\code{"words"}):
