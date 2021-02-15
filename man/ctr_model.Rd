@@ -116,10 +116,10 @@ ctrCV4 <- ctr_model(model = "gaussian", type = "cv", do.iter = TRUE, h = 0, trai
 }
 \references{
 Tibshirani and Taylor (2012). \strong{Degrees of freedom in LASSO problems}.
-\emph{The Annals of Statistics 40, 1198-1232}, \url{https://doi.org/10.1214/12-AOS1003}.
+\emph{The Annals of Statistics 40, 1198-1232}, \doi{10.1214/12-AOS1003}.
 
 Zou, Hastie and Tibshirani (2007). \strong{On the degrees of freedom of the LASSO}.
-\emph{The Annals of Statistics 35, 2173-2192}, \url{https://doi.org/10.1214/009053607000000127}.
+\emph{The Annals of Statistics 35, 2173-2192}, \doi{10.1214/009053607000000127}.
 }
 \seealso{
 \code{\link{sento_model}}

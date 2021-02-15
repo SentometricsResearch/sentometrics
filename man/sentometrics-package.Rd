@@ -35,16 +35,16 @@ Please cite the package in publications. Use \code{citation("sentometrics")}.
 \references{
 Ardia, Bluteau and Boudt (2019). \strong{Questioning the news about economic growth: Sparse forecasting using
 thousands of news-based sentiment values}. \emph{International Journal of Forecasting 35, 1370-1386},
-\url{https://doi.org/10.1016/j.ijforecast.2018.10.010}.
+\doi{10.1016/j.ijforecast.2018.10.010}.
 
 Ardia, Bluteau, Borms and Boudt (2020). \strong{The R package sentometrics to compute, aggregate and
 predict with textual sentiment}. \emph{Forthcoming in Journal of Statistical Software},
-\url{https://doi.org/10.2139/ssrn.3067734}.
+\doi{10.2139/ssrn.3067734}.
 }
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://SentometricsResearch.github.io/sentometrics}
+  \item \url{https://sentometrics-research.com/sentometrics/}
   \item Report bugs at \url{https://github.com/SentometricsResearch/sentometrics/issues}
 }
 

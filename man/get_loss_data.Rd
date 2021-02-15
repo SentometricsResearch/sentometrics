@@ -64,7 +64,7 @@ mcs <- MCS::MCSprocedure(lossData)}
 }
 \references{
 Hansen, Lunde and Nason (2011). \strong{The model confidence set}. \emph{Econometrica 79, 453-497},
-\url{https://doi.org/10.3982/ECTA5771}.
+\doi{10.3982/ECTA5771}.
 }
 \seealso{
 \code{\link{sento_model}}, \code{\link[MCS]{MCSprocedure}}
