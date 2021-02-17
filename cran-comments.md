@@ -1,7 +1,7 @@
 
-## resubmission (version 0.8.3) [15/02/2021]
+## resubmission (version 0.8.3) [17/02/2021]
 
-- adjusted some URL and doi links that gave NOTEs
+- adjusted some URL and doi links that gave redirects (devtools::check_win_devel() revealed no remaining NOTEs)
 
 <!--- ## submission (version 0.8.3) [13/02/2021]
 
