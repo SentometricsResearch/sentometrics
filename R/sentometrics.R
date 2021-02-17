@@ -78,9 +78,9 @@
 #' @references Loughran and McDonald (2011). \strong{When is a liability not a liability? Textual analysis, dictionaries, and 10-Ks}.
 #' \emph{Journal of Finance 66, 35-65}, \doi{10.1111/j.1540-6261.2010.01625.x}.
 #'
-#' @source \href{https://doi.org/10.1007/s10579-016-9364-5}{FEEL lexicon}. Retrieved November 1, 2017.
+#' @source \href{https://link.springer.com/article/10.1007\%2Fs10579-016-9364-5}{FEEL lexicon}. Retrieved November 1, 2017.
 #' @source \href{http://www.wjh.harvard.edu/~inquirer/spreadsheet_guide.htm}{GI lexicon}. Retrieved November 1, 2017.
-#' @source \href{https://doi.org/10.1177/0021943608319388}{HENRY lexicon}. Retrieved
+#' @source \href{https://journals.sagepub.com/doi/abs/10.1177/0021943608319388}{HENRY lexicon}. Retrieved
 #' November 1, 2017.
 #' @source \href{https://sraf.nd.edu/textual-analysis/resources/}{LM lexicon}. Retrieved
 #' November 1, 2017.
