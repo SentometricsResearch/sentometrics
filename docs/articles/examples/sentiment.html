@@ -226,7 +226,7 @@
 <div id="sentiment-calculation-from-a-tm-simplecorpus-object" class="section level3">
 <h3 class="hasAnchor">
 <a href="#sentiment-calculation-from-a-tm-simplecorpus-object" class="anchor"></a>Sentiment calculation from a <strong><code>tm</code></strong> <code>SimpleCorpus</code> object</h3>
-<p>Another simple sentiment calculation, this time using a <strong><code>tm</code></strong> package corpus object. Super flexible! The output is this time slightly different, as the scores are divided by the total number of words.</p>
+<p>Another simple sentiment calculation, this time using a <strong><code>tm</code></strong> package corpus object. Super flexible! The output is on purpose slightly different, as the scores are divided by the total number of words.</p>
 <div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tm/man/SimpleCorpus.html">SimpleCorpus</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/tm/man/VectorSource.html">VectorSource</a></span>(<span class="no">usnews</span><span class="kw">[[</span><span class="st">"texts"</span>]]))
 
 <span class="no">corpus</span></pre></body></html></div>
@@ -412,9 +412,9 @@
 
 <span class="no">s</span></pre></body></html></div>
 <pre><code>##    id       date word_count lexNL--ftr lexFR--ftr lexEN--ftr
-## 1:  1 2020-12-27          5        0.5        0.0        0.0
-## 2:  2 2020-12-27          5        0.0        0.5        0.0
-## 3:  3 2020-12-27          5        0.0        0.0        0.5</code></pre>
+## 1:  1 2021-02-18          5        0.5        0.0        0.0
+## 2:  2 2021-02-18          5        0.0        0.5        0.0
+## 3:  3 2021-02-18          5        0.0        0.0        0.5</code></pre>
 </div>
   </div>
 
