@@ -62,7 +62,7 @@ head(s)
 
 ### Sentiment calculation from a **`tm`** `SimpleCorpus` object
 
-Another simple sentiment calculation, this time using a **`tm`** package corpus object. Super flexible! The output is this time slightly different, as the scores are divided by the total number of words.
+Another simple sentiment calculation, this time using a **`tm`** package corpus object. Super flexible! The output is on purpose slightly different, as the scores are divided by the total number of words.
 
 ```{r}
 corpus <- SimpleCorpus(VectorSource(usnews[["texts"]]))
