@@ -30,7 +30,8 @@ struct SentimentScorerSentences : public RcppParallel::Worker {
                            const bool isFreqWeighting,
                            const int valenceType,
                            Rcpp::NumericMatrix sentScores)
-    : texts(texts), lexiconMap(lexiconMap), valenceMap(valenceMap), how(how), nL(nL), N(N), frequencyMap(frequencyMap), inverseFrequencyMap(inverseFrequencyMap), isFreqWeighting(isFreqWeighting), valenceType(valenceType), sentScores(sentScores) {}
+    : texts(texts), lexiconMap(lexiconMap), valenceMap(valenceMap), how(how), nL(nL), N(N), frequencyMap(frequencyMap),
+      inverseFrequencyMap(inverseFrequencyMap), isFreqWeighting(isFreqWeighting), valenceType(valenceType), sentScores(sentScores) {}
 
   void operator()(std::size_t begin, std::size_t end) {
 
@@ -62,7 +63,8 @@ struct SentimentScorerSentences : public RcppParallel::Worker {
           tokenScores[j] = lexiconMap.at(token);
 
           if (how != "proportional" && how != "counts" && how != "proportionalSquareRoot") {
-            update_token_weights(tokenWeights, normalizer, nPolarized, j, nTokens, how, nL, tokenScores, tokenFrequency, tokenInverseFrequency, maxTokenFrequency, N);
+            update_token_weights(tokenWeights, normalizer, nPolarized, j, nTokens, how, nL,
+                                 tokenScores, tokenFrequency, tokenInverseFrequency, maxTokenFrequency, N);
           }
 
           if (valenceType == 1) { // bigrams approach
@@ -81,7 +83,8 @@ struct SentimentScorerSentences : public RcppParallel::Worker {
               if (lexiconMap.find(token_k) != lexiconMap.end()) {
                 tokenScores[k] = lexiconMap.at(token_k);
                 if (how != "proportional" && how != "counts" && how != "proportionalSquareRoot") {
-                  update_token_weights(tokenWeights, normalizer, nPolarized, k, nTokens, how, nL, tokenScores, tokenFrequency, tokenInverseFrequency, maxTokenFrequency, N);
+                  update_token_weights(tokenWeights, normalizer, nPolarized, k, nTokens, how,
+                                       nL, tokenScores, tokenFrequency, tokenInverseFrequency, maxTokenFrequency, N);
                 }
               } else if (valenceMap.find(token_k) != valenceMap.end()) {
                 double valType = valenceMap.at(token_k);
@@ -96,7 +99,8 @@ struct SentimentScorerSentences : public RcppParallel::Worker {
           }
         }
       }
-      update_token_scores(scores, tokenScores, normalizer, nPolarized, tokenShifters, tokenWeights, nL, nTokens, how, nPuncts);
+      update_token_scores(scores, tokenScores, normalizer, nPolarized, tokenShifters,
+                          tokenWeights, nL, nTokens, how, nPuncts);
 
       sentScores(i, 0) = nTokens - nPuncts;
       for (int m = 0; m < nL; m++) {

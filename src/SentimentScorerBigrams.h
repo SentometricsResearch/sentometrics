@@ -28,7 +28,8 @@ struct SentimentScorerBigrams : public RcppParallel::Worker {
                          std::unordered_map< std::string, double > inverseFrequencyMap,
                          const bool isFreqWeighting,
                          Rcpp::NumericMatrix sentScores)
-    : texts(texts), lexiconMap(lexiconMap), valenceMap(valenceMap), how(how), nL(nL), N(N), frequencyMap(frequencyMap), inverseFrequencyMap(inverseFrequencyMap), isFreqWeighting(isFreqWeighting), sentScores(sentScores) {}
+    : texts(texts), lexiconMap(lexiconMap), valenceMap(valenceMap), how(how), nL(nL), N(N), frequencyMap(frequencyMap),
+      inverseFrequencyMap(inverseFrequencyMap), isFreqWeighting(isFreqWeighting), sentScores(sentScores) {}
 
   void operator()(std::size_t begin, std::size_t end) {
 
@@ -61,7 +62,8 @@ struct SentimentScorerBigrams : public RcppParallel::Worker {
           tokenScores[j] = lexiconMap.at(token);
 
           if (how != "proportional" && how != "counts" && how != "proportionalSquareRoot") {
-            update_token_weights(tokenWeights, normalizer, nPolarized, j, nTokens, how, nL, tokenScores, tokenFrequency, tokenInverseFrequency, maxTokenFrequency, N);
+            update_token_weights(tokenWeights, normalizer, nPolarized, j, nTokens, how,
+                                 nL, tokenScores, tokenFrequency, tokenInverseFrequency, maxTokenFrequency, N);
           }
 
           int k = std::max(0, j - 1);
@@ -70,7 +72,8 @@ struct SentimentScorerBigrams : public RcppParallel::Worker {
           }
         }
       }
-      update_token_scores(scores, tokenScores, normalizer, nPolarized, tokenShifters, tokenWeights, nL, nTokens, how, nPuncts);
+      update_token_scores(scores, tokenScores, normalizer, nPolarized, tokenShifters,
+                          tokenWeights, nL, nTokens, how, nPuncts);
 
       sentScores(i, 0) = nTokens;
       for (int m = 0; m < nL; m++) {
