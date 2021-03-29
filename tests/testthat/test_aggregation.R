@@ -57,7 +57,7 @@ test_that("Aggregation control function breaks when wrong inputs supplied", {
 
 # aggregate.sentiment
 s1 <- compute_sentiment(corpus, lex, how = "proportional")
-s2 <- compute_sentiment(quanteda::texts(corpus), lex, how = "counts")
+s2 <- compute_sentiment(as.character(corpus), lex, how = "counts")
 s3 <- compute_sentiment(corpus, lexClust, how = "proportionalSquareRoot", do.sentence = TRUE)
 sentimentAgg <- aggregate(s3, ctr_agg(lag = 7), do.full = FALSE)
 test_that("Test input and output of sentiment aggregation functionality", {
