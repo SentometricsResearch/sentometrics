@@ -51,7 +51,7 @@ m3 <- merge(s3, s6)
 m4 <- merge(s4, s5)
 nrow(m4) == nrow(m2) # TRUE
 
-# different methods and weighting add rows and columns
+# different methods and weighting adds rows and columns
 ## rows are added only when the different weighting
 ## approach for a specific method gives other sentiment values
 m5 <- merge(s4, s7)

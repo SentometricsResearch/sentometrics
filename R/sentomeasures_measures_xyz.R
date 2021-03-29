@@ -166,7 +166,7 @@ measures_update <- function(sento_measures, sento_corpus, lexicons) {
   ctr <- sento_measures$ctr
   sentiment <- sento_measures$sentiment
   partialCorpus <- quanteda::corpus_subset(sento_corpus, !quanteda::docnames(sento_corpus) %in% sentiment$id)
-  if (length(quanteda::texts(partialCorpus)) > 0) {
+  if (quanteda::ndoc(partialCorpus) > 0) {
     partialSentiment <- compute_sentiment(partialCorpus, lexicons, how = ctr$within$howWithin, nCore = ctr$nCore)
     sentiment <- merge(sentiment, partialSentiment)
   }
