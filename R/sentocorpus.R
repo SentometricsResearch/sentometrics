@@ -343,7 +343,7 @@ corpus_summarize <- function(x, by = "day", features = NULL) {
   # statistics
   dt <- data.table::data.table(
     quanteda::docvars(x),
-    "nTokens" = as.numeric(sapply(as.character(x), length))
+    "nTokens" = as.numeric(sapply(tokenize_texts(as.character(x)), length))
   )
 
   if (!is.null(features)) {
