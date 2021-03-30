@@ -266,7 +266,7 @@ timingsFull.many <- lapply(nTexts, function(n) {
   cat("Run timings for texts size of", n, "\n")
   corpus <-  quanteda::corpus(do.call(rbind, lapply(1:25, function(j) usnews))[keep[1:n], ],
                               text_field = "texts")
-  texts <- quanteda::texts(corpus)
+  texts <- as.character(corpus)
   out <- microbenchmark(
     sentoUnigramsAllFunc(texts),
     sentoUnigramsAllFeaturesFunc(corpus),
