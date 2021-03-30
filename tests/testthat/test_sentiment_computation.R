@@ -3,6 +3,7 @@
 
 context("Sentiment computation")
 
+library("sentometrics")
 library("data.table")
 library("quanteda")
 library("tm")
@@ -19,7 +20,7 @@ txt <- system.file("texts", "txt", package = "tm")
 scorp <- tm::SimpleCorpus(tm::DirSource(txt))
 # scorp$content[1] <- "A text for which we want to calculate above average sentiment."
 # scorp$content[2] <- "A text for which we want to calculate below average sentiment."
-scorp$content[3] <- quanteda::texts(corpus)[3]
+scorp$content[3] <- as.character(corpus)[3]
 
 # VCorpus creation
 reuters <- system.file("texts", "crude", package = "tm")
@@ -44,6 +45,8 @@ lexLang <- lexWrong <- list(en = lEn, fr = lFr)
 names(lexWrong)[2] <- "frr"
 
 ### tests from here ###
+
+load(system.file("extdata", "test_data.rda", package = "sentometrics")) # benchmark sentiment scores
 
 sanity_sentiment <- function(texts, lexicon, valence = NULL) {
   setkey(lexicon, "x")
@@ -73,21 +76,21 @@ sanity_sentiment <- function(texts, lexicon, valence = NULL) {
 }
 
 sentimentList <- list(
-  s1 = compute_sentiment(quanteda::texts(corpus), lex, how = "counts"),
-  s2 = compute_sentiment(quanteda::texts(corpus), lex[1:3], how = "counts"),
-  s3 = compute_sentiment(quanteda::texts(corpus), lex, how = "proportional"),
-  s4 = compute_sentiment(quanteda::texts(corpus), lex, how = "proportionalPol"),
+  s1 = compute_sentiment(as.character(corpus), lex, how = "counts"),
+  s2 = compute_sentiment(as.character(corpus), lex[1:3], how = "counts"),
+  s3 = compute_sentiment(as.character(corpus), lex, how = "proportional"),
+  s4 = compute_sentiment(as.character(corpus), lex, how = "proportionalPol"),
   s5 = compute_sentiment(quanteda::corpus(usnews[1:250, "texts"]), lex, how = "counts"),
   s6 = compute_sentiment(quanteda::corpus(usnews[1:250, c("texts", "wsj", "economy")], text_field = "texts"),
                          lex, how = "counts"),
   s7 = compute_sentiment(corpus, lex, how = "counts"),
-  s8 = compute_sentiment(quanteda::texts(corpus), lexSplit, how = "counts"),
-  # s9 = compute_sentiment(quanteda::texts(corpus), lex, how = "TF", nCore = 2), # no multicore computation in CRAN checks
-  s10 = compute_sentiment(quanteda::texts(corpus), lexClust, how = "counts"),
+  s8 = compute_sentiment(as.character(corpus), lexSplit, how = "counts"),
+  # s9 = compute_sentiment(as.character(corpus), lex, how = "TF", nCore = 2), # no multicore computation in CRAN checks
+  s10 = compute_sentiment(as.character(corpus), lexClust, how = "counts"),
   s11 = compute_sentiment(corpus, lexClust, how = "proportional"),
-  s12 = compute_sentiment(quanteda::texts(corpus), lexClust, how = "proportionalPol"),
-  s13 = compute_sentiment(corpus, lex, how = "exponential"),
-  s14 = compute_sentiment(corpus, lex, how = "inverseExponential"),
+  s12 = compute_sentiment(as.character(corpus), lexClust, how = "proportionalPol"),
+#  s13 = compute_sentiment(corpus, lex, how = "exponential"),
+#  s14 = compute_sentiment(corpus, lex, how = "inverseExponential"),
   s15 = compute_sentiment(corpus, lex, how = "UShaped"),
   s16 = compute_sentiment(corpus, lex, how = "inverseUShaped"),
   # s17 = compute_sentiment(corpus, lex, how = "TF"),
@@ -101,11 +104,6 @@ sentimentList <- list(
 )
 
 # compute_sentiment
-# load(system.file("extdata", "test_data.rda", package = "sentometrics")) # benchmark sentiment scores
-# test_that("Agreement between legacy benchmark and current produced sentiment scores", {
-#   expect_equal(test_data, sentimentList[1:11])
-# })
-
 test_that("Agreement between sentiment scores on document-level across input objects", {
   expect_true(all(unlist(lapply(sentimentList, function(s) nrow(s) == 250))))
   expect_true(all(unlist(lapply(sentimentList[-1], function(s) all(s$word_count == sentimentList$s1$word_count)))))
@@ -115,21 +113,27 @@ test_that("Agreement between sentiment scores on document-level across input obj
                     sentimentList$s5[, c("GI_en", "LM_en", "HENRY_en")])
   expect_equivalent(sentimentList$s6[, -c(1:2)],
                     sentimentList$s7[, colnames(sentimentList$s6)[-c(1:2)], with = FALSE])
-  expect_error(compute_sentiment(quanteda::texts(corpus), lex, how = "notAnOption"))
-  expect_warning(compute_sentiment(quanteda::texts(corpus), lex, how = "counts", nCore = -1))
-  expect_error(compute_sentiment(quanteda::texts(corpus), list_lexicons))
+  expect_error(compute_sentiment(as.character(corpus), lex, how = "notAnOption"))
+  expect_warning(compute_sentiment(as.character(corpus), lex, how = "counts", nCore = -1))
+  expect_error(compute_sentiment(as.character(corpus), list_lexicons))
   expect_true(all.equal(sentimentList$s3[3, -1],
                         compute_sentiment(scorp[3], lex, how = "proportional")[, -1]))
   # expect_warning(compute_sentiment(vcorp, lex, how = "proportional"))
   expect_error(compute_sentiment(corpusLang, lex, how = "proportional"))
   expect_true("language" %in% colnames(quanteda::docvars(corpusLang)))
   expect_error(compute_sentiment(corpusLang, lexWrong, how = "proportional"))
-  expect_true(all.equal(sentimentList$s1$GI_en, sanity_sentiment(quanteda::texts(corpus), lex$GI_en, lex$valence)))
-  expect_true(all.equal(sentimentList$s2$GI_en, sanity_sentiment(quanteda::texts(corpus), lex$GI_en)))
+
+  # expect_true(all.equal(test_data, sentimentList[1:11])) # compare with old sentiment scores
+  setcolorder(sentimentList[[7]], names(test_data[[7]])) # make column order the same
+  setcolorder(sentimentList[[10]], names(test_data[[10]])) # make column order the same
+  expect_equal(test_data, sentimentList[1:11])
+
+  expect_true(all.equal(sentimentList$s1$GI_en, sanity_sentiment(as.character(corpus), lex$GI_en, lex$valence)))
+  expect_true(all.equal(sentimentList$s2$GI_en, sanity_sentiment(as.character(corpus), lex$GI_en)))
 })
 
 sentimentSentenceList <- list(
-  s1 = compute_sentiment(quanteda::texts(corpus), lexClust, how = "counts", do.sentence = TRUE),
+  s1 = compute_sentiment(as.character(corpus), lexClust, how = "counts", do.sentence = TRUE),
   s2 = compute_sentiment(quanteda::corpus(usnews[1:250, "texts"]),
                          lexClust, how = "counts", do.sentence = TRUE),
   s3 = compute_sentiment(quanteda::corpus(usnews[1:250, c("texts", "wsj", "economy")], text_field = "texts"),
@@ -194,12 +198,12 @@ test_that("Correct binding of several sentiment objects", {
 })
 
 # tf-idf comparison sentometrics vs. quanteda
-toks <- stri_split_boundaries(stri_trans_tolower(quanteda::texts(corpus)), type = "word", skip_word_none = TRUE)
+toks <- stri_split_boundaries(stri_trans_tolower(as.character(corpus)), type = "word", skip_word_none = TRUE)
 dfmQ <- quanteda::dfm(as.tokens(toks)) %>% dfm_tfidf(k = 1)
 posScores <- rowSums(as.matrix(quanteda::dfm_select(dfmQ, lex$GI_en[y == 1, x])))
 negScores <- rowSums(as.matrix(quanteda::dfm_select(dfmQ, lex$GI_en[y == -1, x])))
 test_that("Same tf-idf scoring for sentometrics and quanteda", {
-  expect_equal(compute_sentiment(quanteda::texts(corpus), lex[-length(lex)], tokens = toks, "TFIDF")[["GI_en"]],
+  expect_equal(compute_sentiment(as.character(corpus), lex[-length(lex)], tokens = toks, "TFIDF")[["GI_en"]],
                unname(posScores - negScores))
 })
 

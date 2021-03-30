@@ -34,7 +34,7 @@ compute_sentiment_lexicons <- function(x, tokens, dv, lexicons, how, do.sentence
   RcppParallel::setThreadOptions(numThreads = threads)
   if (is_only_character(x)) x <- quanteda::corpus(x)
   if (do.sentence == TRUE) {
-    tokens <- tokenize_texts(quanteda::texts(x), tokens, type = "sentence")
+    tokens <- tokenize_texts(as.character(x), tokens, type = "sentence")
     valenceType <- ifelse(is.null(lexicons[["valence"]]), 0,
                           ifelse(colnames(lexicons[["valence"]])[2] == "y", 1, 2))
     s <- compute_sentiment_sentences(unlist(tokens, recursive = FALSE),
@@ -50,7 +50,7 @@ compute_sentiment_lexicons <- function(x, tokens, dv, lexicons, how, do.sentence
       data.table::setcolorder(s, c("id", "sentence_id", "word_count"))
     }
   } else {
-    tokens <- tokenize_texts(quanteda::texts(x), tokens, type = "word")
+    tokens <- tokenize_texts(as.character(x), tokens, type = "word")
     if (is.null(lexicons[["valence"]])) { # call to C++ code
       s <- compute_sentiment_onegrams(tokens, lexicons, how)
     } else {

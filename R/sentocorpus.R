@@ -246,7 +246,7 @@ add_features <- function(corpus, featuresdf = NULL, keywords = NULL, do.binary =
       stop("Please provide a list with proper names as part of the 'keywords' argument.")
     if (!is_names_correct(names(keywords)))
       stop("At least one feature's name in 'keywords' contains '-'. Please provide proper names.")
-    textsAll <- quanteda::texts(corpus)
+    textsAll <- as.character(corpus)
     if (do.binary == TRUE) fct <- stringi::stri_detect
     else fct <- stringi::stri_count
     N <- length(keywords)
@@ -343,7 +343,7 @@ corpus_summarize <- function(x, by = "day", features = NULL) {
   # statistics
   dt <- data.table::data.table(
     quanteda::docvars(x),
-    "nTokens" = as.numeric(sapply(tokenize_texts(quanteda::texts(x)), length))
+    "nTokens" = as.numeric(sapply(tokenize_texts(as.character(x)), length))
   )
 
   if (!is.null(features)) {
@@ -416,7 +416,7 @@ as.sento_corpus.corpus <- function(x, dates = NULL, do.clean = FALSE) {
     features$date <- dates # avoids accidental duplication
   }
   dt <- data.table::data.table("id" = quanteda::docnames(x),
-                               "texts" = quanteda::texts(x),
+                               "texts" = as.character(x),
                                features) # includes date column
   data.table::setcolorder(dt, c("id", "date", "texts"))
   sento_corpus(dt, do.clean)
@@ -522,14 +522,14 @@ as.sento_corpus <- function(x, dates = NULL, do.clean = FALSE) {
 
 #' @export
 as.data.table.sento_corpus <- function(x, ...) {
-  dt <- data.table::data.table(id = quanteda::docnames(x), texts = quanteda::texts(x), quanteda::docvars(x))
+  dt <- data.table::data.table(id = quanteda::docnames(x), texts = as.character(x), quanteda::docvars(x))
   data.table::setcolorder(dt, c("id", "date", "texts"))
   dt
 }
 
 #' @export
 as.data.frame.sento_corpus <- function(x, ...) {
-  df <- cbind(quanteda::docvars(x), texts = quanteda::texts(x))
+  df <- cbind(quanteda::docvars(x), texts = as.character(x))
   df[, c("date", "texts", setdiff(colnames(df), c("date", "texts")))]
 }
 

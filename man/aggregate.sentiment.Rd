@@ -42,7 +42,7 @@ l2 <- sento_lexicons(list_lexicons[c("LM_en", "HENRY_en")],
                      list_valence_shifters[["en"]][, c("x", "t")])
 sent1 <- compute_sentiment(corpusSample, l1, how = "counts")
 sent2 <- compute_sentiment(corpusSample, l2, do.sentence = TRUE)
-sent3 <- compute_sentiment(quanteda::texts(corpusSample), l2,
+sent3 <- compute_sentiment(as.character(corpusSample), l2,
                            do.sentence = TRUE)
 ctr <- ctr_agg(howTime = c("linear"), by = "year", lag = 3)
 
