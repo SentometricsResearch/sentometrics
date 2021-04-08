@@ -207,3 +207,6 @@ test_that("Same tf-idf scoring for sentometrics and quanteda", {
                unname(posScores - negScores))
 })
 
+test_that("Acceptance of quanteda tokens for tokens argument", {
+  expect_s3_class(compute_sentiment(corpus, lex, tokens = quanteda::tokens(usnews[1:250, "texts"])), "sentiment")
+})
