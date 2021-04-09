@@ -71,7 +71,97 @@
 #' corpusLang <- sento_corpus(corpusdf = usnews)
 #'
 #' @export
-sento_corpus <- function(corpusdf, do.clean = FALSE) {
+sento_corpus <- function(corpusdf, features = NULL, do.clean = FALSE) {
+  UseMethod("sento_corpus")
+}
+
+#' @export
+sento_corpus.data.frame <- function(corpusdf, features = NULL, do.clean = FALSE) {
+
+  corpusdf <- as.data.frame(corpusdf)
+
+  # check for presence of id, date and texts columns
+  nonfeatures <- c("id", "date", "texts")
+  cols <- stringi::stri_replace_all(colnames(corpusdf), "_", regex = " ")
+  # allow for either "texts" or "text"
+  if (any("text" %in% cols) & !any("texts" %in% cols)) cols[cols == "text"] <- "texts"
+  colnames(corpusdf) <- cols
+  if (!all(nonfeatures %in% cols))
+    stop("The input data.frame should have at least three columns named 'id', 'date' and 'texts'.")
+  # check for type of texts column
+  if (!is.character(corpusdf[["texts"]])) stop("The 'texts' column should be of type character.")
+  # check for date format
+  dates <- as.Date(corpusdf$date, format = "%Y-%m-%d")
+  if (any(is.na(dates))) stop("Some dates are not in appropriate format. Should be 'yyyy-mm-dd'.")
+  else corpusdf$date <- dates
+
+  corp <- quanteda::corpus(x = corpusdf, docid_field = "id", text_field = "texts")
+
+  sento_corpus.corpus(corp, features, do.clean)
+}
+
+sento_corpus.corpus <- function(corpusdf, features_names = NULL, do.clean = FALSE) {
+
+  quanteda::meta(corpusdf, "info") <- "This is a sento_corpus object based on the quanteda corpus object."
+
+  docvars <- quanteda::docvars(corpusdf)
+  if (!("date" %in% colnames(docvars))) {
+    stop("There is no 'date' column in the docvars of the corpus. Please set dates using `docvars(x, 'date') <-`  first.")
+  }
+  corpusdf$date <- as.Date(corpusdf$date, format = "%Y-%m-%d")
+  if (any(is.na(corpusdf$date))) stop("Some dates are not in appropriate format. Should be 'yyyy-mm-dd'.")
+
+
+  nonfeatures <- c("date")
+  if ("language" %in% colnames(docvars)) {
+    nonfeatures <- c(nonfeatures, "language")
+  }
+
+  features <- docvars[sapply(docvars, is.numeric)]
+  features <- features[!(colnames(features) %in% nonfeatures)]
+  check_feature_names(colnames(features))
+  message("We retain the following columns as features: ", paste0(colnames(features), collapse = ", "), ".")
+  if (length(features) == 0) {
+    features[["dummyFeature"]] <- 1
+    message("We detected no features, so we added a dummy feature 'dummyFeature'.")
+  } else {
+    if (any(sapply(features, is.factor))) {
+      features[["dummyFeature"]] <- 1
+      message("We added a dummy feature for feature-neutral computation of factors in the docvars.")
+    }
+    if (anyDuplicated(colnames(features))) {
+      cols <- colnames(features)
+      duplics <- unique(cols[duplicated(cols)])
+      stop(paste0("Names of feature columns are not unique. Following names occur at least twice: ",
+                  paste0(duplics, collapse = ", "), "."))
+    }
+    mins <- sapply(features, function(f) min(f, na.rm = TRUE)) >= 0
+    maxs <- sapply(features, function(f) max(f, na.rm = TRUE)) <= 1
+    isBounded <- sapply(1:length(features), function(j) return(all(c(mins[j], maxs[j]))))
+    if (any(!isBounded)) {
+      toScale <- which(!isBounded)
+      for (col in toScale) {
+        vals <- features[, col]
+        features[, col] <- (vals - min(vals)) / (max(vals) - min(vals))
+      }
+      warning(paste0("Following feature columns have been rescaled: ", paste0(colnames(features)[toScale], collapse = ", "), "."))
+    }
+  }
+
+  # replace features names
+  colnames(features) <- stringi::stri_replace_all(colnames(features), "_", regex = " ")
+
+  corp <- corpusdf
+  attr(corp, "features") <- features
+  class(corp) <- c("sento_corpus", class(corp))
+
+  ## TODO: re-add do.clean somewhere
+  ## TODO: allow feature selection
+
+  corp
+}
+
+sento_corpusOLD <- function(corpusdf, features = NULL, do.clean = FALSE) {
 
   corpusdf <- as.data.frame(corpusdf)
 

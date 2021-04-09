@@ -4,7 +4,7 @@
 \alias{sento_corpus}
 \title{Create a sento_corpus object}
 \usage{
-sento_corpus(corpusdf, do.clean = FALSE)
+sento_corpus(corpusdf, features = NULL, do.clean = FALSE)
 }
 \arguments{
 \item{corpusdf}{a \code{data.frame} (or a \code{data.table}, or a \code{tbl}) with as named columns: a document \code{"id"}

@@ -285,14 +285,15 @@ compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, 
 
   languages <- tryCatch(unique(quanteda::docvars(x, field = "language")), error = function(e) NULL)
   if (is.null(languages)) {
-    features <- names(quanteda::docvars(x))[-1] # drop date column
-    dv <- data.table::as.data.table(quanteda::docvars(x)[c("date", features)])
+    # features <- names(quanteda::docvars(x))[-1] # drop date column
+    # dv <- data.table::as.data.table(quanteda::docvars(x)[c("date", features)])
+    dv <- data.table::data.table(date = quanteda::docvars(x, "date"), features(x))
     lexNames <- names(lexicons)[names(lexicons) != "valence"]
     s <- compute_sentiment_lexicons(x, tokens, dv, lexicons, how, do.sentence, nCore)
-    s <- spread_sentiment_features(s, features, lexNames) # there is always at least one feature
+    s <- spread_sentiment_features(s, colnames(features(x)), lexNames) # there is always at least one feature
   } else {
-    features <- names(quanteda::docvars(x))[-c(1:2)] # drop date and language column
-    s <- compute_sentiment_multiple_languages(x, lexicons, languages, features, how, tokens, do.sentence, nCore)
+    # features <- names(quanteda::docvars(x))[-c(1:2)] # drop date and language column
+    s <- compute_sentiment_multiple_languages(x, lexicons, languages, colnames(features(x)), how, tokens, do.sentence, nCore)
   }
 
   s <- s[order(date)] # order by date

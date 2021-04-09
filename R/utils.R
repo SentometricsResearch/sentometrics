@@ -3,6 +3,57 @@
 #################### UTILITY FUNCTIONS ####################
 ###########################################################
 
+#' @export
+docvars <- quanteda::docvars
+
+#' @export
+`docvars<-` <- quanteda::`docvars<-`
+
+#' @export
+features <- function(x, field = NULL) {
+  UseMethod("features")
+}
+
+#' @export
+features.sento_corpus <- function(x, field = NULL) {
+  if (is.null(field)) {
+    attr(x, "features")
+  } else {
+    attr(x, "features")[field]
+  }
+}
+
+# corpus_subset.sento_corpus <- function(x, subset, drop_docid = TRUE, ...) {
+#   features <- features(x)
+#   sub <- corpus_subset(as.corpus(x), subset, drop_docid = TRUE, ...)
+# }
+#' @export
+corpus_subset.sento_corpus <- function(x, subset, drop_docid = TRUE, ...) {
+  attrs <- attributes(x)
+  docvar <- attrs$docvars
+  r <- if (missing(subset)) {
+    rep_len(TRUE, ndoc(x))
+  }
+  else {
+    e <- substitute(subset)
+    r <- eval(e, docvar, parent.frame())
+    r & !is.na(r)
+  }
+  return(x[r, drop_docid = drop_docid])
+}
+#' @export
+`[.sento_corpus` <- function(x, i, drop_docid = TRUE) {
+  if (missing(i))
+    return(x)
+  features <- features(x)[i, ]
+  r <- NextMethod(x)
+  attr(r, "features") <- features
+
+  r
+}
+
+
+
 #' Compute exponential weighting curves
 #'
 #' @description Computes exponential weighting curves. Handy to self-select specific time aggregation weighting schemes
