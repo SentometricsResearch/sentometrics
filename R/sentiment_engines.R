@@ -142,8 +142,8 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
 #' may be spurious and errors could occur. By default set to \code{NULL}.
 #' @param nCore a positive \code{numeric} that will be passed on to the \code{numThreads} argument of the
 #' \code{\link[RcppParallel]{setThreadOptions}} function, to parallelize the sentiment computation across texts. A
-#' value of 1 (default) implies no parallelization. Parallelization may improve speed of the sentiment
-#' computation only for sufficiently large corpora.
+#' value of 1 (default) implies no parallelization. Parallelization will improve speed of the sentiment
+#' computation only for a sufficiently large corpus.
 #' @param do.sentence a \code{logical} to indicate whether the sentiment computation should be done on
 #' sentence-level rather than document-level. By default \code{do.sentence = FALSE}.
 #'
