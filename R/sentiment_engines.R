@@ -136,10 +136,10 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
 #' @param how a single \code{character} vector defining how to perform aggregation within
 #' documents or sentences. For available options, see \code{\link{get_hows}()$words}.
 #' @param tokens a \code{list} of tokenized documents, or if \code{do.sentence = TRUE} a \code{list} of
-#' \code{list}s of tokenized sentences. This allows to specify your own tokenization scheme. Can result from the
-#' \pkg{quanteda}'s \code{\link[quanteda]{tokens}} function, the \pkg{tokenizers} package, or other. Make sure the tokens are
-#' constructed from (the texts from) the \code{x} argument, are unigrams, and preferably set to lowercase, otherwise, results
-#' may be spurious and errors could occur. By default set to \code{NULL}.
+#' \code{list}s of tokenized sentences. This allows to specify your own tokenization scheme. Can indirectly result from
+#' the \pkg{quanteda}'s \code{\link[quanteda]{tokens}} function, the \pkg{tokenizers} package, or other (see examples).
+#' Make sure the tokens are constructed from (the texts from) the \code{x} argument, are unigrams, and preferably
+#' set to lowercase, otherwise, results may be spurious and errors could occur. By default set to \code{NULL}.
 #' @param nCore a positive \code{numeric} that will be passed on to the \code{numThreads} argument of the
 #' \code{\link[RcppParallel]{setThreadOptions}} function, to parallelize the sentiment computation across texts. A
 #' value of 1 (default) implies no parallelization. Parallelization will improve speed of the sentiment

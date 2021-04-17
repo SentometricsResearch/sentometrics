@@ -1,7 +1,11 @@
 
-## resubmission (version 0.8.3) [17/02/2021]
+## resubmission (version 0.8.4) [17/04/2021]
 
-- adjusted some URL and doi links that gave redirects (devtools::check_win_devel() revealed no remaining NOTEs)
+**new**: internal compliance fixes related to new quanteda API (resolves CRAN significant warnings)
+
+<!--- ## resubmission (version 0.8.3) [17/02/2021]
+
+- adjusted some URL and doi links that gave redirects (devtools::check_win_devel() revealed no remaining NOTEs) --->
 
 <!--- ## submission (version 0.8.3) [13/02/2021]
 
@@ -79,14 +83,14 @@
 <!--- ## resubmission (version 0.3) [18/03/2018]
 
 - some examples modified to diminish elapsed time (to pass pre-test)
-- R depends now >= 3.3.0, import of sentimentr omitted
+- R depends now >= 3.3.0, import of sentimentr omitted --->
 
-## submission (version 0.3) [18/03/2018]
+<!--- ## submission (version 0.3) [18/03/2018]
 
 **new**: several additional functions and arguments, small bug fixes and clarifications in documentation 
 - marked UTF-8 strings will remain; this is intentional and comes from the built-in French (mostly) and Dutch word lists --->
 
-<!--- ## Re-submission (version 0.2) [12/11/2017]
+<!--- ## resubmission (version 0.2) [12/11/2017]
 
 - added reference to vignette paper in 'Description' field of DESCRIPTION file
 - we relocated the code to the GitHub repo 'sborms/sentometrics' 

@@ -27,18 +27,18 @@ case of a \code{character} vector, sentiment is only computed across lexicons.}
 documents or sentences. For available options, see \code{\link{get_hows}()$words}.}
 
 \item{tokens}{a \code{list} of tokenized documents, or if \code{do.sentence = TRUE} a \code{list} of
-\code{list}s of tokenized sentences. This allows to specify your own tokenization scheme. Can result from the
-\pkg{quanteda}'s \code{\link[quanteda]{tokens}} function, the \pkg{tokenizers} package, or other. Make sure the tokens are
-constructed from (the texts from) the \code{x} argument, are unigrams, and preferably set to lowercase, otherwise, results
-may be spurious and errors could occur. By default set to \code{NULL}.}
+\code{list}s of tokenized sentences. This allows to specify your own tokenization scheme. Can indirectly result from
+the \pkg{quanteda}'s \code{\link[quanteda]{tokens}} function, the \pkg{tokenizers} package, or other (see examples).
+Make sure the tokens are constructed from (the texts from) the \code{x} argument, are unigrams, and preferably
+set to lowercase, otherwise, results may be spurious and errors could occur. By default set to \code{NULL}.}
 
 \item{do.sentence}{a \code{logical} to indicate whether the sentiment computation should be done on
 sentence-level rather than document-level. By default \code{do.sentence = FALSE}.}
 
 \item{nCore}{a positive \code{numeric} that will be passed on to the \code{numThreads} argument of the
 \code{\link[RcppParallel]{setThreadOptions}} function, to parallelize the sentiment computation across texts. A
-value of 1 (default) implies no parallelization. Parallelization may improve speed of the sentiment
-computation only for sufficiently large corpora.}
+value of 1 (default) implies no parallelization. Parallelization will improve speed of the sentiment
+computation only for a sufficiently large corpus.}
 }
 \value{
 If \code{x} is a \code{sento_corpus} object: a \code{sentiment} object, i.e., a \code{data.table} containing

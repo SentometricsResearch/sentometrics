@@ -23,7 +23,7 @@ Here is an overview of the most important anticipated developments, and known bu
 
 - Implement a structure to support high-frequency intraday aggregation.
 
-- Make more lexicons available (e.g. German and Spanish).
+- Make more lexicons available (e.g. in German and Spanish).
 
 - Give more control to the user to play with **`glmnet`** parameters in the `sento_model()` function.
 

@@ -1,4 +1,8 @@
 
+## sentometrics 0.8.4
+
+- Alignment with released **`quanteda`** v3.0.
+
 ## sentometrics 0.8.3
 
 - Features (or docvars) with names `"id"`, `"sentence_id"`, `"date"`, `"word_count"` or `"texts"` will not be accepted even when `numeric`, to avoid duplicate column names down the line. A clear error message is issued to alert users.
