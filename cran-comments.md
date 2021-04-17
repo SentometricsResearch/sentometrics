@@ -1,7 +1,11 @@
 
-## resubmission (version 0.8.4) [17/04/2021]
+## resubmission (version 0.8.4) [xx/04/2021]
 
-**new**: internal compliance fixes related to new quanteda API (resolves CRAN significant warnings)
+- adjusted one URL, added three packages to Suggests
+
+<!--- ## submission (version 0.8.4) [17/04/2021]
+
+**new**: internal compliance fixes related to newest quanteda API (resolves CRAN significant warnings) --->
 
 <!--- ## resubmission (version 0.8.3) [17/02/2021]
 

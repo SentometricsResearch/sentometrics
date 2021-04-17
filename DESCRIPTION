@@ -18,10 +18,13 @@ Encoding: UTF-8
 LazyData: true
 Suggests: covr, 
   doParallel, 
-  e1071, 
+  e1071,
+  lexicon,
+  MCS,
   NLP,
   parallel, 
   randomForest,
+  stopwords,
   testthat,
   tm
 Imports: caret,
