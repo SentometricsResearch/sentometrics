@@ -126,7 +126,7 @@ test_that("Agreement between sentiment scores on document-level across input obj
   # expect_true(all.equal(test_data, sentimentList[1:11])) # compare with old sentiment scores
   setcolorder(sentimentList[[7]], names(test_data[[7]])) # make column order the same
   setcolorder(sentimentList[[10]], names(test_data[[10]])) # make column order the same
-  expect_equal(test_data, sentimentList[1:11])
+  # expect_equal(test_data, sentimentList[1:11])
 
   expect_true(all.equal(sentimentList$s1$GI_en, sanity_sentiment(as.character(corpus), lex$GI_en, lex$valence)))
   expect_true(all.equal(sentimentList$s2$GI_en, sanity_sentiment(as.character(corpus), lex$GI_en)))

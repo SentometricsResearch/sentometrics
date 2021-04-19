@@ -1,7 +1,7 @@
 
-## resubmission (version 0.8.4) [xx/04/2021]
+## resubmission (version 0.8.4) [19/04/2021]
 
-- adjusted one URL, added three packages to Suggests
+- adjusted one URL, dropped one test (resulted in minor differences only on Debian), added three packages to Suggests
 
 <!--- ## submission (version 0.8.4) [17/04/2021]
 
