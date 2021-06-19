@@ -5,7 +5,6 @@
 ^examples$
 ^THANKS$
 ^sentometrics-manual-.*\.pdf$
-^\.travis\.yml$
 ^cran-comments\.md$
 ^CRAN-RELEASE$
 ^appendix$
@@ -14,3 +13,4 @@
 ^vignettes$
 ^index\.md$
 ^_TODO$
+^\.github$
