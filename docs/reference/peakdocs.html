@@ -88,7 +88,7 @@ sentiment values (across sentiment calculation methods) occur only for one docum
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.4</span>
       </span>
     </div>
 
@@ -96,7 +96,7 @@ sentiment values (across sentiment calculation methods) occur only for one docum
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -167,7 +167,7 @@ sentiment values (across sentiment calculation methods) occur only for one docum
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/SentometricsResearch/sentometrics/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -201,7 +201,7 @@ in absolute terms). The extracted documents are unique, even when, for example, 
 sentiment values (across sentiment calculation methods) occur only for one document.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>peakdocs</span>(<span class='no'>sentiment</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"both"</span>, <span class='kw'>do.average</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>peakdocs</span><span class='op'>(</span><span class='va'>sentiment</span>, n <span class='op'>=</span> <span class='fl'>10</span>, type <span class='op'>=</span> <span class='st'>"both"</span>, do.average <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -233,25 +233,30 @@ value per document.</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A vector of type <code>"character"</code> corresponding to the <code>n</code> extracted document identifiers.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Samuel Borms</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>505</span>)
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>505</span><span class='op'>)</span>
 
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"usnews"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"sentometrics"</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"list_lexicons"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"sentometrics"</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"list_valence_shifters"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"sentometrics"</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"usnews"</span>, package <span class='op'>=</span> <span class='st'>"sentometrics"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"list_lexicons"</span>, package <span class='op'>=</span> <span class='st'>"sentometrics"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"list_valence_shifters"</span>, package <span class='op'>=</span> <span class='st'>"sentometrics"</span><span class='op'>)</span>
 
-<span class='no'>l</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sento_lexicons.html'>sento_lexicons</a></span>(<span class='no'>list_lexicons</span>[<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"LM_en"</span>, <span class='st'>"HENRY_en"</span>)])
+<span class='va'>l</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sento_lexicons.html'>sento_lexicons</a></span><span class='op'>(</span><span class='va'>list_lexicons</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"LM_en"</span>, <span class='st'>"HENRY_en"</span><span class='op'>)</span><span class='op'>]</span><span class='op'>)</span>
 
-<span class='no'>corpus</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sento_corpus.html'>sento_corpus</a></span>(<span class='kw'>corpusdf</span> <span class='kw'>=</span> <span class='no'>usnews</span>)
-<span class='no'>corpusSample</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>quanteda</span><span class='kw ns'>::</span><span class='fu'><a href='https://quanteda.io/reference/corpus_sample.html'>corpus_sample</a></span>(<span class='no'>corpus</span>, <span class='kw'>size</span> <span class='kw'>=</span> <span class='fl'>200</span>)
-<span class='no'>sent</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='compute_sentiment.html'>compute_sentiment</a></span>(<span class='no'>corpusSample</span>, <span class='no'>l</span>, <span class='kw'>how</span> <span class='kw'>=</span> <span class='st'>"proportionalPol"</span>)
+<span class='va'>corpus</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sento_corpus.html'>sento_corpus</a></span><span class='op'>(</span>corpusdf <span class='op'>=</span> <span class='va'>usnews</span><span class='op'>)</span>
+<span class='va'>corpusSample</span> <span class='op'>&lt;-</span> <span class='fu'>quanteda</span><span class='fu'>::</span><span class='fu'><a href='https://quanteda.io/reference/corpus_sample.html'>corpus_sample</a></span><span class='op'>(</span><span class='va'>corpus</span>, size <span class='op'>=</span> <span class='fl'>200</span><span class='op'>)</span>
+<span class='va'>sent</span> <span class='op'>&lt;-</span> <span class='fu'><a href='compute_sentiment.html'>compute_sentiment</a></span><span class='op'>(</span><span class='va'>corpusSample</span>, <span class='va'>l</span>, how <span class='op'>=</span> <span class='st'>"proportionalPol"</span><span class='op'>)</span>
 
 <span class='co'># extract the peaks</span>
-<span class='no'>peaksAbs</span> <span class='kw'>&lt;-</span> <span class='fu'>peakdocs</span>(<span class='no'>sent</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>5</span>)
-<span class='no'>peaksAbsQuantile</span> <span class='kw'>&lt;-</span> <span class='fu'>peakdocs</span>(<span class='no'>sent</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>0.50</span>)
-<span class='no'>peaksPos</span> <span class='kw'>&lt;-</span> <span class='fu'>peakdocs</span>(<span class='no'>sent</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"pos"</span>)
-<span class='no'>peaksNeg</span> <span class='kw'>&lt;-</span> <span class='fu'>peakdocs</span>(<span class='no'>sent</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"neg"</span>)</div></pre>
+<span class='va'>peaksAbs</span> <span class='op'>&lt;-</span> <span class='fu'>peakdocs</span><span class='op'>(</span><span class='va'>sent</span>, n <span class='op'>=</span> <span class='fl'>5</span><span class='op'>)</span>
+<span class='va'>peaksAbsQuantile</span> <span class='op'>&lt;-</span> <span class='fu'>peakdocs</span><span class='op'>(</span><span class='va'>sent</span>, n <span class='op'>=</span> <span class='fl'>0.50</span><span class='op'>)</span>
+<span class='va'>peaksPos</span> <span class='op'>&lt;-</span> <span class='fu'>peakdocs</span><span class='op'>(</span><span class='va'>sent</span>, n <span class='op'>=</span> <span class='fl'>5</span>, type <span class='op'>=</span> <span class='st'>"pos"</span><span class='op'>)</span>
+<span class='va'>peaksNeg</span> <span class='op'>&lt;-</span> <span class='fu'>peakdocs</span><span class='op'>(</span><span class='va'>sent</span>, n <span class='op'>=</span> <span class='fl'>5</span>, type <span class='op'>=</span> <span class='st'>"neg"</span><span class='op'>)</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -267,7 +272,7 @@ value per document.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

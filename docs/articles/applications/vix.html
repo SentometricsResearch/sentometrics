@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.4</span>
       </span>
     </div>
 
@@ -48,7 +48,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -119,7 +119,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/SentometricsResearch/sentometrics/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -139,7 +139,7 @@
 
       
 
-      </header><div class="row">
+      </header><script src="vix_files/header-attrs-2.9/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Predicting the VIX index</h1>
@@ -156,32 +156,35 @@
 <div id="load-packages" class="section level4">
 <h4 class="hasAnchor">
 <a href="#load-packages" class="anchor"></a>Load packages</h4>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"sentometrics"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"quanteda"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"stm"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"lexicon"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://sentometrics-research.com/sentometrics/">"sentometrics"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://quanteda.io">"quanteda"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="http://www.structuraltopicmodel.com/">"stm"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/trinker/lexicon">"lexicon"</a></span><span class="op">)</span></code></pre></div>
 </div>
 <div id="convert-the-built-in-corpus-into-a-sento_corpus-object" class="section level4">
 <h4 class="hasAnchor">
 <a href="#convert-the-built-in-corpus-into-a-sento_corpus-object" class="anchor"></a>Convert the built-in corpus into a <code>sento_corpus</code> object</h4>
 <p>First, transform the built-in corpus of 4145 U.S. news articles between 1995 and 2014 into a <code>sento_corpus</code> object. This corpus object is the best basis for the later addition of new metadata features, and the aggregation into textual sentiment time series.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">uscorpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/sento_corpus.html">sento_corpus</a></span>(<span class="kw pkg">sentometrics</span><span class="kw ns">::</span><span class="no"><a href="../../reference/usnews.html">usnews</a></span>)</pre></body></html></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">uscorpus</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/sento_corpus.html">sento_corpus</a></span><span class="op">(</span><span class="fu">sentometrics</span><span class="fu">::</span><span class="va"><a href="../../reference/usnews.html">usnews</a></span><span class="op">)</span></code></pre></div>
 </div>
 <div id="fit-a-topic-model" class="section level4">
 <h4 class="hasAnchor">
 <a href="#fit-a-topic-model" class="anchor"></a>Fit a topic model</h4>
 <p>To enrich the corpus, we fit a topic model to uncover a set of different latent items discussed across the news. To do the preprocessing into a document-term matrix, we use the <strong><code>quanteda</code></strong> package. The <strong><code>stm</code></strong> package is used to extract 8 topics.</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">dfm</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/dfm.html">dfm</a></span>(<span class="no">uscorpus</span>, <span class="kw">tolower</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
-           <span class="kw">remove_punct</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">remove_numbers</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">remove</span> <span class="kw">=</span> <span class="fu"><a href="https://quanteda.io/reference/reexports.html">stopwords</a></span>(<span class="st">"en"</span>)) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://quanteda.io/reference/dfm_select.html">dfm_remove</a></span>(<span class="kw">min_nchar</span> <span class="kw">=</span> <span class="fl">3</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://quanteda.io/reference/dfm_trim.html">dfm_trim</a></span>(<span class="kw">min_termfreq</span> <span class="kw">=</span> <span class="fl">0.95</span>, <span class="kw">termfreq_type</span> <span class="kw">=</span> <span class="st">"quantile"</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://quanteda.io/reference/dfm_trim.html">dfm_trim</a></span>(<span class="kw">max_docfreq</span> <span class="kw">=</span> <span class="fl">0.10</span>, <span class="kw">docfreq_type</span> <span class="kw">=</span> <span class="st">"prop"</span>)
-<span class="no">dfm</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/dfm_subset.html">dfm_subset</a></span>(<span class="no">dfm</span>, <span class="fu"><a href="https://quanteda.io/reference/ntoken.html">ntoken</a></span>(<span class="no">dfm</span>) <span class="kw">&gt;</span> <span class="fl">0</span>)
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">dfm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/tokens.html">tokens</a></span><span class="op">(</span><span class="va">uscorpus</span>, what <span class="op">=</span> <span class="st">"word"</span>, remove_punct <span class="op">=</span> <span class="cn">TRUE</span>, remove_numbers <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://quanteda.io/reference/dfm.html">dfm</a></span><span class="op">(</span>tolower <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://quanteda.io/reference/dfm_select.html">dfm_remove</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/stopwords/man/stopwords.html">stopwords</a></span><span class="op">(</span><span class="st">"en"</span><span class="op">)</span>, min_nchar <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://quanteda.io/reference/dfm_trim.html">dfm_trim</a></span><span class="op">(</span>min_termfreq <span class="op">=</span> <span class="fl">0.95</span>, termfreq_type <span class="op">=</span> <span class="st">"quantile"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://quanteda.io/reference/dfm_trim.html">dfm_trim</a></span><span class="op">(</span>max_docfreq <span class="op">=</span> <span class="fl">0.10</span>, docfreq_type <span class="op">=</span> <span class="st">"prop"</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://quanteda.io/reference/dfm_subset.html">dfm_subset</a></span><span class="op">(</span><span class="fu"><a href="https://quanteda.io/reference/ntoken.html">ntoken</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span>
 
-<span class="no">topicModel</span> <span class="kw">&lt;-</span> <span class="kw pkg">stm</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/stm/man/stm.html">stm</a></span>(<span class="no">dfm</span>, <span class="kw">K</span> <span class="kw">=</span> <span class="fl">8</span>, <span class="kw">verbose</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
-<span class="no">topTerms</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="kw pkg">stm</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/stm/man/labelTopics.html">labelTopics</a></span>(<span class="no">topicModel</span>, <span class="kw">n</span> <span class="kw">=</span> <span class="fl">5</span>)<span class="kw">[[</span><span class="st">"prob"</span>]])
+<span class="va">topicModel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/stm/man/stm.html">stm</a></span><span class="op">(</span><span class="va">dfm</span>, K <span class="op">=</span> <span class="fl">8</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="va">topTerms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/stm/man/labelTopics.html">labelTopics</a></span><span class="op">(</span><span class="va">topicModel</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">[[</span><span class="st">"prob"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
 
-<span class="no">topTerms</span>[, <span class="fl">1</span>:<span class="fl">4</span>] <span class="co"># first 4 (out of 8) topics</span></pre></body></html></div>
+<span class="va">topTerms</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span> <span class="co"># first 4 (out of 8) topics</span></code></pre></div>
 <pre><code>##      [,1]          [,2]       [,3]        [,4]      
 ## [1,] "funds"       "banks"    "labor"     "tax"     
 ## [2,] "fund"        "credit"   "reported"  "budget"  
@@ -193,12 +196,13 @@
 <h4 class="hasAnchor">
 <a href="#use-the-topic-model-output-to-enrich-the-corpus-with-features" class="anchor"></a>Use the topic model output to enrich the corpus with features</h4>
 <p>A list of keywords that defines the new features is based on the 5 top terms associated to each of the 8 topics. We insert this list of keywords into the <code><a href="../../reference/add_features.html">add_features()</a></code> function. A feature value per news article, normalized between 0 and 1, is generated for each topic, depending on how often the 5 relevant words appear in the news.</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">keywords</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="fl">1</span>:<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span>(<span class="no">topTerms</span>), <span class="kw">function</span>(<span class="no">i</span>) <span class="no">topTerms</span>[, <span class="no">i</span>])
-<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">keywords</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="st">"TOPIC_"</span>, <span class="fl">1</span>:<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">keywords</span>))
-<span class="no">uscorpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/add_features.html">add_features</a></span>(<span class="no">uscorpus</span>, <span class="kw">keywords</span> <span class="kw">=</span> <span class="no">keywords</span>, <span class="kw">do.binary</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">do.regex</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
-<span class="kw pkg">quanteda</span><span class="kw ns">::</span><span class="fu"><a href="https://quanteda.io/reference/docvars.html">docvars</a></span>(<span class="no">uscorpus</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"uncertainty"</span>, <span class="st">"election"</span>, <span class="st">"economy"</span>, <span class="st">"noneconomy"</span>, <span class="st">"wsj"</span>, <span class="st">"wapo"</span>)) <span class="kw">&lt;-</span> <span class="kw">NULL</span>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">keywords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">topTerms</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="va">topTerms</span><span class="op">[</span>, <span class="va">i</span><span class="op">]</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">keywords</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"TOPIC_"</span>, <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">keywords</span><span class="op">)</span><span class="op">)</span>
+<span class="va">uscorpus</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/add_features.html">add_features</a></span><span class="op">(</span><span class="va">uscorpus</span>, keywords <span class="op">=</span> <span class="va">keywords</span>, do.binary <span class="op">=</span> <span class="cn">FALSE</span>, do.regex <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="fu"><a href="https://quanteda.io/reference/docvars.html">docvars</a></span><span class="op">(</span><span class="va">uscorpus</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"uncertainty"</span>, <span class="st">"election"</span>, <span class="st">"economy"</span>, <span class="st">"noneconomy"</span>, <span class="st">"wsj"</span>, <span class="st">"wapo"</span><span class="op">)</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="cn">NULL</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colSums</a></span>(<span class="kw pkg">quanteda</span><span class="kw ns">::</span><span class="fu"><a href="https://quanteda.io/reference/docvars.html">docvars</a></span>(<span class="no">uscorpus</span>)[, -<span class="fl">1</span>] <span class="kw">!=</span> <span class="fl">0</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colSums</a></span><span class="op">(</span><span class="fu"><a href="https://quanteda.io/reference/docvars.html">docvars</a></span><span class="op">(</span><span class="va">uscorpus</span><span class="op">)</span><span class="op">[</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span> <span class="op">!=</span> <span class="fl">0</span><span class="op">)</span></code></pre></div>
 <pre><code>## TOPIC_1 TOPIC_2 TOPIC_3 TOPIC_4 TOPIC_5 TOPIC_6 TOPIC_7 TOPIC_8 
 ##    1111    1101    1389     648     954    1005    1052     856</code></pre>
 <p>The final topic features distribution in the corpus is different than what is reported in the vignette. This is due to fundamental changes within the <strong><code>quanteda</code></strong> package regarding their tokenization. The sensitivity of the topical output is a good reminder about the importance of optimizing the preprocessing and the topic modeling itself (which is not dealt with in detail here).</p>
@@ -207,82 +211,90 @@
 <h4 class="hasAnchor">
 <a href="#prepare-the-sentiment-lexicons" class="anchor"></a>Prepare the sentiment lexicons</h4>
 <p>In total, we will compute the textual sentiment using 9 lexicons, here prepared (mainly cleaned and made coherent) into a <code>sento_lexicons</code> object.</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">lexiconsIn</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(
-  <span class="kw pkg">sentometrics</span><span class="kw ns">::</span><span class="no"><a href="../../reference/list_lexicons.html">list_lexicons</a></span>[<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"LM_en"</span>, <span class="st">"HENRY_en"</span>, <span class="st">"GI_en"</span>)],
-  <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(
-    <span class="kw">NRC</span> <span class="kw">=</span> <span class="kw pkg">lexicon</span><span class="kw ns">::</span><span class="no"><a href="https://rdrr.io/pkg/lexicon/man/hash_sentiment_nrc.html">hash_sentiment_nrc</a></span>,
-    <span class="kw">HULIU</span> <span class="kw">=</span> <span class="kw pkg">lexicon</span><span class="kw ns">::</span><span class="no"><a href="https://rdrr.io/pkg/lexicon/man/hash_sentiment_huliu.html">hash_sentiment_huliu</a></span>,
-    <span class="kw">SENTIWORD</span> <span class="kw">=</span> <span class="kw pkg">lexicon</span><span class="kw ns">::</span><span class="no"><a href="https://rdrr.io/pkg/lexicon/man/hash_sentiment_sentiword.html">hash_sentiment_sentiword</a></span>,
-    <span class="kw">JOCKERS</span> <span class="kw">=</span> <span class="kw pkg">lexicon</span><span class="kw ns">::</span><span class="no"><a href="https://rdrr.io/pkg/lexicon/man/hash_sentiment_jockers.html">hash_sentiment_jockers</a></span>,
-    <span class="kw">SENTICNET</span> <span class="kw">=</span> <span class="kw pkg">lexicon</span><span class="kw ns">::</span><span class="no"><a href="https://rdrr.io/pkg/lexicon/man/hash_sentiment_senticnet.html">hash_sentiment_senticnet</a></span>,
-    <span class="kw">SOCAL</span> <span class="kw">=</span> <span class="kw pkg">lexicon</span><span class="kw ns">::</span><span class="no"><a href="https://rdrr.io/pkg/lexicon/man/hash_sentiment_socal_google.html">hash_sentiment_socal_google</a></span>
-  )
-)
-<span class="no">lex</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="kw">lexiconsIn</span> <span class="kw">=</span> <span class="no">lexiconsIn</span>,
-                      <span class="kw">valenceIn</span> <span class="kw">=</span> <span class="kw pkg">sentometrics</span><span class="kw ns">::</span><span class="no"><a href="../../reference/list_valence_shifters.html">list_valence_shifters</a></span><span class="kw">[[</span><span class="st">"en"</span>]])</pre></body></html></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">lexiconsIn</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
+  <span class="fu">sentometrics</span><span class="fu">::</span><span class="va"><a href="../../reference/list_lexicons.html">list_lexicons</a></span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"LM_en"</span>, <span class="st">"HENRY_en"</span>, <span class="st">"GI_en"</span><span class="op">)</span><span class="op">]</span>,
+  <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
+    NRC <span class="op">=</span> <span class="fu">lexicon</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/lexicon/man/hash_sentiment_nrc.html">hash_sentiment_nrc</a></span>,
+    HULIU <span class="op">=</span> <span class="fu">lexicon</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/lexicon/man/hash_sentiment_huliu.html">hash_sentiment_huliu</a></span>,
+    SENTIWORD <span class="op">=</span> <span class="fu">lexicon</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/lexicon/man/hash_sentiment_sentiword.html">hash_sentiment_sentiword</a></span>,
+    JOCKERS <span class="op">=</span> <span class="fu">lexicon</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/lexicon/man/hash_sentiment_jockers.html">hash_sentiment_jockers</a></span>,
+    SENTICNET <span class="op">=</span> <span class="fu">lexicon</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/lexicon/man/hash_sentiment_senticnet.html">hash_sentiment_senticnet</a></span>,
+    SOCAL <span class="op">=</span> <span class="fu">lexicon</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/lexicon/man/hash_sentiment_socal_google.html">hash_sentiment_socal_google</a></span>
+  <span class="op">)</span>
+<span class="op">)</span>
+<span class="va">lex</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/sento_lexicons.html">sento_lexicons</a></span><span class="op">(</span>lexiconsIn <span class="op">=</span> <span class="va">lexiconsIn</span>,
+                      valenceIn <span class="op">=</span> <span class="fu">sentometrics</span><span class="fu">::</span><span class="va"><a href="../../reference/list_valence_shifters.html">list_valence_shifters</a></span><span class="op">[[</span><span class="st">"en"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="define-the-sentiment-index-aggregation-specifications" class="section level4">
 <h4 class="hasAnchor">
 <a href="#define-the-sentiment-index-aggregation-specifications" class="anchor"></a>Define the sentiment index aggregation specifications</h4>
 <p>All the sentiment computation and aggregation parameters are specified in the <code><a href="../../reference/ctr_agg.html">ctr_agg()</a></code> function. We go for daily textual sentiment time series as 270-day moving averages using Beta weighting schemes. On a given day, all documents are weighted equally. The individual news sentiment scores are normalized by the number of detected lexicon words (these words are referred to as polarized).</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">ctrAggPred</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/ctr_agg.html">ctr_agg</a></span>(
-  <span class="kw">howWithin</span> <span class="kw">=</span> <span class="st">"proportionalPol"</span>,
-  <span class="kw">howDocs</span> <span class="kw">=</span> <span class="st">"equal_weight"</span>,
-  <span class="kw">howTime</span> <span class="kw">=</span> <span class="st">"beta"</span>, <span class="kw">by</span> <span class="kw">=</span> <span class="st">"day"</span>, <span class="kw">fill</span> <span class="kw">=</span> <span class="st">"latest"</span>, <span class="kw">lag</span> <span class="kw">=</span> <span class="fl">270</span>, <span class="kw">aBeta</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fl">3</span>, <span class="kw">bBeta</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fl">2</span>
-)</pre></body></html></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ctrAggPred</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/ctr_agg.html">ctr_agg</a></span><span class="op">(</span>
+  howWithin <span class="op">=</span> <span class="st">"proportionalPol"</span>,
+  howDocs <span class="op">=</span> <span class="st">"equal_weight"</span>,
+  howTime <span class="op">=</span> <span class="st">"beta"</span>, by <span class="op">=</span> <span class="st">"day"</span>, fill <span class="op">=</span> <span class="st">"latest"</span>, lag <span class="op">=</span> <span class="fl">270</span>, aBeta <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, bBeta <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>
+<span class="op">)</span></code></pre></div>
 </div>
 <div id="aggregate-the-corpus-into-textual-sentiment-time-series" class="section level4">
 <h4 class="hasAnchor">
 <a href="#aggregate-the-corpus-into-textual-sentiment-time-series" class="anchor"></a>Aggregate the corpus into textual sentiment time series</h4>
 <p>Calling the <code><a href="../../reference/sento_measures.html">sento_measures()</a></code> function with the corpus, lexicons and aggregation specifications defined before creates the many sentiment time series.</p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">sentMeasPred</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/sento_measures.html">sento_measures</a></span>(<span class="no">uscorpus</span>, <span class="kw">lexicons</span> <span class="kw">=</span> <span class="no">lex</span>, <span class="kw">ctr</span> <span class="kw">=</span> <span class="no">ctrAggPred</span>)
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sentMeasPred</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/sento_measures.html">sento_measures</a></span><span class="op">(</span><span class="va">uscorpus</span>, lexicons <span class="op">=</span> <span class="va">lex</span>, ctr <span class="op">=</span> <span class="va">ctrAggPred</span><span class="op">)</span>
 
-<span class="fu"><a href="../../reference/nmeasures.html">nmeasures</a></span>(<span class="no">sentMeasPred</span>)</pre></body></html></div>
+<span class="fu"><a href="../../reference/nmeasures.html">nmeasures</a></span><span class="op">(</span><span class="va">sentMeasPred</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] 432</code></pre>
 <p>You can plot the measures very simply. Below, the plot shows the sentiment time series averaged per feature.</p>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">sentMeasPred</span>, <span class="kw">group</span> <span class="kw">=</span> <span class="st">"features"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">sentMeasPred</span>, group <span class="op">=</span> <span class="st">"features"</span><span class="op">)</span></code></pre></div>
 <p><img src="vix_files/figure-html/unnamed-chunk-9-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div id="retrieve-the-vix-data" class="section level4">
 <h4 class="hasAnchor">
 <a href="#retrieve-the-vix-data" class="anchor"></a>Retrieve the VIX data</h4>
 <p>We need time series data about the VIX index to predict it. An object with this information is stored on our GitHub repository, and can be retrieved as below. The data are monthly.</p>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"repmis"</span>)
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="http://cran.r-project.org/package=repmis">"repmis"</a></span><span class="op">)</span>
 
-<span class="no">vixObject</span> <span class="kw">&lt;-</span> <span class="st">"https://github.com/sborms/sentometrics/blob/master/examples/vix.rda?raw=true"</span>
-<span class="fu"><a href="https://rdrr.io/pkg/repmis/man/source_data.html">source_data</a></span>(<span class="no">vixObject</span>)</pre></body></html></div>
+<span class="va">vixObject</span> <span class="op">&lt;-</span> <span class="st">"https://github.com/sborms/sentometrics/blob/master/examples/vix.rda?raw=true"</span>
+<span class="fu"><a href="https://rdrr.io/pkg/repmis/man/source_data.html">source_data</a></span><span class="op">(</span><span class="va">vixObject</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] "vix"</code></pre>
 </div>
 <div id="align-the-sentiment-measures-and-the-vix-data" class="section level4">
 <h4 class="hasAnchor">
 <a href="#align-the-sentiment-measures-and-the-vix-data" class="anchor"></a>Align the sentiment measures and the VIX data</h4>
 <p>To make sure the sentiment measures and the VIX data are aligned date-wise, we perform some rearrangements.</p>
-<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">sentMeasIn</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span>(<span class="no">sentMeasPred</span>, <span class="no">date</span> <span class="kw">%in%</span> <span class="no">vix</span>$<span class="no">date</span>)
-<span class="no">datesIn</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/get_dates.html">get_dates</a></span>(<span class="no">sentMeasIn</span>)
-<span class="no">y</span> <span class="kw">&lt;-</span> <span class="no">vix</span>[<span class="no">vix</span>$<span class="no">date</span> <span class="kw">%in%</span> <span class="no">datesIn</span>, <span class="no">value</span>]
-<span class="no">x</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="kw">lag</span> <span class="kw">=</span> <span class="no">y</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sentMeasIn</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/subset.data.table.html">subset</a></span><span class="op">(</span><span class="va">sentMeasPred</span>, <span class="va">date</span> <span class="op">%in%</span> <span class="va">vix</span><span class="op">$</span><span class="va">date</span><span class="op">)</span>
+<span class="va">datesIn</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/get_dates.html">get_dates</a></span><span class="op">(</span><span class="va">sentMeasIn</span><span class="op">)</span>
+<span class="va">y</span> <span class="op">&lt;-</span> <span class="va">vix</span><span class="op">[</span><span class="va">vix</span><span class="op">$</span><span class="va">date</span> <span class="op">%in%</span> <span class="va">datesIn</span>, <span class="va">value</span><span class="op">]</span>
+<span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>lag <span class="op">=</span> <span class="va">y</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="prepare-the-regression-model-specifications" class="section level4">
 <h4 class="hasAnchor">
 <a href="#prepare-the-regression-model-specifications" class="anchor"></a>Prepare the regression model specifications</h4>
 <p>The regression model we will run is the high-dimensional elastic net regression, given that we have many explanatory sentiment variables. For details about the high-dimensional regression framework, see the <strong><code>glmnet</code></strong> package. We want to do a true out-of-sample analysis rolling forward through time, hence we set <code>do.iter = TRUE</code> and define a sample size of 60. We are trying to predict the VIX variable 6 months ahead (<code>h = 6</code>).</p>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">ctrIter</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/ctr_model.html">ctr_model</a></span>(<span class="kw">model</span> <span class="kw">=</span> <span class="st">"gaussian"</span>,
-                     <span class="kw">type</span> <span class="kw">=</span> <span class="st">"BIC"</span>,
-                     <span class="kw">h</span> <span class="kw">=</span> <span class="fl">6</span>,
-                     <span class="kw">alphas</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="fl">0.1</span>, <span class="fl">0.3</span>, <span class="fl">0.5</span>, <span class="fl">0.7</span>, <span class="fl">0.9</span>, <span class="fl">1</span>),
-                     <span class="kw">do.iter</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
-                     <span class="kw">oos</span> <span class="kw">=</span> <span class="fl">5</span>, <span class="co"># h - 1</span>
-                     <span class="kw">nSample</span> <span class="kw">=</span> <span class="fl">60</span>,
-                     <span class="kw">nCore</span> <span class="kw">=</span> <span class="fl">1</span>,
-                     <span class="kw">do.progress</span> <span class="kw">=</span> <span class="fl">FALSE</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ctrIter</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/ctr_model.html">ctr_model</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"gaussian"</span>,
+                     type <span class="op">=</span> <span class="st">"BIC"</span>,
+                     h <span class="op">=</span> <span class="fl">6</span>,
+                     alphas <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.1</span>, <span class="fl">0.3</span>, <span class="fl">0.5</span>, <span class="fl">0.7</span>, <span class="fl">0.9</span>, <span class="fl">1</span><span class="op">)</span>,
+                     do.iter <span class="op">=</span> <span class="cn">TRUE</span>,
+                     oos <span class="op">=</span> <span class="fl">5</span>, <span class="co"># h - 1</span>
+                     nSample <span class="op">=</span> <span class="fl">60</span>,
+                     nCore <span class="op">=</span> <span class="fl">1</span>,
+                     do.progress <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="fit-and-assess-the-elastic-net-model-iteratively-over-time" class="section level4">
 <h4 class="hasAnchor">
 <a href="#fit-and-assess-the-elastic-net-model-iteratively-over-time" class="anchor"></a>Fit and assess the elastic net model iteratively over time</h4>
 <p>The <code><a href="../../reference/sento_model.html">sento_model()</a></code> function runs the model estimations iteratively and keeps track of the out-of-sample performance. Through the <code>x</code> argument, we slide the VIX index as autoregressive component into the regression equation. Omit this argument if you only want to use the sentiment variables as explanatory variables.</p>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="no">out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/sento_model.html">sento_model</a></span>(<span class="no">sentMeasIn</span>, <span class="kw">x</span> <span class="kw">=</span> <span class="no">x</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">y</span>, <span class="kw">ctr</span> <span class="kw">=</span> <span class="no">ctrIter</span>)
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/sento_model.html">sento_model</a></span><span class="op">(</span><span class="va">sentMeasIn</span>, x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span>, ctr <span class="op">=</span> <span class="va">ctrIter</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">out</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></code></pre></div>
 <pre><code>## Model specification 
 ## - - - - - - - - - - - - - - - - - - - - 
 ##  
@@ -300,17 +312,21 @@
 ## Root mean squared prediction error: 10.42 
 ## Mean absolute deviation: 8.2</code></pre>
 <p>The out-of-sample predictions versus the realized values are displayed in following plot. The predictions are not that bad, though they lag the true VIX evolutions. The coefficient attached to the lagged value of the VIX itself dominates often.</p>
-<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">out</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></code></pre></div>
 <p><img src="vix_files/figure-html/unnamed-chunk-14-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div id="compute-and-plot-the-sentiment-attributions" class="section level4">
 <h4 class="hasAnchor">
 <a href="#compute-and-plot-the-sentiment-attributions" class="anchor"></a>Compute and plot the sentiment attributions</h4>
 <p>As a diagnostic tool, one can compute the prediction attributions to the various dimensions of the sentiment measures (the features, the lexicons, and the time weighting schemes). This way, visualizations can show which elements steer the predictions and when.</p>
-<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="no">attr</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/attributions.html">attributions</a></span>(<span class="no">out</span>, <span class="no">sentMeasIn</span>, <span class="kw">do.lags</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">do.normalize</span> <span class="kw">=</span> <span class="fl">FALSE</span>)</pre></body></html></div>
-<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">attr</span>, <span class="kw">group</span> <span class="kw">=</span> <span class="st">"features"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">attr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/attributions.html">attributions</a></span><span class="op">(</span><span class="va">out</span>, <span class="va">sentMeasIn</span>, do.lags <span class="op">=</span> <span class="cn">FALSE</span>, do.normalize <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">attr</span>, group <span class="op">=</span> <span class="st">"features"</span><span class="op">)</span></code></pre></div>
 <p><img src="vix_files/figure-html/unnamed-chunk-16-1.png" width="576" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">attr</span>, <span class="kw">group</span> <span class="kw">=</span> <span class="st">"lexicons"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">attr</span>, group <span class="op">=</span> <span class="st">"lexicons"</span><span class="op">)</span></code></pre></div>
 <p><img src="vix_files/figure-html/unnamed-chunk-16-2.png" width="576" style="display: block; margin: auto;"></p>
 </div>
   </div>
@@ -328,7 +344,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

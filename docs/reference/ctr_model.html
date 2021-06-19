@@ -88,7 +88,7 @@ estimation and calibration procedure." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.4</span>
       </span>
     </div>
 
@@ -96,7 +96,7 @@ estimation and calibration procedure." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -167,7 +167,7 @@ estimation and calibration procedure." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/SentometricsResearch/sentometrics/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -201,24 +201,24 @@ textual sentiment measures (and potentially other variables). See <code><a href=
 estimation and calibration procedure.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>ctr_model</span>(
-  <span class='kw'>model</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"gaussian"</span>, <span class='st'>"binomial"</span>, <span class='st'>"multinomial"</span>),
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"BIC"</span>, <span class='st'>"AIC"</span>, <span class='st'>"Cp"</span>, <span class='st'>"cv"</span>),
-  <span class='kw'>do.intercept</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>do.iter</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>h</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>oos</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>do.difference</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>alphas</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='fl'>0.2</span>),
-  <span class='kw'>lambdas</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>nSample</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>trainWindow</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>testWindow</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>start</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>do.shrinkage.x</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>do.progress</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>nCore</span> <span class='kw'>=</span> <span class='fl'>1</span>
-)</pre>
+    <pre class="usage"><span class='fu'>ctr_model</span><span class='op'>(</span>
+  model <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"gaussian"</span>, <span class='st'>"binomial"</span>, <span class='st'>"multinomial"</span><span class='op'>)</span>,
+  type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"BIC"</span>, <span class='st'>"AIC"</span>, <span class='st'>"Cp"</span>, <span class='st'>"cv"</span><span class='op'>)</span>,
+  do.intercept <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  do.iter <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  h <span class='op'>=</span> <span class='fl'>0</span>,
+  oos <span class='op'>=</span> <span class='fl'>0</span>,
+  do.difference <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  alphas <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>1</span>, by <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span>,
+  lambdas <span class='op'>=</span> <span class='cn'>NULL</span>,
+  nSample <span class='op'>=</span> <span class='cn'>NULL</span>,
+  trainWindow <span class='op'>=</span> <span class='cn'>NULL</span>,
+  testWindow <span class='op'>=</span> <span class='cn'>NULL</span>,
+  start <span class='op'>=</span> <span class='fl'>1</span>,
+  do.shrinkage.x <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  do.progress <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  nCore <span class='op'>=</span> <span class='fl'>1</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -277,7 +277,7 @@ will be of \(y_{t + 2} - y_t\) on \(X_t\). If <code>h = -2</code>, the regressio
       <th>lambdas</th>
       <td><p>a <code>numeric</code> vector of the lambdas to test for during calibration, \(&gt;= 0\).
 A value of zero means no regularization, thus requires care when the data is fat. By default set to
-<code>NULL</code>, such that the lambdas sequence is generated by the <code><a href='https://rdrr.io/pkg/glmnet/man/glmnet.html'>glmnet</a></code> function
+<code>NULL</code>, such that the lambdas sequence is generated by the <code><a href='https://glmnet.stanford.edu/reference/glmnet.html'>glmnet</a></code> function
 or set to <code>10^seq(2, -2, length.out = 100)</code> in case of cross-validation.</p></td>
     </tr>
     <tr>
@@ -327,29 +327,36 @@ whenever a parallel backend is set up. See the examples in <code><a href='sento_
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     <p>Tibshirani and Taylor (2012). <strong>Degrees of freedom in LASSO problems</strong>.
-<em>The Annals of Statistics 40, 1198-1232</em>, <a href='https://doi.org/10.1214/12-AOS1003'>https://doi.org/10.1214/12-AOS1003</a>.</p>
+<em>The Annals of Statistics 40, 1198-1232</em>, doi: <a href='https://doi.org/10.1214/12-AOS1003'>10.1214/12-AOS1003</a>
+.</p>
 <p>Zou, Hastie and Tibshirani (2007). <strong>On the degrees of freedom of the LASSO</strong>.
-<em>The Annals of Statistics 35, 2173-2192</em>, <a href='https://doi.org/10.1214/009053607000000127'>https://doi.org/10.1214/009053607000000127</a>.</p>
+<em>The Annals of Statistics 35, 2173-2192</em>, doi: <a href='https://doi.org/10.1214/009053607000000127'>10.1214/009053607000000127</a>
+.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='sento_model.html'>sento_model</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Samuel Borms, Keven Bluteau</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># information criterion based model control functions</span>
-<span class='no'>ctrIC1</span> <span class='kw'>&lt;-</span> <span class='fu'>ctr_model</span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"gaussian"</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"BIC"</span>, <span class='kw'>do.iter</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>h</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-                    <span class='kw'>alphas</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='fl'>0.10</span>))
-<span class='no'>ctrIC2</span> <span class='kw'>&lt;-</span> <span class='fu'>ctr_model</span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"gaussian"</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"AIC"</span>, <span class='kw'>do.iter</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>h</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>nSample</span> <span class='kw'>=</span> <span class='fl'>100</span>,
-                    <span class='kw'>do.difference</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>oos</span> <span class='kw'>=</span> <span class='fl'>3</span>)
+<span class='va'>ctrIC1</span> <span class='op'>&lt;-</span> <span class='fu'>ctr_model</span><span class='op'>(</span>model <span class='op'>=</span> <span class='st'>"gaussian"</span>, type <span class='op'>=</span> <span class='st'>"BIC"</span>, do.iter <span class='op'>=</span> <span class='cn'>FALSE</span>, h <span class='op'>=</span> <span class='fl'>0</span>,
+                    alphas <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>1</span>, by <span class='op'>=</span> <span class='fl'>0.10</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>ctrIC2</span> <span class='op'>&lt;-</span> <span class='fu'>ctr_model</span><span class='op'>(</span>model <span class='op'>=</span> <span class='st'>"gaussian"</span>, type <span class='op'>=</span> <span class='st'>"AIC"</span>, do.iter <span class='op'>=</span> <span class='cn'>TRUE</span>, h <span class='op'>=</span> <span class='fl'>4</span>, nSample <span class='op'>=</span> <span class='fl'>100</span>,
+                    do.difference <span class='op'>=</span> <span class='cn'>TRUE</span>, oos <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>
 
 <span class='co'># cross-validation based model control functions</span>
-<span class='no'>ctrCV1</span> <span class='kw'>&lt;-</span> <span class='fu'>ctr_model</span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"gaussian"</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"cv"</span>, <span class='kw'>do.iter</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>h</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-                    <span class='kw'>trainWindow</span> <span class='kw'>=</span> <span class='fl'>250</span>, <span class='kw'>testWindow</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>oos</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>do.progress</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-<span class='no'>ctrCV2</span> <span class='kw'>&lt;-</span> <span class='fu'>ctr_model</span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"binomial"</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"cv"</span>, <span class='kw'>h</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>trainWindow</span> <span class='kw'>=</span> <span class='fl'>250</span>,
-                    <span class='kw'>testWindow</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>oos</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>do.progress</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-<span class='no'>ctrCV3</span> <span class='kw'>&lt;-</span> <span class='fu'>ctr_model</span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"multinomial"</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"cv"</span>, <span class='kw'>h</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>trainWindow</span> <span class='kw'>=</span> <span class='fl'>250</span>,
-                    <span class='kw'>testWindow</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>oos</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>do.progress</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-<span class='no'>ctrCV4</span> <span class='kw'>&lt;-</span> <span class='fu'>ctr_model</span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"gaussian"</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"cv"</span>, <span class='kw'>do.iter</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>h</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>trainWindow</span> <span class='kw'>=</span> <span class='fl'>45</span>,
-                    <span class='kw'>testWindow</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>oos</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>nSample</span> <span class='kw'>=</span> <span class='fl'>70</span>, <span class='kw'>do.progress</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div></pre>
+<span class='va'>ctrCV1</span> <span class='op'>&lt;-</span> <span class='fu'>ctr_model</span><span class='op'>(</span>model <span class='op'>=</span> <span class='st'>"gaussian"</span>, type <span class='op'>=</span> <span class='st'>"cv"</span>, do.iter <span class='op'>=</span> <span class='cn'>FALSE</span>, h <span class='op'>=</span> <span class='fl'>0</span>,
+                    trainWindow <span class='op'>=</span> <span class='fl'>250</span>, testWindow <span class='op'>=</span> <span class='fl'>4</span>, oos <span class='op'>=</span> <span class='fl'>0</span>, do.progress <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='va'>ctrCV2</span> <span class='op'>&lt;-</span> <span class='fu'>ctr_model</span><span class='op'>(</span>model <span class='op'>=</span> <span class='st'>"binomial"</span>, type <span class='op'>=</span> <span class='st'>"cv"</span>, h <span class='op'>=</span> <span class='fl'>0</span>, trainWindow <span class='op'>=</span> <span class='fl'>250</span>,
+                    testWindow <span class='op'>=</span> <span class='fl'>4</span>, oos <span class='op'>=</span> <span class='fl'>0</span>, do.progress <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='va'>ctrCV3</span> <span class='op'>&lt;-</span> <span class='fu'>ctr_model</span><span class='op'>(</span>model <span class='op'>=</span> <span class='st'>"multinomial"</span>, type <span class='op'>=</span> <span class='st'>"cv"</span>, h <span class='op'>=</span> <span class='fl'>2</span>, trainWindow <span class='op'>=</span> <span class='fl'>250</span>,
+                    testWindow <span class='op'>=</span> <span class='fl'>4</span>, oos <span class='op'>=</span> <span class='fl'>2</span>, do.progress <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='va'>ctrCV4</span> <span class='op'>&lt;-</span> <span class='fu'>ctr_model</span><span class='op'>(</span>model <span class='op'>=</span> <span class='st'>"gaussian"</span>, type <span class='op'>=</span> <span class='st'>"cv"</span>, do.iter <span class='op'>=</span> <span class='cn'>TRUE</span>, h <span class='op'>=</span> <span class='fl'>0</span>, trainWindow <span class='op'>=</span> <span class='fl'>45</span>,
+                    testWindow <span class='op'>=</span> <span class='fl'>4</span>, oos <span class='op'>=</span> <span class='fl'>0</span>, nSample <span class='op'>=</span> <span class='fl'>70</span>, do.progress <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -365,7 +372,7 @@ whenever a parallel backend is set up. See the examples in <code><a href='sento_
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

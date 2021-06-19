@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.4</span>
       </span>
     </div>
 
@@ -48,7 +48,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -119,7 +119,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/SentometricsResearch/sentometrics/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -139,7 +139,7 @@
 
       
 
-      </header><div class="row">
+      </header><script src="modeling_files/header-attrs-2.9/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Modeling</h1>
@@ -154,39 +154,44 @@
     
 <p>This tutorial learns how to use created sentiment measures in both a high-dimensional regression context proposed by the package, as well as in any other (regression) model.</p>
 <p><strong>Preparation</strong>  </p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"sentometrics"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"ggplot2"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"data.table"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"zoo"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"e1071"</span>)
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://sentometrics-research.com/sentometrics/">"sentometrics"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://ggplot2.tidyverse.org">"ggplot2"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://r-datatable.com">"data.table"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://zoo.R-Forge.R-project.org/">"zoo"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st">"e1071"</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"usnews"</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"epu"</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"list_lexicons"</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"list_valence_shifters"</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"usnews"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"epu"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"list_lexicons"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"list_valence_shifters"</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">505</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">505</span><span class="op">)</span></code></pre></div>
 <p>We create several sentiment time series to use in the models.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/sento_corpus.html">sento_corpus</a></span>(<span class="no">usnews</span>)
-<span class="no">lexicons</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="no">list_lexicons</span>[<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"GI_en"</span>, <span class="st">"HENRY_en"</span>)])
-<span class="no">ctr</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/ctr_agg.html">ctr_agg</a></span>(<span class="st">"counts"</span>, <span class="st">"proportional"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"linear"</span>, <span class="st">"equal_weight"</span>), <span class="kw">by</span> <span class="kw">=</span> <span class="st">"month"</span>, <span class="kw">lag</span> <span class="kw">=</span> <span class="fl">6</span>)
-<span class="no">measures</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/sento_measures.html">sento_measures</a></span>(<span class="no">corpus</span>, <span class="no">lexicons</span>, <span class="no">ctr</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">corpus</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/sento_corpus.html">sento_corpus</a></span><span class="op">(</span><span class="va">usnews</span><span class="op">)</span>
+<span class="va">lexicons</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/sento_lexicons.html">sento_lexicons</a></span><span class="op">(</span><span class="va">list_lexicons</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"GI_en"</span>, <span class="st">"HENRY_en"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>
+<span class="va">ctr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/ctr_agg.html">ctr_agg</a></span><span class="op">(</span><span class="st">"counts"</span>, <span class="st">"proportional"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"linear"</span>, <span class="st">"equal_weight"</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"month"</span>, lag <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>
+<span class="va">measures</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/sento_measures.html">sento_measures</a></span><span class="op">(</span><span class="va">corpus</span>, <span class="va">lexicons</span>, <span class="va">ctr</span><span class="op">)</span></code></pre></div>
 <p>As target variable, we take the built-in Economic Policy Uncertainty (EPU) index, and randomly generate two other covariates.</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">y</span> <span class="kw">&lt;-</span> <span class="no">epu</span>[<span class="no">epu</span>$<span class="no">date</span> <span class="kw">%in%</span> <span class="fu"><a href="../../reference/get_dates.html">get_dates</a></span>(<span class="no">measures</span>), <span class="st">"index"</span>]
-<span class="no">x</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="kw">x1</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">y</span>)), <span class="kw">x2</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">y</span>))) <span class="co"># two other (random) x variables</span>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">epu</span><span class="op">[</span><span class="va">epu</span><span class="op">$</span><span class="va">date</span> <span class="op">%in%</span> <span class="fu"><a href="../../reference/get_dates.html">get_dates</a></span><span class="op">(</span><span class="va">measures</span><span class="op">)</span>, <span class="st">"index"</span><span class="op">]</span>
+<span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>x1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span>, x2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="co"># two other (random) x variables</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">y</span>) <span class="kw">==</span> <span class="fu"><a href="https://rdrr.io/r/stats/nobs.html">nobs</a></span>(<span class="no">measures</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/stats/nobs.html">nobs</a></span><span class="op">(</span><span class="va">measures</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
 <p><strong>Background</strong>  </p>
-<p>The model supported is the elastic net regression, made available as a finetuned interface to the <code><a href="https://rdrr.io/pkg/glmnet/man/glmnet.html">glmnet::glmnet()</a></code> function. The elastic net has two hyperparameters which need to be calibrated: alpha (where if 1 one gets the LASSO regression, and if 0 one gets the Ridge regression), and lambda (which defines the degree of regularization, where if 0 there will be none). The possible options to calibrate these parameters are to use an information criterion, or to use time series cross-validation.</p>
+<p>The model supported is the elastic net regression, made available as a finetuned interface to the <code><a href="https://glmnet.stanford.edu/reference/glmnet.html">glmnet::glmnet()</a></code> function. The elastic net has two hyperparameters which need to be calibrated: alpha (where if 1 one gets the LASSO regression, and if 0 one gets the Ridge regression), and lambda (which defines the degree of regularization, where if 0 there will be none). The possible options to calibrate these parameters are to use an information criterion, or to use time series cross-validation.</p>
 <div id="in-sample-regression" class="section level3">
 <h3 class="hasAnchor">
 <a href="#in-sample-regression" class="anchor"></a>In-sample regression</h3>
 <p>The regression specifications are defined through the <code><a href="../../reference/ctr_model.html">ctr_model()</a></code> function. A <code>"gaussian"</code> model means a linear regression. The <code>type</code> argument decides on the hyperparameter calibration method, in this case, a Bayesian information criterion will be used. The model is run with <code><a href="../../reference/sento_model.html">sento_model()</a></code>, and results in a <code>sento_model</code> object.</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">ctrIC</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/ctr_model.html">ctr_model</a></span>(<span class="kw">model</span> <span class="kw">=</span> <span class="st">"gaussian"</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"BIC"</span>) <span class="co"># same as ctr_model()</span>
-<span class="no">out1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/sento_model.html">sento_model</a></span>(<span class="no">measures</span>, <span class="no">y</span>, <span class="no">x</span>, <span class="kw">ctr</span> <span class="kw">=</span> <span class="no">ctrIC</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ctrIC</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/ctr_model.html">ctr_model</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"gaussian"</span>, type <span class="op">=</span> <span class="st">"BIC"</span><span class="op">)</span> <span class="co"># same as ctr_model()</span>
+<span class="va">out1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/sento_model.html">sento_model</a></span><span class="op">(</span><span class="va">measures</span>, <span class="va">y</span>, <span class="va">x</span>, ctr <span class="op">=</span> <span class="va">ctrIC</span><span class="op">)</span></code></pre></div>
 <pre><code>## alphas run: 0, 0.2, 0.4, 0.6, 0.8, 1</code></pre>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">out1</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">out1</span><span class="op">)</span></code></pre></div>
 <pre><code>## Model specification 
 ## - - - - - - - - - - - - - - - - - - - - 
 ##  
@@ -199,43 +204,45 @@
 ## Non-zero coefficients 
 ## - - - - - - - - - - - - - - - - - - - - 
 ##                                           
-## (Intercept)                     171.003415
-## GI_en--noneconomy--equal_weight  -7.595736
-## HENRY_en--wsj--linear            -8.026232
-## HENRY_en--wapo--linear           -2.317268
-## x1                              -14.395650
-## x2                                2.859282</code></pre>
+## (Intercept)                     170.993200
+## GI_en--noneconomy--equal_weight  -7.596694
+## HENRY_en--wsj--linear            -8.021764
+## HENRY_en--wapo--linear           -2.317766
+## x1                              -14.395745
+## x2                                2.859532</code></pre>
 <p>To do predictions with the model, there is the <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> function.</p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">nx</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/nmeasures.html">nmeasures</a></span>(<span class="no">measures</span>) + <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span>(<span class="no">x</span>)
-<span class="no">newx</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="no">nx</span>) * <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html">as.data.table</a></span>(<span class="no">measures</span>)[, -<span class="fl">1</span>], <span class="no">x</span>)[<span class="fl">30</span>:<span class="fl">39</span>, ] <span class="co"># 10 random new predictors</span>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">nx</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/nmeasures.html">nmeasures</a></span><span class="op">(</span><span class="va">measures</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>
+<span class="va">newx</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">nx</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html">as.data.table</a></span><span class="op">(</span><span class="va">measures</span><span class="op">)</span><span class="op">[</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="va">x</span><span class="op">)</span><span class="op">[</span><span class="fl">30</span><span class="op">:</span><span class="fl">39</span>, <span class="op">]</span> <span class="co"># 10 random new predictors</span>
 
-<span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="no">out1</span>, <span class="kw">newx</span> <span class="kw">=</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.matrix.html">as.matrix</a></span>(<span class="no">newx</span>))</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">out1</span>, newx <span class="op">=</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.matrix.html">as.matrix</a></span><span class="op">(</span><span class="va">newx</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>##             s0
-##  [1,] 116.9924
-##  [2,] 144.2360
-##  [3,] 145.9814
-##  [4,] 121.0026
-##  [5,] 113.9048
-##  [6,] 152.8811
-##  [7,] 131.0230
-##  [8,] 160.1343
-##  [9,] 120.2925
-## [10,] 145.3160</code></pre>
+##  [1,] 116.9840
+##  [2,] 144.2303
+##  [3,] 145.9725
+##  [4,] 121.0015
+##  [5,] 113.9066
+##  [6,] 152.8732
+##  [7,] 131.0186
+##  [8,] 160.1248
+##  [9,] 120.2898
+## [10,] 145.3093</code></pre>
 <p>The <code><a href="../../reference/ctr_model.html">ctr_model()</a></code> function provides much more flexibility. Below setup uses a cross-validation calibration approach, for a rolling in-sample size of 70 and an out-of-sample test set of 10. This is typically more time-consuming, hence, we show how one can parallelize the single model call. We also take the differences of the target variable, and shift it four periods ahead. The data reorganization is handled internally.</p>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"parallel"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"doParallel"</span>)
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st">"parallel"</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st">"doParallel"</span><span class="op">)</span>
 
-<span class="no">cl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/parallel/makeCluster.html">makeCluster</a></span>(<span class="fl">2</span>) <span class="co"># two cores</span>
-<span class="fu"><a href="https://rdrr.io/pkg/doParallel/man/registerDoParallel.html">registerDoParallel</a></span>(<span class="no">cl</span>)
+<span class="va">cl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/parallel/makeCluster.html">makeCluster</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span> <span class="co"># two cores</span>
+<span class="fu"><a href="https://rdrr.io/pkg/doParallel/man/registerDoParallel.html">registerDoParallel</a></span><span class="op">(</span><span class="va">cl</span><span class="op">)</span>
 
-<span class="no">ctrCV</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/ctr_model.html">ctr_model</a></span>(<span class="kw">model</span> <span class="kw">=</span> <span class="st">"gaussian"</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"cv"</span>, <span class="kw">h</span> <span class="kw">=</span> <span class="fl">4</span>, <span class="kw">do.difference</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">trainWindow</span> <span class="kw">=</span> <span class="fl">70</span>,
-                   <span class="kw">testWindow</span> <span class="kw">=</span> <span class="fl">10</span>, <span class="kw">alphas</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0.10</span>, <span class="fl">0.50</span>, <span class="fl">0.90</span>), <span class="kw">do.progress</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
-<span class="no">out2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/sento_model.html">sento_model</a></span>(<span class="no">measures</span>, <span class="no">y</span>, <span class="kw">x</span> <span class="kw">=</span> <span class="no">x</span>, <span class="kw">ctr</span> <span class="kw">=</span> <span class="no">ctrCV</span>)
+<span class="va">ctrCV</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/ctr_model.html">ctr_model</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"gaussian"</span>, type <span class="op">=</span> <span class="st">"cv"</span>, h <span class="op">=</span> <span class="fl">4</span>, do.difference <span class="op">=</span> <span class="cn">TRUE</span>, trainWindow <span class="op">=</span> <span class="fl">70</span>,
+                   testWindow <span class="op">=</span> <span class="fl">10</span>, alphas <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.10</span>, <span class="fl">0.50</span>, <span class="fl">0.90</span><span class="op">)</span>, do.progress <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="va">out2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/sento_model.html">sento_model</a></span><span class="op">(</span><span class="va">measures</span>, <span class="va">y</span>, x <span class="op">=</span> <span class="va">x</span>, ctr <span class="op">=</span> <span class="va">ctrCV</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/parallel/makeCluster.html">stopCluster</a></span>(<span class="no">cl</span>)
-<span class="fu">registerDoSEQ</span>() <span class="co"># ensures sequential processing hereafter</span>
+<span class="fu"><a href="https://rdrr.io/r/parallel/makeCluster.html">stopCluster</a></span><span class="op">(</span><span class="va">cl</span><span class="op">)</span>
+<span class="fu">registerDoSEQ</span><span class="op">(</span><span class="op">)</span> <span class="co"># ensures sequential processing hereafter</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">out2</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">out2</span><span class="op">)</span></code></pre></div>
 <pre><code>## Model specification 
 ## - - - - - - - - - - - - - - - - - - - - 
 ##  
@@ -257,11 +264,12 @@
 <h3 class="hasAnchor">
 <a href="#iterative-regressions-and-out-of-sample-prediction" class="anchor"></a>Iterative regressions and out-of-sample prediction</h3>
 <p>Setting <code>do.iter = TRUE</code> and picking a <code>nSample</code> size will run regressions iteratively moving forward over time. At every run, as in a real forecasting experiment, an out-of-sample prediction is generated and stored. To speed up the analysis, one could try to augment the <code>nCore</code> argument which will enact parallel computation across the different iterations.</p>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">ctrIter</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/ctr_model.html">ctr_model</a></span>(<span class="kw">model</span> <span class="kw">=</span> <span class="st">"gaussian"</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"AIC"</span>, <span class="kw">do.iter</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">h</span> <span class="kw">=</span> <span class="fl">3</span>,
-                     <span class="kw">oos</span> <span class="kw">=</span> <span class="fl">2</span>, <span class="kw">alphas</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0.25</span>, <span class="fl">0.75</span>), <span class="kw">nSample</span> <span class="kw">=</span> <span class="fl">75</span>, <span class="kw">do.progress</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
-<span class="no">out3</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/sento_model.html">sento_model</a></span>(<span class="no">measures</span>, <span class="no">y</span>, <span class="kw">x</span> <span class="kw">=</span> <span class="no">x</span>, <span class="kw">ctr</span> <span class="kw">=</span> <span class="no">ctrIter</span>)
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ctrIter</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/ctr_model.html">ctr_model</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"gaussian"</span>, type <span class="op">=</span> <span class="st">"AIC"</span>, do.iter <span class="op">=</span> <span class="cn">TRUE</span>, h <span class="op">=</span> <span class="fl">3</span>,
+                     oos <span class="op">=</span> <span class="fl">2</span>, alphas <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.25</span>, <span class="fl">0.75</span><span class="op">)</span>, nSample <span class="op">=</span> <span class="fl">75</span>, do.progress <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="va">out3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/sento_model.html">sento_model</a></span><span class="op">(</span><span class="va">measures</span>, <span class="va">y</span>, x <span class="op">=</span> <span class="va">x</span>, ctr <span class="op">=</span> <span class="va">ctrIter</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">out3</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">out3</span><span class="op">)</span></code></pre></div>
 <pre><code>## Model specification 
 ## - - - - - - - - - - - - - - - - - - - - 
 ##  
@@ -270,87 +278,102 @@
 ## Sample size: 75 
 ## Total number of iterations/predictions: 155 
 ## Optimal average elastic net alpha parameter: 0.64 
-## Optimal average elastic net lambda parameter: 2.25 
+## Optimal average elastic net lambda parameter: 2.23 
 ##  
 ## Out-of-sample performance 
 ## - - - - - - - - - - - - - - - - - - - - 
 ##  
-## Mean directional accuracy: 46.1 % 
-## Root mean squared prediction error: 52.55 
-## Mean absolute deviation: 40.61</code></pre>
+## Mean directional accuracy: 46.75 % 
+## Root mean squared prediction error: 52.71 
+## Mean absolute deviation: 40.72</code></pre>
 <p>The out-of-sample predictions can be plot against the true realizations of the target variable.</p>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">out3</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">out3</span><span class="op">)</span></code></pre></div>
 <p><img src="modeling_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div id="attribution-analysis" class="section level3">
 <h3 class="hasAnchor">
 <a href="#attribution-analysis" class="anchor"></a>Attribution analysis</h3>
 <p>Take the model output from the previous example. To analyze the contribution of each sentiment variable component to a prediction, called attribution, the <code><a href="../../reference/attributions.html">attributions()</a></code> function does the trick.</p>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="no">attr3</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/attributions.html">attributions</a></span>(<span class="no">out3</span>, <span class="no">measures</span>, <span class="kw">refDates</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">out3</span>$<span class="no">models</span>)[<span class="fl">1</span>:<span class="fl">50</span>])</pre></body></html></div>
-<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">attr3</span>, <span class="st">"lexicons"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">attr3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/attributions.html">attributions</a></span><span class="op">(</span><span class="va">out3</span>, <span class="va">measures</span>, refDates <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">out3</span><span class="op">$</span><span class="va">models</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">50</span><span class="op">]</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">attr3</span>, <span class="st">"lexicons"</span><span class="op">)</span></code></pre></div>
 <p><img src="modeling_files/figure-html/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">attr3</span>, <span class="st">"features"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">attr3</span>, <span class="st">"features"</span><span class="op">)</span></code></pre></div>
 <p><img src="modeling_files/figure-html/unnamed-chunk-11-2.png" width="672" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">attr3</span>, <span class="st">"time"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">attr3</span>, <span class="st">"time"</span><span class="op">)</span></code></pre></div>
 <p><img src="modeling_files/figure-html/unnamed-chunk-11-3.png" width="672" style="display: block; margin: auto;"></p>
 <p>For a very deep analysis, it is also possible to trace back the contribution of a single document to a prediction at a given point in time. As the time lag for the sentiment measures was set to 6 months, news articles up to 5 months before a prediction date have an impact, the degree depending on the sentiment and the associated time weight.</p>
-<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="no">attr3</span>$<span class="no">documents</span>$<span class="no">`2004-06-01`</span></pre></body></html></div>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">attr3</span><span class="op">$</span><span class="va">documents</span><span class="op">$</span><span class="va">`2004-06-01`</span></code></pre></div>
 <pre><code>##             id       date     attrib
-##   1: 842613957 2004-01-01  2.1730324
-##   2: 842615485 2004-01-01 -0.4861275
-##   3: 830982208 2004-01-01 -0.2865413
-##   4: 842616604 2004-01-01  0.3820924
-##   5: 830983876 2004-01-01 -2.1949679
+##   1: 842613957 2004-01-01  2.1705457
+##   2: 842615485 2004-01-01 -0.4855627
+##   3: 830982208 2004-01-01 -0.2868741
+##   4: 842616604 2004-01-01  0.3816503
+##   5: 830983876 2004-01-01 -2.1950286
 ##  ---                                
-##  97: 830982195 2004-06-01 -2.4634854
-##  98: 842615105 2004-06-01 -2.4266404
-##  99: 842615622 2004-06-01 -2.4363705
-## 100: 842615125 2004-06-01 -0.6905909
-## 101: 842615280 2004-06-01  0.5362519</code></pre>
+##  97: 830982195 2004-06-01 -2.4639224
+##  98: 842615105 2004-06-01 -2.4257580
+##  99: 842615622 2004-06-01 -2.4370032
+## 100: 842615125 2004-06-01 -0.6908950
+## 101: 842615280 2004-06-01  0.5365558</code></pre>
 </div>
 <div id="other-models" class="section level3">
 <h3 class="hasAnchor">
 <a href="#other-models" class="anchor"></a>Other models</h3>
 <p>The <code><a href="../../reference/sento_model.html">sento_model()</a></code> function is no perfect toolbox. However, by converting the sentiment measures into a straight <code>data.table</code> (or a <code>data.frame</code>), you are not limited. For instance, below example shows how to do a low-dimensional regression using the <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code> function, with some of the sentiment variables created in the package.</p>
-<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="no">dt</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html">as.data.table</a></span>(<span class="no">measures</span>)
-<span class="no">z</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/zoo/man/zoo.html">zoo</a></span>(<span class="no">dt</span>[, <span class="fl">2</span>:<span class="fl">7</span>], <span class="kw">order.by</span> <span class="kw">=</span> <span class="no">dt</span><span class="kw">[[</span><span class="st">"date"</span>]])
-<span class="no">reg</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span>(<span class="no">y</span> ~ <span class="no">z</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html">as.data.table</a></span><span class="op">(</span><span class="va">measures</span><span class="op">)</span>
+<span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/zoo/man/zoo.html">zoo</a></span><span class="op">(</span><span class="va">dt</span><span class="op">[</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">7</span><span class="op">]</span>, order.by <span class="op">=</span> <span class="va">dt</span><span class="op">[[</span><span class="st">"date"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
+<span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">z</span><span class="op">)</span></code></pre></div>
 <p>At some point we might integrate other useful models into the <code><a href="../../reference/sento_model.html">sento_model()</a></code> function, but having the sentiment measures at your disposal, you are already good to go elsewhere.</p>
 </div>
 <div id="classification-using-sentiment" class="section level3">
 <h3 class="hasAnchor">
 <a href="#classification-using-sentiment" class="anchor"></a>Classification using sentiment</h3>
 <p>The above examples take a time series perspective. However, sentiment on text-level can also be useful to predict other attributes of a text. We illustrate one possible approach hereunder, where we try to predict if news discusses the economy using sentiment information.</p>
-<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="no">y</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span>(<span class="no">usnews</span>$<span class="no">economy</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">usnews</span><span class="op">$</span><span class="va">economy</span><span class="op">)</span></code></pre></div>
 <p>To calculate a couple of sentiment variables, we split the Harvard General Inquirer lexicon into 15 random groups.</p>
-<div class="sourceCode" id="cb24"><html><body><pre class="r"><span class="no">l</span> <span class="kw">&lt;-</span> <span class="no">list_lexicons</span>$<span class="no">GI_en</span>
-<span class="no">lg</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/split.html">split</a></span>(<span class="no">l</span>, <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span>(<span class="fl">14</span> * <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">l</span>))), <span class="kw">labels</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="st">"s"</span>, <span class="fl">1</span>:<span class="fl">15</span>)))
-<span class="no">lexicons</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="no">lg</span>)
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">l</span> <span class="op">&lt;-</span> <span class="va">list_lexicons</span><span class="op">$</span><span class="va">GI_en</span>
+<span class="va">lg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/split.html">split</a></span><span class="op">(</span><span class="va">l</span>, <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="fl">14</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">l</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"s"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">15</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="va">lexicons</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/sento_lexicons.html">sento_lexicons</a></span><span class="op">(</span><span class="va">lg</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">l</span>) <span class="kw">==</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html">rbindlist</a></span>(<span class="no">lexicons</span>))</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">l</span><span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html">rbindlist</a></span><span class="op">(</span><span class="va">lexicons</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
 <p>Sentiment is computed in one go using the <code><a href="../../reference/compute_sentiment.html">compute_sentiment()</a></code> function, this time using an inverse U-shaped scheme for normalizing the scores.</p>
-<div class="sourceCode" id="cb26"><html><body><pre class="r"><span class="no">s</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/compute_sentiment.html">compute_sentiment</a></span>(<span class="no">usnews</span>$<span class="no">texts</span>, <span class="no">lexicons</span>, <span class="st">"inverseUShaped"</span>)
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/compute_sentiment.html">compute_sentiment</a></span><span class="op">(</span><span class="va">usnews</span><span class="op">$</span><span class="va">texts</span>, <span class="va">lexicons</span>, <span class="st">"inverseUShaped"</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">s</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span></code></pre></div>
 <pre><code>##  [1] "id"         "word_count" "s1"         "s2"         "s3"        
 ##  [6] "s4"         "s5"         "s6"         "s7"         "s8"        
 ## [11] "s9"         "s10"        "s11"        "s12"        "s13"       
 ## [16] "s14"        "s15"</code></pre>
 <p>The data is divided into a training set, and a test set for model validation.</p>
-<div class="sourceCode" id="cb28"><html><body><pre class="r"><span class="no">data</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="kw">y</span> <span class="kw">=</span> <span class="no">y</span>, <span class="no">s</span>[, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>:<span class="fl">2</span>)])
-<span class="no">dataTrain</span> <span class="kw">&lt;-</span> <span class="no">data</span>[<span class="fl">1</span>:<span class="fl">3500</span>, ]
-<span class="no">dataTest</span> <span class="kw">&lt;-</span> <span class="no">data</span>[<span class="fl">3501</span>:<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">data</span>), ]</pre></body></html></div>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">y</span>, <span class="va">s</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>
+<span class="va">dataTrain</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3500</span>, <span class="op">]</span>
+<span class="va">dataTest</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="fl">3501</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span>, <span class="op">]</span></code></pre></div>
 <p>We employ support vector machine classification to estimate our model.</p>
-<div class="sourceCode" id="cb29"><html><body><pre class="r"><span class="no">model</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/e1071/man/svm.html">svm</a></span>(<span class="no">y</span> ~ <span class="no">.</span>, <span class="no">dataTrain</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/e1071/man/svm.html">svm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">.</span>, <span class="va">dataTrain</span><span class="op">)</span></code></pre></div>
 <p>Let’s construct confusion matrices to see how well the model does in-sample, and in the test set.</p>
-<div class="sourceCode" id="cb30"><html><body><pre class="r"><span class="no">conf_matrix</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">m</span>, <span class="no">d</span>) <span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="no">m</span>, <span class="no">d</span>), <span class="no">d</span>$<span class="no">y</span>, <span class="kw">dnn</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Prediction"</span>, <span class="st">"Actual"</span>))</pre></body></html></div>
-<div class="sourceCode" id="cb31"><html><body><pre class="r"><span class="fu">conf_matrix</span>(<span class="no">model</span>, <span class="no">dataTrain</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">conf_matrix</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">m</span>, <span class="va">d</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">m</span>, <span class="va">d</span><span class="op">)</span>, <span class="va">d</span><span class="op">$</span><span class="va">y</span>, dnn <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Prediction"</span>, <span class="st">"Actual"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">conf_matrix</span><span class="op">(</span><span class="va">model</span>, <span class="va">dataTrain</span><span class="op">)</span></code></pre></div>
 <pre><code>##           Actual
 ## Prediction    0    1
 ##          0 2865  630
 ##          1    0    5</code></pre>
-<div class="sourceCode" id="cb33"><html><body><pre class="r"><span class="fu">conf_matrix</span>(<span class="no">model</span>, <span class="no">dataTest</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">conf_matrix</span><span class="op">(</span><span class="va">model</span>, <span class="va">dataTest</span><span class="op">)</span></code></pre></div>
 <pre><code>##           Actual
 ## Prediction   0   1
 ##          0 514 131
@@ -374,7 +397,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

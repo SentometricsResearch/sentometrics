@@ -88,7 +88,7 @@ most recent non-missing value." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.4</span>
       </span>
     </div>
 
@@ -96,7 +96,7 @@ most recent non-missing value." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -167,7 +167,7 @@ most recent non-missing value." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/SentometricsResearch/sentometrics/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -201,12 +201,12 @@ boundary dates, such that the time series are continuous date-wise. Fills in any
 most recent non-missing value.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>measures_fill</span>(
-  <span class='no'>sento_measures</span>,
-  <span class='kw'>fill</span> <span class='kw'>=</span> <span class='st'>"zero"</span>,
-  <span class='kw'>dateBefore</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>dateAfter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
-)</pre>
+    <pre class="usage"><span class='fu'>measures_fill</span><span class='op'>(</span>
+  <span class='va'>sento_measures</span>,
+  fill <span class='op'>=</span> <span class='st'>"zero"</span>,
+  dateBefore <span class='op'>=</span> <span class='cn'>NULL</span>,
+  dateAfter <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -240,22 +240,27 @@ later than <code><a href='https://rdrr.io/r/utils/head.html'>tail(get_dates(sent
 
     <p>The <code>dateBefore</code> and <code>dateAfter</code> dates are converted according to the <code>sento_measures[["by"]]</code>
 frequency.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Samuel Borms</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># construct a sento_measures object to start with</span>
-<span class='no'>corpus</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sento_corpus.html'>sento_corpus</a></span>(<span class='kw'>corpusdf</span> <span class='kw'>=</span> <span class='kw pkg'>sentometrics</span><span class='kw ns'>::</span><span class='no'><a href='usnews.html'>usnews</a></span>)
-<span class='no'>corpusSample</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>quanteda</span><span class='kw ns'>::</span><span class='fu'><a href='https://quanteda.io/reference/corpus_sample.html'>corpus_sample</a></span>(<span class='no'>corpus</span>, <span class='kw'>size</span> <span class='kw'>=</span> <span class='fl'>500</span>)
-<span class='no'>l</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sento_lexicons.html'>sento_lexicons</a></span>(<span class='kw pkg'>sentometrics</span><span class='kw ns'>::</span><span class='no'><a href='list_lexicons.html'>list_lexicons</a></span>[<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"LM_en"</span>, <span class='st'>"HENRY_en"</span>)],
-                    <span class='kw pkg'>sentometrics</span><span class='kw ns'>::</span><span class='no'><a href='list_valence_shifters.html'>list_valence_shifters</a></span><span class='kw'>[[</span><span class='st'>"en"</span>]])
-<span class='no'>ctr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='ctr_agg.html'>ctr_agg</a></span>(<span class='kw'>howTime</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"equal_weight"</span>, <span class='st'>"linear"</span>), <span class='kw'>by</span> <span class='kw'>=</span> <span class='st'>"day"</span>, <span class='kw'>lag</span> <span class='kw'>=</span> <span class='fl'>7</span>, <span class='kw'>fill</span> <span class='kw'>=</span> <span class='st'>"none"</span>)
-<span class='no'>sento_measures</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sento_measures.html'>sento_measures</a></span>(<span class='no'>corpusSample</span>, <span class='no'>l</span>, <span class='no'>ctr</span>)
+<span class='va'>corpus</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sento_corpus.html'>sento_corpus</a></span><span class='op'>(</span>corpusdf <span class='op'>=</span> <span class='fu'>sentometrics</span><span class='fu'>::</span><span class='va'><a href='usnews.html'>usnews</a></span><span class='op'>)</span>
+<span class='va'>corpusSample</span> <span class='op'>&lt;-</span> <span class='fu'>quanteda</span><span class='fu'>::</span><span class='fu'><a href='https://quanteda.io/reference/corpus_sample.html'>corpus_sample</a></span><span class='op'>(</span><span class='va'>corpus</span>, size <span class='op'>=</span> <span class='fl'>500</span><span class='op'>)</span>
+<span class='va'>l</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sento_lexicons.html'>sento_lexicons</a></span><span class='op'>(</span><span class='fu'>sentometrics</span><span class='fu'>::</span><span class='va'><a href='list_lexicons.html'>list_lexicons</a></span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"LM_en"</span>, <span class='st'>"HENRY_en"</span><span class='op'>)</span><span class='op'>]</span>,
+                    <span class='fu'>sentometrics</span><span class='fu'>::</span><span class='va'><a href='list_valence_shifters.html'>list_valence_shifters</a></span><span class='op'>[[</span><span class='st'>"en"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+<span class='va'>ctr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='ctr_agg.html'>ctr_agg</a></span><span class='op'>(</span>howTime <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"equal_weight"</span>, <span class='st'>"linear"</span><span class='op'>)</span>, by <span class='op'>=</span> <span class='st'>"day"</span>, lag <span class='op'>=</span> <span class='fl'>7</span>, fill <span class='op'>=</span> <span class='st'>"none"</span><span class='op'>)</span>
+<span class='va'>sento_measures</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sento_measures.html'>sento_measures</a></span><span class='op'>(</span><span class='va'>corpusSample</span>, <span class='va'>l</span>, <span class='va'>ctr</span><span class='op'>)</span>
 
 <span class='co'># fill measures</span>
-<span class='no'>f1</span> <span class='kw'>&lt;-</span> <span class='fu'>measures_fill</span>(<span class='no'>sento_measures</span>)
-<span class='no'>f2</span> <span class='kw'>&lt;-</span> <span class='fu'>measures_fill</span>(<span class='no'>sento_measures</span>, <span class='kw'>fill</span> <span class='kw'>=</span> <span class='st'>"latest"</span>)
-<span class='no'>f3</span> <span class='kw'>&lt;-</span> <span class='fu'>measures_fill</span>(<span class='no'>sento_measures</span>, <span class='kw'>fill</span> <span class='kw'>=</span> <span class='st'>"zero"</span>,
-                    <span class='kw'>dateBefore</span> <span class='kw'>=</span> <span class='fu'><a href='get_dates.html'>get_dates</a></span>(<span class='no'>sento_measures</span>)[<span class='fl'>1</span>] - <span class='fl'>10</span>,
-                    <span class='kw'>dateAfter</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span>(<span class='fu'><a href='get_dates.html'>get_dates</a></span>(<span class='no'>sento_measures</span>), <span class='fl'>1</span>) + <span class='fl'>15</span>)</div></pre>
+<span class='va'>f1</span> <span class='op'>&lt;-</span> <span class='fu'>measures_fill</span><span class='op'>(</span><span class='va'>sento_measures</span><span class='op'>)</span>
+<span class='va'>f2</span> <span class='op'>&lt;-</span> <span class='fu'>measures_fill</span><span class='op'>(</span><span class='va'>sento_measures</span>, fill <span class='op'>=</span> <span class='st'>"latest"</span><span class='op'>)</span>
+<span class='va'>f3</span> <span class='op'>&lt;-</span> <span class='fu'>measures_fill</span><span class='op'>(</span><span class='va'>sento_measures</span>, fill <span class='op'>=</span> <span class='st'>"zero"</span>,
+                    dateBefore <span class='op'>=</span> <span class='fu'><a href='get_dates.html'>get_dates</a></span><span class='op'>(</span><span class='va'>sento_measures</span><span class='op'>)</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span> <span class='op'>-</span> <span class='fl'>10</span>,
+                    dateAfter <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span><span class='op'>(</span><span class='fu'><a href='get_dates.html'>get_dates</a></span><span class='op'>(</span><span class='va'>sento_measures</span><span class='op'>)</span>, <span class='fl'>1</span><span class='op'>)</span> <span class='op'>+</span> <span class='fl'>15</span><span class='op'>)</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -271,7 +276,7 @@ frequency.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

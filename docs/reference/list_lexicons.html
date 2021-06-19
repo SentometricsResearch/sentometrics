@@ -109,7 +109,7 @@ hash_sentiment_." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.4</span>
       </span>
     </div>
 
@@ -117,7 +117,7 @@ hash_sentiment_." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -188,7 +188,7 @@ hash_sentiment_." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/SentometricsResearch/sentometrics/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -243,7 +243,7 @@ All words are unigrams and in lowercase. The built-in lexicons are the following
 <code>hash_sentiment_</code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"list_lexicons"</span>)</pre>
+    <pre class="usage"><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"list_lexicons"</span><span class='op'>)</span></pre>
 
 
     <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
@@ -251,24 +251,28 @@ All words are unigrams and in lowercase. The built-in lexicons are the following
     <p>A <code>list</code> with all built-in lexicons, appropriately named as <code>"NAME_language(_tr)"</code> .</p>
     <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
 
-    <p><a href='https://doi.org/10.1007/s10579-016-9364-5'>FEEL lexicon</a>. Retrieved November 1, 2017.</p>
+    <p><a href='https://link.springer.com/article/10.1007%2Fs10579-016-9364-5'>FEEL lexicon</a>. Retrieved November 1, 2017.</p>
 <p><a href='http://www.wjh.harvard.edu/~inquirer/spreadsheet_guide.htm'>GI lexicon</a>. Retrieved November 1, 2017.</p>
-<p><a href='https://doi.org/10.1177/0021943608319388'>HENRY lexicon</a>. Retrieved
+<p><a href='https://journals.sagepub.com/doi/abs/10.1177/0021943608319388'>HENRY lexicon</a>. Retrieved
 November 1, 2017.</p>
-<p><a href='https://sraf.nd.edu/textual-analysis/resources'>LM lexicon</a>. Retrieved
+<p><a href='https://sraf.nd.edu/textual-analysis/resources/'>LM lexicon</a>. Retrieved
 November 1, 2017.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     <p>Abdaoui, Azé, Bringay and Poncelet (2017). <strong>FEEL: French Expanded Emotion Lexicon</strong>.
-<em>Language Resources &amp; Evaluation 51, 833-855</em>, <a href='https://doi.org/10.1007/s10579-016-9364-5'>https://doi.org/10.1007/s10579-016-9364-5</a>.</p>
+<em>Language Resources &amp; Evaluation 51, 833-855</em>, doi: <a href='https://doi.org/10.1007/s10579-016-9364-5'>10.1007/s10579-016-9364-5</a>
+.</p>
 <p>Henry (2008). <strong>Are investors influenced by how earnings press releases are written?</strong>.
-<em>Journal of Business Communication 45, 363-407</em>, <a href='https://doi.org/10.1177/0021943608319388'>https://doi.org/10.1177/0021943608319388</a>.</p>
+<em>Journal of Business Communication 45, 363-407</em>, doi: <a href='https://doi.org/10.1177/0021943608319388'>10.1177/0021943608319388</a>
+.</p>
 <p>Loughran and McDonald (2011). <strong>When is a liability not a liability? Textual analysis, dictionaries, and 10-Ks</strong>.
-<em>Journal of Finance 66, 35-65</em>, <a href='https://doi.org/10.1111/j.1540-6261.2010.01625.x'>https://doi.org/10.1111/j.1540-6261.2010.01625.x</a>.</p>
+<em>Journal of Finance 66, 35-65</em>, doi: <a href='https://doi.org/10.1111/j.1540-6261.2010.01625.x'>10.1111/j.1540-6261.2010.01625.x</a>
+.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"list_lexicons"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"sentometrics"</span>)
-<span class='no'>list_lexicons</span>[<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"FEEL_en_tr"</span>, <span class='st'>"LM_en"</span>)]</div><div class='output co'>#&gt; $FEEL_en_tr
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"list_lexicons"</span>, package <span class='op'>=</span> <span class='st'>"sentometrics"</span><span class='op'>)</span>
+<span class='va'>list_lexicons</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"FEEL_en_tr"</span>, <span class='st'>"LM_en"</span><span class='op'>)</span><span class='op'>]</span>
+</div><div class='output co'>#&gt; $FEEL_en_tr
 #&gt;                  x  y
 #&gt;    1:  abandonment -1
 #&gt;    2: abbreviation  1
@@ -312,7 +316,7 @@ November 1, 2017.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

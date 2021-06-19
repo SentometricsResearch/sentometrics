@@ -86,7 +86,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.4</span>
       </span>
     </div>
 
@@ -94,7 +94,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -165,7 +165,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/SentometricsResearch/sentometrics/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -198,7 +198,7 @@
     </div>
 
     <pre class="usage"><span class='co'># S3 method for sento_measures</span>
-<span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>x</span>, <span class='kw'>subset</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>select</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>delete</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
+<span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>x</span>, subset <span class='op'>=</span> <span class='cn'>NULL</span>, select <span class='op'>=</span> <span class='cn'>NULL</span>, delete <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -232,43 +232,51 @@ combinations (consisting of one unique lexicon, one unique feature, and one uniq
 
     <p>A modified <code>sento_measures</code> object, with only the remaining rows and sentiment measures,
 including updated information and statistics, but the original sentiment scores <code>data.table</code> untouched.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Samuel Borms</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"usnews"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"sentometrics"</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"list_lexicons"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"sentometrics"</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"list_valence_shifters"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"sentometrics"</span>)
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"usnews"</span>, package <span class='op'>=</span> <span class='st'>"sentometrics"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"list_lexicons"</span>, package <span class='op'>=</span> <span class='st'>"sentometrics"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"list_valence_shifters"</span>, package <span class='op'>=</span> <span class='st'>"sentometrics"</span><span class='op'>)</span>
 
 <span class='co'># construct a sento_measures object to start with</span>
-<span class='no'>corpus</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sento_corpus.html'>sento_corpus</a></span>(<span class='kw'>corpusdf</span> <span class='kw'>=</span> <span class='no'>usnews</span>)
-<span class='no'>corpusSample</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>quanteda</span><span class='kw ns'>::</span><span class='fu'><a href='https://quanteda.io/reference/corpus_sample.html'>corpus_sample</a></span>(<span class='no'>corpus</span>, <span class='kw'>size</span> <span class='kw'>=</span> <span class='fl'>500</span>)
-<span class='no'>l</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sento_lexicons.html'>sento_lexicons</a></span>(<span class='no'>list_lexicons</span>[<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"LM_en"</span>, <span class='st'>"HENRY_en"</span>)])
-<span class='no'>ctr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='ctr_agg.html'>ctr_agg</a></span>(<span class='kw'>howTime</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"equal_weight"</span>, <span class='st'>"linear"</span>), <span class='kw'>by</span> <span class='kw'>=</span> <span class='st'>"year"</span>, <span class='kw'>lag</span> <span class='kw'>=</span> <span class='fl'>3</span>)
-<span class='no'>sm</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sento_measures.html'>sento_measures</a></span>(<span class='no'>corpusSample</span>, <span class='no'>l</span>, <span class='no'>ctr</span>)
+<span class='va'>corpus</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sento_corpus.html'>sento_corpus</a></span><span class='op'>(</span>corpusdf <span class='op'>=</span> <span class='va'>usnews</span><span class='op'>)</span>
+<span class='va'>corpusSample</span> <span class='op'>&lt;-</span> <span class='fu'>quanteda</span><span class='fu'>::</span><span class='fu'><a href='https://quanteda.io/reference/corpus_sample.html'>corpus_sample</a></span><span class='op'>(</span><span class='va'>corpus</span>, size <span class='op'>=</span> <span class='fl'>500</span><span class='op'>)</span>
+<span class='va'>l</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sento_lexicons.html'>sento_lexicons</a></span><span class='op'>(</span><span class='va'>list_lexicons</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"LM_en"</span>, <span class='st'>"HENRY_en"</span><span class='op'>)</span><span class='op'>]</span><span class='op'>)</span>
+<span class='va'>ctr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='ctr_agg.html'>ctr_agg</a></span><span class='op'>(</span>howTime <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"equal_weight"</span>, <span class='st'>"linear"</span><span class='op'>)</span>, by <span class='op'>=</span> <span class='st'>"year"</span>, lag <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>
+<span class='va'>sm</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sento_measures.html'>sento_measures</a></span><span class='op'>(</span><span class='va'>corpusSample</span>, <span class='va'>l</span>, <span class='va'>ctr</span><span class='op'>)</span>
 
 <span class='co'># three specified indices in required list format</span>
-<span class='no'>three</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>as.list</a></span>(
-  <span class='kw pkg'>stringi</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/stringi/man/stri_split.html'>stri_split</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"LM_en--economy--linear"</span>,
+<span class='va'>three</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>as.list</a></span><span class='op'>(</span>
+  <span class='fu'>stringi</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/stringi/man/stri_split.html'>stri_split</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"LM_en--economy--linear"</span>,
                         <span class='st'>"HENRY_en--wsj--equal_weight"</span>,
-                        <span class='st'>"HENRY_en--wapo--equal_weight"</span>),
-                      <span class='kw'>regex</span> <span class='kw'>=</span> <span class='st'>"--"</span>)
-)
+                        <span class='st'>"HENRY_en--wapo--equal_weight"</span><span class='op'>)</span>,
+                      regex <span class='op'>=</span> <span class='st'>"--"</span><span class='op'>)</span>
+<span class='op'>)</span>
 
 <span class='co'># different subsets</span>
-<span class='no'>sub1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>sm</span>, <span class='no'>HENRY_en</span>--<span class='no'>economy</span>--<span class='no'>equal_weight</span> <span class='kw'>&gt;=</span> <span class='fl'>0.01</span>)
-<span class='no'>sub2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>sm</span>, <span class='no'>date</span> <span class='kw'>%in%</span> <span class='fu'><a href='get_dates.html'>get_dates</a></span>(<span class='no'>sm</span>)[<span class='fl'>3</span>:<span class='fl'>12</span>])</div><div class='output co'>#&gt; <span class='error'>Error in subset.sento_measures(sm, date %in% get_dates(sm)[3:12]): The 'subset' argument must evaluate to logical.</span></div><div class='input'><span class='no'>sub3</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>sm</span>, <span class='fl'>3</span>:<span class='fl'>12</span>)
-<span class='no'>sub4</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>sm</span>, <span class='fl'>1</span>:<span class='fl'>100</span>) <span class='co'># warning</span></div><div class='output co'>#&gt; <span class='warning'>Warning: At least one row index is greater than nobs(x). Input sento_measures object is returned.</span></div><div class='input'>
+<span class='va'>sub1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>sm</span>, <span class='va'>HENRY_en</span><span class='op'>-</span><span class='op'>-</span><span class='va'>economy</span><span class='op'>-</span><span class='op'>-</span><span class='va'>equal_weight</span> <span class='op'>&gt;=</span> <span class='fl'>0.01</span><span class='op'>)</span>
+<span class='va'>sub2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>sm</span>, <span class='va'>date</span> <span class='op'>%in%</span> <span class='fu'><a href='get_dates.html'>get_dates</a></span><span class='op'>(</span><span class='va'>sm</span><span class='op'>)</span><span class='op'>[</span><span class='fl'>3</span><span class='op'>:</span><span class='fl'>12</span><span class='op'>]</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in subset.sento_measures(sm, date %in% get_dates(sm)[3:12]): The 'subset' argument must evaluate to logical.</span></div><div class='input'><span class='va'>sub3</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>sm</span>, <span class='fl'>3</span><span class='op'>:</span><span class='fl'>12</span><span class='op'>)</span>
+<span class='va'>sub4</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>sm</span>, <span class='fl'>1</span><span class='op'>:</span><span class='fl'>100</span><span class='op'>)</span> <span class='co'># warning</span>
+</div><div class='output co'>#&gt; <span class='warning'>Warning: At least one row index is greater than nobs(x). Input sento_measures object is returned.</span></div><div class='input'>
 <span class='co'># different selections</span>
-<span class='no'>sel1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>sm</span>, <span class='kw'>select</span> <span class='kw'>=</span> <span class='st'>"equal_weight"</span>)
-<span class='no'>sel2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>sm</span>, <span class='kw'>select</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"equal_weight"</span>, <span class='st'>"linear"</span>))
-<span class='no'>sel3</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>sm</span>, <span class='kw'>select</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"linear"</span>, <span class='st'>"LM_en"</span>))
-<span class='no'>sel4</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>sm</span>, <span class='kw'>select</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"linear"</span>, <span class='st'>"wsj"</span>), <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"linear"</span>, <span class='st'>"economy"</span>)))
-<span class='no'>sel5</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>sm</span>, <span class='kw'>select</span> <span class='kw'>=</span> <span class='no'>three</span>)
+<span class='va'>sel1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>sm</span>, select <span class='op'>=</span> <span class='st'>"equal_weight"</span><span class='op'>)</span>
+<span class='va'>sel2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>sm</span>, select <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"equal_weight"</span>, <span class='st'>"linear"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>sel3</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>sm</span>, select <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"linear"</span>, <span class='st'>"LM_en"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>sel4</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>sm</span>, select <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"linear"</span>, <span class='st'>"wsj"</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"linear"</span>, <span class='st'>"economy"</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>sel5</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>sm</span>, select <span class='op'>=</span> <span class='va'>three</span><span class='op'>)</span>
 
 <span class='co'># different deletions</span>
-<span class='no'>del1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>sm</span>, <span class='kw'>delete</span> <span class='kw'>=</span> <span class='st'>"equal_weight"</span>)
-<span class='no'>del2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>sm</span>, <span class='kw'>delete</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"linear"</span>, <span class='st'>"LM_en"</span>))
-<span class='no'>del3</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>sm</span>, <span class='kw'>delete</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"linear"</span>, <span class='st'>"wsj"</span>), <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"linear"</span>, <span class='st'>"economy"</span>)))
-<span class='no'>del4</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>sm</span>, <span class='kw'>delete</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"equal_weight"</span>, <span class='st'>"linear"</span>)) <span class='co'># warning</span></div><div class='output co'>#&gt; <span class='warning'>Warning: No appropriate combination found or all measures selected for deletion. Input sento_measures object is returned.</span></div><div class='input'><span class='no'>del5</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>sm</span>, <span class='kw'>delete</span> <span class='kw'>=</span> <span class='no'>three</span>)</div></pre>
+<span class='va'>del1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>sm</span>, delete <span class='op'>=</span> <span class='st'>"equal_weight"</span><span class='op'>)</span>
+<span class='va'>del2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>sm</span>, delete <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"linear"</span>, <span class='st'>"LM_en"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>del3</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>sm</span>, delete <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"linear"</span>, <span class='st'>"wsj"</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"linear"</span>, <span class='st'>"economy"</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>del4</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>sm</span>, delete <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"equal_weight"</span>, <span class='st'>"linear"</span><span class='op'>)</span><span class='op'>)</span> <span class='co'># warning</span>
+</div><div class='output co'>#&gt; <span class='warning'>Warning: No appropriate combination found or all measures selected for deletion. Input sento_measures object is returned.</span></div><div class='input'><span class='va'>del5</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>sm</span>, delete <span class='op'>=</span> <span class='va'>three</span><span class='op'>)</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -284,7 +292,7 @@ including updated information and statistics, but the original sentiment scores 
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

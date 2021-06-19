@@ -87,7 +87,7 @@ Serves as the most direct way towards a panel of textual sentiment measures as a
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.4</span>
       </span>
     </div>
 
@@ -95,7 +95,7 @@ Serves as the most direct way towards a panel of textual sentiment measures as a
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -166,7 +166,7 @@ Serves as the most direct way towards a panel of textual sentiment measures as a
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/SentometricsResearch/sentometrics/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -199,7 +199,7 @@ Serves as the most direct way towards a panel of textual sentiment measures as a
 Serves as the most direct way towards a panel of textual sentiment measures as a <code>sento_measures</code> object.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>sento_measures</span>(<span class='no'>sento_corpus</span>, <span class='no'>lexicons</span>, <span class='no'>ctr</span>)</pre>
+    <pre class="usage"><span class='fu'>sento_measures</span><span class='op'>(</span><span class='va'>sento_corpus</span>, <span class='va'>lexicons</span>, <span class='va'>ctr</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -243,25 +243,29 @@ any `-' symbol.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='compute_sentiment.html'>compute_sentiment</a></code>, <code><a href='https://rdrr.io/r/stats/aggregate.html'>aggregate</a></code>, <code><a href='measures_update.html'>measures_update</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Samuel Borms, Keven Bluteau</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"usnews"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"sentometrics"</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"list_lexicons"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"sentometrics"</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"list_valence_shifters"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"sentometrics"</span>)
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"usnews"</span>, package <span class='op'>=</span> <span class='st'>"sentometrics"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"list_lexicons"</span>, package <span class='op'>=</span> <span class='st'>"sentometrics"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"list_valence_shifters"</span>, package <span class='op'>=</span> <span class='st'>"sentometrics"</span><span class='op'>)</span>
 
 <span class='co'># construct a sento_measures object to start with</span>
-<span class='no'>corpus</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sento_corpus.html'>sento_corpus</a></span>(<span class='kw'>corpusdf</span> <span class='kw'>=</span> <span class='no'>usnews</span>)
-<span class='no'>corpusSample</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>quanteda</span><span class='kw ns'>::</span><span class='fu'><a href='https://quanteda.io/reference/corpus_sample.html'>corpus_sample</a></span>(<span class='no'>corpus</span>, <span class='kw'>size</span> <span class='kw'>=</span> <span class='fl'>500</span>)
-<span class='no'>l</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sento_lexicons.html'>sento_lexicons</a></span>(<span class='no'>list_lexicons</span>[<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"LM_en"</span>, <span class='st'>"HENRY_en"</span>)], <span class='no'>list_valence_shifters</span><span class='kw'>[[</span><span class='st'>"en"</span>]])
-<span class='no'>ctr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='ctr_agg.html'>ctr_agg</a></span>(<span class='kw'>howWithin</span> <span class='kw'>=</span> <span class='st'>"counts"</span>,
-               <span class='kw'>howDocs</span> <span class='kw'>=</span> <span class='st'>"proportional"</span>,
-               <span class='kw'>howTime</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"equal_weight"</span>, <span class='st'>"linear"</span>, <span class='st'>"almon"</span>),
-               <span class='kw'>by</span> <span class='kw'>=</span> <span class='st'>"month"</span>,
-               <span class='kw'>lag</span> <span class='kw'>=</span> <span class='fl'>3</span>,
-               <span class='kw'>ordersAlm</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>3</span>,
-               <span class='kw'>do.inverseAlm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-<span class='no'>sento_measures</span> <span class='kw'>&lt;-</span> <span class='fu'>sento_measures</span>(<span class='no'>corpusSample</span>, <span class='no'>l</span>, <span class='no'>ctr</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span>(<span class='no'>sento_measures</span>)</div><div class='output co'>#&gt; This sento_measures object contains 64 textual sentiment time series with 238 observations each (monthly).
+<span class='va'>corpus</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sento_corpus.html'>sento_corpus</a></span><span class='op'>(</span>corpusdf <span class='op'>=</span> <span class='va'>usnews</span><span class='op'>)</span>
+<span class='va'>corpusSample</span> <span class='op'>&lt;-</span> <span class='fu'>quanteda</span><span class='fu'>::</span><span class='fu'><a href='https://quanteda.io/reference/corpus_sample.html'>corpus_sample</a></span><span class='op'>(</span><span class='va'>corpus</span>, size <span class='op'>=</span> <span class='fl'>500</span><span class='op'>)</span>
+<span class='va'>l</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sento_lexicons.html'>sento_lexicons</a></span><span class='op'>(</span><span class='va'>list_lexicons</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"LM_en"</span>, <span class='st'>"HENRY_en"</span><span class='op'>)</span><span class='op'>]</span>, <span class='va'>list_valence_shifters</span><span class='op'>[[</span><span class='st'>"en"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+<span class='va'>ctr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='ctr_agg.html'>ctr_agg</a></span><span class='op'>(</span>howWithin <span class='op'>=</span> <span class='st'>"counts"</span>,
+               howDocs <span class='op'>=</span> <span class='st'>"proportional"</span>,
+               howTime <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"equal_weight"</span>, <span class='st'>"linear"</span>, <span class='st'>"almon"</span><span class='op'>)</span>,
+               by <span class='op'>=</span> <span class='st'>"month"</span>,
+               lag <span class='op'>=</span> <span class='fl'>3</span>,
+               ordersAlm <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span>,
+               do.inverseAlm <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='va'>sento_measures</span> <span class='op'>&lt;-</span> <span class='fu'>sento_measures</span><span class='op'>(</span><span class='va'>corpusSample</span>, <span class='va'>l</span>, <span class='va'>ctr</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>sento_measures</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; This sento_measures object contains 64 textual sentiment time series with 238 observations each (monthly).
 #&gt; 
 #&gt; Following features are present: wsj wapo economy noneconomy 
 #&gt; Following lexicons are used to calculate sentiment: LM_en HENRY_en 
@@ -271,7 +275,7 @@ any `-' symbol.</p>
 #&gt; 
 #&gt; Aggregate average statistics: 
 #&gt;     mean       sd      max      min meanCorr 
-#&gt; -0.34518  2.34385  6.92447 -7.73045  0.22638 </div><div class='input'>
+#&gt; -0.34519  2.34385  6.92444 -7.73045  0.22638 </div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -288,7 +292,7 @@ any `-' symbol.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

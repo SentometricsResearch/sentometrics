@@ -98,7 +98,7 @@ noneconomy. Equals 1 if the article is not relevant to the U.S. economy (complem
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.4</span>
       </span>
     </div>
 
@@ -106,7 +106,7 @@ noneconomy. Equals 1 if the article is not relevant to the U.S. economy (complem
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -177,7 +177,7 @@ noneconomy. Equals 1 if the article is not relevant to the U.S. economy (complem
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/SentometricsResearch/sentometrics/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -221,7 +221,7 @@ contains following information:</p>
 
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"usnews"</span>)</pre>
+    <pre class="usage"><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"usnews"</span><span class='op'>)</span></pre>
 
 
     <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
@@ -229,12 +229,14 @@ contains following information:</p>
     <p>A <code>data.frame</code>, formatted as required to be an input for <code><a href='sento_corpus.html'>sento_corpus</a></code>.</p>
     <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
 
-    <p><a href='https://www.figure-eight.com/data-for-everyone/'>Economic News Article Tone and Relevance</a>. Retrieved
+    <p><a href='https://appen.com/open-source-datasets/'>Economic News Article Tone and Relevance</a>. Retrieved
 November 1, 2017.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"usnews"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"sentometrics"</span>)
-<span class='no'>usnews</span>[<span class='fl'>3192</span>, <span class='st'>"texts"</span>]</div><div class='output co'>#&gt; [1] "Author Edward P. Lazear As Washington debates the fate of the 2001 and 2003 tax cuts, many lawmakers have fallen into a logical trap of their own making. Although they recognize that tax increases hurt the economy, they argue that our huge deficit requires Congress to raise revenue through a tax hike. This argument rests on the flawed premise that we can reduce the deficit only by increasing taxes, as if high levels of spending are a given. Not so. To reduce spending and reignite growth, this Congress or its successor should take two actions. First, immediately cut the level of spending that has been increased so dramatically since 2008. Second, institute an inflation-minus-one rule to constrain future spending increases. Much public discussion focuses on the deficit, which is indeed at critical levels of around 10 of GDP. But even if President Obama succeeds at lowering the deficit to 4 of GDP by 2013, our public-debt-to-GDP ratio will still be dangerously high, at over 70, or nearly twice what it was during the Bush years. As the economists Carmen Reinhart and Kenneth Rogoff have shown in the journal American Economic Review, such high debt-to-GDP ratios are associated with low growth."</div><div class='input'><span class='no'>usnews</span>[<span class='fl'>1</span>:<span class='fl'>5</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"id"</span>, <span class='st'>"date"</span>, <span class='st'>"texts"</span>)]</div><div class='output co'>#&gt;          id       date
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"usnews"</span>, package <span class='op'>=</span> <span class='st'>"sentometrics"</span><span class='op'>)</span>
+<span class='va'>usnews</span><span class='op'>[</span><span class='fl'>3192</span>, <span class='st'>"texts"</span><span class='op'>]</span>
+</div><div class='output co'>#&gt; [1] "Author Edward P. Lazear As Washington debates the fate of the 2001 and 2003 tax cuts, many lawmakers have fallen into a logical trap of their own making. Although they recognize that tax increases hurt the economy, they argue that our huge deficit requires Congress to raise revenue through a tax hike. This argument rests on the flawed premise that we can reduce the deficit only by increasing taxes, as if high levels of spending are a given. Not so. To reduce spending and reignite growth, this Congress or its successor should take two actions. First, immediately cut the level of spending that has been increased so dramatically since 2008. Second, institute an inflation-minus-one rule to constrain future spending increases. Much public discussion focuses on the deficit, which is indeed at critical levels of around 10 of GDP. But even if President Obama succeeds at lowering the deficit to 4 of GDP by 2013, our public-debt-to-GDP ratio will still be dangerously high, at over 70, or nearly twice what it was during the Bush years. As the economists Carmen Reinhart and Kenneth Rogoff have shown in the journal American Economic Review, such high debt-to-GDP ratios are associated with low growth."</div><div class='input'><span class='va'>usnews</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"id"</span>, <span class='st'>"date"</span>, <span class='st'>"texts"</span><span class='op'>)</span><span class='op'>]</span>
+</div><div class='output co'>#&gt;          id       date
 #&gt; 1 830981846 1995-01-02
 #&gt; 2 842617067 1995-01-05
 #&gt; 3 830982165 1995-01-05
@@ -262,7 +264,7 @@ November 1, 2017.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

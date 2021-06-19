@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.4</span>
       </span>
     </div>
 
@@ -48,7 +48,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -119,7 +119,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/SentometricsResearch/sentometrics/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -139,7 +139,7 @@
 
       
 
-      </header><div class="row">
+      </header><script src="epu_files/header-attrs-2.9/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Creating EPU indices</h1>
@@ -156,9 +156,10 @@
 <div id="load-packages" class="section level4">
 <h4 class="hasAnchor">
 <a href="#load-packages" class="anchor"></a>Load packages</h4>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"sentometrics"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"data.table"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"quanteda"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://sentometrics-research.com/sentometrics/">"sentometrics"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://r-datatable.com">"data.table"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://quanteda.io">"quanteda"</a></span><span class="op">)</span></code></pre></div>
 </div>
 <div id="a-regular-epu-index" class="section level2">
 <h2 class="hasAnchor">
@@ -168,29 +169,32 @@
 <h4 class="hasAnchor">
 <a href="#load-and-create-corpus-object" class="anchor"></a>Load and create corpus object</h4>
 <p>We load and transform the built-in corpus of 4145 U.S. news articles between 1995 and 2014 into a <code>sento_corpus</code> object. We only include the journal features, indicating article source (one of The Wall Street Journal or The Washington Post).</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"usnews"</span>)
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"usnews"</span><span class="op">)</span>
 
-<span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/sento_corpus.html">sento_corpus</a></span>(<span class="no">usnews</span>[, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"id"</span>, <span class="st">"date"</span>, <span class="st">"texts"</span>, <span class="st">"wsj"</span>, <span class="st">"wapo"</span>)])</pre></body></html></div>
+<span class="va">corpus</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/sento_corpus.html">sento_corpus</a></span><span class="op">(</span><span class="va">usnews</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"id"</span>, <span class="st">"date"</span>, <span class="st">"texts"</span>, <span class="st">"wsj"</span>, <span class="st">"wapo"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="define-list-of-keywords-and-turn-into-a-sento_lexicons-object" class="section level4">
 <h4 class="hasAnchor">
 <a href="#define-list-of-keywords-and-turn-into-a-sento_lexicons-object" class="anchor"></a>Define list of keywords and turn into a <code>sento_lexicons</code> object</h4>
 <p>We take the original keywords used to pinpoint coverage about the economy (E), policy concerns (P) and uncertainty (U), and organize them into a <code>sento_lexicons</code> object.</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">keywords</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(
-  <span class="kw">E</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"economy"</span>, <span class="st">"economic"</span>),
-  <span class="kw">P</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"congress"</span>, <span class="st">"legislation"</span>, <span class="st">"white house"</span>, <span class="st">"regulation"</span>, <span class="st">"deficit"</span>, <span class="st">"federal reserve"</span>),
-  <span class="kw">U</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"uncertainty"</span>, <span class="st">"uncertain"</span>)
-)
-<span class="no">keywords_dt</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">keywords</span>, <span class="kw">function</span>(<span class="no">kw</span>) <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">kw</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="fl">1</span>))
-<span class="no">lex</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="no">keywords_dt</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">keywords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
+  E <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"economy"</span>, <span class="st">"economic"</span><span class="op">)</span>,
+  P <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"congress"</span>, <span class="st">"legislation"</span>, <span class="st">"white house"</span>, <span class="st">"regulation"</span>, <span class="st">"deficit"</span>, <span class="st">"federal reserve"</span><span class="op">)</span>,
+  U <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"uncertainty"</span>, <span class="st">"uncertain"</span><span class="op">)</span>
+<span class="op">)</span>
+<span class="va">keywords_dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">keywords</span>, <span class="kw">function</span><span class="op">(</span><span class="va">kw</span><span class="op">)</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">kw</span>, y <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
+<span class="va">lex</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/sento_lexicons.html">sento_lexicons</a></span><span class="op">(</span><span class="va">keywords_dt</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="compute-textual-sentiment" class="section level4">
 <h4 class="hasAnchor">
 <a href="#compute-textual-sentiment" class="anchor"></a>Compute “textual sentiment”</h4>
 <p>These keywords lexicons are used in the <code><a href="../../reference/compute_sentiment.html">compute_sentiment()</a></code> function. For each EPU dimension, the obtained scores represent the number of keywords present in a given news article.</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">s</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/compute_sentiment.html">compute_sentiment</a></span>(<span class="no">corpus</span>, <span class="no">lex</span>, <span class="st">"counts"</span>)
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/compute_sentiment.html">compute_sentiment</a></span><span class="op">(</span><span class="va">corpus</span>, <span class="va">lex</span>, <span class="st">"counts"</span><span class="op">)</span>
 
-<span class="no">s</span>[, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"date"</span>, <span class="st">"word_count"</span>)]</pre></body></html></div>
+<span class="va">s</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"date"</span>, <span class="st">"word_count"</span><span class="op">)</span><span class="op">]</span></code></pre></div>
 <pre><code>##              id E--wsj E--wapo P--wsj P--wapo U--wsj U--wapo
 ##    1: 830981846      0       0      0       0      0       0
 ##    2: 842617067      0       0      0       0      0       0
@@ -208,35 +212,38 @@
 <h4 class="hasAnchor">
 <a href="#adjust-and-reconvert-to-a-sentiment-object" class="anchor"></a>Adjust and reconvert to a <code>sentiment</code> object</h4>
 <p>As we are not interested in the number of keywords, but only in whether a keyword was present, we need some adjustments. In particular, we split the <code>sentiment</code> object and compute an EPU column per newspaper, with a score of 1 if at least two categories’ keywords show up, and 0 if not.</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">sA</span> <span class="kw">&lt;-</span> <span class="no">s</span>[, <span class="fl">1</span>:<span class="fl">3</span>]
-<span class="no">sB</span> <span class="kw">&lt;-</span> <span class="no">s</span>[, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>:<span class="fl">3</span>)]
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sA</span> <span class="op">&lt;-</span> <span class="va">s</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>
+<span class="va">sB</span> <span class="op">&lt;-</span> <span class="va">s</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>
 
-<span class="no">to_epu</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>) <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowSums</a></span>(<span class="no">x</span> <span class="kw">&gt;</span> <span class="fl">0</span>) <span class="kw">&gt;=</span> <span class="fl">2</span>) <span class="co"># &gt;= 3 is too strict for this corpus</span>
+<span class="va">to_epu</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowSums</a></span><span class="op">(</span><span class="va">x</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">2</span><span class="op">)</span> <span class="co"># &gt;= 3 is too strict for this corpus</span>
 
-<span class="no">sB</span>[, <span class="st">"EPU--wsj"</span> <span class="kw">:=</span> <span class="fu">to_epu</span>(<span class="no">.SD</span>), <span class="kw">.SDcols</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/startsWith.html">endsWith</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">sB</span>), <span class="st">"wsj"</span>)]
-<span class="no">sB</span>[, <span class="st">"EPU--wapo"</span> <span class="kw">:=</span> <span class="fu">to_epu</span>(<span class="no">.SD</span>), <span class="kw">.SDcols</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/startsWith.html">endsWith</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">sB</span>), <span class="st">"wapo"</span>)]
+<span class="va">sB</span><span class="op">[</span>, <span class="st">"EPU--wsj"</span> <span class="op">:=</span> <span class="fu">to_epu</span><span class="op">(</span><span class="va">.SD</span><span class="op">)</span>, .SDcols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/startsWith.html">endsWith</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">sB</span><span class="op">)</span>, <span class="st">"wsj"</span><span class="op">)</span><span class="op">]</span>
+<span class="va">sB</span><span class="op">[</span>, <span class="st">"EPU--wapo"</span> <span class="op">:=</span> <span class="fu">to_epu</span><span class="op">(</span><span class="va">.SD</span><span class="op">)</span>, .SDcols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/startsWith.html">endsWith</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">sB</span><span class="op">)</span>, <span class="st">"wapo"</span><span class="op">)</span><span class="op">]</span>
 
-<span class="no">s2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/as.sentiment.html">as.sentiment</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="no">sA</span>, <span class="no">sB</span>[, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"EPU--wsj"</span>, <span class="st">"EPU--wapo"</span>)]))</pre></body></html></div>
+<span class="va">s2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/as.sentiment.html">as.sentiment</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span><span class="va">sA</span>, <span class="va">sB</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"EPU--wsj"</span>, <span class="st">"EPU--wapo"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="aggregate-into-sentiment-measures" class="section level4">
 <h4 class="hasAnchor">
 <a href="#aggregate-into-sentiment-measures" class="anchor"></a>Aggregate into sentiment measures</h4>
 <p>This new <code>sentiment</code> object is aggregated into a monthly average and a 12-monthly linear moving average time series per newspaper. Setting <code>howDocs = "equal_weight"</code> and <code>do.ignoreZeros = FALSE</code> normalizes the monthly values by the combined number of news articles in that month.</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">w</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="st">"simple"</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">0</span>, <span class="fl">11</span>), <span class="fl">1</span>), <span class="st">"linear"</span> <span class="kw">=</span> <span class="fu"><a href="../../reference/weights_exponential.html">weights_exponential</a></span>(<span class="fl">12</span>, <span class="kw">alphas</span> <span class="kw">=</span> <span class="fl">10</span>^-<span class="fl">10</span>)[, <span class="fl">1</span>])
-<span class="no">ctr</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/ctr_agg.html">ctr_agg</a></span>(<span class="kw">howDocs</span> <span class="kw">=</span> <span class="st">"equal_weight"</span>, <span class="kw">do.ignoreZeros</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
-               <span class="kw">howTime</span> <span class="kw">=</span> <span class="st">"own"</span>, <span class="kw">by</span> <span class="kw">=</span> <span class="st">"month"</span>, <span class="kw">lag</span> <span class="kw">=</span> <span class="fl">12</span>, <span class="kw">weights</span> <span class="kw">=</span> <span class="no">w</span>)
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">w</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="st">"simple"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">11</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span>, <span class="st">"linear"</span> <span class="op">=</span> <span class="fu"><a href="../../reference/weights_exponential.html">weights_exponential</a></span><span class="op">(</span><span class="fl">12</span>, alphas <span class="op">=</span> <span class="fl">10</span><span class="op">^</span><span class="op">-</span><span class="fl">10</span><span class="op">)</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span>
+<span class="va">ctr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/ctr_agg.html">ctr_agg</a></span><span class="op">(</span>howDocs <span class="op">=</span> <span class="st">"equal_weight"</span>, do.ignoreZeros <span class="op">=</span> <span class="cn">FALSE</span>,
+               howTime <span class="op">=</span> <span class="st">"own"</span>, by <span class="op">=</span> <span class="st">"month"</span>, lag <span class="op">=</span> <span class="fl">12</span>, weights <span class="op">=</span> <span class="va">w</span><span class="op">)</span>
 
-<span class="no">sm</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span>(<span class="no">s2</span>, <span class="no">ctr</span>)</pre></body></html></div>
+<span class="va">sm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">s2</span>, <span class="va">ctr</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="scale-newspaper-level-epu-measures" class="section level4">
 <h4 class="hasAnchor">
 <a href="#scale-newspaper-level-epu-measures" class="anchor"></a>Scale newspaper-level EPU measures</h4>
 <p>The next step is to scale the newspaper-level EPU time series to unit standard deviation before a certain date (in this case, before 2005). Rather than unit standard deviation, we standardize to a standard deviation of 100.</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">dt</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html">as.data.table</a></span>(<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/subset.data.table.html">subset</a></span>(<span class="no">sm</span>, <span class="no">date</span> <span class="kw">&lt;</span> <span class="st">"2005-01-01"</span>))
-<span class="no">sds</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>(<span class="no">dt</span>[, -<span class="fl">1</span>], <span class="fl">2</span>, <span class="no">sd</span>)
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html">as.data.table</a></span><span class="op">(</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/subset.data.table.html">subset</a></span><span class="op">(</span><span class="va">sm</span>, <span class="va">date</span> <span class="op">&lt;</span> <span class="st">"2005-01-01"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">sds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">dt</span><span class="op">[</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="fl">2</span>, <span class="va">sd</span><span class="op">)</span>
 
-<span class="no">sm2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/scale.html">scale</a></span>(<span class="no">sm</span>, <span class="kw">center</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">scale</span> <span class="kw">=</span> <span class="no">sds</span>/<span class="fl">100</span>)
-<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/subset.data.table.html">subset</a></span>(<span class="no">sm2</span>, <span class="no">date</span> <span class="kw">&lt;</span> <span class="st">"2005-01-01"</span>)<span class="kw">[[</span><span class="st">"stats"</span>]]</pre></body></html></div>
+<span class="va">sm2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/scale.html">scale</a></span><span class="op">(</span><span class="va">sm</span>, center <span class="op">=</span> <span class="cn">FALSE</span>, scale <span class="op">=</span> <span class="va">sds</span><span class="op">/</span><span class="fl">100</span><span class="op">)</span>
+<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/subset.data.table.html">subset</a></span><span class="op">(</span><span class="va">sm2</span>, <span class="va">date</span> <span class="op">&lt;</span> <span class="st">"2005-01-01"</span><span class="op">)</span><span class="op">[[</span><span class="st">"stats"</span><span class="op">]</span><span class="op">]</span></code></pre></div>
 <pre><code>##          EPU--wsj--simple EPU--wapo--simple EPU--wsj--linear EPU--wapo--linear
 ## mean           96.1926353        76.9955241      319.1703100      271.85568619
 ## sd            100.0000000       100.0000000      100.0000000      100.00000000
@@ -248,18 +255,20 @@
 <h4 class="hasAnchor">
 <a href="#aggregate-measures-into-one-epu-index" class="anchor"></a>Aggregate measures into one EPU index</h4>
 <p>To then obtain the actual EPU index, the newspaper-level series are averaged by reapplying the <code><a href="https://rdrr.io/r/stats/aggregate.html">aggregate()</a></code> function. We are left with two series, one a moving average of the other.</p>
-<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="no">sm3</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span>(<span class="no">sm2</span>, <span class="kw">features</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">journals</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"wsj"</span>, <span class="st">"wapo"</span>)))
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sm3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">sm2</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>journals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"wsj"</span>, <span class="st">"wapo"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">sm3</span>, <span class="st">"time"</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">sm3</span>, <span class="st">"time"</span><span class="op">)</span></code></pre></div>
 <p><img src="epu_files/figure-html/unnamed-chunk-9-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div id="rescale-into-final-epu-index" class="section level4">
 <h4 class="hasAnchor">
 <a href="#rescale-into-final-epu-index" class="anchor"></a>Rescale into final EPU index</h4>
 <p>The <code><a href="https://rdrr.io/r/base/scale.html">scale()</a></code> function can be used again to achieve final normalizations. For the sake of the example, we shift the indices upwards by a value of 50.</p>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">sm4</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/scale.html">scale</a></span>(<span class="no">sm3</span>, <span class="kw">center</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(-<span class="fl">50</span>, <span class="fu"><a href="../../reference/nmeasures.html">nmeasures</a></span>(<span class="no">sm3</span>)), <span class="kw">scale</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sm4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/scale.html">scale</a></span><span class="op">(</span><span class="va">sm3</span>, center <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="op">-</span><span class="fl">50</span>, <span class="fu"><a href="../../reference/nmeasures.html">nmeasures</a></span><span class="op">(</span><span class="va">sm3</span><span class="op">)</span><span class="op">)</span>, scale <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">sm4</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">sm4</span><span class="op">)</span></code></pre></div>
 <p><img src="epu_files/figure-html/unnamed-chunk-10-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 </div>
@@ -271,53 +280,58 @@
 <h4 class="hasAnchor">
 <a href="#recreate-corpus-object" class="anchor"></a>Recreate corpus object</h4>
 <p>We start from scratch by reinitializing the corpus.</p>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/sento_corpus.html">sento_corpus</a></span>(<span class="no">usnews</span>[, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"id"</span>, <span class="st">"date"</span>, <span class="st">"texts"</span>, <span class="st">"wsj"</span>, <span class="st">"wapo"</span>)])</pre></body></html></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">corpus</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/sento_corpus.html">sento_corpus</a></span><span class="op">(</span><span class="va">usnews</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"id"</span>, <span class="st">"date"</span>, <span class="st">"texts"</span>, <span class="st">"wsj"</span>, <span class="st">"wapo"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="compute-epu-relevance" class="section level4">
 <h4 class="hasAnchor">
 <a href="#compute-epu-relevance" class="anchor"></a>Compute EPU relevance</h4>
 <p>We move forward by adding binary features to the corpus for the E, P and U keywords defined earlier. Next, we compute an EPU feature, based on the same mechanism using the self-created <code>to_epu()</code> function.</p>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/add_features.html">add_features</a></span>(<span class="no">corpus</span>, <span class="kw">keywords</span> <span class="kw">=</span> <span class="no">keywords</span>, <span class="kw">do.binary</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">corpus</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/add_features.html">add_features</a></span><span class="op">(</span><span class="va">corpus</span>, keywords <span class="op">=</span> <span class="va">keywords</span>, do.binary <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 
-<span class="no">dv</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html">as.data.table</a></span>(<span class="fu"><a href="https://quanteda.io/reference/docvars.html">docvars</a></span>(<span class="no">corpus</span>))
-<span class="no">dv</span>[, <span class="no">EPU</span> <span class="kw">:=</span> <span class="fu">to_epu</span>(<span class="no">.SD</span>), <span class="kw">.SDcols</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"E"</span>, <span class="st">"P"</span>, <span class="st">"U"</span>)]</pre></body></html></div>
+<span class="va">dv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html">as.data.table</a></span><span class="op">(</span><span class="fu"><a href="https://quanteda.io/reference/docvars.html">docvars</a></span><span class="op">(</span><span class="va">corpus</span><span class="op">)</span><span class="op">)</span>
+<span class="va">dv</span><span class="op">[</span>, <span class="va">EPU</span> <span class="op">:=</span> <span class="fu">to_epu</span><span class="op">(</span><span class="va">.SD</span><span class="op">)</span>, .SDcols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"E"</span>, <span class="st">"P"</span>, <span class="st">"U"</span><span class="op">)</span><span class="op">]</span></code></pre></div>
 </div>
 <div id="add-normalized-newspaper-features" class="section level4">
 <h4 class="hasAnchor">
 <a href="#add-normalized-newspaper-features" class="anchor"></a>Add normalized newspaper features</h4>
 <p>Having detected the news articles to count in the EPU index, we need to normalize these counts. We do so per newspaper using some <strong><code>data.table</code></strong> magic, and then add the appropriate features to the corpus using <code><a href="../../reference/add_features.html">add_features()</a></code>.</p>
-<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="co"># compute total number of articles per journal and month</span>
-<span class="no">totArticles</span> <span class="kw">&lt;-</span> <span class="no">dv</span>[, <span class="no">date</span> <span class="kw">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span>(<span class="no">date</span>, <span class="st">"%Y-%m"</span>)][,
-  <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">.SD</span>, <span class="no">sum</span>), <span class="kw">by</span> <span class="kw">=</span> <span class="no">date</span>, <span class="kw">.SDcols</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"wsj"</span>, <span class="st">"wapo"</span>)]
-<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setattr.html">setnames</a></span>(<span class="no">totArticles</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"wsj"</span>, <span class="st">"wapo"</span>), <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"wsjT"</span>, <span class="st">"wapoT"</span>))
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># compute total number of articles per journal and month</span>
+<span class="va">totArticles</span> <span class="op">&lt;-</span> <span class="va">dv</span><span class="op">[</span>, <span class="va">date</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span><span class="op">(</span><span class="va">date</span>, <span class="st">"%Y-%m"</span><span class="op">)</span><span class="op">]</span><span class="op">[</span>,
+  <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">.SD</span>, <span class="va">sum</span><span class="op">)</span>, by <span class="op">=</span> <span class="va">date</span>, .SDcols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"wsj"</span>, <span class="st">"wapo"</span><span class="op">)</span><span class="op">]</span>
+<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setattr.html">setnames</a></span><span class="op">(</span><span class="va">totArticles</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"wsj"</span>, <span class="st">"wapo"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"wsjT"</span>, <span class="st">"wapoT"</span><span class="op">)</span><span class="op">)</span>
 
-<span class="no">dv</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/merge.html">merge</a></span>(<span class="no">dv</span>, <span class="no">totArticles</span>, <span class="kw">by</span> <span class="kw">=</span> <span class="st">"date"</span>)
-<span class="no">dv</span>[, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"wsj"</span>, <span class="st">"wapo"</span>) <span class="kw">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>((<span class="no">wsj</span> * <span class="no">EPU</span>) / <span class="no">wsjT</span>, (<span class="no">EPU</span> * <span class="no">wapo</span>) / <span class="no">wapoT</span>)]
+<span class="va">dv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/merge.html">merge</a></span><span class="op">(</span><span class="va">dv</span>, <span class="va">totArticles</span>, by <span class="op">=</span> <span class="st">"date"</span><span class="op">)</span>
+<span class="va">dv</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"wsj"</span>, <span class="st">"wapo"</span><span class="op">)</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="op">(</span><span class="va">wsj</span> <span class="op">*</span> <span class="va">EPU</span><span class="op">)</span> <span class="op">/</span> <span class="va">wsjT</span>, <span class="op">(</span><span class="va">EPU</span> <span class="op">*</span> <span class="va">wapo</span><span class="op">)</span> <span class="op">/</span> <span class="va">wapoT</span><span class="op">)</span><span class="op">]</span>
 
-<span class="kw">for</span> (<span class="no">j</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html">which</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">dv</span>) <span class="kw">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"wsj"</span>, <span class="st">"wapo"</span>))) <span class="co"># replace NaN and Inf values due to zero division</span>
-  <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/assign.html">set</a></span>(<span class="no">dv</span>, <span class="fu"><a href="https://rdrr.io/r/base/which.html">which</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span>(<span class="no">dv</span><span class="kw">[[</span><span class="no">j</span>]]) <span class="kw">|</span> <span class="fu"><a href="https://rdrr.io/r/base/is.finite.html">is.infinite</a></span>(<span class="no">dv</span><span class="kw">[[</span><span class="no">j</span>]])), <span class="no">j</span>, <span class="fl">0</span>)
+<span class="kw">for</span> <span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">dv</span><span class="op">)</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"wsj"</span>, <span class="st">"wapo"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="co"># replace NaN and Inf values due to zero division</span>
+  <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/assign.html">set</a></span><span class="op">(</span><span class="va">dv</span>, <span class="fu"><a href="https://rdrr.io/r/base/which.html">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">dv</span><span class="op">[[</span><span class="va">j</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">|</span> <span class="fu"><a href="https://rdrr.io/r/base/is.finite.html">is.infinite</a></span><span class="op">(</span><span class="va">dv</span><span class="op">[[</span><span class="va">j</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>, <span class="va">j</span>, <span class="fl">0</span><span class="op">)</span>
 
-<span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/add_features.html">add_features</a></span>(<span class="no">corpus</span>, <span class="kw">featuresdf</span> <span class="kw">=</span> <span class="no">dv</span>[, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"wsj"</span>, <span class="st">"wapo"</span>, <span class="st">"EPU"</span>)])</pre></body></html></div>
+<span class="va">corpus</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/add_features.html">add_features</a></span><span class="op">(</span><span class="va">corpus</span>, featuresdf <span class="op">=</span> <span class="va">dv</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"wsj"</span>, <span class="st">"wapo"</span>, <span class="st">"EPU"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="select-epu-corpus" class="section level4">
 <h4 class="hasAnchor">
 <a href="#select-epu-corpus" class="anchor"></a>Select EPU corpus</h4>
 <p>We continue with a subsetted corpus carrying those articles discussing enough EPU material. We clean the features keeping only the normalized newspaper-level features.</p>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">corpus</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/corpus_subset.html">corpus_subset</a></span>(<span class="no">corpus</span>, <span class="no">EPU</span> <span class="kw">==</span> <span class="fl">1</span>)
-<span class="fu"><a href="https://quanteda.io/reference/docvars.html">docvars</a></span>(<span class="no">corpus</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"E"</span>, <span class="st">"P"</span>, <span class="st">"U"</span>, <span class="st">"EPU"</span>)) <span class="kw">&lt;-</span> <span class="kw">NULL</span></pre></body></html></div>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">corpus</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/corpus_subset.html">corpus_subset</a></span><span class="op">(</span><span class="va">corpus</span>, <span class="va">EPU</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span>
+<span class="fu"><a href="https://quanteda.io/reference/docvars.html">docvars</a></span><span class="op">(</span><span class="va">corpus</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"E"</span>, <span class="st">"P"</span>, <span class="st">"U"</span>, <span class="st">"EPU"</span><span class="op">)</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></code></pre></div>
 </div>
 <div id="aggregate-into-a-sentiment-adjusted-epu-index" class="section level4">
 <h4 class="hasAnchor">
 <a href="#aggregate-into-a-sentiment-adjusted-epu-index" class="anchor"></a>Aggregate into a sentiment-adjusted EPU index</h4>
 <p>The news sentiment layer is added by applying the all-at-once sentiment computation and aggregation function <code><a href="../../reference/sento_measures.html">sento_measures()</a></code>. The popular Harvard General Inquirer is the sentiment lexicon at service. Averaging across the newspaper series gives a final EPU index. Specific scaling as shown before is left aside.</p>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="no">sentLex</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/sento_lexicons.html">sento_lexicons</a></span>(<span class="kw pkg">sentometrics</span><span class="kw ns">::</span><span class="no"><a href="../../reference/list_lexicons.html">list_lexicons</a></span>[<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"GI_en"</span>)])
-<span class="no">ctr</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/ctr_agg.html">ctr_agg</a></span>(<span class="st">"counts"</span>, <span class="st">"equal_weight"</span>, <span class="st">"equal_weight"</span>, <span class="kw">by</span> <span class="kw">=</span> <span class="st">"month"</span>, <span class="kw">lag</span> <span class="kw">=</span> <span class="fl">12</span>)
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sentLex</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/sento_lexicons.html">sento_lexicons</a></span><span class="op">(</span><span class="fu">sentometrics</span><span class="fu">::</span><span class="va"><a href="../../reference/list_lexicons.html">list_lexicons</a></span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"GI_en"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>
+<span class="va">ctr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/ctr_agg.html">ctr_agg</a></span><span class="op">(</span><span class="st">"counts"</span>, <span class="st">"equal_weight"</span>, <span class="st">"equal_weight"</span>, by <span class="op">=</span> <span class="st">"month"</span>, lag <span class="op">=</span> <span class="fl">12</span><span class="op">)</span>
 
-<span class="no">sm</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/sento_measures.html">sento_measures</a></span>(<span class="no">corpus</span>, <span class="no">sentLex</span>, <span class="no">ctr</span>)
+<span class="va">sm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/sento_measures.html">sento_measures</a></span><span class="op">(</span><span class="va">corpus</span>, <span class="va">sentLex</span>, <span class="va">ctr</span><span class="op">)</span>
 
-<span class="no">sm2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span>(<span class="no">sm</span>, <span class="kw">features</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">journals</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"wsj"</span>, <span class="st">"wapo"</span>)))
+<span class="va">sm2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">sm</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>journals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"wsj"</span>, <span class="st">"wapo"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">sm2</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">sm2</span><span class="op">)</span></code></pre></div>
 <p><img src="epu_files/figure-html/unnamed-chunk-15-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 </div>
@@ -338,7 +352,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -1,18 +1,18 @@
-pandoc: '2.6'
-pkgdown: 1.5.1
+pandoc: 2.11.4
+pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
-  epu: applications/epu.html
-  vix: applications/vix.html
-  gopress: contributions/gopress.html
-  isa: contributions/isa.html
+  applications/epu: epu.html
+  applications/vix: vix.html
+  contributions/gopress: gopress.html
+  contributions/isa: isa.html
   development: development.html
-  corpus: examples/corpus.html
-  indexation: examples/indexation.html
-  modeling: examples/modeling.html
-  sentiment: examples/sentiment.html
+  examples/corpus: corpus.html
+  examples/indexation: indexation.html
+  examples/modeling: modeling.html
+  examples/sentiment: sentiment.html
   sentometrics: sentometrics.html
-last_built: 2020-12-27T13:28Z
+last_built: 2021-06-19T11:05Z
 urls:
   reference: https://sentometricsresearch.github.io/sentometrics/reference
   article: https://sentometricsresearch.github.io/sentometrics/articles

@@ -27,7 +27,7 @@
 #' @references Ardia, Bluteau and Boudt (2019). \strong{Questioning the news about economic growth: Sparse forecasting using
 #' thousands of news-based sentiment values}. \emph{International Journal of Forecasting 35, 1370-1386},
 #' \doi{10.1016/j.ijforecast.2018.10.010}.
-#' @references Ardia, Bluteau, Borms and Boudt (2020). \strong{The R package sentometrics to compute, aggregate and
+#' @references Ardia, Bluteau, Borms and Boudt (2021). \strong{The R package sentometrics to compute, aggregate and
 #' predict with textual sentiment}. \emph{Forthcoming in Journal of Statistical Software},
 #' \doi{10.2139/ssrn.3067734}.
 "_PACKAGE"

@@ -88,7 +88,7 @@ the MCS package." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.4</span>
       </span>
     </div>
 
@@ -96,7 +96,7 @@ the MCS package." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -167,7 +167,7 @@ the MCS package." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/SentometricsResearch/sentometrics/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -201,7 +201,7 @@ Can then be used, for instance, as an input to create a model confidence set (Ha
 the <span class="pkg">MCS</span> package.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_loss_data</span>(<span class='no'>models</span>, <span class='kw'>loss</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"DA"</span>, <span class='st'>"error"</span>, <span class='st'>"errorSq"</span>, <span class='st'>"AD"</span>, <span class='st'>"accuracy"</span>))</pre>
+    <pre class="usage"><span class='fu'>get_loss_data</span><span class='op'>(</span><span class='va'>models</span>, loss <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"DA"</span>, <span class='st'>"error"</span>, <span class='st'>"errorSq"</span>, <span class='st'>"AD"</span>, <span class='st'>"accuracy"</span><span class='op'>)</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -227,47 +227,53 @@ is calculated. The first four options are available for <code>"gaussian"</code> 
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     <p>Hansen, Lunde and Nason (2011). <strong>The model confidence set</strong>. <em>Econometrica 79, 453-497</em>,
-<a href='https://doi.org/10.3982/ECTA5771'>https://doi.org/10.3982/ECTA5771</a>.</p>
+doi: <a href='https://doi.org/10.3982/ECTA5771'>10.3982/ECTA5771</a>
+.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='sento_model.html'>sento_model</a></code>, <code><a href='https://rdrr.io/pkg/MCS/man/MCSprocedure.html'>MCSprocedure</a></code></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Samuel Borms</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"usnews"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"sentometrics"</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"list_lexicons"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"sentometrics"</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"list_valence_shifters"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"sentometrics"</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"epu"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"sentometrics"</span>)
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"usnews"</span>, package <span class='op'>=</span> <span class='st'>"sentometrics"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"list_lexicons"</span>, package <span class='op'>=</span> <span class='st'>"sentometrics"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"list_valence_shifters"</span>, package <span class='op'>=</span> <span class='st'>"sentometrics"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"epu"</span>, package <span class='op'>=</span> <span class='st'>"sentometrics"</span><span class='op'>)</span>
 
-<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>505</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>505</span><span class='op'>)</span>
 
 <span class='co'># construct two sento_measures objects</span>
-<span class='no'>corpusAll</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sento_corpus.html'>sento_corpus</a></span>(<span class='kw'>corpusdf</span> <span class='kw'>=</span> <span class='no'>usnews</span>)
-<span class='no'>corpus</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>quanteda</span><span class='kw ns'>::</span><span class='fu'><a href='https://quanteda.io/reference/corpus_subset.html'>corpus_subset</a></span>(<span class='no'>corpusAll</span>, <span class='no'>date</span> <span class='kw'>&gt;=</span> <span class='st'>"1997-01-01"</span> <span class='kw'>&amp;</span> <span class='no'>date</span> <span class='kw'>&lt;</span> <span class='st'>"2014-10-01"</span>)
-<span class='no'>l</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sento_lexicons.html'>sento_lexicons</a></span>(<span class='no'>list_lexicons</span>[<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"LM_en"</span>, <span class='st'>"HENRY_en"</span>)], <span class='no'>list_valence_shifters</span><span class='kw'>[[</span><span class='st'>"en"</span>]])
+<span class='va'>corpusAll</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sento_corpus.html'>sento_corpus</a></span><span class='op'>(</span>corpusdf <span class='op'>=</span> <span class='va'>usnews</span><span class='op'>)</span>
+<span class='va'>corpus</span> <span class='op'>&lt;-</span> <span class='fu'>quanteda</span><span class='fu'>::</span><span class='fu'><a href='https://quanteda.io/reference/corpus_subset.html'>corpus_subset</a></span><span class='op'>(</span><span class='va'>corpusAll</span>, <span class='va'>date</span> <span class='op'>&gt;=</span> <span class='st'>"1997-01-01"</span> <span class='op'>&amp;</span> <span class='va'>date</span> <span class='op'>&lt;</span> <span class='st'>"2014-10-01"</span><span class='op'>)</span>
+<span class='va'>l</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sento_lexicons.html'>sento_lexicons</a></span><span class='op'>(</span><span class='va'>list_lexicons</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"LM_en"</span>, <span class='st'>"HENRY_en"</span><span class='op'>)</span><span class='op'>]</span>, <span class='va'>list_valence_shifters</span><span class='op'>[[</span><span class='st'>"en"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
 
-<span class='no'>ctrA</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='ctr_agg.html'>ctr_agg</a></span>(<span class='kw'>howWithin</span> <span class='kw'>=</span> <span class='st'>"proportionalPol"</span>, <span class='kw'>howDocs</span> <span class='kw'>=</span> <span class='st'>"proportional"</span>,
-                <span class='kw'>howTime</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"equal_weight"</span>, <span class='st'>"linear"</span>), <span class='kw'>by</span> <span class='kw'>=</span> <span class='st'>"month"</span>, <span class='kw'>lag</span> <span class='kw'>=</span> <span class='fl'>3</span>)
-<span class='no'>sentMeas</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sento_measures.html'>sento_measures</a></span>(<span class='no'>corpus</span>, <span class='no'>l</span>, <span class='no'>ctrA</span>)
+<span class='va'>ctrA</span> <span class='op'>&lt;-</span> <span class='fu'><a href='ctr_agg.html'>ctr_agg</a></span><span class='op'>(</span>howWithin <span class='op'>=</span> <span class='st'>"proportionalPol"</span>, howDocs <span class='op'>=</span> <span class='st'>"proportional"</span>,
+                howTime <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"equal_weight"</span>, <span class='st'>"linear"</span><span class='op'>)</span>, by <span class='op'>=</span> <span class='st'>"month"</span>, lag <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>
+<span class='va'>sentMeas</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sento_measures.html'>sento_measures</a></span><span class='op'>(</span><span class='va'>corpus</span>, <span class='va'>l</span>, <span class='va'>ctrA</span><span class='op'>)</span>
 
 <span class='co'># prepare y and other x variables</span>
-<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='no'>epu</span>[<span class='no'>epu</span>$<span class='no'>date</span> <span class='kw'>%in%</span> <span class='fu'><a href='get_dates.html'>get_dates</a></span>(<span class='no'>sentMeas</span>), <span class='st'>"index"</span>]
-<span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>y</span>) <span class='kw'>==</span> <span class='fu'><a href='https://rdrr.io/r/stats/nobs.html'>nobs</a></span>(<span class='no'>sentMeas</span>) <span class='co'># TRUE</span>
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>y</span>)), <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>y</span>))) <span class='co'># two other (random) x variables</span>
-<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span>(<span class='no'>x</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"x1"</span>, <span class='st'>"x2"</span>)
+<span class='va'>y</span> <span class='op'>&lt;-</span> <span class='va'>epu</span><span class='op'>[</span><span class='va'>epu</span><span class='op'>$</span><span class='va'>date</span> <span class='op'>%in%</span> <span class='fu'><a href='get_dates.html'>get_dates</a></span><span class='op'>(</span><span class='va'>sentMeas</span><span class='op'>)</span>, <span class='st'>"index"</span><span class='op'>]</span>
+<span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>y</span><span class='op'>)</span> <span class='op'>==</span> <span class='fu'><a href='https://rdrr.io/r/stats/nobs.html'>nobs</a></span><span class='op'>(</span><span class='va'>sentMeas</span><span class='op'>)</span> <span class='co'># TRUE</span>
+<span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>y</span><span class='op'>)</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>y</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span> <span class='co'># two other (random) x variables</span>
+<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"x1"</span>, <span class='st'>"x2"</span><span class='op'>)</span>
 
 <span class='co'># estimate different type of regressions</span>
-<span class='no'>ctrM</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='ctr_model.html'>ctr_model</a></span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"gaussian"</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"AIC"</span>, <span class='kw'>do.iter</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-                 <span class='kw'>h</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>nSample</span> <span class='kw'>=</span> <span class='fl'>120</span>, <span class='kw'>start</span> <span class='kw'>=</span> <span class='fl'>50</span>)
-<span class='no'>out1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sento_model.html'>sento_model</a></span>(<span class='no'>sentMeas</span>, <span class='no'>y</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='no'>x</span>, <span class='kw'>ctr</span> <span class='kw'>=</span> <span class='no'>ctrM</span>)
-<span class='no'>out2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sento_model.html'>sento_model</a></span>(<span class='no'>sentMeas</span>, <span class='no'>y</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ctr</span> <span class='kw'>=</span> <span class='no'>ctrM</span>)
-<span class='no'>out3</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sento_model.html'>sento_model</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>sentMeas</span>, <span class='kw'>select</span> <span class='kw'>=</span> <span class='st'>"linear"</span>), <span class='no'>y</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='no'>x</span>, <span class='kw'>ctr</span> <span class='kw'>=</span> <span class='no'>ctrM</span>)
-<span class='no'>out4</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sento_model.html'>sento_model</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>sentMeas</span>, <span class='kw'>select</span> <span class='kw'>=</span> <span class='st'>"linear"</span>), <span class='no'>y</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ctr</span> <span class='kw'>=</span> <span class='no'>ctrM</span>)
+<span class='va'>ctrM</span> <span class='op'>&lt;-</span> <span class='fu'><a href='ctr_model.html'>ctr_model</a></span><span class='op'>(</span>model <span class='op'>=</span> <span class='st'>"gaussian"</span>, type <span class='op'>=</span> <span class='st'>"AIC"</span>, do.iter <span class='op'>=</span> <span class='cn'>TRUE</span>,
+                 h <span class='op'>=</span> <span class='fl'>0</span>, nSample <span class='op'>=</span> <span class='fl'>120</span>, start <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span>
+<span class='va'>out1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sento_model.html'>sento_model</a></span><span class='op'>(</span><span class='va'>sentMeas</span>, <span class='va'>y</span>, x <span class='op'>=</span> <span class='va'>x</span>, ctr <span class='op'>=</span> <span class='va'>ctrM</span><span class='op'>)</span>
+<span class='va'>out2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sento_model.html'>sento_model</a></span><span class='op'>(</span><span class='va'>sentMeas</span>, <span class='va'>y</span>, x <span class='op'>=</span> <span class='cn'>NULL</span>, ctr <span class='op'>=</span> <span class='va'>ctrM</span><span class='op'>)</span>
+<span class='va'>out3</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sento_model.html'>sento_model</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>sentMeas</span>, select <span class='op'>=</span> <span class='st'>"linear"</span><span class='op'>)</span>, <span class='va'>y</span>, x <span class='op'>=</span> <span class='va'>x</span>, ctr <span class='op'>=</span> <span class='va'>ctrM</span><span class='op'>)</span>
+<span class='va'>out4</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sento_model.html'>sento_model</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>sentMeas</span>, select <span class='op'>=</span> <span class='st'>"linear"</span><span class='op'>)</span>, <span class='va'>y</span>, x <span class='op'>=</span> <span class='cn'>NULL</span>, ctr <span class='op'>=</span> <span class='va'>ctrM</span><span class='op'>)</span>
 
-<span class='no'>lossData</span> <span class='kw'>&lt;-</span> <span class='fu'>get_loss_data</span>(<span class='kw'>models</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>m1</span> <span class='kw'>=</span> <span class='no'>out1</span>, <span class='kw'>m2</span> <span class='kw'>=</span> <span class='no'>out2</span>, <span class='kw'>m3</span> <span class='kw'>=</span> <span class='no'>out3</span>, <span class='kw'>m4</span> <span class='kw'>=</span> <span class='no'>out4</span>),
-                          <span class='kw'>loss</span> <span class='kw'>=</span> <span class='st'>"errorSq"</span>)
+<span class='va'>lossData</span> <span class='op'>&lt;-</span> <span class='fu'>get_loss_data</span><span class='op'>(</span>models <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>m1 <span class='op'>=</span> <span class='va'>out1</span>, m2 <span class='op'>=</span> <span class='va'>out2</span>, m3 <span class='op'>=</span> <span class='va'>out3</span>, m4 <span class='op'>=</span> <span class='va'>out4</span><span class='op'>)</span>,
+                          loss <span class='op'>=</span> <span class='st'>"errorSq"</span><span class='op'>)</span>
 
-<span class='no'>mcs</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>MCS</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/MCS/man/MCSprocedure.html'>MCSprocedure</a></span>(<span class='no'>lossData</span>)}</div></pre>
+<span class='va'>mcs</span> <span class='op'>&lt;-</span> <span class='fu'>MCS</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/MCS/man/MCSprocedure.html'>MCSprocedure</a></span><span class='op'>(</span><span class='va'>lossData</span><span class='op'>)</span><span class='op'>}</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -283,7 +289,7 @@ is calculated. The first four options are available for <code>"gaussian"</code> 
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

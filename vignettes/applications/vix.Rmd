@@ -34,15 +34,15 @@ uscorpus <- sento_corpus(sentometrics::usnews)
 To enrich the corpus, we fit a topic model to uncover a set of different latent items discussed across the news. To do the preprocessing into a document-term matrix, we use the **`quanteda`** package. The **`stm`** package is used to extract 8 topics.
 
 ```{r}
-dfm <- dfm(uscorpus, tolower = TRUE, 
-           remove_punct = TRUE, remove_numbers = TRUE, remove = stopwords("en")) %>%
-  dfm_remove(min_nchar = 3) %>%
+dfm <- tokens(uscorpus, what = "word", remove_punct = TRUE, remove_numbers = TRUE) %>%
+  dfm(tolower = TRUE) %>%
+  dfm_remove(stopwords("en"), min_nchar = 3) %>%
   dfm_trim(min_termfreq = 0.95, termfreq_type = "quantile") %>%
-  dfm_trim(max_docfreq = 0.10, docfreq_type = "prop")
-dfm <- dfm_subset(dfm, ntoken(dfm) > 0)
+  dfm_trim(max_docfreq = 0.10, docfreq_type = "prop") %>% 
+  dfm_subset(ntoken(.) > 0)
 
-topicModel <- stm::stm(dfm, K = 8, verbose = FALSE)
-topTerms <- t(stm::labelTopics(topicModel, n = 5)[["prob"]])
+topicModel <- stm(dfm, K = 8, verbose = FALSE)
+topTerms <- t(labelTopics(topicModel, n = 5)[["prob"]])
 
 topTerms[, 1:4] # first 4 (out of 8) topics
 ```
@@ -55,9 +55,9 @@ A list of keywords that defines the new features is based on the 5 top terms ass
 keywords <- lapply(1:ncol(topTerms), function(i) topTerms[, i])
 names(keywords) <- paste0("TOPIC_", 1:length(keywords))
 uscorpus <- add_features(uscorpus, keywords = keywords, do.binary = FALSE, do.regex = FALSE)
-quanteda::docvars(uscorpus, c("uncertainty", "election", "economy", "noneconomy", "wsj", "wapo")) <- NULL
+docvars(uscorpus, c("uncertainty", "election", "economy", "noneconomy", "wsj", "wapo")) <- NULL
 
-colSums(quanteda::docvars(uscorpus)[, -1] != 0)
+colSums(docvars(uscorpus)[, -1] != 0)
 ```
 
 The final topic features distribution in the corpus is different than what is reported in the vignette. This is due to fundamental changes within the **`quanteda`** package regarding their tokenization. The sensitivity of the topical output is a good reminder about the importance of optimizing the preprocessing and the topic modeling itself (which is not dealt with in detail here).

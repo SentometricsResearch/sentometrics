@@ -1,10 +1,10 @@
 
-year <- "2020"
+year <- "2021"
 doi <- "10.2139/ssrn.3067734"
 
 citHeader("To cite the R package 'sentometrics' in publications use:")
 
-citEntry(key = "ArdiaBluteauBormsBoudt2020",
+citEntry(key = "ArdiaBluteauBormsBoudt2021",
          entry = "article",
          title = "The R Package sentometrics to Compute, Aggregate and Predict with Textual Sentiment",
          author = personList(person("David","Ardia"),

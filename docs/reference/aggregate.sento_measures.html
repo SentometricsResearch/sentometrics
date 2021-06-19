@@ -89,7 +89,7 @@ sentiment measure for each of the dimensions." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.4</span>
       </span>
     </div>
 
@@ -97,7 +97,7 @@ sentiment measure for each of the dimensions." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -168,7 +168,7 @@ sentiment measure for each of the dimensions." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/SentometricsResearch/sentometrics/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -204,15 +204,15 @@ sentiment measure for each of the dimensions.</p>
     </div>
 
     <pre class="usage"><span class='co'># S3 method for sento_measures</span>
-<span class='fu'><a href='https://rdrr.io/r/stats/aggregate.html'>aggregate</a></span>(
-  <span class='no'>x</span>,
-  <span class='kw'>features</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>lexicons</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>time</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>do.global</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>do.keep</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='no'>...</span>
-)</pre>
+<span class='fu'><a href='https://rdrr.io/r/stats/aggregate.html'>aggregate</a></span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  features <span class='op'>=</span> <span class='cn'>NULL</span>,
+  lexicons <span class='op'>=</span> <span class='cn'>NULL</span>,
+  time <span class='op'>=</span> <span class='cn'>NULL</span>,
+  do.global <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  do.keep <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -273,46 +273,51 @@ along each component from the <code>lexicons</code>, <code>features</code>, and 
 terms of allowed weights. For example, the global index based on the supplied lexicon weights (<code>"globLex"</code>) is obtained
 first by multiplying every sentiment measure with its corresponding weight (meaning, the weight given to the lexicon the
 sentiment is computed with), then by taking the average per date.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Samuel Borms</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"usnews"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"sentometrics"</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"list_lexicons"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"sentometrics"</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"list_valence_shifters"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"sentometrics"</span>)
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"usnews"</span>, package <span class='op'>=</span> <span class='st'>"sentometrics"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"list_lexicons"</span>, package <span class='op'>=</span> <span class='st'>"sentometrics"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"list_valence_shifters"</span>, package <span class='op'>=</span> <span class='st'>"sentometrics"</span><span class='op'>)</span>
 
 <span class='co'># construct a sento_measures object to start with</span>
-<span class='no'>corpus</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sento_corpus.html'>sento_corpus</a></span>(<span class='kw'>corpusdf</span> <span class='kw'>=</span> <span class='no'>usnews</span>)
-<span class='no'>corpusSample</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>quanteda</span><span class='kw ns'>::</span><span class='fu'><a href='https://quanteda.io/reference/corpus_sample.html'>corpus_sample</a></span>(<span class='no'>corpus</span>, <span class='kw'>size</span> <span class='kw'>=</span> <span class='fl'>500</span>)
-<span class='no'>l</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sento_lexicons.html'>sento_lexicons</a></span>(<span class='no'>list_lexicons</span>[<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"LM_en"</span>, <span class='st'>"HENRY_en"</span>)],
-                    <span class='no'>list_valence_shifters</span><span class='kw'>[[</span><span class='st'>"en"</span>]])
-<span class='no'>ctr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='ctr_agg.html'>ctr_agg</a></span>(<span class='kw'>howTime</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"equal_weight"</span>, <span class='st'>"linear"</span>),
-               <span class='kw'>by</span> <span class='kw'>=</span> <span class='st'>"year"</span>, <span class='kw'>lag</span> <span class='kw'>=</span> <span class='fl'>3</span>)
-<span class='no'>sento_measures</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sento_measures.html'>sento_measures</a></span>(<span class='no'>corpusSample</span>, <span class='no'>l</span>, <span class='no'>ctr</span>)
+<span class='va'>corpus</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sento_corpus.html'>sento_corpus</a></span><span class='op'>(</span>corpusdf <span class='op'>=</span> <span class='va'>usnews</span><span class='op'>)</span>
+<span class='va'>corpusSample</span> <span class='op'>&lt;-</span> <span class='fu'>quanteda</span><span class='fu'>::</span><span class='fu'><a href='https://quanteda.io/reference/corpus_sample.html'>corpus_sample</a></span><span class='op'>(</span><span class='va'>corpus</span>, size <span class='op'>=</span> <span class='fl'>500</span><span class='op'>)</span>
+<span class='va'>l</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sento_lexicons.html'>sento_lexicons</a></span><span class='op'>(</span><span class='va'>list_lexicons</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"LM_en"</span>, <span class='st'>"HENRY_en"</span><span class='op'>)</span><span class='op'>]</span>,
+                    <span class='va'>list_valence_shifters</span><span class='op'>[[</span><span class='st'>"en"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>
+<span class='va'>ctr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='ctr_agg.html'>ctr_agg</a></span><span class='op'>(</span>howTime <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"equal_weight"</span>, <span class='st'>"linear"</span><span class='op'>)</span>,
+               by <span class='op'>=</span> <span class='st'>"year"</span>, lag <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>
+<span class='va'>sento_measures</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sento_measures.html'>sento_measures</a></span><span class='op'>(</span><span class='va'>corpusSample</span>, <span class='va'>l</span>, <span class='va'>ctr</span><span class='op'>)</span>
 
 <span class='co'># aggregation across specified components</span>
-<span class='no'>smAgg</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/aggregate.html'>aggregate</a></span>(<span class='no'>sento_measures</span>,
-                   <span class='kw'>time</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>W</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"equal_weight"</span>, <span class='st'>"linear"</span>)),
-                   <span class='kw'>features</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>journals</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"wsj"</span>, <span class='st'>"wapo"</span>)),
-                   <span class='kw'>do.keep</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+<span class='va'>smAgg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/aggregate.html'>aggregate</a></span><span class='op'>(</span><span class='va'>sento_measures</span>,
+                   time <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>W <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"equal_weight"</span>, <span class='st'>"linear"</span><span class='op'>)</span><span class='op'>)</span>,
+                   features <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>journals <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"wsj"</span>, <span class='st'>"wapo"</span><span class='op'>)</span><span class='op'>)</span>,
+                   do.keep <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 
 <span class='co'># aggregation in full</span>
-<span class='no'>dims</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='get_dimensions.html'>get_dimensions</a></span>(<span class='no'>sento_measures</span>)
-<span class='no'>smFull</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/aggregate.html'>aggregate</a></span>(<span class='no'>sento_measures</span>,
-                    <span class='kw'>lexicons</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>L</span> <span class='kw'>=</span> <span class='no'>dims</span><span class='kw'>[[</span><span class='st'>"lexicons"</span>]]),
-                    <span class='kw'>time</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>T</span> <span class='kw'>=</span> <span class='no'>dims</span><span class='kw'>[[</span><span class='st'>"time"</span>]]),
-                    <span class='kw'>features</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>F</span> <span class='kw'>=</span> <span class='no'>dims</span><span class='kw'>[[</span><span class='st'>"features"</span>]]))
+<span class='va'>dims</span> <span class='op'>&lt;-</span> <span class='fu'><a href='get_dimensions.html'>get_dimensions</a></span><span class='op'>(</span><span class='va'>sento_measures</span><span class='op'>)</span>
+<span class='va'>smFull</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/aggregate.html'>aggregate</a></span><span class='op'>(</span><span class='va'>sento_measures</span>,
+                    lexicons <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>L <span class='op'>=</span> <span class='va'>dims</span><span class='op'>[[</span><span class='st'>"lexicons"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>,
+                    time <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>T <span class='op'>=</span> <span class='va'>dims</span><span class='op'>[[</span><span class='st'>"time"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span>,
+                    features <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>F <span class='op'>=</span> <span class='va'>dims</span><span class='op'>[[</span><span class='st'>"features"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span><span class='op'>)</span>
 
 <span class='co'># "global" aggregation</span>
-<span class='no'>smGlobal</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/aggregate.html'>aggregate</a></span>(<span class='no'>sento_measures</span>, <span class='kw'>do.global</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-                      <span class='kw'>lexicons</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.3</span>, <span class='fl'>0.1</span>),
-                      <span class='kw'>features</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>, -<span class='fl'>0.5</span>, <span class='fl'>0.3</span>, <span class='fl'>1.2</span>),
-                      <span class='kw'>time</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+<span class='va'>smGlobal</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/aggregate.html'>aggregate</a></span><span class='op'>(</span><span class='va'>sento_measures</span>, do.global <span class='op'>=</span> <span class='cn'>TRUE</span>,
+                      lexicons <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0.3</span>, <span class='fl'>0.1</span><span class='op'>)</span>,
+                      features <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='op'>-</span><span class='fl'>0.5</span>, <span class='fl'>0.3</span>, <span class='fl'>1.2</span><span class='op'>)</span>,
+                      time <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 <span class='co'># aggregation won't work, but produces informative error message</span>
-<span class='fu'><a href='https://rdrr.io/r/stats/aggregate.html'>aggregate</a></span>(<span class='no'>sento_measures</span>,
-          <span class='kw'>time</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>W</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"equal_weight"</span>, <span class='st'>"almon1"</span>)),
-          <span class='kw'>lexicons</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>LEX</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"LM_en"</span>)),
-          <span class='kw'>features</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>journals</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"notInHere"</span>, <span class='st'>"wapo"</span>)))}</div></pre>
+<span class='fu'><a href='https://rdrr.io/r/stats/aggregate.html'>aggregate</a></span><span class='op'>(</span><span class='va'>sento_measures</span>,
+          time <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>W <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"equal_weight"</span>, <span class='st'>"almon1"</span><span class='op'>)</span><span class='op'>)</span>,
+          lexicons <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>LEX <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"LM_en"</span><span class='op'>)</span><span class='op'>)</span>,
+          features <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>journals <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"notInHere"</span>, <span class='st'>"wapo"</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>}</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -328,7 +333,7 @@ sentiment is computed with), then by taking the average per date.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

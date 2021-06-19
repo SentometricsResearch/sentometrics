@@ -93,7 +93,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -164,7 +164,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/SentometricsResearch/sentometrics/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -203,7 +203,7 @@
 <a href="#sentometrics-083" class="anchor"></a>sentometrics 0.8.3</h2>
 <ul>
 <li>Features (or docvars) with names <code>"id"</code>, <code>"sentence_id"</code>, <code>"date"</code>, <code>"word_count"</code> or <code>"texts"</code> will not be accepted even when <code>numeric</code>, to avoid duplicate column names down the line. A clear error message is issued to alert users.</li>
-<li>Replacement of <code><a href="https://rdrr.io/r/base/order.html">order()</a></code> calls on <code>data.frame</code>s where needed to avoid CRAN complaints.</li>
+<li>Replacement of <code><a href="https://Rdatatable.gitlab.io/data.table/reference/setorder.html">order()</a></code> calls on <code>data.frame</code>s where needed to avoid CRAN complaints.</li>
 <li>Some small documentation fixes.</li>
 </ul>
 </div>
@@ -251,7 +251,7 @@
 <a href="#sentometrics-075" class="anchor"></a>sentometrics 0.7.5</h2>
 <ul>
 <li>New functions: <code>as.data.table.sento_corpus()</code>, <code>as.data.frame.sento_corpus()</code>, and <code>as.data.frame.sento_measures()</code>.</li>
-<li>Embedded a small workaround in <code><a href="../reference/plot.attributions.html">plot.attributions()</a></code> to guaranty same plotting behaviour after update of <strong><code>ggplot2</code></strong> package that gave buggy output for the <code>geom_area()</code> layer.</li>
+<li>Embedded a small workaround in <code><a href="../reference/plot.attributions.html">plot.attributions()</a></code> to guaranty same plotting behaviour after update of <strong><code>ggplot2</code></strong> package that gave buggy output for the <code><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html">geom_area()</a></code> layer.</li>
 <li>Integrated for overall consistency <code><a href="../reference/sentometrics-defunct.html">measures_global()</a></code> into the <code><a href="../reference/aggregate.sento_measures.html">aggregate.sento_measures()</a></code> function, adding a <code>do.global</code> argument to enact it.</li>
 <li>Slightly changed the clusters-based sentence-level sentiment computation (different weighting of adversative conjunctions).</li>
 <li>Clarified the documentation for the <code><a href="../reference/peakdates.html">peakdates()</a></code> and <code><a href="../reference/peakdocs.html">peakdocs()</a></code> functions.</li>
@@ -337,7 +337,7 @@
 <li>Corrected update of <code>"attribWeights"</code> element of output <code>sentomeasures</code> object in required <code>measures_xyz()</code> functions.</li>
 <li>Added a new attribution dimension (<code>"lags"</code>) to the <code><a href="../reference/attributions.html">attributions()</a></code> function, and corrected some edge cases.</li>
 <li>Made a slight correction to the information criterion estimators.</li>
-<li>Added a <code>lambdas</code> argument to the <code><a href="../reference/ctr_model.html">ctr_model()</a></code> function, directly passed on to the <code><a href="https://rdrr.io/pkg/glmnet/man/glmnet.html">glmnet::glmnet()</a></code> function if used.</li>
+<li>Added a <code>lambdas</code> argument to the <code><a href="../reference/ctr_model.html">ctr_model()</a></code> function, directly passed on to the <code><a href="https://glmnet.stanford.edu/reference/glmnet.html">glmnet::glmnet()</a></code> function if used.</li>
 <li>Omitted <code>do.combine</code> argument in <code><a href="../reference/sentometrics-defunct.html">measures_delete()</a></code> and <code><a href="../reference/sentometrics-defunct.html">measures_select()</a></code> functions to simplify.</li>
 <li>Expanded set of unit tests, included a coverage badge, and added <strong><code>covr</code></strong> to Suggests.</li>
 <li>Reimplementation (and improved documentation) of the sentiment calculation in the <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code> function, by writing part of the code in <strong><code>Rcpp</code></strong> relying on <strong><code>RcppParallel</code></strong> (added to Imports); there are now three approaches to computing sentiment (unigrams, bigrams and clusters).</li>
@@ -351,8 +351,8 @@
 <li>Omitted statement printed (‘Compute sentiment… Done.’) in the <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code> function.</li>
 <li>Slightly modified <code><a href="https://rdrr.io/r/base/print.html">print()</a></code> generic for a <code>sentomeasures</code> object.</li>
 <li>Dropped the <code>"tf-idf"</code> option for within-document aggregation in the <code><a href="../reference/ctr_agg.html">ctr_agg()</a></code> function.</li>
-<li>The <code><a href="../reference/sento_lexicons.html">sento_lexicons()</a></code> function outputs a <code>sentolexicons</code> object, which the <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code>. function specifically requires as an input; a <code>sentolexicons</code> object also includes a <code><a href="https://rdrr.io/r/base/Extract.html">"["</a></code> class-preserving extractor function.</li>
-<li>The <code><a href="../reference/attributions.html">attributions()</a></code> function outputs an <code>attributions</code> object; the <code>plot_attribtutions()</code> function is therefore replaced by the <code><a href="https://rdrr.io/r/base/plot.html">plot()</a></code> generic.</li>
+<li>The <code><a href="../reference/sento_lexicons.html">sento_lexicons()</a></code> function outputs a <code>sentolexicons</code> object, which the <code><a href="../reference/compute_sentiment.html">compute_sentiment()</a></code>. function specifically requires as an input; a <code>sentolexicons</code> object also includes a <code>"["</code> class-preserving extractor function.</li>
+<li>The <code><a href="../reference/attributions.html">attributions()</a></code> function outputs an <code>attributions</code> object; the <code>plot_attribtutions()</code> function is therefore replaced by the <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> generic.</li>
 <li>Defunct the <code><a href="../reference/sentometrics-defunct.html">perform_MCS()</a></code> function, but the output of the <code><a href="../reference/get_loss_data.html">get_loss_data()</a></code> function can easily be used as an input to the <code>MCSprocedure()</code> function from the <strong><code>MCS</code></strong> package (discarded from Imports).</li>
 <li>Moved the <strong><code>parallel</code></strong> and <strong><code>doParallel</code></strong> packages to Suggests, as only needed (if enacted) in the <code><a href="../reference/sento_model.html">sento_model()</a></code> function.</li>
 <li>Sligthly modified appearance of plotting functions, to drop <strong><code>ggthemes</code></strong> from Imports.</li>
@@ -438,7 +438,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
