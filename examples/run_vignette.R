@@ -6,11 +6,12 @@
 ###### DESCRIPTION ######
 
 ### This code is used in the vignette paper 'The R Package sentometrics to Compute,
-### Aggregate and Predict with Textual Sentiment' (Ardia, Bluteau, Borms and Boudt, 2020).
+### Aggregate and Predict with Textual Sentiment' (Ardia, Bluteau, Borms and Boudt, 2021).
 ### See the paper for the results and setup details.
+
 ### Download the package and its dependencies first before you run this script...
-### install.packages("sentometrics", dependencies = TRUE) # from CRAN (version 0.8), OR
-### install.packages("sentometrics_0.8.tar.gz", repos = NULL, dependencies = TRUE) # from the tar
+### install.packages("sentometrics", dependencies = TRUE) # from CRAN (version 0.8.4), OR
+### install.packages("sentometrics_0.8.4.tar.gz", repos = NULL, dependencies = TRUE) # from the tar
 
 ### Dependencies can be installed separately like this:
 ### install.packages(
@@ -22,35 +23,38 @@
 
 ###### SESSION INFO ######
 
-# R version 3.6.2 (2019-12-12)
+# R version 4.1.0 (2021-05-18)
 # Platform: x86_64-w64-mingw32/x64 (64-bit)
-# Running under: Windows 10 x64 (build 18362)
-#
+# Running under: Windows 10 x64 (build 19043)
+# 
 # Matrix products: default
-#
+# 
 # locale:
 # [1] LC_COLLATE=English_Belgium.1252  LC_CTYPE=English_Belgium.1252    LC_MONETARY=English_Belgium.1252
-# [4] LC_NUMERIC=C                     LC_TIME=English_Belgium.1252
-#
+# [4] LC_NUMERIC=C                     LC_TIME=English_Belgium.1252    
+# 
 # attached base packages:
-# [1] stats     graphics  grDevices utils     datasets  methods   base
-#
+# [1] stats     graphics  grDevices utils     datasets  methods   base     
+# 
 # other attached packages:
-# [1] data.table_1.12.8  sentometrics_0.8.0 zoo_1.8-7          lubridate_1.7.4    stm_1.3.5          quanteda_1.5.2
-# [7] lexicon_1.2.1      gridExtra_2.3      ggplot2_3.2.1
-#
+# [1] data.table_1.14.0  sentometrics_0.8.4 zoo_1.8-9          lubridate_1.7.10   stm_1.3.6          quanteda_3.0.0    
+# [7] lexicon_1.2.1      gridExtra_2.3      ggplot2_3.3.4     
+# 
 # loaded via a namespace (and not attached):
-#  [1] NLP_0.2-0          Rcpp_1.0.3         pillar_1.4.3       compiler_3.6.2     iterators_1.0.12   tools_3.6.2
-#  [7] stopwords_1.0      digest_0.6.23      lifecycle_0.1.0    tibble_2.1.3       gtable_0.3.0       lattice_0.20-38
-# [13] pkgconfig_2.0.3    rlang_0.4.2        foreach_1.4.7      Matrix_1.2-18      fastmatch_1.1-0    RcppRoll_0.3.0
-# [19] parallel_3.6.2     stringr_1.4.0      withr_2.1.2        dplyr_0.8.3        xml2_1.2.2         glmnet_3.0-2
-# [25] syuzhet_1.0.4      grid_3.6.2         tidyselect_0.2.5   glue_1.3.1         R6_2.4.1           ISOweek_0.6-2
-# [31] farver_2.0.1       spacyr_1.2         purrr_0.3.3        magrittr_1.5       matrixStats_0.55.0 codetools_0.2-16
-# [37] scales_1.1.0       assertthat_0.2.1   shape_1.4.4        colorspace_1.4-1   labeling_0.3       stringi_1.4.5
-# [43] lazyeval_0.2.2     RcppParallel_4.4.4 munsell_0.5.0      slam_0.1-47        tm_0.7-7           crayon_1.3.4
+#  [1] shape_1.4.6        tidyselect_1.1.1   slam_0.1-48        NLP_0.2-1          purrr_0.3.4        splines_4.1.0     
+#  [7] lattice_0.20-44    colorspace_2.0-1   vctrs_0.3.8        generics_0.1.0     survival_3.2-11    utf8_1.2.1        
+# [13] rlang_0.4.11       syuzhet_1.0.6      pillar_1.6.1       glue_1.4.2         withr_2.4.2        matrixStats_0.59.0
+# [19] foreach_1.5.1      lifecycle_1.0.0    stringr_1.4.0      munsell_0.5.0      gtable_0.3.0       ragg_1.1.3        
+# [25] codetools_0.2-18   labeling_0.4.2     tm_0.7-8           parallel_4.1.0     fansi_0.5.0        xts_0.12.1        
+# [31] Rcpp_1.0.6         scales_1.1.1       RcppParallel_5.1.4 systemfonts_1.0.2  farver_2.1.0       textshaping_0.3.5 
+# [37] fastmatch_1.1-0    stopwords_2.2      digest_0.6.27      stringi_1.6.2      dplyr_1.0.6        RcppRoll_0.3.0    
+# [43] rprojroot_2.0.2    grid_4.1.0         here_1.0.1         ISOweek_0.6-2      tools_4.1.0        magrittr_2.0.1    
+# [49] glmnet_4.1-1       tibble_3.1.2       crayon_1.4.1       pkgconfig_2.0.3    ellipsis_0.3.2     Matrix_1.3-3      
+# [55] xml2_1.3.2         iterators_1.0.13   R6_2.5.0           compiler_4.1.0
 
 remove(list = ls())
-options(prompt = "R> ", continue = "+  ", width = 120, digits = 4, max.print = 90, useFancyQuotes = FALSE)
+options(prompt = "R> ", continue = "+  ", width = 120, digits = 4,
+         max.print = 90, useFancyQuotes = FALSE)
 sink(file = "output_vignette.txt", append = FALSE, split = TRUE) # output printed in .txt file
 
 library("ggplot2")
@@ -88,14 +92,16 @@ cat("\n")
 
 regex <- c("\\bRepublic[s]?\\b|\\bDemocrat[s]?\\b|\\belection\\b")
 uscorpus <- add_features(uscorpus,
-                         keywords = list(uncertainty = c("uncertainty", "distrust"), election = regex),
+                         keywords = list(uncertainty = c("uncertainty", "distrust"),
+                                         election = regex),
                          do.binary = TRUE,
                          do.regex = c(FALSE, TRUE))
 tail(quanteda::docvars(uscorpus))
 cat("\n")
 
 summ <- corpus_summarize(uscorpus, by = "year")
-pCorp <- summ$plots$feature_plot + guides(color = guide_legend(nrow = 1))
+pCorp <- summ$plots$feature_plot + guides(color = guide_legend(nrow = 1)) + 
+  theme(text = element_text(size = 10))
 pCorp
 
 cat("### SECTION 3.2 ####################### \n \n")
@@ -118,7 +124,8 @@ lex <- sento_lexicons(lexiconsIn = lexiconsIn,
 lex[["HENRY_en"]]
 cat("\n")
 
-sentScores <- compute_sentiment(usnews[["texts"]], lexicons = lex, how = "proportional")
+sentScores <- compute_sentiment(usnews[["texts"]], lexicons = lex,
+                                how = "proportional")
 head(sentScores[, c("id", "word_count", "GI_en", "SENTIWORD", "SOCAL")])
 cat("\n")
 
@@ -142,7 +149,8 @@ sSentences <- compute_sentiment(uscorpus, lex, do.sentence = TRUE)
 sSentences[1:11, 1:6]
 cat("\n")
 
-aggDocuments <- aggregate(sSentences, ctr_agg(howDocs = "equal_weight"), do.full = FALSE)
+aggDocuments <- aggregate(sSentences, ctr_agg(howDocs = "equal_weight"),
+                          do.full = FALSE)
 aggDocuments[1:2, 1:6]
 cat("\n")
 
@@ -171,7 +179,8 @@ sentMeas <- sento_measures(uscorpus, lexicons = lex, ctr = ctrAgg)
 as.data.table(sentMeas)[, c(1, 23)]
 cat("\n")
 
-pT <- plot(sentMeas, group = "time")
+pT <- plot(sentMeas, group = "time") + 
+  theme(text = element_text(size = 10))
 pT
 
 cat("### SECTION 3.4 ####################### \n \n")
@@ -198,7 +207,8 @@ mean(as.numeric(sentMeasLex$stats["meanCorr", ]))
 cat("\n")
 
 pL <- plot(sentMeasLex, group = "lexicons") +
-  guides(colour = guide_legend(nrow = 1))
+  guides(colour = guide_legend(nrow = 1)) +
+  theme(text = element_text(size = 10))
 pL
 
 sentMeasAgg <- aggregate(sentMeas,
@@ -244,19 +254,21 @@ cat("\n")
 
 cat("### SECTION 4 ####################### \n \n")
 
-dfm <- quanteda::dfm(uscorpus, tolower = TRUE,
-                     remove_punct = TRUE, remove_numbers = TRUE, remove = quanteda::stopwords("en")) %>%
-  quanteda::dfm_remove(min_nchar = 3) %>%
+dfm <- quanteda::tokens(uscorpus, what = "word",
+                        remove_punct = TRUE, remove_numbers = TRUE) %>%
+  quanteda::dfm(tolower = TRUE) %>%
+  quanteda::dfm_remove(quanteda::stopwords("en"), min_nchar = 3) %>%
   quanteda::dfm_trim(min_termfreq = 0.95, termfreq_type = "quantile") %>%
-  quanteda::dfm_trim(max_docfreq = 0.10, docfreq_type = "prop")
-dfm <- quanteda::dfm_subset(dfm, quanteda::ntoken(dfm) > 0)
+  quanteda::dfm_trim(max_docfreq = 0.10, docfreq_type = "prop") %>% 
+  quanteda::dfm_subset(quanteda::ntoken(.) > 0)
 topicModel <- stm::stm(dfm, K = 8, verbose = FALSE)
 
 topTerms <- t(stm::labelTopics(topicModel, n = 5)[["prob"]])
 keywords <- lapply(1:ncol(topTerms), function(i) topTerms[, i])
 names(keywords) <- paste0("TOPIC_", 1:length(keywords))
 
-uscorpus <- add_features(uscorpus, keywords = keywords, do.binary = FALSE, do.regex = FALSE)
+uscorpus <- add_features(uscorpus, keywords = keywords, do.binary = FALSE,
+                         do.regex = FALSE)
 quanteda::docvars(uscorpus, c("uncertainty", "election", "economy", "noneconomy", "wsj", "wapo")) <- NULL
 colSums(quanteda::docvars(uscorpus)[, -1] != 0)
 cat("\n")
@@ -266,7 +278,8 @@ ctrAggPred <- ctr_agg(howWithin = "proportionalPol", howDocs = "equal_weight", h
 sentMeasPred <- sento_measures(uscorpus, lexicons = lex, ctr = ctrAggPred)
 
 pF <- plot(sentMeasPred, group = "features") +
-  guides(colour = guide_legend(nrow = 1))
+  guides(colour = guide_legend(nrow = 1)) +
+  theme(text = element_text(size = 10))
 pF
 
 load("vix.rda")
@@ -320,16 +333,30 @@ dates2 <- which(dates > "2007-06-01" & dates <= "2009-12-01")
 dates3 <- which(dates > "2009-12-01")
 
 rmseTable <- c(
-  out$performance$RMSFE, sqrt(mean(benchmark$errorSq)), sqrt(mean(benchmark$errorSqAR)), # full
-  sqrt(mean(out$performance$raw[dates1, "errorSq"])), sqrt(mean(benchmark[dates1, "errorSq"])), sqrt(mean(benchmark[dates1, "errorSqAR"])), # pre-crisis (P1)
-  sqrt(mean(out$performance$raw[dates2, "errorSq"])), sqrt(mean(benchmark[dates2, "errorSq"])), sqrt(mean(benchmark[dates2, "errorSqAR"])), # crisis (P2)
-  sqrt(mean(out$performance$raw[dates3, "errorSq"])), sqrt(mean(benchmark[dates3, "errorSq"])), sqrt(mean(benchmark[dates3, "errorSqAR"])) # post-crisis (P3)
+  out$performance$RMSFE, sqrt(mean(benchmark$errorSq)),
+  sqrt(mean(benchmark$errorSqAR)), # full
+  sqrt(mean(out$performance$raw[dates1, "errorSq"])),
+  sqrt(mean(benchmark[dates1, "errorSq"])),
+  sqrt(mean(benchmark[dates1, "errorSqAR"])), # pre-crisis (P1)
+  sqrt(mean(out$performance$raw[dates2, "errorSq"])),
+  sqrt(mean(benchmark[dates2, "errorSq"])),
+  sqrt(mean(benchmark[dates2, "errorSqAR"])), # crisis (P2)
+  sqrt(mean(out$performance$raw[dates3, "errorSq"])),
+  sqrt(mean(benchmark[dates3, "errorSq"])),
+  sqrt(mean(benchmark[dates3, "errorSqAR"])) # post-crisis (P3)
 )
 madTable <- c(
-  out$performance$MAD, mean(abs(benchmark$error)), mean(abs(benchmark$errorAR)),
-  mean(abs(out$performance$raw[dates1, "error"])), mean(abs(benchmark[dates1, "error"])), mean(abs(benchmark[dates1, "errorAR"])),
-  mean(abs(out$performance$raw[dates2, "error"])), mean(abs(benchmark[dates2, "error"])), mean(abs(benchmark[dates2, "errorAR"])),
-  mean(abs(out$performance$raw[dates3, "error"])), mean(abs(benchmark[dates3, "error"])), mean(abs(benchmark[dates3, "errorAR"]))
+  out$performance$MAD, mean(abs(benchmark$error)),
+  mean(abs(benchmark$errorAR)),
+  mean(abs(out$performance$raw[dates1, "error"])),
+  mean(abs(benchmark[dates1, "error"])),
+  mean(abs(benchmark[dates1, "errorAR"])),
+  mean(abs(out$performance$raw[dates2, "error"])),
+  mean(abs(benchmark[dates2, "error"])),
+  mean(abs(benchmark[dates2, "errorAR"])),
+  mean(abs(out$performance$raw[dates3, "error"])),
+  mean(abs(benchmark[dates3, "error"])),
+  mean(abs(benchmark[dates3, "errorAR"]))
 )
 names(rmseTable) <- names(madTable) <-
   paste0(rep(c("Full", "P1", "P2", "P3"), rep(3, 4)), "_", c("M-s", "M-bm", "M-ar"))
@@ -345,16 +372,20 @@ cat("\n")
 
 r <- plot(out) +
   geom_line(data = melt(data.table(date = names(out$models),
-                                   "M-epu" = preds, "M-ar" = predsAR, check.names = FALSE),
-                        id.vars = "date"))
+                                   "M-epu" = preds, "M-ar" = predsAR,
+                                   check.names = FALSE),
+                        id.vars = "date")) + 
+  theme(text = element_text(size = 10))
 r
 
 attr <- attributions(out, sentMeasIn, do.lags = FALSE, do.normalize = FALSE)
 
 fe <- plot(attr, group = "features") +
-  guides(fill = guide_legend(nrow = 1))
+  guides(fill = guide_legend(nrow = 1)) +
+  theme(text = element_text(size = 10))
 le <- plot(attr, group = "lexicons") +
-  guides(fill = guide_legend(nrow = 1))
+  guides(fill = guide_legend(nrow = 1)) + 
+  theme(text = element_text(size = 10))
 a <- grid.arrange(fe + theme(axis.title.x = element_blank()),
                   le + theme(axis.title.y = element_blank()),
                   ncol = 1, nrow = 2)
@@ -371,10 +402,10 @@ cat("\n")
 
 sink()
 
-ggsave("corpsumm.pdf", pCorp)
-ggsave("sentmeasT.pdf", pT)
-ggsave("sentmeasL.pdf", pL)
-ggsave("sentmeasF.pdf", pF)
-ggsave("for.pdf", r)
-ggsave("attr.pdf", a)
-
+if (!dir.exists("Figures")) dir.create("Figures")
+ggsave("Figures/corpsumm.pdf", pCorp)
+ggsave("Figures/sentmeasT.pdf", pT)
+ggsave("Figures/sentmeasL.pdf", pL)
+ggsave("Figures/sentmeasF.pdf", pF)
+ggsave("Figures/for.pdf", r)
+ggsave("Figures/attr.pdf", a)
