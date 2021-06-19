@@ -5,13 +5,13 @@
 
 <!-- badges: start -->
 [![CRAN](https://www.r-pkg.org/badges/version/sentometrics)](https://cran.r-project.org/package=sentometrics)
+[![Build](https://github.com/SentometricsResearch/sentometrics/workflows/Build/badge.svg)](https://github.com/SentometricsResearch/sentometrics/actions)
 [![Downloads](https://cranlogs.r-pkg.org/badges/last-day/sentometrics?color=ff69b4)](https://www.r-pkg.org/pkg/sentometrics)
 [![Downloads](https://cranlogs.r-pkg.org/badges/sentometrics?color=ff69b4)](https://www.r-pkg.org/pkg/sentometrics)
 [![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/sentometrics?color=ff69b4)](https://www.r-pkg.org/pkg/sentometrics)
 <!-- [![codecov](https://codecov.io/github/SentometricsResearch/sentometrics/branch/master/graphs/badge.svg)](https://codecov.io/github/SentometricsResearch/sentometrics) -->
 <!-- [![Pending Pull-Requests](https://githubbadges.herokuapp.com/SentometricsResearch/sentometrics/pulls.svg?style=flat)](https://github.com/SentometricsResearch/sentometrics/pulls) -->
 <!-- [![Github Issues](https://githubbadges.herokuapp.com/SentometricsResearch/sentometrics/issues.svg)](https://github.com/SentometricsResearch/sentometrics/issues) -->
-[![R-CMD-check](https://github.com/SentometricsResearch/sentometrics/workflows/R-CMD-check/badge.svg)](https://github.com/SentometricsResearch/sentometrics/actions)
 <!-- badges: end -->
 
 ### Introduction
