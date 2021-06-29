@@ -13,7 +13,7 @@ Description: Optimized prediction based on textual sentiment, accounting for the
 Depends: R (>= 3.3.0)
 License: GPL (>= 2)
 BugReports: https://github.com/SentometricsResearch/sentometrics/issues
-URL: https://sentometrics-research.com/sentometrics/
+URL: https://sentometrics-research.com/sentometrics
 Encoding: UTF-8
 LazyData: true
 Suggests: covr, 
