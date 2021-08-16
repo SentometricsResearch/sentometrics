@@ -3,7 +3,7 @@ title: "Future development"
 output: rmarkdown::html_vignette
 ---
 
-Here is an overview of the most important anticipated developments, and known bugs or minor unfinished business. The main objective is to converge towards a stable 1.0.0 release. If you want to help out on some of these things, contact [Samuel Borms](mailto:borms_sam@hotmail.com), or file a pull request on GitHub.
+Here is an overview of the most important anticipated developments, and known bugs or minor unfinished business. If you want to help out on some of these things, contact [Samuel Borms](mailto:borms_sam@hotmail.com), or simply open an issue and file a pull request on GitHub.
 
 ### Extensions
 

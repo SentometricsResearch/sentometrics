@@ -1,7 +1,7 @@
 Package: sentometrics
 Type: Package
 Title: An Integrated Framework for Textual Sentiment Time Series Aggregation and Prediction
-Version: 0.8.4
+Version: 1.0.0
 Authors@R: c(person("Samuel", "Borms", email = "borms_sam@hotmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-9533-1870")),
   person("David", "Ardia", email = "david.ardia@hec.ca", role = c("aut"), comment = c(ORCID = "0000-0003-2823-782X")),
   person("Keven", "Bluteau", email = "keven.bluteau@unine.ch", role = c("aut"), comment = c(ORCID = "0000-0003-2990-4807")),
@@ -9,7 +9,7 @@ Authors@R: c(person("Samuel", "Borms", email = "borms_sam@hotmail.com", role = c
   person("Jeroen", "Van Pelt", email = "jeroenvanpelt@hotmail.com", role = c("ctb")),
   person("Andres", "Algaba", email = "andres.algaba@vub.be", role = c("ctb")))
 Maintainer: Samuel Borms <borms_sam@hotmail.com>
-Description: Optimized prediction based on textual sentiment, accounting for the intrinsic challenge that sentiment can be computed and pooled across texts and time in various ways. See Ardia et al. (2021) <doi:10.2139/ssrn.3067734>.
+Description: Optimized prediction based on textual sentiment, accounting for the intrinsic challenge that sentiment can be computed and pooled across texts and time in various ways. See Ardia et al. (2021) <doi:10.18637/jss.v099.i02>.
 Depends: R (>= 3.3.0)
 License: GPL (>= 2)
 BugReports: https://github.com/SentometricsResearch/sentometrics/issues

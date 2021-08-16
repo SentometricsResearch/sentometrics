@@ -28,8 +28,8 @@
 #' thousands of news-based sentiment values}. \emph{International Journal of Forecasting 35, 1370-1386},
 #' \doi{10.1016/j.ijforecast.2018.10.010}.
 #' @references Ardia, Bluteau, Borms and Boudt (2021). \strong{The R package sentometrics to compute, aggregate and
-#' predict with textual sentiment}. \emph{Forthcoming in Journal of Statistical Software},
-#' \doi{10.2139/ssrn.3067734}.
+#' predict with textual sentiment}. \emph{Journal of Statistical Software 99(2), 1-40},
+#' \doi{10.18637/jss.v099.i02}.
 "_PACKAGE"
 
 #' Built-in lexicons

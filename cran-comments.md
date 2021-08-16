@@ -1,7 +1,11 @@
 
-## resubmission (version 0.8.4) [19/04/2021]
+## submission (version 1.0.0) [16/08/2021]
 
-- adjusted one URL, dropped one test (resulted in minor differences only on Debian), added three packages to Suggests
+- Version bump associated with release of JSS publication. The DOI in the CITATION is for a new JSS publication that will be registered after publication on CRAN.
+
+<!--- ## resubmission (version 0.8.4) [19/04/2021]
+
+- adjusted one URL, dropped one test (resulted in minor differences only on Debian), added three packages to Suggests --->
 
 <!--- ## submission (version 0.8.4) [17/04/2021]
 

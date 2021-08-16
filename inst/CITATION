@@ -1,22 +1,24 @@
 
-year <- "2021"
-doi <- "10.2139/ssrn.3067734"
-
-citHeader("To cite the R package 'sentometrics' in publications use:")
-
-citEntry(key = "ArdiaBluteauBormsBoudt2021",
-         entry = "article",
-         title = "The R Package sentometrics to Compute, Aggregate and Predict with Textual Sentiment",
-         author = personList(person("David","Ardia"),
-                             person("Keven","Bluteau"),
-                             person("Samuel","Borms"),
-                             person("Kris","Boudt")),
-         journal = "Forthcoming in Journal of Statistical Software",
-         doi = doi,
-         year = year,
-         textVersion =
-           paste0("David Ardia, Keven Bluteau, Samuel Borms and Kris Boudt (", year,"). ",
-                  "The R Package sentometrics to Compute, Aggregate and Predict with Textual Sentiment. ",
-                  paste0("Forthcoming in Journal of Statistical Software. ", "doi: ", doi), ".")
+bibentry(bibtype = "Article",
+  title        = "The {R} Package {sentometrics} to Compute, Aggregate, and Predict with Textual Sentiment",
+  author       = c(person(given = "David",
+                          family = "Ardia",
+                          email = "david.ardia@hec.ca"),
+                   person(given = "Keven",
+                          family = "Bluteau",
+                          email = "keven.bluteau@usherbrooke.ca"),
+                   person(given = "Samuel",
+                          family = "Borms",
+                          email = "borms_sam@hotmail.com"),
+                   person(given = "Kris",
+                          family = "Boudt",
+                          email = "kris.boudt@ugent.be")),
+  journal      = "Journal of Statistical Software",
+  year         = "2021",
+  volume       = "99",
+  number       = "2",
+  pages        = "1--40",
+  doi          = "10.18637/jss.v099.i02",
+  header       = "To cite sentometrics in publications use:"
 )
 
