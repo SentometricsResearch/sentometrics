@@ -1,4 +1,8 @@
 
+## sentometrics 1.0.0
+
+- Version bump associated with release of vignette in the Journal of Statistical Software.
+
 ## sentometrics 0.8.4
 
 - Alignment with released **`quanteda`** v3.0.
