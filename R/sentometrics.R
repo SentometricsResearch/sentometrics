@@ -24,12 +24,12 @@
 #'
 #' @note Please cite the package in publications. Use \code{citation("sentometrics")}.
 #'
+#' @references Ardia, Bluteau, Borms and Boudt (2021). \strong{The R Package sentometrics to Compute, Aggregate, and
+#' Predict with Textual Sentiment}. \emph{Journal of Statistical Software 99(2), 1-40},
+#' \doi{10.18637/jss.v099.i02}.
 #' @references Ardia, Bluteau and Boudt (2019). \strong{Questioning the news about economic growth: Sparse forecasting using
 #' thousands of news-based sentiment values}. \emph{International Journal of Forecasting 35, 1370-1386},
 #' \doi{10.1016/j.ijforecast.2018.10.010}.
-#' @references Ardia, Bluteau, Borms and Boudt (2021). \strong{The R package sentometrics to compute, aggregate and
-#' predict with textual sentiment}. \emph{Journal of Statistical Software 99(2), 1-40},
-#' \doi{10.18637/jss.v099.i02}.
 "_PACKAGE"
 
 #' Built-in lexicons
