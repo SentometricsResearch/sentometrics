@@ -1,7 +1,11 @@
 
-## submission (version 1.0.0) [17/08/2021]
+## resubmission (version 1.0.0) [17/08/2021]
 
-- Version bump associated with release of JSS publication. The DOI in the CITATION is for a new JSS publication that will be registered after publication on CRAN.
+- adjusted one URL
+
+<!--- ## submission (version 1.0.0) [17/08/2021]
+
+- version bump associated with release of JSS publication; the DOI in the CITATION is for a new JSS publication that will be registered after publication on CRAN --->
 
 <!--- ## resubmission (version 0.8.4) [19/04/2021]
 
@@ -95,7 +99,8 @@
 
 <!--- ## submission (version 0.3) [18/03/2018]
 
-**new**: several additional functions and arguments, small bug fixes and clarifications in documentation 
+**new**: several additional functions and arguments, small bug fixes and clarifications in documentation
+
 - marked UTF-8 strings will remain; this is intentional and comes from the built-in French (mostly) and Dutch word lists --->
 
 <!--- ## resubmission (version 0.2) [12/11/2017]

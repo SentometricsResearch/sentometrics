@@ -44,7 +44,7 @@ thousands of news-based sentiment values}. \emph{International Journal of Foreca
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://sentometrics-research.com/sentometrics}
+  \item \url{https://sentometrics-research.com/sentometrics/}
   \item Report bugs at \url{https://github.com/SentometricsResearch/sentometrics/issues}
 }
 
