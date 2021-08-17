@@ -518,7 +518,9 @@ run_sento_model <- compiler::cmpfun(.run_sento_model)
     }
     cl <- parallel::makeCluster(min(parallel::detectCores(), nCore))
     doParallel::registerDoParallel(cl)
-    regsOpt <- foreach::foreach(i = start:nIter, .export = c("run_sento_model")) %dopar% {
+    regsOpt <- foreach::foreach(i = start:nIter,
+                                .packages = "sentometrics",
+                                .export = c("run_sento_model")) %dopar% {
       out <- run_sento_model(
         sento_measures, y, x, h, alphas = alphas, lambdas = lambdas, do.intercept = do.intercept,
         trainWindow = trainWindow, testWindow = testWindow, oos = oos, type = type, do.progress = FALSE,

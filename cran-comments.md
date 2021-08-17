@@ -1,5 +1,5 @@
 
-## submission (version 1.0.0) [16/08/2021]
+## submission (version 1.0.0) [17/08/2021]
 
 - Version bump associated with release of JSS publication. The DOI in the CITATION is for a new JSS publication that will be registered after publication on CRAN.
 
