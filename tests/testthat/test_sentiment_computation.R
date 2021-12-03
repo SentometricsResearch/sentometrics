@@ -207,3 +207,27 @@ test_that("Same tf-idf scoring for sentometrics and quanteda", {
                unname(posScores - negScores))
 })
 
+# elision check
+test_that("Sentiment words are recognized after elision removal", {
+  sample_text <- setNames(nm = c("Je me sens abandonné.", "J'ai peur de l'abandon",
+                                 "J'ai peur de l’abandon", "C'est un abandon",
+                                 "J'ai une sensation aiguë d'abandon"))
+  s1 <- compute_sentiment(
+    sample_text,
+    lexicons = sentometrics::sento_lexicons(list(LM_sample = head(sentometrics::list_lexicons$LM_fr_tr, 5)),
+                                            list_valence_shifters$fr),
+    how = "proportionalPol"
+  )
+  s2 <- compute_sentiment(
+    sample_text,
+    lexicons = sentometrics::sento_lexicons(list(LM_sample = head(sentometrics::list_lexicons$LM_fr_tr, 5)),
+                                            list_valence_shifters$fr),
+    how = "proportionalPol",
+    remove_elisions = FALSE
+  )
+
+  expect_equal(s1$LM_sample, c(-1, -1, -1, -1, -1.8))
+  expect_equal(s2$LM_sample, c(-1, 0, 0, -1, 0))
+
+})
+
