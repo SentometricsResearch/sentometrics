@@ -8,18 +8,21 @@ spread_sentiment_features <- function(s, features, lexNames) {
   s[]
 }
 
-tokenize_texts <- function(x, tokens = NULL, type = "word") { # x embeds a character vector
+tokenize_texts <- function(x, tokens = NULL, type = "word", remove_elisions = TRUE) { # x embeds a character vector
   if (is.null(tokens)) {
     if (type == "word") {
+      lower <- stringi::stri_trans_tolower(x)
+      if (remove_elisions) lower <- stringi::stri_replace_all(lower, "", regex = "\\b([lmtnsjdc]|qu|jusqu|quoiqu|lorsqu|puisqu)[\\'\\u2019]")
       tok <- stringi::stri_split_boundaries(
-        stringi::stri_trans_tolower(x),
-        type = "word", skip_word_none = TRUE, skip_word_number = TRUE
+        lower, type = "word", skip_word_none = TRUE, skip_word_number = TRUE
       )
     } else if (type == "sentence") {
       sentences <- stringi::stri_split_boundaries(x, type = "sentence")
       tok <- lapply(sentences, function(sn) { # list of documents of list of sentences of words
+        lower <- stringi::stri_trans_tolower(gsub(", ", " c_c ", sn)) # reset commas
+        if (remove_elisions) lower <- stringi::stri_replace_all(lower, "", regex = "\\b([lmtnsjdc]|qu|jusqu|quoiqu|lorsqu|puisqu)[\\'\\u2019]")
         wo <- stringi::stri_split_boundaries(
-          stringi::stri_trans_tolower(gsub(", ", " c_c ", sn)), # reset commas
+          lower,
           type = "word", skip_word_none = TRUE, skip_word_number = TRUE
         )
         wo[sapply(wo, length) != 0]
@@ -29,12 +32,12 @@ tokenize_texts <- function(x, tokens = NULL, type = "word") { # x embeds a chara
   tok
 }
 
-compute_sentiment_lexicons <- function(x, tokens, dv, lexicons, how, do.sentence = FALSE, nCore = 1) {
+compute_sentiment_lexicons <- function(x, tokens, dv, lexicons, how, do.sentence = FALSE, nCore = 1, remove_elisions = TRUE) {
   threads <- min(RcppParallel::defaultNumThreads(), nCore)
   RcppParallel::setThreadOptions(numThreads = threads)
   if (is_only_character(x)) x <- quanteda::corpus(x)
   if (do.sentence == TRUE) {
-    tokens <- tokenize_texts(as.character(x), tokens, type = "sentence")
+    tokens <- tokenize_texts(as.character(x), tokens, type = "sentence", remove_elisions)
     valenceType <- ifelse(is.null(lexicons[["valence"]]), 0,
                           ifelse(colnames(lexicons[["valence"]])[2] == "y", 1, 2))
     s <- compute_sentiment_sentences(unlist(tokens, recursive = FALSE),
@@ -50,7 +53,7 @@ compute_sentiment_lexicons <- function(x, tokens, dv, lexicons, how, do.sentence
       data.table::setcolorder(s, c("id", "sentence_id", "word_count"))
     }
   } else {
-    tokens <- tokenize_texts(as.character(x), tokens, type = "word")
+    tokens <- tokenize_texts(as.character(x), tokens, type = "word", remove_elisions)
     if (is.null(lexicons[["valence"]])) { # call to C++ code
       s <- compute_sentiment_onegrams(tokens, lexicons, how)
     } else {
@@ -66,7 +69,7 @@ compute_sentiment_lexicons <- function(x, tokens, dv, lexicons, how, do.sentence
 }
 
 compute_sentiment_multiple_languages <- function(x, lexicons, languages, features, how,
-                                                 tokens = NULL, do.sentence = FALSE, nCore = 1) {
+                                                 tokens = NULL, do.sentence = FALSE, nCore = 1, remove_elisions = TRUE) {
   ids <- quanteda::docnames(x) # original ids to keep same order in output
 
   # split corpus by language
@@ -82,7 +85,7 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
     if (!(l %in% names(lexicons))) {
       stop(paste0("No lexicon found for language: ", l))
     }
-    s <- compute_sentiment(corpus, lexicons[[l]], how, tokens[idxs[[l]]], do.sentence, nCore)
+    s <- compute_sentiment(corpus, lexicons[[l]], how, tokens[idxs[[l]]], do.sentence, nCore, remove_elisions)
     sentByLang[[l]] <- s
   }
 
@@ -93,6 +96,8 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
 }
 
 #' Compute textual sentiment across features and lexicons
+#'
+#' @encoding UTF-8
 #'
 #' @author Samuel Borms, Jeroen Van Pelt, Andres Algaba
 #'
@@ -146,6 +151,11 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
 #' computation only for a sufficiently large corpus.
 #' @param do.sentence a \code{logical} to indicate whether the sentiment computation should be done on
 #' sentence-level rather than document-level. By default \code{do.sentence = FALSE}.
+#' @param remove_elisions a \code{logical} to indicate whether elisions should be removed in front of words. Elisions are
+#' notably present in the French language where some words are for example preceded by "l'" or "d'", such as "l'amélioration".
+#' Standard tokenization rules do not separate the elision from the word, which prevent the identification of some sentiment words.
+#' If \code{TRUE}, removes the French elisions from all words prior to the sentiment computation. The removed elisions are:
+#' "l'", "m'", "t'", "qu'", "n'", "s'", "j'", "d'", "c'", "jusqu'", "quoiqu'", "lorsqu'" and "puisqu'".
 #'
 #' @return If \code{x} is a \code{sento_corpus} object: a \code{sentiment} object, i.e., a \code{data.table} containing
 #' the sentiment scores \code{data.table} with an \code{"id"}, a \code{"date"} and a \code{"word_count"} column,
@@ -226,7 +236,7 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
 #'
 #' @importFrom compiler cmpfun
 #' @export
-compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, do.sentence = FALSE, nCore = 1) {
+compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, do.sentence = FALSE, nCore = 1, remove_elisions = TRUE) {
   if (!(how %in% get_hows()[["words"]]))
     stop("Please select an appropriate aggregation 'how'.")
   if (length(nCore) != 1 || !is.numeric(nCore))
@@ -280,7 +290,7 @@ compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, 
   UseMethod("compute_sentiment", x)
 }
 
-.compute_sentiment.sento_corpus <- function(x, lexicons, how = "proportional", tokens = NULL, do.sentence = FALSE, nCore = 1) {
+.compute_sentiment.sento_corpus <- function(x, lexicons, how = "proportional", tokens = NULL, do.sentence = FALSE, nCore = 1, remove_elisions = TRUE) {
   nCore <- check_nCore(nCore)
 
   languages <- tryCatch(unique(quanteda::docvars(x, field = "language")), error = function(e) NULL)
@@ -292,7 +302,7 @@ compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, 
     s <- spread_sentiment_features(s, features, lexNames) # there is always at least one feature
   } else {
     features <- names(quanteda::docvars(x))[-c(1:2)] # drop date and language column
-    s <- compute_sentiment_multiple_languages(x, lexicons, languages, features, how, tokens, do.sentence, nCore)
+    s <- compute_sentiment_multiple_languages(x, lexicons, languages, features, how, tokens, do.sentence, nCore, remove_elisions)
   }
 
   s <- s[order(date)] # order by date
@@ -304,7 +314,7 @@ compute_sentiment <- function(x, lexicons, how = "proportional", tokens = NULL, 
 #' @export
 compute_sentiment.sento_corpus <- compiler::cmpfun(.compute_sentiment.sento_corpus)
 
-.compute_sentiment.corpus <- function(x, lexicons, how = "proportional", tokens = NULL, do.sentence = FALSE, nCore = 1) {
+.compute_sentiment.corpus <- function(x, lexicons, how = "proportional", tokens = NULL, do.sentence = FALSE, nCore = 1, remove_elisions = TRUE) {
   nCore <- check_nCore(nCore)
 
   if (ncol(quanteda::docvars(x)) == 0) {
@@ -316,7 +326,7 @@ compute_sentiment.sento_corpus <- compiler::cmpfun(.compute_sentiment.sento_corp
     dv <- data.table::as.data.table(quanteda::docvars(x)[features])
   }
 
-  s <- compute_sentiment_lexicons(x, tokens, dv, lexicons, how, do.sentence, nCore)
+  s <- compute_sentiment_lexicons(x, tokens, dv, lexicons, how, do.sentence, nCore, remove_elisions)
 
   if (!is.null(features)) { # spread sentiment across numeric features if present and reformat
     lexNames <- names(lexicons)[names(lexicons) != "valence"]
@@ -330,9 +340,9 @@ compute_sentiment.sento_corpus <- compiler::cmpfun(.compute_sentiment.sento_corp
 #' @export
 compute_sentiment.corpus <- compiler::cmpfun(.compute_sentiment.corpus)
 
-.compute_sentiment.character <- function(x, lexicons, how = "proportional", tokens = NULL, do.sentence = FALSE, nCore = 1) {
+.compute_sentiment.character <- function(x, lexicons, how = "proportional", tokens = NULL, do.sentence = FALSE, nCore = 1, remove_elisions = TRUE) {
   nCore <- check_nCore(nCore)
-  s <- compute_sentiment_lexicons(x, tokens, dv = NULL, lexicons, how, do.sentence, nCore)
+  s <- compute_sentiment_lexicons(x, tokens, dv = NULL, lexicons, how, do.sentence, nCore, remove_elisions)
 
   s
 }
@@ -341,18 +351,18 @@ compute_sentiment.corpus <- compiler::cmpfun(.compute_sentiment.corpus)
 #' @export
 compute_sentiment.character <- compiler::cmpfun(.compute_sentiment.character)
 
-.compute_sentiment.VCorpus <- function(x, lexicons, how = "proportional", tokens = NULL, do.sentence = FALSE, nCore = 1) {
+.compute_sentiment.VCorpus <- function(x, lexicons, how = "proportional", tokens = NULL, do.sentence = FALSE, nCore = 1, remove_elisions = TRUE) {
   compute_sentiment(unlist(lapply(x, "[[", "content")),
-                    lexicons, how, tokens, do.sentence, nCore)
+                    lexicons, how, tokens, do.sentence, nCore, remove_elisions)
 }
 
 #' @importFrom compiler cmpfun
 #' @export
 compute_sentiment.VCorpus <- compiler::cmpfun(.compute_sentiment.VCorpus)
 
-.compute_sentiment.SimpleCorpus <- function(x, lexicons, how = "proportional", tokens = NULL, do.sentence = FALSE, nCore = 1) {
+.compute_sentiment.SimpleCorpus <- function(x, lexicons, how = "proportional", tokens = NULL, do.sentence = FALSE, nCore = 1, remove_elisions = TRUE) {
   compute_sentiment(as.character(as.list(x)),
-                    lexicons, how, tokens, do.sentence, nCore)
+                    lexicons, how, tokens, do.sentence, nCore, remove_elisions)
 }
 
 #' @importFrom compiler cmpfun
