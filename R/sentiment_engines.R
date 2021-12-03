@@ -97,6 +97,8 @@ compute_sentiment_multiple_languages <- function(x, lexicons, languages, feature
 
 #' Compute textual sentiment across features and lexicons
 #'
+#' @encoding UTF-8
+#'
 #' @author Samuel Borms, Jeroen Van Pelt, Andres Algaba
 #'
 #' @description Given a corpus of texts, computes sentiment per document or sentence using the valence shifting
