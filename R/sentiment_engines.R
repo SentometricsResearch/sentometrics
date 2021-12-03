@@ -12,7 +12,7 @@ tokenize_texts <- function(x, tokens = NULL, type = "word", remove_elisions = TR
   if (is.null(tokens)) {
     if (type == "word") {
       lower <- stringi::stri_trans_tolower(x)
-      if (remove_elisions) lower <- stringi::stri_replace_all(lower, "", regex = "\\b([lmtnsjdc]|qu|jusqu|quoiqu|lorsqu|puisqu)[\\'\\’]")
+      if (remove_elisions) lower <- stringi::stri_replace_all(lower, "", regex = "\\b([lmtnsjdc]|qu|jusqu|quoiqu|lorsqu|puisqu)[\\'\\u2019]")
       tok <- stringi::stri_split_boundaries(
         lower, type = "word", skip_word_none = TRUE, skip_word_number = TRUE
       )
@@ -20,7 +20,7 @@ tokenize_texts <- function(x, tokens = NULL, type = "word", remove_elisions = TR
       sentences <- stringi::stri_split_boundaries(x, type = "sentence")
       tok <- lapply(sentences, function(sn) { # list of documents of list of sentences of words
         lower <- stringi::stri_trans_tolower(gsub(", ", " c_c ", sn)) # reset commas
-        if (remove_elisions) lower <- stringi::stri_replace_all(lower, "", regex = "\\b([lmtnsjdc]|qu|jusqu|quoiqu|lorsqu|puisqu)[\\'\\’]")
+        if (remove_elisions) lower <- stringi::stri_replace_all(lower, "", regex = "\\b([lmtnsjdc]|qu|jusqu|quoiqu|lorsqu|puisqu)[\\'\\u2019]")
         wo <- stringi::stri_split_boundaries(
           lower,
           type = "word", skip_word_none = TRUE, skip_word_number = TRUE
