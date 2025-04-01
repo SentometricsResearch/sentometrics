@@ -69,7 +69,7 @@
 #' data("list_lexicons", package = "sentometrics")
 #' list_lexicons[c("FEEL_en_tr", "LM_en")]
 #'
-#' @format A \code{list} with all built-in lexicons, appropriately named as \code{"NAME_language(_tr)"} .
+#' @format A \code{list} with all built-in lexicons, appropriately named as \code{"NAME_language(_tr)"}.
 #'
 #' @references Abdaoui, \enc{Azé}{Aze}, Bringay and Poncelet (2017). \strong{FEEL: French Expanded Emotion Lexicon}.
 #' \emph{Language Resources & Evaluation 51, 833-855}, \doi{10.1007/s10579-016-9364-5}.

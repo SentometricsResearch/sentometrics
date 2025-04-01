@@ -49,7 +49,7 @@ useconomynews <- as.data.frame(USECONOMYNEWS) # back to lowercase before saving
 useconomynews$id <- as.character(useconomynews$id)
 usnews <- useconomynews
 
-save(usnews, file = "data/usnews.rda", compress = 'xz')
+save(usnews, file = "data/usnews.rda", compress = "xz")
 # load("data/usnews.rda")
 
 ######################### Economic Policy Uncertainty Index (1985-2018, monthly)
@@ -75,7 +75,7 @@ ym <- as.factor(ym)
 levels(ym) <- c("below-", "below", "above", "above+") # multinomial example series
 
 epu <- data.frame(date = epu$date, index = epu$epu, above = yb, aboveMulti = ym)
-save(epu, file = "data/epu.rda", compress = 'xz')
+save(epu, file = "data/epu.rda", compress = "xz")
 
 ######################### LEXICONS
 
@@ -219,11 +219,11 @@ form_word_list <- function(type) {
   }
   if (type == "lexicons") {
     assign("lexicons", value = listed, pos = 1)
-    save(lexicons, file = "data/lexicons.rda", compress = 'xz')
+    save(lexicons, file = "data/lexicons.rda", compress = "xz")
   }
   else if (type == "valence") {
     assign("valence", value = listed, pos = 1)
-    save(valence, file = "data/valence.rda", compress = 'xz')
+    save(valence, file = "data/valence.rda", compress = "xz")
   }
 }
 
