@@ -1,4 +1,8 @@
 
+## sentometrics 1.0.1
+
+- Fixed NOTEs about Rd files with link targets missing package anchors as per CRAN's request.
+
 ## sentometrics 1.0.0
 
 - Version bump associated with publication of vignette in the Journal of Statistical Software.

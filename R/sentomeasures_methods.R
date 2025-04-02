@@ -14,7 +14,7 @@
 #' in a separate color, but this may look visually overwhelming very fast, and can be quite slow.
 #' @param ... not used.
 #'
-#' @return Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using
+#' @return Returns a simple \code{\link[ggplot2]{ggplot}} object, which can be added onto (or to alter its default elements) by using
 #' the \code{+} operator (see example). By default, a legend is positioned at the top if there are at maximum twelve line
 #' graphs plotted and \code{group} is different from \code{"all"}.
 #'
@@ -276,7 +276,7 @@ get_dimensions <- function(sento_measures) {
 #' or long format.
 #'
 #' @param x a \code{sento_measures} object created using \code{\link{sento_measures}}.
-#' @param keep.rownames see \code{\link{as.data.table}}.
+#' @param keep.rownames see \code{\link[data.table]{as.data.table}}.
 #' @param format a single \code{character} vector, one of \code{c("wide", "long")}.
 #' @param ... not used.
 #'

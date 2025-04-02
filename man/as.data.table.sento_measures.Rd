@@ -9,7 +9,7 @@
 \arguments{
 \item{x}{a \code{sento_measures} object created using \code{\link{sento_measures}}.}
 
-\item{keep.rownames}{see \code{\link{as.data.table}}.}
+\item{keep.rownames}{see \code{\link[data.table]{as.data.table}}.}
 
 \item{format}{a single \code{character} vector, one of \code{c("wide", "long")}.}
 

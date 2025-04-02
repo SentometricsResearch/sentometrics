@@ -183,9 +183,8 @@ The tools available in **`sentometrics`** are complementary to other text mining
 ```{r sento topic, message=FALSE}
 frenchCorpus <- corpus_subset(sentoCorpus, language == "fr")
 
-dfm <- dfm(frenchCorpus, tolower = TRUE, # create and clean a document-feature matrix
-           remove_punct = TRUE, remove_numbers = TRUE, remove = stopwords("fr")) %>%
-  dfm_remove(min_nchar = 3) %>%
+dfm <- dfm(tokens(frenchCorpus), tolower = TRUE) %>% # create & clean a document-feature matrix
+  dfm_remove(min_nchar = 3, pattern = stopwords("fr")) %>%
   dfm_trim(min_termfreq = 0.95, termfreq_type = "quantile") %>%
   dfm_trim(max_docfreq = 0.10, docfreq_type = "prop")
 dfm <- dfm_subset(dfm, ntoken(dfm) > 0)

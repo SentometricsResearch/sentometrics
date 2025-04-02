@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // compute_df
 Rcpp::NumericVector compute_df(double alpha, Rcpp::NumericVector lambda, Rcpp::List xA);
 RcppExport SEXP _sentometrics_compute_df(SEXP alphaSEXP, SEXP lambdaSEXP, SEXP xASEXP) {

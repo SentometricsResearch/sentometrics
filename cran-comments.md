@@ -1,7 +1,11 @@
 
-## resubmission (version 1.0.0) [17/08/2021]
+## submission (version 1.0.1) [02/04/2025]
 
-- adjusted one URL
+- fixed NOTEs about Rd files with link targets missing package anchors
+
+<!--- ## resubmission (version 1.0.0) [17/08/2021]
+
+- adjusted one URL --->
 
 <!--- ## submission (version 1.0.0) [17/08/2021]
 

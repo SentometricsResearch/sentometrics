@@ -724,7 +724,7 @@ print.sento_modelIter <- function(x, ...) {
 #' @param x a \code{sento_modelIter} object created using \code{\link{sento_model}}.
 #' @param ... not used.
 #'
-#' @return Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using
+#' @return Returns a simple \code{\link[ggplot2]{ggplot}} object, which can be added onto (or to alter its default elements) by using
 #' the \code{+} operator.
 #'
 #' @import ggplot2
@@ -758,21 +758,21 @@ plot.sento_modelIter <- function(x, ...) {
 #' @author Samuel Borms
 #'
 #' @description Prediction method for \code{sento_model} class, with usage along the lines of
-#' \code{\link{predict.glmnet}}, but simplified in terms of parameters.
+#' \code{\link[glmnet]{predict.glmnet}}, but simplified in terms of parameters.
 #'
 #' @param object a \code{sento_model} object created with \code{\link{sento_model}}.
 #' @param newx a data \code{matrix} used for the prediction(s), row-by-row; see
-#' \code{\link{predict.glmnet}}. The number of columns should be equal to \code{sum(sento_model$nVar)}, being the
+#' \code{\link[glmnet]{predict.glmnet}}. The number of columns should be equal to \code{sum(sento_model$nVar)}, being the
 #' number of original sentiment measures and other variables. The variables discarded in the regression process are
 #' dealt with within this function, based on \code{sento_model$discarded}.
 #' @param type type of prediction required, a value from \code{c("link", "response", "class")}, see documentation for
-#' \code{\link{predict.glmnet}}.
+#' \code{\link[glmnet]{predict.glmnet}}.
 #' @param offset not used.
 #' @param ... not used.
 #'
 #' @return A prediction output depending on the \code{type} argument.
 #'
-#' @seealso \code{\link{predict.glmnet}}, \code{\link{sento_model}}
+#' @seealso \code{\link[glmnet]{predict.glmnet}}, \code{\link{sento_model}}
 #'
 #' @export
 predict.sento_model <- function(object, newx, type = "response", offset = NULL, ...) {

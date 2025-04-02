@@ -278,7 +278,7 @@ attributions <- function(model, sento_measures, do.lags = TRUE, do.normalize = F
 #' @param group a value from \code{c("lags", "lexicons", "features", "time")}.
 #' @param ... not used.
 #'
-#' @return Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using
+#' @return Returns a simple \code{\link[ggplot2]{ggplot}} object, which can be added onto (or to alter its default elements) by using
 #' the \code{+} operator. By default, a legend is positioned at the top if the number of components of the
 #' dimension is at maximum twelve.
 #'

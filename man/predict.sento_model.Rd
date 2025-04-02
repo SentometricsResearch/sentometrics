@@ -10,12 +10,12 @@
 \item{object}{a \code{sento_model} object created with \code{\link{sento_model}}.}
 
 \item{newx}{a data \code{matrix} used for the prediction(s), row-by-row; see
-\code{\link{predict.glmnet}}. The number of columns should be equal to \code{sum(sento_model$nVar)}, being the
+\code{\link[glmnet]{predict.glmnet}}. The number of columns should be equal to \code{sum(sento_model$nVar)}, being the
 number of original sentiment measures and other variables. The variables discarded in the regression process are
 dealt with within this function, based on \code{sento_model$discarded}.}
 
 \item{type}{type of prediction required, a value from \code{c("link", "response", "class")}, see documentation for
-\code{\link{predict.glmnet}}.}
+\code{\link[glmnet]{predict.glmnet}}.}
 
 \item{offset}{not used.}
 
@@ -26,10 +26,10 @@ A prediction output depending on the \code{type} argument.
 }
 \description{
 Prediction method for \code{sento_model} class, with usage along the lines of
-\code{\link{predict.glmnet}}, but simplified in terms of parameters.
+\code{\link[glmnet]{predict.glmnet}}, but simplified in terms of parameters.
 }
 \seealso{
-\code{\link{predict.glmnet}}, \code{\link{sento_model}}
+\code{\link[glmnet]{predict.glmnet}}, \code{\link{sento_model}}
 }
 \author{
 Samuel Borms

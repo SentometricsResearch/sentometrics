@@ -14,7 +14,7 @@
 \item{...}{not used.}
 }
 \value{
-Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using
+Returns a simple \code{\link[ggplot2]{ggplot}} object, which can be added onto (or to alter its default elements) by using
 the \code{+} operator. By default, a legend is positioned at the top if the number of components of the
 dimension is at maximum twelve.
 }

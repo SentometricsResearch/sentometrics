@@ -49,7 +49,6 @@ struct SentimentScorerSentences : public RcppParallel::Worker {
 
       if (isFreqWeighting) {
         update_frequency_map(freqMap, frequencyMap, i);
-        // update_max_token_frequency(maxTokenFrequency, freqMap, how);
       }
 
       for (int j = 0; j < nTokens; j++) {

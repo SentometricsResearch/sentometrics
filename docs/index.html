@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" type="image/png" sizes="120x120" href="apple-touch-icon-120x120.png">
 <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="apple-touch-icon-76x76.png">
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="apple-touch-icon-60x60.png">
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
@@ -28,6 +28,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -40,25 +42,19 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">sentometrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.1</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="articles/sentometrics.html">Get started</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Examples
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
@@ -76,7 +72,8 @@
       <a href="articles/examples/modeling.html">Modeling</a>
     </li>
     <li class="divider">
-    <li class="dropdown-header">Applications</li>
+    </li>
+<li class="dropdown-header">Applications</li>
     <li>
       <a href="articles/applications/epu.html">Creating EPU indices</a>
     </li>
@@ -86,9 +83,9 @@
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Contributions
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
@@ -101,9 +98,9 @@
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     News
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
@@ -118,9 +115,9 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/SentometricsResearch/sentometrics/">
+  <a href="https://github.com/SentometricsResearch/sentometrics/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul>
@@ -129,7 +126,7 @@
           <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
 </div>
       </form>
-      
+
     </div>
 <!--/.nav-collapse -->
   </div>
@@ -137,38 +134,38 @@
 </div>
 <!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="contents col-md-9">
 
 
-<div id="sentometrics-" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#sentometrics-" class="anchor"></a>sentometrics <a href="https://www.sentometrics.org"><img src="reference/figures/logo.png" style="padding-left:2px" align="right" width="160"></a>
+<div class="section level1">
+<div class="page-header"><h1 id="sentometrics-">sentometrics <a href="https://www.sentometrics.org" class="external-link"><img src="reference/figures/logo.png" style="padding-left:2px" align="right" width="160"></a>
+<a class="anchor" aria-label="anchor" href="#sentometrics-"></a>
 </h1></div>
 <blockquote>
 <p>The <strong><code>sentometrics</code></strong> package offers an <strong>integrated framework for textual sentiment time series aggregation and prediction</strong>. It accounts for the intrinsic challenge that textual sentiment can be computed in many different ways, as well as the large number of possibilities to pool sentiment into a time series index. The package integrates the fast <em>quantification</em> of sentiment from texts, the <em>aggregation</em> into different sentiment time series, and the <em>prediction</em> based on these measures. All in one coherent workflow!</p>
 </blockquote>
 <p>Explore this package website to learn about what you can do with <strong><code>sentometrics</code></strong> and how so.</p>
-<div id="reference" class="section level3">
-<h3 class="hasAnchor">
-<a href="#reference" class="anchor"></a>Reference</h3>
+<div class="section level3">
+<h3 id="reference">Reference<a class="anchor" aria-label="anchor" href="#reference"></a>
+</h3>
 <p>Please cite <strong><code>sentometrics</code></strong> in publications. See the <strong>Citation</strong> section on the right.</p>
 </div>
-<div id="acknowledgements" class="section level3">
-<h3 class="hasAnchor">
-<a href="#acknowledgements" class="anchor"></a>Acknowledgements</h3>
-<p>This software package originates from a <a href="https://github.com/rstats-gsoc/gsoc2017/wiki/Sentometrics:-An-integrated-framework-for-text-based-multivariate-time-series-modeling-and-forecasting">Google Summer of Code 2017</a> project, was further developed during a follow-up <a href="https://github.com/rstats-gsoc/gsoc2019/wiki/sentometrics">Google Summer of Code 2019</a> project, and benefited generally from financial support by <a href="https://innoviris.brussels">Innoviris</a>, <a href="https://www.ivado.ca">IVADO</a>, <a href="https://www.swissuniversities.ch">swissuniversities</a>, and the <a href="http://www.snf.ch">Swiss National Science Foundation</a> (grants #179281 and #191730).</p>
+<div class="section level3">
+<h3 id="acknowledgements">Acknowledgements<a class="anchor" aria-label="anchor" href="#acknowledgements"></a>
+</h3>
+<p>This software package originates from a <a href="https://github.com/rstats-gsoc/gsoc2017/wiki/Sentometrics:-An-integrated-framework-for-text-based-multivariate-time-series-modeling-and-forecasting" class="external-link">Google Summer of Code 2017</a> project, was further developed during a follow-up <a href="https://github.com/rstats-gsoc/gsoc2019/wiki/sentometrics" class="external-link">Google Summer of Code 2019</a> project, and benefited generally from financial support by <a href="https://innoviris.brussels" class="external-link">Innoviris</a>, <a href="https://www.ivado.ca" class="external-link">IVADO</a>, <a href="https://www.swissuniversities.ch" class="external-link">swissuniversities</a>, and the <a href="http://www.snf.ch" class="external-link">Swiss National Science Foundation</a> (grants #179281 and #191730).</p>
 <!-- <img height="71" src="man/figures/gsoc.png" alt="GSoC" style="margin-right:8px"/>
 <img height="79" src="man/figures/innoviris.png" alt="Innoviris" style="display:inline-block;margin-right:8px"/>
 <img height="77" src="man/figures/ivado.png" alt="IVADO" style="display:inline-block;margin-right:8px"/>
 <img height="79" src="man/figures/swissuniversities.png" alt="swissuniversities" style="display:inline-block;margin-right:8px"/>
 <img height="88" src="man/figures/snsf.png" alt="SNSF" style="display:inline-block;margin-right:8px"/> -->
 </div>
-<div id="contact" class="section level3">
-<h3 class="hasAnchor">
-<a href="#contact" class="anchor"></a>Contact</h3>
+<div class="section level3">
+<h3 id="contact">Contact<a class="anchor" aria-label="anchor" href="#contact"></a>
+</h3>
 <p>Reach out to <a href="mailto:borms_sam@hotmail.com">Samuel Borms</a> if you have questions, suggestions or want to become a contributor. See the <strong>News &gt; Development</strong> section to find out what you can help us with.</p>
 </div>
 </div>
@@ -177,73 +174,77 @@
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=sentometrics">https://​cloud.r-project.org/​package=sentometrics</a>
-</li>
-<li>Browse source code at <br><a href="https://github.com/SentometricsResearch/sentometrics/">https://​github.com/​SentometricsResearch/​sentometrics/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/SentometricsResearch/sentometrics/issues">https://​github.com/​SentometricsResearch/​sentometrics/​issues</a>
-</li>
+<li><a href="https://cloud.r-project.org/package=sentometrics" class="external-link">View on CRAN</a></li>
+<li><a href="https://github.com/SentometricsResearch/sentometrics/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/SentometricsResearch/sentometrics/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li>GPL (&gt;= 2)</li>
 </ul>
 </div>
+
+
 <div class="citation">
-<h2>Citation</h2>
+<h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li><a href="authors.html">Citing sentometrics</a></li>
-</ul>
-</div>
-<div class="developers">
-<h2>Developers</h2>
-<ul class="list-unstyled">
-<li>
-<a href="https://www.linkedin.com/in/sam-borms">Samuel Borms</a> <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-9533-1870" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>
-<a href="https://ardiad.github.io">David Ardia</a> <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-2823-782X" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>
-<a href="https://www.kevenbluteau.com">Keven Bluteau</a> <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-2990-4807" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>
-<a href="https://linkedin.com/in/krisboudt">Kris Boudt</a> <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-1000-5142" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li><a href="authors.html">All authors...</a></li>
+<li><a href="authors.html#citation">Citing sentometrics</a></li>
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="developers">
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li><a href="https://cran.r-project.org/package=sentometrics"><img src="https://www.r-pkg.org/badges/version/sentometrics" alt="CRAN"></a></li>
-<li><a href="https://codecov.io/github/SentometricsResearch/sentometrics"><img src="https://codecov.io/github/SentometricsResearch/sentometrics/branch/master/graphs/badge.svg" alt="codecov"></a></li>
-<li><a href="https://www.r-pkg.org/pkg/sentometrics"><img src="https://cranlogs.r-pkg.org/badges/last-day/sentometrics?color=ff69b4" alt="Downloads"></a></li>
-<li><a href="https://www.r-pkg.org/pkg/sentometrics"><img src="https://cranlogs.r-pkg.org/badges/sentometrics?color=ff69b4" alt="Downloads"></a></li>
-<li><a href="https://www.r-pkg.org/pkg/sentometrics"><img src="https://cranlogs.r-pkg.org/badges/grand-total/sentometrics?color=ff69b4" alt="Downloads"></a></li>
+<li>
+<a href="https://www.linkedin.com/in/sam-borms" class="external-link">Samuel Borms</a> <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-9533-1870" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>
+<a href="https://ardiad.github.io" class="external-link">David Ardia</a> <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-2823-782X" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>
+<a href="https://www.kevenbluteau.com" class="external-link">Keven Bluteau</a> <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-2990-4807" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>
+<a href="https://linkedin.com/in/krisboudt" class="external-link">Kris Boudt</a> <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-1000-5142" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
+
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://cran.r-project.org/package=sentometrics" class="external-link"><img src="https://www.r-pkg.org/badges/version/sentometrics" alt="CRAN"></a></li>
+<li><a href="https://codecov.io/github/SentometricsResearch/sentometrics" class="external-link"><img src="https://codecov.io/github/SentometricsResearch/sentometrics/branch/master/graphs/badge.svg" alt="codecov"></a></li>
+<li><a href="https://www.r-pkg.org/pkg/sentometrics" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/last-day/sentometrics?color=ff69b4" alt="Downloads"></a></li>
+<li><a href="https://www.r-pkg.org/pkg/sentometrics" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/sentometrics?color=ff69b4" alt="Downloads"></a></li>
+<li><a href="https://www.r-pkg.org/pkg/sentometrics" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/sentometrics?color=ff69b4" alt="Downloads"></a></li>
+</ul>
 </div>
+
+  </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by <a href="https://www.linkedin.com/in/sam-borms">Samuel Borms</a>, <a href="https://ardiad.github.io">David Ardia</a>, <a href="https://www.kevenbluteau.com">Keven Bluteau</a>, <a href="https://linkedin.com/in/krisboudt">Kris Boudt</a>.</p>
+  <p></p>
+<p>Developed by <a href="https://www.linkedin.com/in/sam-borms" class="external-link">Samuel Borms</a>, <a href="https://ardiad.github.io" class="external-link">David Ardia</a>, <a href="https://www.kevenbluteau.com" class="external-link">Keven Bluteau</a>, <a href="https://linkedin.com/in/krisboudt" class="external-link">Kris Boudt</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer>
 </div>
 
-  
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.1/docsearch.min.js" integrity="sha256-GKvGqXDznoRYHCwKXGnuchvKSwmx9SRMrZOTh2g4Sb0=" crossorigin="anonymous"></script><script>
   docsearch({
-    
-    
+
+
     apiKey: '29d61aa2be101325ab9a82514b58064b',
     indexName: 'sentometrics',
     inputSelector: 'input#search-input.form-control',

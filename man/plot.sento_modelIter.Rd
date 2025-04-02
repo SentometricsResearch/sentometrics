@@ -12,7 +12,7 @@
 \item{...}{not used.}
 }
 \value{
-Returns a simple \code{\link{ggplot}} object, which can be added onto (or to alter its default elements) by using
+Returns a simple \code{\link[ggplot2]{ggplot}} object, which can be added onto (or to alter its default elements) by using
 the \code{+} operator.
 }
 \description{
