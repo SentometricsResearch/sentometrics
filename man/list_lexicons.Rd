@@ -8,14 +8,14 @@
 A \code{list} with all built-in lexicons, appropriately named as \code{"NAME_language(_tr)"}.
 }
 \source{
-\href{https://link.springer.com/article/10.1007\%2Fs10579-016-9364-5}{FEEL lexicon}. Retrieved November 1, 2017.
+\href{https://link.springer.com/article/10.1007/s10579-016-9364-5}{FEEL lexicon}. Retrieved November 1, 2017.
 
-\href{http://www.wjh.harvard.edu/~inquirer/spreadsheet_guide.htm}{GI lexicon}. Retrieved November 1, 2017.
+\href{https://inquirer.sites.fas.harvard.edu}{GI lexicon}. Retrieved November 1, 2017.
 
 \href{https://journals.sagepub.com/doi/abs/10.1177/0021943608319388}{HENRY lexicon}. Retrieved
 November 1, 2017.
 
-\href{https://sraf.nd.edu/textual-analysis/resources/}{LM lexicon}. Retrieved
+\href{https://sraf.nd.edu/textual-analysis/}{LM lexicon}. Retrieved
 November 1, 2017.
 }
 \usage{
