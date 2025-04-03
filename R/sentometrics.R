@@ -145,7 +145,7 @@
 #'
 #' @format A \code{data.frame}, formatted as required to be an input for \code{\link{sento_corpus}}.
 #'
-#' @source \href{https://www.appen.com/open-source-datasets}{Economic News Article Tone and Relevance}. Retrieved
+#' @source \strong{Economic News Article Tone and Relevance} dataset. Retrieved
 #' November 1, 2017.
 "usnews"
 
