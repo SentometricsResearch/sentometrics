@@ -151,6 +151,16 @@ inline void update_token_scores(std::vector< double >& scores,
     scale_token_weights(tokenWeights, normalizer, nTokens);
   }
 
+  std::vector< double > denominator_proportionalPol = std::vector< double >(nL, 0);
+  if (how == "proportionalPol") {
+    for (int j = 0; j < nL; j++) {
+      for (int i = 0; i < nTokens; i++) {
+        denominator_proportionalPol[j] += abs(tokenShifters[i] * tokenScores[i][j]);
+      }
+    }
+  }
+
+
   for (int i = 0; i < nTokens; i++) {
     for (int j = 0; j < nL; j++) {
       if (tokenScores[i].size() != 0) {
@@ -161,7 +171,8 @@ inline void update_token_scores(std::vector< double >& scores,
           } else if (how == "proportional") {
             scores[j] += (tokenShifters[i] * score) / (nTokens - nPuncts);
           } else if (how == "proportionalPol") {
-            if (nPolarized[j] > 0) scores[j] += (tokenShifters[i] * score) / nPolarized[j];
+            // if (nPolarized[j] > 0) scores[j] += (tokenShifters[i] * score) / nPolarized[j];
+            if (nPolarized[j] > 0) scores[j] += (tokenShifters[i] * score) / denominator_proportionalPol[j];
           } else if (how == "proportionalSquareRoot") {
             scores[j] += (tokenShifters[i] * score) / std::sqrt(nTokens - nPuncts);
           } else {
